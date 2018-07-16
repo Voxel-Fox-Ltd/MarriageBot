@@ -1,0 +1,9 @@
+{
+    "token": "",
+    "database": {
+        "user": "marriagebot" ,
+        "password": "",
+        "database": "marriagebot",
+        "host": "127.0.0.1"
+    }
+}
