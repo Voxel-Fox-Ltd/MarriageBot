@@ -1,5 +1,4 @@
 __pycache__/*
 *.pyc
-config/*
-!*.example
+config/config.json
 *sublime*
