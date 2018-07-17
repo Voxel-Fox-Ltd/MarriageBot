@@ -1,4 +1,10 @@
+from random import choice
+from discord import Member
 from asyncpg import connect
+
+
+RANDOM_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_'
+
 
 class DatabaseConnection(object):
 
@@ -8,7 +14,7 @@ class DatabaseConnection(object):
         self.db = None
 
     async def __aenter__(self):
-        self.db = await connect(self.config)
+        self.db = await connect(**self.config)
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
@@ -27,3 +33,65 @@ class DatabaseConnection(object):
         if x:
             return x
         return None
+
+    async def make_id(self, table:str, id_field:str) -> str:
+        '''
+        Makes a random ID that hasn't appeared in the database before for a given table
+        '''
+
+        while True:
+            idnumber = ''
+            for i in range(11):
+                idnumber += choice(RANDOM_CHARACTERS)
+            x = await self(f'SELECT * FROM {table} WHERE {id_field}=$1', idnumber)
+            if not x:
+                return idnumber
+
+    async def get_marriage(self, user:Member):
+        '''
+        Gets a marriage dictionary from the database for the given user
+        '''
+
+        x = await self('SELECT * FROM marriages WHERE user_id=$1 AND valid=TRUE', user.id)
+        if x:
+            y = await self('SELECT * FROM marriages WHERE marriage_id=$1 AND valid=TRUE', x[0]['marriage_id'])
+            return [x, y]
+        return None
+
+    async def add_event(self, instigator:Member, target:Member, event:str):
+        '''
+        Adds an event to the events table
+        '''
+
+        idnumber = await self.make_id('events', 'event_id')
+        # event_id, event_type, instigator, target, time
+        await self(
+            'INSERT INTO events VALUES ($1, $2, $3, $4, NOW())', 
+            idnumber,
+            event,
+            instigator.id,
+            target.id 
+        )
+
+    async def marry(self, instigator:Member, target:Member, marriage_id:str=None):
+        '''
+        Marries two users together
+        '''
+
+        if marriage_id == None:
+            idnumber = await self.make_id('marriages', 'marriage_id')
+        else:
+            idnumber = marriage_id
+        # marriage_id, user_id, user_name, partner_id, partner_name, valid
+        await self(
+            'INSERT INTO marriages VALUES ($1, $2, $3, $4, $5, TRUE)',
+            idnumber,
+            instigator.id,
+            instigator.name,
+            target.id,
+            target.name,
+        )
+        await self.add_event(instigator, target, 'MARRIAGE')
+        if marriage_id == None:
+            await self.marry(target, instigator, idnumber)  # Run it again with instigator/target flipped
+

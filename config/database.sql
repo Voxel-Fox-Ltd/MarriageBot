@@ -4,7 +4,7 @@ USE marriagebot;
 
 
 CREATE TYPE event AS ENUM (
-    'MARRIAGE', 'DIVORCE', 'PROPOSAL', 'I DO', 'I DONT', 'ALREADY MARRIED'
+    'MARRIAGE', 'DIVORCE', 'PROPOSAL', 'I DO', 'I DONT', 'ALREADY MARRIED', 'TIMEOUT'
 );
 
 
@@ -12,6 +12,8 @@ CREATE TABLE marriages(
     marriage_id VARCHAR(11) NOT NULL,
     user_id BIGINT NOT NULL,
     user_name VARCHAR(36) NOT NULL,
+    partner_id BIGINT NOT NULL,
+    partner_name VARCHAR(36) NOT NULL,
     valid BOOLEAN NOT NULL,
     PRIMARY KEY (marriage_id, user_id)
 );
