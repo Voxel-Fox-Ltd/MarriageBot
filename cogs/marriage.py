@@ -25,6 +25,12 @@ class Marriage(object):
 
         instigator = ctx.author
         target = user  # Just so "target" didn't show up in the help message
+        if target.bot:
+            await ctx.send("Gay marriage _was_ a slippery slope, but not quite slippery enough to let you marry robots. The answer is no.")
+            return
+        if instigator.id == target.id:
+            await ctx.send("Are you serious.")
+            return
 
         async with self.bot.database() as db:
             # See if they're married already
@@ -112,7 +118,6 @@ class Marriage(object):
         async with self.bot.database() as db:
             await db.divorce(instigator=instigator, target=target, marriage_id=instigator_married[0]['marriage_id'])
         await ctx.send(f"You and {target.mention} are now divorced. I wish you luck in your lives.")
-
 
 
 def setup(bot:CustomBot):
