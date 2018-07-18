@@ -4,16 +4,23 @@ USE marriagebot;
 
 
 CREATE TYPE event AS ENUM (
-    'MARRIAGE', 'DIVORCE', 'PROPOSAL', 'I DO', 'I DONT', 'ALREADY MARRIED', 'TIMEOUT'
+    'MARRIAGE', 
+    'DIVORCE', 
+    'PROPOSAL', 
+    'I DO', 
+    'I DONT', 
+    'ALREADY MARRIED', 
+    'TIMEOUT',
+    'PARENT REQUEST',
+    'ACCEPT ADOPTION',
+    'DECLINE ADOPTION'
 );
 
 
 CREATE TABLE marriages(
     marriage_id VARCHAR(11) NOT NULL,
     user_id BIGINT NOT NULL,
-    user_name VARCHAR(36) NOT NULL,
     partner_id BIGINT NOT NULL,
-    partner_name VARCHAR(36) NOT NULL,
     valid BOOLEAN NOT NULL,
     PRIMARY KEY (marriage_id, user_id)
 );
@@ -36,3 +43,12 @@ CREATE TABLE events(
 -- In the event of a marriage an entry is made for each user in the partnership
 -- event_id is a random 11-character string
 -- time is when the event was triggered
+
+
+CREATE TABLE parents(
+    child_id BIGINT NOT NULL,
+    parent_id BIGINT NOT NULL,
+    PRIMARY KEY (child_id)
+);
+-- Since a child will only appear once, you can set child_id to the primary key
+-- A parent can have many children, a child will have only one parent

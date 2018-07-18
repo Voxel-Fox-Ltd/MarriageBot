@@ -84,12 +84,10 @@ class DatabaseConnection(object):
             idnumber = marriage_id
         # marriage_id, user_id, user_name, partner_id, partner_name, valid
         await self(
-            'INSERT INTO marriages VALUES ($1, $2, $3, $4, $5, TRUE)',
+            'INSERT INTO marriages VALUES ($1, $2, $3, TRUE)',
             idnumber,
             instigator.id,
-            instigator.name,
             target.id,
-            target.name,
         )
         await self.add_event(instigator, target, 'MARRIAGE')
         if marriage_id == None:
@@ -105,3 +103,12 @@ class DatabaseConnection(object):
         await self.add_event(instigator=target, target=instigator, event='DIVORCE')
         await self('UPDATE marriages SET valid=FALSE WHERE marriage_id=$1', marriage_id)
 
+    async def get_parent(self, user:Member):
+        '''
+        Finds the parentage info of a given user
+        '''
+
+        x = await self('SELECT * FROM parents WHERE child_id=$1', user.id)
+        if x:
+            return x[0]
+        return None
