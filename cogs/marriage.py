@@ -13,11 +13,16 @@ class Marriage(object):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
-        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)")
+
+        # Proposal text
+        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
+        # Proposal cache
+        self.cache = []
 
-    @command()
+
+    @command(aliases=['marry'])
     async def propose(self, ctx:Context, user:Member):
         '''
         Lets you propose to another Discord user
@@ -25,10 +30,23 @@ class Marriage(object):
 
         instigator = ctx.author
         target = user  # Just so "target" didn't show up in the help message
-        if target.bot:
+
+        # See if either user is already being proposed to
+        if instigator.id in self.cache:
+            await ctx.send("You can only propose to one person at a time .-.")
+            return
+        elif target.id in self.cache:
+            await ctx.send("That person has already been proposed to. Please wait.")
+            return
+
+        # Manage exclusions
+        if target.id == self.bot.user.id:
+            await ctx.send("I'm flattered but no, sweetheart 😘")
+            return
+        elif target.bot or instigator.bot:
             await ctx.send("Gay marriage _was_ a slippery slope, but not quite slippery enough to let you marry robots. The answer is no.")
             return
-        if instigator.id == target.id:
+        elif instigator.id == target.id:
             await ctx.send("Are you serious.")
             return
 
@@ -52,6 +70,8 @@ class Marriage(object):
         async with self.bot.database() as db:
             await db.add_event(instigator=instigator, target=target, event='PROPOSAL')
         await ctx.send(f"{target.mention}, do you accept {instigator.mention}'s proposal?")
+        self.cache.append(instigator.id)
+        self.cache.append(target.id)
 
         # Make the check
         def check(message):
@@ -75,7 +95,9 @@ class Marriage(object):
         except TimeoutError as e:
             async with self.bot.database() as db:
                 await db.add_event(instigator=target, target=instigator, event='TIMEOUT')
-            await ctx.send("The proposal has timed out. Try again when they're online!")
+            await ctx.send(f"{instigator.mention}, your proposal has timed out. Try again when they're online!")
+            self.cache.remove(instigator.id)
+            self.cache.remove(target.id)
             return
 
         # Valid response recieved, see what their answer was
@@ -84,13 +106,14 @@ class Marriage(object):
             async with self.bot.database() as db:
                 await db.add_event(instigator=target, target=instigator, event='I DONT')
             await ctx.send("That's fair. The marriage has been called off.")
-            return
         elif response == 'YES':
             async with self.bot.database() as db:
                 await db.add_event(instigator=target, target=instigator, event='I DO')
                 await db.marry(instigator, target)
             await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
-            return
+
+        self.cache.remove(instigator.id)
+        self.cache.remove(target.id)
 
 
     @command()
