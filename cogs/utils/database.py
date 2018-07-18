@@ -55,7 +55,7 @@ class DatabaseConnection(object):
         x = await self('SELECT * FROM marriages WHERE user_id=$1 AND valid=TRUE', user.id)
         if x:
             y = await self('SELECT * FROM marriages WHERE marriage_id=$1 AND valid=TRUE', x[0]['marriage_id'])
-            return [x, y]
+            return [x[0], y[0]]
         return None
 
     async def add_event(self, instigator:Member, target:Member, event:str):
@@ -94,4 +94,14 @@ class DatabaseConnection(object):
         await self.add_event(instigator, target, 'MARRIAGE')
         if marriage_id == None:
             await self.marry(target, instigator, idnumber)  # Run it again with instigator/target flipped
+
+    async def divorce(self, instigator:Member, target:Member, marriage_id:str):
+        '''
+        Divorces two married people
+        '''
+
+        instigator
+        await self.add_event(instigator=instigator, target=target, event='DIVORCE')
+        await self.add_event(instigator=target, target=instigator, event='DIVORCE')
+        await self('UPDATE marriages SET valid=FALSE WHERE marriage_id=$1', marriage_id)
 

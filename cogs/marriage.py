@@ -13,7 +13,7 @@ class Marriage(object):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
-        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)")
+        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
 
@@ -56,7 +56,7 @@ class Marriage(object):
             
             if message.author.id != target.id:
                 return False
-            c = message.content
+            c = message.content.casefold()
             yes = self.proposal_yes.search(c)
             no = self.proposal_no.search(c)
             if any([yes, no]):
@@ -85,6 +85,34 @@ class Marriage(object):
                 await db.marry(instigator, target)
             await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
             return
+
+
+    @command()
+    async def divorce(self, ctx:Context, user:Member):
+        '''
+        Divorces you from your current spouse
+        '''
+
+        instigator = ctx.author
+        target = user  # Just so "target" didn't show up in the help message
+
+        # Get marriage data for the user
+        async with self.bot.database() as db:
+            instigator_married = await db.get_marriage(instigator)
+
+        # See why it could fail
+        if not instigator_married:
+            await ctx.send("You're not married. Don't try to divorce strangers .-.")
+            return
+        elif target.id not in [instigator_married[0]['partner_id'], instigator_married[1]['partner_id']]:
+            await ctx.send("You aren't married to that person .-.")
+            return
+
+        # At this point they can only be married
+        async with self.bot.database() as db:
+            await db.divorce(instigator=instigator, target=target, marriage_id=instigator_married[0]['marriage_id'])
+        await ctx.send(f"You and {target.mention} are now divorced. I wish you luck in your lives.")
+
 
 
 def setup(bot:CustomBot):
