@@ -53,7 +53,7 @@ class Information(object):
     @command()
     async def parent(self, ctx:Context, user:Member=None):
         '''
-        Gives you a list of all of your children
+        Tells you who your parent is
         '''
 
         if user == None:
