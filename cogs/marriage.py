@@ -51,12 +51,20 @@ class Marriage(object):
             return
 
         async with self.bot.database() as db:
-            # See if they're married already
+            # See if they're married or parented already
             instigator_married = await db.get_marriage(instigator)
+            instigator_parentage = await db.get_parent(instigator)
+            instigator_children = await db.get_children(instigator)
             target_married = await db.get_marriage(target)
 
         # If they are, tell them off
-        if instigator_married:
+        if instigator_parentage and instigator_parentage['parent_id'] == target.id:
+            await ctx.send("... That's your parent. No.")
+            return
+        elif target.id in instigator_children:
+            await ctx.send("... That's your child. No.")
+            return
+        elif instigator_married:
             await ctx.send(f"{instigator.mention}, you can't marry someone if you're already married .-.")
             return
         elif target_married:

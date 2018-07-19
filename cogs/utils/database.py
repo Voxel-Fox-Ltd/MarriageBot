@@ -112,3 +112,14 @@ class DatabaseConnection(object):
         if x:
             return x[0]
         return None
+
+    async def get_children(self, user:Member):
+        '''
+        Finds the IDs of all children of the given member
+        '''
+
+        # children = []
+        x = await self('SELECT * FROM parents WHERE parent_id=$1', user.id)
+        if x:
+            return [i['child_id'] for i in x]
+        return []

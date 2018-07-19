@@ -53,12 +53,20 @@ class Parentage(object):
         # See if they already have a parent
         async with self.bot.database() as db:
             parentage = await db.get_parent(instigator)
+            children = await db.get_children(instigator)
+            marriage = await db.get_marriage(instigator)
         if parentage:
             await ctx.send("Sorry, but you already have a parent :/")
             return
+        elif target.id in children:
+            await ctx.send("That is your child. You can't make your child your parent.")
+            return
+        elif target.id in [marriage[0]['user_id'], marriage[0]['partner_id']]:
+            await ctx.send("Sorry to say this but you can't marry your spouse.")
+            return
 
         # Make sure the user knows
-        m = await ctx.send(f"Just to make sure, {instigator.mention}, you should know you can't change your parent after you do this. Do you want to continue?")
+        m = await ctx.send(f"Just to make sure, {instigator.mention}, you should know you can't change your parent after you do this, and you can only have one. Do you want to continue?")
         await m.add_reaction('👌')
         await m.add_reaction('👎')
         try:

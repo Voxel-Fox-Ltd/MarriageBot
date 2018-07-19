@@ -3,7 +3,7 @@ from cogs.utils.custom_bot import CustomBot
 
 
 bot = CustomBot(
-    command_prefix='m!', 
+    command_prefix=['m!', '<@468281173072805889> ', '<@!468281173072805889> '], 
     config_file='config/config.json'
     )
 
