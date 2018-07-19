@@ -23,7 +23,7 @@ class Parentage(object):
 
 
     @command()
-    async def parent(self, ctx:Context, parent:Member):
+    async def makeparent(self, ctx:Context, parent:Member):
         '''
         Picks a user that you want to be your parent
         '''
@@ -61,7 +61,7 @@ class Parentage(object):
         elif target.id in children:
             await ctx.send("That is your child. You can't make your child your parent.")
             return
-        elif target.id in [marriage[0]['user_id'], marriage[0]['partner_id']]:
+        elif marriage and target.id in [marriage[0]['user_id'], marriage[0]['partner_id']]:
             await ctx.send("Sorry to say this but you can't marry your spouse.")
             return
 
