@@ -3,6 +3,7 @@ from asyncio import TimeoutError
 from discord import Member
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.family_tree.family_tree import FamilyTree
 
 
 class Parentage(object):
@@ -51,18 +52,20 @@ class Parentage(object):
             return
 
         # See if they already have a parent
+        await ctx.trigger_typing()
         async with self.bot.database() as db:
             parentage = await db.get_parent(instigator)
             children = await db.get_children(instigator)
             marriage = await db.get_marriage(instigator)
-        if parentage:
+            family_tree = FamilyTree(instigator.id, 6)  # Get the instigator's tree
+            await family_tree.populate_tree(db)
+        
+        # If they are, tell them off
+        if family_tree.get_member(target.id):
+            await ctx.send(f"{instigator.mention}, they're already part of your family.")
+            return
+        elif parentage:
             await ctx.send("Sorry, but you already have a parent :/")
-            return
-        elif target.id in children:
-            await ctx.send("That is your child. You can't make your child your parent.")
-            return
-        elif marriage and target.id in [marriage[0]['user_id'], marriage[0]['partner_id']]:
-            await ctx.send("Sorry to say this but you can't marry your spouse.")
             return
 
         # Make sure the user knows

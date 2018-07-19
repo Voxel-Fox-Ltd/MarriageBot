@@ -1,6 +1,11 @@
-from discord import Member
+from subprocess import run
+from os import remove
+from re import compile
+from asyncio import sleep
+from discord import Member, File
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.family_tree.family_tree import FamilyTree
 
 
 class Information(object):
@@ -11,6 +16,7 @@ class Information(object):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
+        self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
 
 
     @command(aliases=['spouse', 'husband', 'wife'])
@@ -65,6 +71,45 @@ class Information(object):
             await ctx.send(f"`{user!s}` has no parent.")
             return
         await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(x[0]['parent_id'])!s}`.")
+
+
+    @command()
+    async def tree(self, ctx:Context, root:Member=None, depth:int=3):
+        '''
+        Gets the family tree of a given user
+        '''
+
+        if root == None:
+            root = ctx.author
+        if depth >= 8:
+            depth = 8
+
+        # Get their family tree
+        await ctx.trigger_typing()
+        ft = FamilyTree(root.id, depth)
+        async with self.bot.database() as db:
+            await ft.populate_tree(db)
+        self.last_tree = ft
+            
+        # Make sure they have one
+        if ft.root.children == [] and ft.root.partner == None:
+            await ctx.send(f"{root!s} has no family to put into a tree .-.")
+            return
+
+        # Start the 3-step conversion process
+        with open(f'./trees/{root.id}.txt', 'w', encoding='utf-8') as a:
+            text = ft.stringify(self.bot)
+            a.write(self.substitution.sub('', text))
+        f = open(f'./trees/{root.id}.dot', 'w')
+        _ = run(['py', './cogs/utils/family_tree/familytreemaker.py', '-a', self.substitution.sub('', str(root)), f'./trees/{root.id}.txt'], stdout=f)
+        f.close()
+        _ = run(['dot', '-Tpng', f'./trees/{root.id}.dot', '-o', f'./trees/{root.id}.png', '-Gcharset=latin1', '-Gsize=200\\!', '-Gdpi=100'])
+
+        # Send file and delete cached
+        await ctx.send(file=File(fp=f'./trees/{root.id}.png'))
+        await sleep(1)  # Just so the file still isn't sending
+        for i in [f'./trees/{root.id}.txt', f'./trees/{root.id}.dot', f'./trees/{root.id}.png']:
+            _ = remove(i)
 
 
 def setup(bot:CustomBot):

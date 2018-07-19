@@ -56,3 +56,14 @@ class FamilyTree(object):
             fulltext += '\n'
         return fulltext
 
+    def get_member(self, discord_id):
+        '''
+        Returns the the family tree member object of the given Discord ID should it exist,
+        otherwise None
+        '''
+
+        for user in self.root.span([], include_parents=True, add_parent=True):
+            if user.id == discord_id:
+                return user
+        return None
+

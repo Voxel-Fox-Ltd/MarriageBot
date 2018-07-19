@@ -80,7 +80,7 @@ class FamilyTreeMember(object):
     def __repr__(self):
         return str(self.id)
 
-    def span(self, all_people, add_parent=False):
+    def span(self, all_people, add_parent=False, include_parents:bool=False):
         '''
         Gets a list of every user in the tree
         '''
@@ -99,15 +99,15 @@ class FamilyTreeMember(object):
         if self in all_people:
             return all_people
         all_people.append(self)
-        if add_parent and self.parent:
-            all_people = self.parent.span(all_people, add_parent=True)
+        if include_parents and add_parent and self.parent:
+            all_people = self.parent.span(all_people, add_parent=True, include_parents=include_parents)
         if self.children:
             for child in self.children:
                 if child in all_people:
                     continue
-                all_people = child.span(all_people, add_parent=False)
+                all_people = child.span(all_people, add_parent=False, include_parents=include_parents)
         if self.partner:
-            all_people = self.partner.span(all_people, add_parent=True)
+            all_people = self.partner.span(all_people, add_parent=True, include_parents=include_parents)
 
         nodupe = []
         for i in all_people:

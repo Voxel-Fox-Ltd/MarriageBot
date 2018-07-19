@@ -3,10 +3,9 @@ from asyncio import iscoroutine
 from discord import Member
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
-from cogs.utils.family_tree.family_tree import FamilyTree
 
 
-class Parentage(object):
+class CalebOnly(object):
     '''
     The parentage cog
     Handles the adoption of parents
@@ -16,21 +15,8 @@ class Parentage(object):
         self.bot = bot
         self.last_tree = None
 
-
     async def __local_check(self, ctx:Context):
         return str(ctx.author) == 'Caleb#2831'
-
-
-    @command(hidden=True)
-    async def tree(self, ctx:Context, root:Member, depth:int=3):
-        '''
-        '''
-
-        ft = FamilyTree(root.id, depth)
-        async with self.bot.database() as db:
-            await ft.populate_tree(db)
-        self.last_tree = ft 
-        await ctx.send('Done.')
 
 
     @command(hidden=True)
@@ -51,7 +37,7 @@ class Parentage(object):
 
 
 def setup(bot:CustomBot):
-    x = Parentage(bot)
+    x = CalebOnly(bot)
     bot.add_cog(x)
 
 
