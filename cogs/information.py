@@ -25,10 +25,13 @@ class Information(object):
         async with self.bot.database() as db:
             x = await db.get_marriage(user)
         if not x:
-            await ctx.send(f"{user.mention} is not currently married.")
+            await ctx.send(f"`{user!s}` is not currently married.")
             return
         i = x[0]
-        await ctx.send(f"<@{i['user_id']}> is currently married to <@{i['partner_id']}>.")
+
+        u1 = self.bot.get_user(i['user_id'])
+        u2 = self.bot.get_user(i['partner_id'])
+        await ctx.send(f"`{u1!s}` is currently married to `{u2!s}`.")
 
 
     @command(aliases=['child'])
@@ -43,14 +46,9 @@ class Information(object):
         async with self.bot.database() as db:
             x = await db('SELECT * FROM parents WHERE parent_id=$1', user.id)
         if not x:
-            await ctx.send(f"{user.mention} has no children right now.")
+            await ctx.send(f"`{user!s}` has no children right now.")
             return
-        await ctx.send("{.mention} has {} child{}: <@{}>".format(
-            user,
-            len(x), 
-            '' if len(x) == 1 else 'ren',
-            '>, <@'.join([str(i['child_id']) for i in x])
-        ))
+        await ctx.send(f"`{user!s}` has `{len(x)}` child" + {False:"ren",True:""}.get(len(x)==1) + ": " + ", ".join([f"`{self.bot.get_user(i['child_id'])!s}`" for i in x]))
 
     @command()
     async def parent(self, ctx:Context, user:Member=None):
@@ -64,9 +62,9 @@ class Information(object):
         async with self.bot.database() as db:
             x = await db('SELECT * FROM parents WHERE child_id=$1', user.id)
         if not x:
-            await ctx.send(f"{user.mention} has no parent.")
+            await ctx.send(f"`{user!s}` has no parent.")
             return
-        await ctx.send(f"{user.mention}'s parent is <@{x[0]['parent_id']}>.")
+        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(x[0]['parent_id'])!s}`.")
 
 
 def setup(bot:CustomBot):

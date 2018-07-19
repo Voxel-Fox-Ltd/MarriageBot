@@ -90,6 +90,8 @@ class Marriage(object):
             
             if message.author.id != target.id:
                 return False
+            if message.channel.id != ctx.channel.id:
+                return False
             c = message.content.casefold()
             yes = self.proposal_yes.search(c)
             no = self.proposal_no.search(c)
