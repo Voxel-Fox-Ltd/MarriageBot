@@ -100,10 +100,10 @@ class Parentage(object):
             if message.channel.id != ctx.channel.id:
                 return False
             c = message.content.casefold()
-            yes = self.proposal_yes.search(c)
             no = self.proposal_no.search(c)
+            yes = self.proposal_yes.search(c)
             if any([yes, no]):
-                return 'YES' if yes else 'NO'
+                return 'NO' if no else 'YES'
             return False
 
         # Wait for a response
