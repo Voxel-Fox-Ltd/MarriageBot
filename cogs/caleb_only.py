@@ -56,22 +56,19 @@ class CalebOnly(object):
         await ctx.send('```py\n' + str(ans) + '```')
 
 
-    # @command()
-    # async def related(self, ctx:Context, child:Member, parent:Member):
-    #     await ctx.trigger_typing()
-    #     async with self.bot.database() as db:
-    #         family_tree1 = FamilyTree(child.id, 6, go_back=-1)  # Get the instigator's tree
-    #         await family_tree1.populate_tree(db)
-    #         family_tree2 = FamilyTree(parent.id, 6, go_back=-1)  # Get the instigator's tree
-    #         await family_tree2.populate_tree(db)
-        
-    #     # If they are, tell them off
-    #     treeset_1 = set([i.id for i in family_tree1.all_users()])
-    #     treeset_2 = set([i.id for i in family_tree2.all_users()])
-    #     if treeset_1.intersection(treeset_2):
-    #         await ctx.send('Yes')
-    #         return
-    #     await ctx.send('No')
+    @command(aliases=['rld'])
+    async def reload(self, ctx:Context, *cog_name:str):
+        '''
+        Unloads a cog from the bot
+        '''
+
+        self.bot.unload_extension('cogs.' + '_'.join([i for i in cog_name]))
+        try:
+            self.bot.load_extension('cogs.' + '_'.join([i for i in cog_name]))
+        except Exception as e:
+            await ctx.send('```py\n' + format_exc() + '```')
+            return
+        await ctx.send('Cog reloaded.')
         
 
 
