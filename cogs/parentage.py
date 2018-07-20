@@ -133,6 +133,29 @@ class Parentage(object):
         self.cache.remove(target.id)
 
 
+    @command()
+    async def disown(self, ctx:Context, child:Member):
+        '''
+        Lets you remove a user from being your child
+        '''
+
+        instigator = ctx.author
+        target = child
+
+        async with self.bot.database() as db:
+            children = await db('SELECT * FROM parents WHERE parent_id=$1', instigator.id)
+        if not children:
+            await ctx.send(f"Heh. You don't have any children, {instigator.mention}.")
+            return
+        children_ids = [i['child_id'] for i in children]
+        if target.id not in children_ids:
+            await ctx.send(f"That person isn't your child, {instigator.mention}.")
+            return
+        async with self.bot.database() as db:
+            await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2', target.id, instigator.id)
+        await ctx.send(f"Sorry, {target.mention}, but you're an orphan now. You're free, {instigator.mention}!")
+
+
 def setup(bot:CustomBot):
     x = Parentage(bot)
     bot.add_cog(x)
