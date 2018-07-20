@@ -86,29 +86,40 @@ class Information(object):
 
         # Get their family tree
         await ctx.trigger_typing()
-        ft = FamilyTree(root.id, depth)
+        ft = FamilyTree(root.id, depth, root.id)
         async with self.bot.database() as db:
             await ft.populate_tree(db)
-        self.last_tree = ft
-            
+
         # Make sure they have one
-        if ft.root.children == [] and ft.root.partner == None:
+        if ft.root.children == [] and ft.root.partner == None and ft.root.parent == None:
             await ctx.send(f"{root!s} has no family to put into a tree .-.")
             return
 
+        # Expand upwards
+        x = ft.root
+        while True:
+            if x.parent == None:
+                break
+            else:
+                x = x.parent
+                depth += 1
+        ft = FamilyTree(x.id, depth, root.id)
+        async with self.bot.database() as db:
+            await ft.populate_tree(db)
+
         # Start the 3-step conversion process
-        with open(f'./trees/{root.id}.txt', 'w', encoding='utf-8') as a:
+        with open(f'./trees/{x.id}.txt', 'w', encoding='utf-8') as a:
             text = ft.stringify(self.bot)
             a.write(self.substitution.sub('', text))
-        f = open(f'./trees/{root.id}.dot', 'w')
-        _ = run(['py', './cogs/utils/family_tree/familytreemaker.py', '-a', self.substitution.sub('', str(root)), f'./trees/{root.id}.txt'], stdout=f)
+        f = open(f'./trees/{x.id}.dot', 'w')
+        _ = run(['py', './cogs/utils/family_tree/familytreemaker.py', '-a', self.substitution.sub('', str(x.get_name(self.bot))), f'./trees/{x.id}.txt'], stdout=f)
         f.close()
-        _ = run(['dot', '-Tpng', f'./trees/{root.id}.dot', '-o', f'./trees/{root.id}.png', '-Gcharset=latin1', '-Gsize=200\\!', '-Gdpi=100'])
+        _ = run(['dot', '-Tpng', f'./trees/{x.id}.dot', '-o', f'./trees/{x.id}.png', '-Gcharset=latin1', '-Gsize=200\\!', '-Gdpi=100'])
 
         # Send file and delete cached
-        await ctx.send(file=File(fp=f'./trees/{root.id}.png'))
+        await ctx.send(file=File(fp=f'./trees/{x.id}.png'))
         await sleep(1)  # Just so the file still isn't sending
-        for i in [f'./trees/{root.id}.txt', f'./trees/{root.id}.dot', f'./trees/{root.id}.png']:
+        for i in [f'./trees/{x.id}.txt', f'./trees/{x.id}.dot', f'./trees/{x.id}.png']:
             _ = remove(i)
 
 
