@@ -97,6 +97,9 @@ class Information(object):
 
         # Expand upwards
         x = ft.root
+        if x.parent == None:
+            if ft.root.partner != None and ft.root.partner.parent != None:
+                x = ft.root.partner
         while True:
             if x.parent == None:
                 break
