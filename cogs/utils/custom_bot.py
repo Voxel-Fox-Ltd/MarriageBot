@@ -1,4 +1,6 @@
 from json import load
+from asyncio import sleep
+from discord import Game
 from discord.ext.commands import AutoShardedBot
 from cogs.utils.database import DatabaseConnection
 
@@ -11,6 +13,22 @@ class CustomBot(AutoShardedBot):
         self.config_file = config_file
         self.database = DatabaseConnection
         self.database.config = self.config['database']
+
+        self.presence_loop = self.loop.create_task(self.presence_loop())
+
+
+    async def presence_loop(self):
+        '''
+        A loop of changing the presence for the botto
+        '''
+
+        await self.wait_until_ready()
+        while not self.is_closed():
+            presence_text = self.config['presence_text']
+            for string in presence_text:
+                game = Game(string)
+                await self.change_presence(activity=game)
+                await sleep(60)
 
 
     @property
