@@ -13,18 +13,31 @@ class FamilyTree(object):
             The depth that the tree should span
     '''
 
-    def __init__(self, root:int, depth:int=3, original_root:int=None):
+    def __init__(self, root:int, depth:int=3, original_root:int=None, go_back:int=0):
         self.root_id = root
         self.original_root = original_root if original_root else root
         self.root = None
         self.depth = depth
+        self.go_back = go_back
 
     async def populate_tree(self, database):
         '''
         Populates the family tree
         '''
 
-        self.root = await FamilyTreeMember.generate(self.root_id, self.depth, database=database)
+        depth = self.depth
+        search_id = self.root_id
+        go_back = self.go_back
+        while go_back != 0:
+            root = await FamilyTreeMember.generate(search_id, 1, database=database)
+            if root.parent:
+                search_id = root.parent.id 
+                depth += 1
+                go_back -= 1
+            else:
+                break
+        self.root = await FamilyTreeMember.generate(search_id, depth, database=database)
+
 
     def stringify(self, bot):
         '''
@@ -67,4 +80,8 @@ class FamilyTree(object):
             if user.id == discord_id:
                 return user
         return None
+
+
+    def all_users(self):
+        return self.root.span([], include_parents=True, add_parent=True)
 

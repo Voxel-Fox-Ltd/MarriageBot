@@ -57,12 +57,15 @@ class Marriage(object):
         async with self.bot.database() as db:
             instigator_married = await db.get_marriage(instigator)
             target_married = await db.get_marriage(target)
-            family_tree = FamilyTree(instigator.id, 6)  # Get the instigator's tree
-            await family_tree.populate_tree(db)
+            family_tree1 = FamilyTree(instigator.id, 6, go_back=-1)  # Get the instigator's tree
+            await family_tree1.populate_tree(db)
+            family_tree2 = FamilyTree(target.id, 6, go_back=-1)  # Get the instigator's tree
+            await family_tree2.populate_tree(db)
         
-
         # If they are, tell them off
-        if family_tree.get_member(target.id):
+        treeset_1 = set([i.id for i in family_tree1.all_users()])
+        treeset_2 = set([i.id for i in family_tree2.all_users()])
+        if treeset_1.intersection(treeset_2):
             await ctx.send(random_text.proposing_to_family(instigator, target))
             return
         if instigator_married:
