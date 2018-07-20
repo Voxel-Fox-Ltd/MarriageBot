@@ -8,35 +8,38 @@ from random import choice
 
 '''
 Events:
-    Proposing to a person
-    Proposing to a married person
-    Proposing when married
-    Proposing to a person in your family
-    Proposing while having proposed to someone else
-    Proposing while they've been proposed to
-    Proposing to the bot
-    Proposing to a different bot
-    Proposing to yourself
-    Accepting a proposal
-    Declining a proposal
-    Proposal timing out
+[x] Proposing to a person
+[x] Proposing to a married person
+[x] Proposing when married
+[x] Proposing to a person in your family
+[ ] Proposing while having proposed to someone else
+[ ] Proposing while they've been proposed to
+[ ] Proposing to the bot
+[ ] Proposing to a different bot
+[ ] Proposing to yourself
+[ ] Accepting a proposal
+[ ] Declining a proposal
+[ ] Proposal timing out
 
-    Picking a parent
-    Picking a family member as a parent
-    Picking the bot as your parent
-    Picking a parent while waiting on a response from another
-    Picking a parent while they've already been asked
-    Picking a different bot as your parent
-    Picking yourself as your parent
-    Parent request timing out
-    Accepting request
-    Declining request
-    Request times out
+[ ] Picking a parent
+[ ] Picking a family member as a parent
+[ ] Picking the bot as your parent
+[ ] Picking a parent while waiting on a response f[ ] another
+[ ] Picking a parent while they've already been asked
+[ ] Picking a different bot as your parent
+[ ] Picking yourself as your parent
+[ ] Parent request timing out
+[ ] Accepting request
+[ ] Declining request
+[ ] Request times out
 
-    Divorcing your partner
-    Divorcing someone who isn't your partner
+[ ] Divorcing your partner
+[ ] Divorcing someone who isn't your partner
 
-    No family tree
+[ ] Disown your child
+[ ] Disown someone who isn't your child
+
+[ ] No family tree
 '''
 
 def valid_proposal(instigator, target):
