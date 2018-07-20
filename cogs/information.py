@@ -78,15 +78,13 @@ class Information(object):
 
 
     @command()
-    async def tree(self, ctx:Context, root:Member=None, depth:int=3):
+    async def tree(self, ctx:Context, root:Member=None):
         '''
         Gets the family tree of a given user
         '''
 
         if root == None:
             root = ctx.author
-        if depth >= 8 and ctx.author.id != self.bot.config['owner']:
-            depth = 8
 
         # Get their family tree
         await ctx.trigger_typing()
@@ -111,6 +109,7 @@ class Information(object):
         await sleep(1)  # Just so the file still isn't sending
         for i in [f'./trees/{root.id}.txt', f'./trees/{root.id}.dot', f'./trees/{root.id}.png']:
             _ = remove(i)
+            # pass
 
 
 def setup(bot:CustomBot):

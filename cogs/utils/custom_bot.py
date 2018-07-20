@@ -34,6 +34,7 @@ class CustomBot(AutoShardedBot):
 
 
     async def startup(self):
+        FamilyTreeMember.all_users = {None: None}
         async with self.database() as db:
             partnerships = await db('SELECT * FROM marriages WHERE valid=TRUE')
             parents = await db('SELECT * FROM parents')

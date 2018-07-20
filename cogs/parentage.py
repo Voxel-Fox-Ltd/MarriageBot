@@ -64,19 +64,6 @@ class Parentage(object):
             await ctx.send("Sorry, but you already have a parent :/")
             return
 
-        # Make sure the user knows
-        m = await ctx.send(f"Just to make sure, {instigator.mention}, you should know you can't change your parent after you do this, and you can only have one. Do you want to continue?")
-        await m.add_reaction('👌')
-        await m.add_reaction('👎')
-        try:
-            r, u = await self.bot.wait_for('reaction_add', check=lambda r, u: u.id == instigator.id and r.emoji in ['👌', '👎'], timeout=60.0)
-            if r.emoji == '👎':
-                await ctx.send("Well, that's your choice.")
-                return
-        except TimeoutError as e:
-            await ctx.send("Well, the timeout has spoken.")
-            return
-
         # No parent, send request
         async with self.bot.database() as db:
             await db.add_event(instigator=instigator, target=target, event='PARENT REQUEST')
