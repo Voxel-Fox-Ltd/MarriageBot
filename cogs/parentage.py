@@ -3,7 +3,7 @@ from asyncio import TimeoutError
 from discord import Member
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
-from cogs.utils.family_tree.family_tree import FamilyTree
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
 class Parentage(object):
@@ -53,20 +53,14 @@ class Parentage(object):
 
         # See if they already have a parent
         await ctx.trigger_typing()
-        async with self.bot.database() as db:
-            parentage = await db.get_parent(instigator)
-            family_tree1 = FamilyTree(instigator.id, 6, go_back=-1)  # Get the instigator's tree
-            await family_tree1.populate_tree(db)
-            family_tree2 = FamilyTree(target.id, 6, go_back=-1)  # Get the instigator's tree
-            await family_tree2.populate_tree(db)
-        
-        # If they are, tell them off
-        treeset_1 = set([i.id for i in family_tree1.all_users()])
-        treeset_2 = set([i.id for i in family_tree2.all_users()])
-        if treeset_1.intersection(treeset_2):
+        user_tree = FamilyTreeMember.get(instigator.id)
+        root = user_tree.expand_backwards(-1)
+        tree_id_list = [i.id for i in root.span()]
+
+        if target.id in tree_id_list:
             await ctx.send(f"{instigator.mention}, they're already part of your family.")
             return
-        elif parentage:
+        elif user_tree.parent:
             await ctx.send("Sorry, but you already have a parent :/")
             return
 
@@ -131,6 +125,10 @@ class Parentage(object):
                 await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
             await ctx.send(f"{instigator.mention}, your new parent is {target.mention} c:")
 
+        me = FamilyTreeMember.get(instigator.id)
+        me.parent = target.id 
+        them = FamilyTreeMember.get(target.id)
+        them.children.append(instigator.id)
         self.cache.remove(instigator.id)
         self.cache.remove(target.id)
 
@@ -156,6 +154,11 @@ class Parentage(object):
         async with self.bot.database() as db:
             await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2', target.id, instigator.id)
         await ctx.send(f"Sorry, {target.mention}, but you're an orphan now. You're free, {instigator.mention}!")
+
+        me = FamilyTreeMember.get(instigator.id)
+        me.children.remove(target.id )
+        them = FamilyTreeMember.get(target.id)
+        them.parent = None
 
 
 def setup(bot:CustomBot):

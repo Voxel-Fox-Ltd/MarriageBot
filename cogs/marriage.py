@@ -3,7 +3,7 @@ from asyncio import TimeoutError
 from discord import Member
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
-from cogs.utils.family_tree.family_tree import FamilyTree
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 import cogs.utils.random_text as random_text
 
 
@@ -54,24 +54,17 @@ class Marriage(object):
 
         # See if they're married or in the family already
         await ctx.trigger_typing()
-        async with self.bot.database() as db:
-            instigator_married = await db.get_marriage(instigator)
-            target_married = await db.get_marriage(target)
-            family_tree1 = FamilyTree(instigator.id, 6, go_back=-1)  # Get the instigator's tree
-            await family_tree1.populate_tree(db)
-            family_tree2 = FamilyTree(target.id, 6, go_back=-1)  # Get the instigator's tree
-            await family_tree2.populate_tree(db)
-        
-        # If they are, tell them off
-        treeset_1 = set([i.id for i in family_tree1.all_users()])
-        treeset_2 = set([i.id for i in family_tree2.all_users()])
-        if treeset_1.intersection(treeset_2):
+        user_tree = FamilyTreeMember.get(instigator.id)
+        root = user_tree.expand_backwards(-1)
+        tree_id_list = [i.id for i in root.span()]
+
+        if target.id in tree_id_list:
             await ctx.send(random_text.proposing_to_family(instigator, target))
             return
-        if instigator_married:
+        if user_tree.partner:
             await ctx.send(random_text.proposing_when_married(instigator, target))
             return
-        elif target_married:
+        elif FamilyTreeMember.get(target.id).partner:
             await ctx.send(random_text.proposing_to_married(instigator, target))
             return
 
@@ -123,6 +116,10 @@ class Marriage(object):
                 await db.marry(instigator, target)
             await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
 
+        me = FamilyTreeMember.get(instigator.id)
+        me.partner = target.id 
+        them = FamilyTreeMember.get(target.id)
+        them.partner = instigator.id
         self.cache.remove(instigator.id)
         self.cache.remove(target.id)
 
@@ -137,14 +134,13 @@ class Marriage(object):
         target = user  # Just so "target" didn't show up in the help message
 
         # Get marriage data for the user
-        async with self.bot.database() as db:
-            instigator_married = await db.get_marriage(instigator)
+        instigator_data.partner = FamilyTreeMember.get(instigator.id)
 
         # See why it could fail
-        if not instigator_married:
+        if instigator_data.partner:
             await ctx.send("You're not married. Don't try to divorce strangers .-.")
             return
-        elif target.id not in [instigator_married[0]['partner_id'], instigator_married[1]['partner_id']]:
+        elif instigator_data.partner != target.id:
             await ctx.send("You aren't married to that person .-.")
             return
 
@@ -152,6 +148,11 @@ class Marriage(object):
         async with self.bot.database() as db:
             await db.divorce(instigator=instigator, target=target, marriage_id=instigator_married[0]['marriage_id'])
         await ctx.send(f"You and {target.mention} are now divorced. I wish you luck in your lives.")
+
+        me = FamilyTreeMember.get(instigator.id)
+        me.partner = None
+        them = FamilyTreeMember.get(target.id)
+        them.partner = None
 
 
 def setup(bot:CustomBot):
