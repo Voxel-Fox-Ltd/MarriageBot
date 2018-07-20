@@ -19,6 +19,10 @@ class Information(object):
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
 
 
+    # async def __local_check(self, ctx:Context):
+    #     return str(ctx.author) == 'Caleb#2831'
+
+
     @command(aliases=['spouse', 'husband', 'wife'])
     async def partner(self, ctx:Context, user:Member=None):
         '''
@@ -81,7 +85,7 @@ class Information(object):
 
         if root == None:
             root = ctx.author
-        if depth >= 8:
+        if depth >= 8 and ctx.author.id != self.bot.config['owner']:
             depth = 8
 
         # Get their family tree
@@ -116,12 +120,12 @@ class Information(object):
             text = ft.stringify(self.bot)
             a.write(self.substitution.sub('', text))
         f = open(f'./trees/{x.id}.dot', 'w')
-        _ = run(['py', './cogs/utils/family_tree/familytreemaker.py', '-a', self.substitution.sub('', str(x.get_name(self.bot))), f'./trees/{x.id}.txt'], stdout=f)
+        _ = run(['python3.6', './cogs/utils/family_tree/familytreemaker.py', '-a', self.substitution.sub('', str(x.get_name(self.bot))), f'./trees/{x.id}.txt'], stdout=f)
         f.close()
         _ = run(['dot', '-Tpng', f'./trees/{x.id}.dot', '-o', f'./trees/{x.id}.png', '-Gcharset=latin1', '-Gsize=200\\!', '-Gdpi=100'])
 
         # Send file and delete cached
-        await ctx.send(file=File(fp=f'./trees/{x.id}.png'))
+        await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{x.id}.png'))
         await sleep(1)  # Just so the file still isn't sending
         for i in [f'./trees/{x.id}.txt', f'./trees/{x.id}.dot', f'./trees/{x.id}.png']:
             _ = remove(i)
