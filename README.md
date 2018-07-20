@@ -5,7 +5,7 @@ This is a small Discord bot intended to bring love to your Discord servers. What
 
 ## Me
 
-I'm `Caleb#2831`, found at `admin@callumb.co.uk`. Feel free to ask for help at any time. If you like what I do, then [feel free to help out](https://patreon.com/CallumBartlett).
+I'm `Caleb#2831`. Feel free to ask for help at any time. If you like what I do, then [feel free to help out](https://patreon.com/CallumBartlett).
 
 # Commands
 
@@ -14,6 +14,21 @@ This command allows you to initiate a marriage with another user. They, of cours
 
 * `m!divorce @User#1231`
 This does the opposite of the marry command, as you can imagine. It opens you back up to the dating pool.
+
+* `m!makeparent @User#1231`
+Asks the person to be your parent. This will further restrict you from the dating pool, but makes your fake family trees look cooler.
+
+* `m!disown @User#1231`
+Allows you to disown one of your children.
+
+* `m!partner [@User#1231]`
+Shows who the user's partner is. Defaults to yourself.
+
+* `m!parent [@User#1231]`
+Shows who the user's parent is. Defaults to yourself.
+
+* `m!tree [@User#1231]`
+Shows the family tree of the given user. Defaults to yourself. The bot needs to be able to send images to do this.
 
 # Self-Hosting
 
