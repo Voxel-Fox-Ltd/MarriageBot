@@ -38,6 +38,15 @@ Shows who the user's parent is. Defaults to yourself.
 * `m!tree [@User#1231]`
 Shows the family tree of the given user. Defaults to yourself. The bot needs to be able to send images to do this.
 
+# Testimonials
+
+![Testimonial 1](https://sparcli.callumb.co.uk/marriagebot/1.png)
+![Testimonial 2](https://sparcli.callumb.co.uk/marriagebot/2.png)
+![Testimonial 3](https://sparcli.callumb.co.uk/marriagebot/3.png)
+![Testimonial 4](https://sparcli.callumb.co.uk/marriagebot/4.png)
+![Testimonial 5](https://sparcli.callumb.co.uk/marriagebot/5.png)
+![Testimonial 6](https://sparcli.callumb.co.uk/marriagebot/6.png)
+
 # Self-Hosting
 
 To host this bot yourself, you will need to install Python 3.6 or above, as well as the Discord.py rewrite. The database that *I* use is Postgres, and the SQL to generate the database and all relevant tables is included in the `config` folder, though you will have to edit and rename the `config/config.json` file to work properly for your database setup.
