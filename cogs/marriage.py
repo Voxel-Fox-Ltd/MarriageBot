@@ -4,6 +4,7 @@ from discord import Member
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree import FamilyTree
+import cogs.utils.random_text as random_text
 
 
 class Marriage(object):
@@ -62,22 +63,19 @@ class Marriage(object):
 
         # If they are, tell them off
         if family_tree.get_member(target.id):
-            await ctx.send(f"Sorry, {instigator.mention}, they're already part of your family.")
+            await ctx.send(random_text.proposing_to_family(instigator, target))
             return
         if instigator_married:
-            await ctx.send(f"{instigator.mention}, you can't marry someone if you're already married .-.")
+            await ctx.send(random_text.proposing_when_married(instigator, target))
             return
         elif target_married:
-            async with self.bot.database() as db:
-                await db.add_event(instigator=instigator, target=target, event='PROPOSAL')
-                await db.add_event(instigator=target, target=instigator, event='ALREADY MARRIED')
-            await ctx.send(f"{instigator.mention}, they're already married .-.")
+            await ctx.send(random_text.proposing_to_married(instigator, target))
             return
 
         # Neither are married, set up the proposal
         async with self.bot.database() as db:
             await db.add_event(instigator=instigator, target=target, event='PROPOSAL')
-        await ctx.send(f"{target.mention}, do you accept {instigator.mention}'s proposal?")
+        await ctx.send(random_text.valid_proposal(instigator, target))
         self.cache.append(instigator.id)
         self.cache.append(target.id)
 

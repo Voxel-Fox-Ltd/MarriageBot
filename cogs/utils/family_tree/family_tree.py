@@ -13,8 +13,9 @@ class FamilyTree(object):
             The depth that the tree should span
     '''
 
-    def __init__(self, root:int, depth:int=3):
+    def __init__(self, root:int, depth:int=3, original_root:int=None):
         self.root_id = root
+        self.original_root = original_root if original_root else root
         self.root = None
         self.depth = depth
 
@@ -54,7 +55,7 @@ class FamilyTree(object):
                     fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
             added_to_tree.append(user.id)
             fulltext += '\n'
-        return fulltext
+        return fulltext.replace(f'(id={self.original_root})', f"(F, id={self.original_root})")
 
     def get_member(self, discord_id):
         '''
