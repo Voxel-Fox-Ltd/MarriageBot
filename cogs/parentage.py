@@ -74,7 +74,7 @@ class Parentage(object):
         await m.add_reaction('👎')
         try:
             r, u = await self.bot.wait_for('reaction_add', check=lambda r, u: u.id == instigator.id and r.emoji in ['👌', '👎'], timeout=60.0)
-            if r == '👎':
+            if r.emoji == '👎':
                 await ctx.send("Well, that's your choice.")
                 return
         except TimeoutError as e:
