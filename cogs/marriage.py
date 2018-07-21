@@ -115,11 +115,11 @@ class Marriage(object):
                 await db.add_event(instigator=target, target=instigator, event='I DO')
                 await db.marry(instigator, target)
             await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
+            me = FamilyTreeMember.get(instigator.id)
+            me.partner = target.id 
+            them = FamilyTreeMember.get(target.id)
+            them.partner = instigator.id
 
-        me = FamilyTreeMember.get(instigator.id)
-        me.partner = target.id 
-        them = FamilyTreeMember.get(target.id)
-        them.partner = instigator.id
         self.cache.remove(instigator.id)
         self.cache.remove(target.id)
 
@@ -134,10 +134,10 @@ class Marriage(object):
         target = user  # Just so "target" didn't show up in the help message
 
         # Get marriage data for the user
-        instigator_data.partner = FamilyTreeMember.get(instigator.id)
+        instigator_data = FamilyTreeMember.get(instigator.id)
 
         # See why it could fail
-        if instigator_data.partner:
+        if instigator_data.partner == None:
             await ctx.send("You're not married. Don't try to divorce strangers .-.")
             return
         elif instigator_data.partner != target.id:
@@ -146,7 +146,8 @@ class Marriage(object):
 
         # At this point they can only be married
         async with self.bot.database() as db:
-            await db.divorce(instigator=instigator, target=target, marriage_id=instigator_married[0]['marriage_id'])
+            # await db.divorce(instigator=instigator, target=target, marriage_id=instigator_married[0]['marriage_id'])
+            await db('UPDATE marriages SET valid=FALSE where user_id=$1 OR user_id=$2', instigator.id, target.id)
         await ctx.send(f"You and {target.mention} are now divorced. I wish you luck in your lives.")
 
         me = FamilyTreeMember.get(instigator.id)

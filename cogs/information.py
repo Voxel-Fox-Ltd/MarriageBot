@@ -19,10 +19,6 @@ class Information(object):
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
 
 
-    # async def __local_check(self, ctx:Context):
-    #     return str(ctx.author) == 'Caleb#2831'
-
-
     @command(aliases=['spouse', 'husband', 'wife'])
     async def partner(self, ctx:Context, user:Member=None):
         '''

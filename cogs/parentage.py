@@ -111,11 +111,11 @@ class Parentage(object):
                 await db.add_event(instigator=target, target=instigator, event='ACCEPT ADOPTION')
                 await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
             await ctx.send(f"{instigator.mention}, your new parent is {target.mention} c:")
+            me = FamilyTreeMember.get(instigator.id)
+            me.parent = target.id 
+            them = FamilyTreeMember.get(target.id)
+            them.children.append(instigator.id)
 
-        me = FamilyTreeMember.get(instigator.id)
-        me.parent = target.id 
-        them = FamilyTreeMember.get(target.id)
-        them.children.append(instigator.id)
         self.cache.remove(instigator.id)
         self.cache.remove(target.id)
 
