@@ -29,6 +29,9 @@ Asks the person to be your parent. This will further restrict you from the datin
 * `m!disown @User#1231`
 Allows you to disown one of your children.
 
+* `m!emancipate @User#1231`
+The equivelant of running away from home. Removes your parent.
+
 * `m!partner [@User#1231]`
 Shows who the user's partner is. Defaults to yourself.
 

@@ -129,12 +129,9 @@ class Parentage(object):
         instigator = ctx.author
         target = child
 
-        async with self.bot.database() as db:
-            children = await db('SELECT * FROM parents WHERE parent_id=$1', instigator.id)
-        if not children:
-            await ctx.send(f"Heh. You don't have any children, {instigator.mention}.")
-            return
-        children_ids = [i['child_id'] for i in children]
+        user_tree = FamilyTreeMember.get(instigator.id)
+        children_ids = user_tree.children
+
         if target.id not in children_ids:
             await ctx.send(f"That person isn't your child, {instigator.mention}.")
             return
@@ -146,6 +143,31 @@ class Parentage(object):
         me.children.remove(target.id )
         them = FamilyTreeMember.get(target.id)
         them.parent = None
+
+
+    @command(aliases=['eman'])
+    async def emancipate(self, ctx:Context, parent:Member):
+        '''
+        Making it so you no longer have a parent
+        '''
+
+        instigator = ctx.author
+        target = parent
+
+        user_tree = FamilyTreeMember.get(instigator.id)
+        parent = user_tree.parent
+
+        if target.id != parent:
+            await ctx.send(f"That person isn't your parent, {instigator.mention}.")
+            return
+        async with self.bot.database() as db:
+            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2', target.id, instigator.id)
+        await ctx.send(f"You're an orphan now, {instigator.mention}. Sorry {target.mention}!")
+
+        me = FamilyTreeMember.get(instigator.id)
+        me.parent = None
+        them = FamilyTreeMember.get(target.id)
+        them.children.remove(instigator.id)
 
 
 def setup(bot:CustomBot):
