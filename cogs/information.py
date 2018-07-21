@@ -74,13 +74,15 @@ class Information(object):
 
 
     @command()
-    async def tree(self, ctx:Context, root:Member=None):
+    async def tree(self, ctx:Context, root:Member=None, depth:int=-1):
         '''
         Gets the family tree of a given user
         '''
 
         if root == None:
             root = ctx.author
+        if depth <= 0:
+            depth = -1
 
         # Get their family tree
         await ctx.trigger_typing()
@@ -92,7 +94,7 @@ class Information(object):
             return
 
         # Start the 3-step conversion process
-        root, text = tree.to_tree_string(self.bot, expand_backwards=-1)
+        root, text = tree.to_tree_string(self.bot, expand_backwards=depth, depth=depth*2)
         with open(f'./trees/{root.id}.txt', 'w', encoding='utf-8') as a:
             a.write(self.substitution.sub('', text))
         f = open(f'./trees/{root.id}.dot', 'w')

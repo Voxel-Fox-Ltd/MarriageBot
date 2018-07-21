@@ -43,7 +43,7 @@ class FamilyTreeMember(object):
             cls.all_users[user_id] = x
             return x
 
-    def span(self, people_list:list=None, add_parent:bool=False, expand_upwards:bool=False) -> list:
+    def span(self, people_list:list=None, add_parent:bool=False, expand_upwards:bool=False, depth:int=0, max_depth:int=None) -> list:
         '''
         Gets a list of every user related to this one
 
@@ -54,6 +54,10 @@ class FamilyTreeMember(object):
                 Whether or not to add the parent of this user to the people list
             expand_upwards: bool
                 Whether or not to expand upwards in the tree
+            depth: int = 0
+                Starting depth of the span method
+            max_depth: int = None
+                How far to expand when making the tree
 
         Returns:
             A list of all people on the family for this user, in no particular order
@@ -64,22 +68,24 @@ class FamilyTreeMember(object):
             people_list = []
         if self in people_list:
             return people_list
+        elif abs(depth) == max_depth:
+            return people_list
         people_list.append(self)
 
         # Add your parent
         if expand_upwards and add_parent and self.parent:
-            people_list = self.get_parent().span(people_list, add_parent=True, expand_upwards=expand_upwards)
+            people_list = self.get_parent().span(people_list, add_parent=True, expand_upwards=expand_upwards, depth=depth+1, max_depth=max_depth)
 
         # Add your children
         if self.children:
             for child in self.get_children():
                 if child in people_list:
                     continue
-                people_list = child.span(people_list, add_parent=False, expand_upwards=expand_upwards)
+                people_list = child.span(people_list, add_parent=False, expand_upwards=expand_upwards, depth=depth-1, max_depth=max_depth)
 
         # Add your partner
         if self.partner:
-            people_list = self.get_partner().span(people_list, add_parent=True, expand_upwards=expand_upwards)
+            people_list = self.get_partner().span(people_list, add_parent=True, expand_upwards=expand_upwards, depth=depth, max_depth=max_depth)
 
         # Remove dupes, should they be in there
         nodupe = []
@@ -110,7 +116,7 @@ class FamilyTreeMember(object):
             depth -= 1
         return root_user
 
-    def to_tree_string(self, bot, expand_backwards:int=0):
+    def to_tree_string(self, bot, expand_backwards:int=0, depth:int=-1):
         '''
         Gives you a string of the current family tree that will go through familytreemaker.py
 
@@ -129,7 +135,7 @@ class FamilyTreeMember(object):
         root_user = self.expand_backwards(expand_backwards)
 
         # Go through all who are related
-        for user in root_user.span():
+        for user in root_user.span(max_depth=depth):
 
             # If you have nothing to add, you won't be added
             if user.partner == None and len(user.children) == 0:
