@@ -1,7 +1,7 @@
 from traceback import format_exc
 from asyncio import iscoroutine
 from discord import Member
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, group
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
@@ -69,6 +69,82 @@ class CalebOnly(object):
             await ctx.send('```py\n' + format_exc() + '```')
             return
         await ctx.send('Cog reloaded.')
+
+
+    @command()
+    async def runsql(self, ctx:Context, *, content:str):
+        '''
+        Runs a line of SQL into the sparcli database
+        '''
+
+        async with self.bot.database() as db:
+            x = await db(content) or 'No content.'
+        if type(x) in [str, type(None)]:
+            await ctx.send(x)
+            return
+
+        # Get the results into groups
+        column_headers = list(x[0].keys())
+        grouped_outputs = {}
+        for i in column_headers:
+            grouped_outputs[i] = []
+        for guild_data in x:
+            for i, o in guild_data.items():
+                grouped_outputs[i].append(str(o))
+
+        # Everything is now grouped super nicely
+        # Now to get the maximum length of each column and add it as the last item
+        for key, item_list in grouped_outputs.items():
+            max_len = max([len(i) for i in item_list + [key]])
+            grouped_outputs[key].append(max_len)
+
+        # Format the outputs and add to a list
+        key_headers = []
+        temp_output = []
+        for key, value in grouped_outputs.items():
+            # value is a list of unformatted strings
+            key_headers.append(format(key, '<' + str(value[-1])))
+            formatted_values = [format(i, '<' + str(value[-1])) for i in value[:-1]]
+            # string_value = '|'.join(formatted_values)
+            temp_output.append(formatted_values)
+        key_string = '|'.join(key_headers)
+
+        # Rotate the list because apparently I need to
+        output = []
+        for i in range(len(temp_output[0])):
+            temp = []
+            for o in temp_output:
+                temp.append(o[i])
+            output.append('|'.join(temp))
+
+        # Add some final values before returning to the user
+        line = '-' * len(key_string)
+        output = [key_string, line] + output 
+        string_output = '\n'.join(output)
+        await ctx.send('```\n{}```'.format(string_output))
+
+
+    @group()
+    async def profile(self, ctx:Context):
+        '''
+        A parent group for the different profile commands
+        '''
+
+        pass
+
+
+    @profile.command(aliases=['username'])
+    async def name(self, ctx:Context, *, username:str):
+        '''
+        Lets you change the username of the bot
+        '''
+
+        if len(username) > 32:
+            await ctx.send('That username is too long to be compatible with Discord.')
+            return 
+
+        await self.bot.user.edit(username=username)
+        await ctx.send('Done.')
         
 
 
