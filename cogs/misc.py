@@ -33,7 +33,7 @@ class Misc(object):
         '''
 
         await ctx.send(
-            f"<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&permissions=3072>"
+            f"<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&permissions=35840>"
         )
 
 

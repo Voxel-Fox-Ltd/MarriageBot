@@ -1,7 +1,8 @@
-
 # MarriageBot
 
-This is a small Discord bot intended to bring love to your Discord servers. What it does is allows two users to get married. There are no benefits or drawbacks to being married. It simply is a thing that you can do.
+This is a small Discord bot intended to bring love to your Discord servers. What it does is allows two users to get married. There are no benefits or drawbacks to being married. It simply is a thing that you can do. Here's a family tree you can make through marrying and adopting various users:
+
+![A large family tree composed entirely of Discord users](https://sparcli.callumb.co.uk/marriagebot/tree.png)
 
 ## Me
 
@@ -17,11 +18,16 @@ Thanks to Graphwiz for being a free piece of software that I can use at my leisu
 
 # Commands
 
+Note: there's no command to accept or decline a proposal. Just say something along the lines of "yes" or "no" into chat, and it'll interpret that from there.
+
 * `m!propose @User#1231`
 This command allows you to initiate a marriage with another user. They, of course, can then deny your proposal, but that's unimportant
 
 * `m!divorce @User#1231`
 This does the opposite of the marry command, as you can imagine. It opens you back up to the dating pool.
+
+* `m!adopt @User#1231`
+Lets you try to adopt the mentioned user.
 
 * `m!makeparent @User#1231`
 Asks the person to be your parent. This will further restrict you from the dating pool, but makes your fake family trees look cooler.
@@ -40,6 +46,9 @@ Shows who the user's parent is. Defaults to yourself.
 
 * `m!tree [@User#1231]`
 Shows the family tree of the given user. Defaults to yourself. The bot needs to be able to send images to do this.
+
+* `m!fulltree [@User#1231]`
+Gives you the full family tree output for the given user as a .ged file.
 
 # Testimonials
 
