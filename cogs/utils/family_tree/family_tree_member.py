@@ -1,4 +1,8 @@
-from discord import User
+from random import choice
+from discord import User, File
+
+
+generate_id = lambda: ''.join([choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for i in range(10)])
 
 
 class FamilyTreeMember(object):
@@ -16,6 +20,7 @@ class FamilyTreeMember(object):
 
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
         self.id = discord_id
+        self.tree_id = generate_id()
         self.children = children
         self.parent = parent_id
         self.partner = partner_id
@@ -46,6 +51,8 @@ class FamilyTreeMember(object):
     def span(self, people_list:list=None, add_parent:bool=False, expand_upwards:bool=False, depth:int=0, max_depth:int=None) -> list:
         '''
         Gets a list of every user related to this one
+        If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
+        even if they're related through marriage's parents etc
 
         Params:
             people_list: list 
@@ -115,6 +122,70 @@ class FamilyTreeMember(object):
                 break
             depth -= 1
         return root_user
+
+    def generate_gedcom_file(self, bot):
+        '''
+        Gives you the INDI and FAM gedcom strings for this family tree
+        Includes their spouse, if they have one, and any children
+        Small bit of redundancy: a family will be added twice if they have a spouse. 
+        '''
+
+        '''
+        Example family:
+        0 @I1@ INDI
+            1 NAME John /Smith/
+            1 FAMS @F1@
+        0 @F1@ FAM
+            1 HUSB @I1@
+            1 WIFE @I2@
+            1 CHIL @I3@
+        '''
+
+        gedcom_text = []
+        family_id_cache = {}  # id: family count
+        full_family = self.span(add_parent=True, expand_upwards=True)
+
+        for i in full_family:
+            working_text = [
+                f'0 @I{i.tree_id}@ INDI',
+                f'\t1 NAME {i.get_name(bot)}'
+            ]
+
+            # If you have a parent, get added to their family
+            if i.parent:
+                if i.parent in family_id_cache:
+                    working_text.append(f'\t1 FAMC @F{family_id_cache[i.parent]}@')
+                elif i.get_parent().partner and i.get_parent().partner in family_id_cache:
+                    working_text.append(f'\t1 FAMC @F{family_id_cache[i.get_parent().partner]}@')
+                else:
+                    working_text.append(f'\t1 FAMC @F{i.get_parent().tree_id}@')
+
+            # If you have children or a partner, generate a family
+            if i.children or i.partner:
+                current_text = '\n'.join(gedcom_text)
+
+                # See if you need to make a new family or be added to one already made
+                try:
+                    insert_location = gedcom_text.index(f'\t1 HUSB @I{i.tree_id}@')
+                    # Above will throw error if this user is not in a tree already
+
+                    working_text.append(f'\t1 FAMS @F{family_id_cache[i.partner]}@')
+                    family_id_cache[i.id] = i.get_partner().tree_id
+                    for c in i.get_children():
+                        gedcom_text.insert(insert_location, f'\t1 CHIL @I{c.tree_id}@')
+                except ValueError:
+                    family_id_cache[i.id] = i.tree_id
+                    working_text.append(f'\t1 FAMS @F{i.tree_id}@')
+                    working_text.append(f'0 @F{i.tree_id}@ FAM')
+                    working_text.append(f'\t1 WIFE @I{i.tree_id}@')
+                    if i.partner:
+                        working_text.append(f'\t1 HUSB @I{i.get_partner().tree_id}@')
+                    for c in i.get_children():
+                        working_text.append(f'\t1 CHIL @I{c.tree_id}@')
+
+            gedcom_text.extend(working_text)
+        x = '0 HEAD\n\t1 GEDC\n\t\t2 VERS 5.5\n\t\t2 FORM LINEAGE-LINKED\t1 CHAR UNICODE\n' + '\n'.join(gedcom_text) + '\n0 TRLR'
+        return x
 
     def to_tree_string(self, bot, expand_backwards:int=0, depth:int=-1):
         '''

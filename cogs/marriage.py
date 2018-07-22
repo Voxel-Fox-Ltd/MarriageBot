@@ -56,7 +56,7 @@ class Marriage(object):
         await ctx.trigger_typing()
         user_tree = FamilyTreeMember.get(instigator.id)
         root = user_tree.expand_backwards(-1)
-        tree_id_list = [i.id for i in root.span()]
+        tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
             await ctx.send(random_text.proposing_to_family(instigator, target))

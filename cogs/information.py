@@ -1,6 +1,7 @@
 from subprocess import run
 from os import remove
 from re import compile
+from io import BytesIO
 from asyncio import sleep
 from discord import Member, File
 from discord.ext.commands import command, Context
@@ -71,6 +72,20 @@ class Information(object):
             await ctx.send(f"`{user!s}` has no parent.")
             return
         await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(x[0]['parent_id'])!s}`.")
+
+
+    @command()
+    async def fulltree(self, ctx:Context, root:Member=None):
+        '''
+        Gives you the full family tree of a user
+        '''
+
+        if root == None:
+            root = ctx.author
+
+        text = FamilyTreeMember.get(root.id).generate_gedcom_file(self.bot)
+        file = BytesIO(text.encode())
+        await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
     @command()
