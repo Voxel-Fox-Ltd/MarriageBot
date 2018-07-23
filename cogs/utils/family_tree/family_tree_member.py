@@ -254,7 +254,7 @@ class FamilyTreeMember(object):
             fulltext += user.get_name(bot) + f' (id={user.id})\n'
 
             # Add their partner
-            if user.id == initial_user:
+            if user.id == initial_user and user.partner:
                 fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
                 added_to_tree.append(user.partner)
             elif all_guilds == False and user.partner and ctx.guild.get_member(user.partner) != None:
@@ -269,6 +269,10 @@ class FamilyTreeMember(object):
                 fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
                 added_to_tree.append(user.partner)
 
+            if all_guilds == False and any([ctx.guild.get_member(i) for i in user.children]) and user.id == initial_user and user.partner == None:
+                # No spouse, children, is initial
+                fulltext += f'None (id={nonecount})\n'
+                nonecount += 1
             if all_guilds == False and any([ctx.guild.get_member(i) for i in user.children]) and (ctx.guild.get_member(user.partner) == None and user.id != initial_user):
                 # Valid children and invalid spouse
                 fulltext += f'None (id={nonecount})\n'
