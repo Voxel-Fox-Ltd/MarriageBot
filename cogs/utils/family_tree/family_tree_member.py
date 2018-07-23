@@ -102,7 +102,7 @@ class FamilyTreeMember(object):
             nodupe.append(i)
         return nodupe
 
-    def expand_backwards(self, depth:int=1):
+    def expand_backwards(self, depth:int=1, all_guilds:bool=True, ctx=None):
         '''
         Expands backwards into the tree
 
@@ -110,15 +110,25 @@ class FamilyTreeMember(object):
             depth: int = 1
                 How far back to expand
                 Set to -1 for the base root
+            all_guilds: bool = True
+                Sets whether or not to get users from all guilds
+            ctx: Context = None
+                Used to check whether a user is in the initial guild
+                Only required if all_guilds is set to False
         '''
 
+        previous = None
         root_user = self
         while depth != 0:
+            previous = root_user
             if root_user.parent:
                 root_user = root_user.get_parent()
             elif root_user.partner and root_user.get_partner().parent:
                 root_user = root_user.get_partner().get_parent()
             else:
+                break
+            if all_guilds == False and ctx.guild.get_member(root_user.id) == None:
+                root_user = previous
                 break
             depth -= 1
         return root_user
@@ -184,54 +194,112 @@ class FamilyTreeMember(object):
                         working_text.append(f'\t1 CHIL @I{c.tree_id}@')
 
             gedcom_text.extend(working_text)
-        x = '0 HEAD\n\t1 GEDC\n\t\t2 VERS 5.5\n\t\t2 FORM LINEAGE-LINKED\t1 CHAR UNICODE\n' + '\n'.join(gedcom_text) + '\n0 TRLR'
+        x = '0 HEAD\n\t1 GEDC\n\t\t2 VERS 5.5\n\t\t2 FORM LINEAGE-LINKED\n\t1 CHAR UNICODE\n' + '\n'.join(gedcom_text) + '\n0 TRLR'
         return x
 
-    def to_tree_string(self, bot, expand_backwards:int=0, depth:int=-1):
+    def to_tree_string(self, ctx, expand_backwards:int=0, depth:int=-1, all_guilds:bool=False):
         '''
         Gives you a string of the current family tree that will go through familytreemaker.py
 
         Params:
-            bot: CustomBot
+            ctx: Context
                 Used solely to get the names of people
-            expand_backwards:int = 0
+            expand_backwards: int = 0
                 See how far back you want to go up the generations
                 Set to -1 for maximum
+            all_guilds: bool = False
+                Decides whether to get users from all guilds or just the current guild to
+                add to your tree
         '''
 
         fulltext = ''
         added_to_tree = []  # list of IDs that have been added
         nonecount = 0
+        bot = ctx.bot
+        initial_user = self.id
 
-        root_user = self.expand_backwards(expand_backwards)
+        if self.parent:
+            root_user = self.get_parent()
+        else:
+            root_user = self
+        root_user = root_user.expand_backwards(expand_backwards, all_guilds=all_guilds, ctx=ctx)
 
         # Go through all who are related
         for user in root_user.span(max_depth=depth):
 
             # If you have nothing to add, you won't be added
             if user.partner == None and len(user.children) == 0:
+                # No partner, no children
                 continue
             if user.id in added_to_tree:
+                # Already added
                 continue
+            if initial_user in user.children:
+                pass
+            elif all_guilds == False:
+                if ctx.guild.get_member(user.id) == None:
+                    # Not in guild
+                    continue
+                elif user.parent and ctx.guild.get_member(user.parent) == None and user.id != initial_user:
+                    # Parent not in guild
+                    continue
+                elif user.partner and user.id == initial_user:
+                    # Have a partner, are initial user
+                    pass
+                elif ctx.guild.get_member(user.partner) == None and any([ctx.guild.get_member(i) for i in user.children]) == False:
+                    # Family are all invalid
+                    continue
 
             # Add the current iteration
             fulltext += user.get_name(bot) + f' (id={user.id})\n'
 
             # Add their partner
-            if user.partner:
+            if user.id == initial_user:
                 fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
                 added_to_tree.append(user.partner)
-            if len(user.children) > 0 and user.partner == None:
+            elif all_guilds == False and user.partner and ctx.guild.get_member(user.partner) != None:
+                # Partner exists in server
+                fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
+                added_to_tree.append(user.partner)
+            elif all_guilds == False and user.partner:
+                # Partner not in server
+                added_to_tree.append(user.partner)
+            elif all_guilds and user.partner:
+                # Partner exists
+                fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
+                added_to_tree.append(user.partner)
+
+            if all_guilds == False and any([ctx.guild.get_member(i) for i in user.children]) and (ctx.guild.get_member(user.partner) == None and user.id != initial_user):
+                # Valid children and invalid spouse
+                fulltext += f'None (id={nonecount})\n'
+                nonecount += 1
+            elif all_guilds and len(user.children) > 0 and user.partner == None:
+                # Any amount of children, no spouse
                 fulltext += f'None (id={nonecount})\n'
                 nonecount += 1
 
             # Add their children
-            if len(user.children) > 0:
-                for child in user.get_children():
-                    fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
-            if user.partner and len(user.get_partner().children) > 0:
-                for child in user.get_partner().get_children():
-                    fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+            if all_guilds == False:
+                # Get valid children from selection
+                valid_children = [o.id for o in [ctx.guild.get_member(i) for i in user.children] if o]
+                # Add them to the tree
+                if len(valid_children) > 0:
+                    for child in [self.get(i) for i in valid_children]:
+                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+                # If their spouse is valid with children
+                if ctx.guild.get_member(user.partner) and len(user.get_partner().children) > 0:
+                    # Add their children
+                    valid_children = [o.id for o in [ctx.guild.get_member(i) for i in user.get_partner().children] if o]
+                    for child in [self.get(i) for i in valid_children]:
+                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+            elif all_guilds:
+                if len(user.children) > 0:
+                    for child in user.get_children():
+                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+                if user.partner and len(user.get_partner().children) > 0:
+                    for child in user.get_partner().get_children():
+                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+
 
             # Cache user
             added_to_tree.append(user.id)

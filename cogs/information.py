@@ -94,6 +94,20 @@ class Information(object):
         Gets the family tree of a given user
         '''
 
+        return await self.treemaker(ctx, root, depth, False)
+
+
+    @command()
+    async def globaltree(self, ctx:Context, root:Member=None, depth:int=-1):
+        '''
+        Gets the global family tree of a given user
+        '''
+
+        return await self.treemaker(ctx, root, depth, True)
+
+
+    async def treemaker(self, ctx:Context, root:Member, depth:int, all_guilds:bool):
+
         if root == None:
             root = ctx.author
         if depth <= 0:
@@ -109,7 +123,10 @@ class Information(object):
             return
 
         # Start the 3-step conversion process
-        root, text = tree.to_tree_string(self.bot, expand_backwards=depth, depth=depth*2)
+        root, text = tree.to_tree_string(ctx, expand_backwards=depth, depth=depth*2, all_guilds=all_guilds)
+        if text == '':
+            await ctx.send(f"`{root!s}` has no family to put into a tree .-.")
+            return
         with open(f'./trees/{root.id}.txt', 'w', encoding='utf-8') as a:
             a.write(self.substitution.sub('', text))
         f = open(f'./trees/{root.id}.dot', 'w')
