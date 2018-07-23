@@ -1,10 +1,12 @@
 from glob import glob
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_help import CustomHelp
 
 
 bot = CustomBot(
     command_prefix=['m!', '<@468281173072805889> ', '<@!468281173072805889> '], 
-    config_file='config/config.json'
+    config_file='config/config.json',
+    formatter=CustomHelp()
     )
 
 
