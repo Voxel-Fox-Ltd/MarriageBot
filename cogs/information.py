@@ -75,7 +75,7 @@ class Information(object):
 
 
     @command()
-    async def fulltree(self, ctx:Context, root:Member=None):
+    async def treefile(self, ctx:Context, root:Member=None):
         '''
         Gives you the full family tree of a user
         '''
@@ -97,7 +97,7 @@ class Information(object):
         return await self.treemaker(ctx, root, depth, False)
 
 
-    @command()
+    @command(aliases=['fulltree'])
     async def globaltree(self, ctx:Context, root:Member=None, depth:int=-1):
         '''
         Gets the global family tree of a given user

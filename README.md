@@ -52,7 +52,7 @@ Shows the family tree of the given user on the server the command was called fro
 * `m!globaltree [@User#1231]`
 Shows the family tree of the given user across all servers (since families persist over different servers). Defaults to yourself. The bot needs to be able to send images to do this.
 
-* `m!fulltree [@User#1231]`
+* `m!treefile [@User#1231]`
 Gives you the full family tree output for the given user as a .ged file.
 
 # Testimonials
@@ -60,11 +60,11 @@ Gives you the full family tree output for the given user as a .ged file.
 ![Testimonial 1](https://sparcli.callumb.co.uk/marriagebot/1.png)
 ![Testimonial 2](https://sparcli.callumb.co.uk/marriagebot/2.png)
 ![Testimonial 3](https://sparcli.callumb.co.uk/marriagebot/3.png)
-![Testimonial 4](https://sparcli.callumb.co.uk/marriagebot/4.png)
 ![Testimonial 5](https://sparcli.callumb.co.uk/marriagebot/5.png)
 ![Testimonial 6](https://sparcli.callumb.co.uk/marriagebot/6.png)
 ![Testimonial 7](https://sparcli.callumb.co.uk/marriagebot/7.png)
 ![Testimonial 8](https://sparcli.callumb.co.uk/marriagebot/8.png)
+![Testimonial 9](https://sparcli.callumb.co.uk/marriagebot/9.png)
 
 # Self-Hosting
 
