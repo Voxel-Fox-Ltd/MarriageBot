@@ -1,5 +1,6 @@
 from json import load
 from asyncio import sleep
+from aiohttp import ClientSession
 from discord import Game
 from discord.ext.commands import AutoShardedBot
 from cogs.utils.database import DatabaseConnection
@@ -17,6 +18,7 @@ class CustomBot(AutoShardedBot):
 
         self.startup_method = self.loop.create_task(self.startup())
         self.presence_loop = self.loop.create_task(self.presence_loop())
+        self.dbl_guild_count_loop = self.loop.create_task(self.dbl_guild_count_loop())
 
 
     async def presence_loop(self):
@@ -34,6 +36,10 @@ class CustomBot(AutoShardedBot):
 
 
     async def startup(self):
+        '''
+        Resets and fills the FamilyTreeMember cache with objects
+        '''
+
         FamilyTreeMember.all_users = {None: None}
         async with self.database() as db:
             partnerships = await db('SELECT * FROM marriages WHERE valid=TRUE')
@@ -45,6 +51,26 @@ class CustomBot(AutoShardedBot):
             parent.children.append(i['child_id'])
             child = FamilyTreeMember.get(i['child_id'])
             child.parent = i['parent_id']
+
+
+    async def dbl_guild_count_loop(self):
+        '''
+        The loop of uploading the guild count to the DBL server
+        '''
+
+        await self.wait_until_ready()
+        while not self.is_closed():
+            async with ClientSession(loop=self.loop) as session:
+                url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
+                json = {
+                    'server_count': len(self.guilds),
+                }
+                headers = {
+                    'Authorization': self.config['dbl_token']
+                }
+                async with session.post(url, json=json, headers=headers) as r:
+                    pass
+            await sleep(60*60)  # 1 hour
 
 
     @property

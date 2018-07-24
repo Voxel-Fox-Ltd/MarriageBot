@@ -1,8 +1,0 @@
-* One user must be able to marry another
-* Any given user can only be married to one other user at a time
-* A user can deny a marriage proposal
-* A user can accept a marriage proposal
-* A user can divorce their spouse at any given time
-
-* If a user leaves all guilds that the bot is in (so that the bot can no longer see them) they will be automatically divorced
-* If the bot is kicked from a guild and there are users that the bot can no longer see, their marriage will be invalidated
