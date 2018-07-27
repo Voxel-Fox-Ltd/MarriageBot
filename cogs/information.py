@@ -97,7 +97,11 @@ class Information(object):
         Gets the family tree of a given user
         '''
 
-        return await self.treemaker(ctx, root, depth, False)
+        try:
+            return await self.treemaker(ctx, root, depth, False)
+        except Exception as e:
+            await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
+            raise e
 
 
     @command(aliases=['fulltree'])
@@ -107,7 +111,11 @@ class Information(object):
         Gets the global family tree of a given user
         '''
 
-        return await self.treemaker(ctx, root, depth, True)
+        try:
+            return await self.treemaker(ctx, root, depth, True)
+        except Exception as e:
+            await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
+            raise e
 
 
     async def treemaker(self, ctx:Context, root:Member, depth:int, all_guilds:bool):
@@ -131,12 +139,33 @@ class Information(object):
         if text == '':
             await ctx.send(f"`{root!s}` has no family to put into a tree .-.")
             return
+
+        # Write their treemaker code to a file
         with open(f'./trees/{root.id}.txt', 'w', encoding='utf-8') as a:
             a.write(self.substitution.sub('', text))
+
+        # Convert and write to a dot file
         f = open(f'./trees/{root.id}.dot', 'w')
-        _ = run(['python3.6', './cogs/utils/family_tree/familytreemaker.py', '-a', self.substitution.sub('', str(root.get_name(self.bot))), f'./trees/{root.id}.txt'], stdout=f)
+        _ = run([
+            'python3.6', 
+            './cogs/utils/family_tree/familytreemaker.py', 
+            '-a', 
+            '"' + self.substitution.sub('', str(root.get_name(self.bot))) + '"', 
+            f'./trees/{root.id}.txt'
+            ], stdout=f)
         f.close()
-        _ = run(['dot', '-Tpng', f'./trees/{root.id}.dot', '-o', f'./trees/{root.id}.png', '-Gcharset=latin1', '-Gsize=200\\!', '-Gdpi=100'])
+
+        # Convert to an image
+        _ = run([
+            'dot', 
+            '-Tpng', 
+            f'./trees/{root.id}.dot', 
+            '-o', 
+            f'./trees/{root.id}.png', 
+            '-Gcharset=latin1', 
+            '-Gsize=200\\!', 
+            '-Gdpi=100'
+            ])
 
         # Send file and delete cached
         await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{root.id}.png'))
