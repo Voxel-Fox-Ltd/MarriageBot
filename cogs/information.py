@@ -3,7 +3,7 @@ from os import remove
 from re import compile
 from io import BytesIO
 from asyncio import sleep
-from discord import Member, File
+from discord import Member, File, User
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
@@ -106,7 +106,7 @@ class Information(object):
 
     @command(aliases=['fulltree'])
     @can_send_files()
-    async def globaltree(self, ctx:Context, root:Member=None, depth:int=-1):
+    async def globaltree(self, ctx:Context, root:User=None, depth:int=-1):
         '''
         Gets the global family tree of a given user
         '''
@@ -118,7 +118,7 @@ class Information(object):
             raise e
 
 
-    async def treemaker(self, ctx:Context, root:Member, depth:int, all_guilds:bool):
+    async def treemaker(self, ctx:Context, root:User, depth:int, all_guilds:bool):
 
         if root == None:
             root = ctx.author
@@ -142,7 +142,8 @@ class Information(object):
 
         # Write their treemaker code to a file
         with open(f'./trees/{root.id}.txt', 'w', encoding='utf-8') as a:
-            a.write(self.substitution.sub('', text))
+            # a.write(self.substitution.sub('_', text))
+            a.write(text)
 
         # Convert and write to a dot file
         f = open(f'./trees/{root.id}.dot', 'w')
@@ -150,7 +151,8 @@ class Information(object):
             'python3.6', 
             './cogs/utils/family_tree/familytreemaker.py', 
             '-a', 
-            self.substitution.sub('', str(root.get_name(self.bot))), 
+            # self.substitution.sub('_', str(root.get_name(self.bot))), 
+            root.get_name(self.bot), 
             f'./trees/{root.id}.txt'
             ], stdout=f)
         f.close()
@@ -162,7 +164,8 @@ class Information(object):
             f'./trees/{root.id}.dot', 
             '-o', 
             f'./trees/{root.id}.png', 
-            '-Gcharset=latin1', 
+            # '-Gcharset=latin1', 
+            '-Gcharset=UTF-8', 
             '-Gsize=200\\!', 
             '-Gdpi=100'
             ])

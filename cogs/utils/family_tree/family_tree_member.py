@@ -1,3 +1,4 @@
+from re import compile
 from random import choice
 from discord import User, File
 
@@ -17,6 +18,8 @@ class FamilyTreeMember(object):
     '''
 
     all_users = {None: None}  # id: FamilyTreeMember
+    substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
+
 
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
         self.id = discord_id
@@ -251,22 +254,22 @@ class FamilyTreeMember(object):
                     continue
 
             # Add the current iteration
-            fulltext += user.get_name(bot) + f' (id={user.id})\n'
+            fulltext += user.get_name(bot).replace('(', '_').replace(')', '_') + f' (id={user.id})\n'
 
             # Add their partner
             if user.id == initial_user and user.partner:
-                fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
+                fulltext += user.get_partner().get_name(bot).replace('(', '_').replace(')', '_') + f' (id={user.partner})\n'
                 added_to_tree.append(user.partner)
             elif all_guilds == False and user.partner and ctx.guild.get_member(user.partner) != None:
                 # Partner exists in server
-                fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
+                fulltext += user.get_partner().get_name(bot).replace('(', '_').replace(')', '_') + f' (id={user.partner})\n'
                 added_to_tree.append(user.partner)
             elif all_guilds == False and user.partner:
                 # Partner not in server
                 added_to_tree.append(user.partner)
             elif all_guilds and user.partner:
                 # Partner exists
-                fulltext += user.get_partner().get_name(bot) + f' (id={user.partner})\n'
+                fulltext += user.get_partner().get_name(bot).replace('(', '_').replace(')', '_') + f' (id={user.partner})\n'
                 added_to_tree.append(user.partner)
 
             if all_guilds == False and any([ctx.guild.get_member(i) for i in user.children]) and user.id == initial_user and user.partner == None:
@@ -289,20 +292,20 @@ class FamilyTreeMember(object):
                 # Add them to the tree
                 if len(valid_children) > 0:
                     for child in [self.get(i) for i in valid_children]:
-                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+                        fulltext += '\t' + child.get_name(bot).replace('(', '_').replace(')', '_') + f' (id={child.id})\n'
                 # If their spouse is valid with children
                 if ctx.guild.get_member(user.partner) and len(user.get_partner().children) > 0:
                     # Add their children
                     valid_children = [o.id for o in [ctx.guild.get_member(i) for i in user.get_partner().children] if o]
                     for child in [self.get(i) for i in valid_children]:
-                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+                        fulltext += '\t' + child.get_name(bot).replace('(', '_').replace(')', '_') + f' (id={child.id})\n'
             elif all_guilds:
                 if len(user.children) > 0:
                     for child in user.get_children():
-                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+                        fulltext += '\t' + child.get_name(bot).replace('(', '_').replace(')', '_') + f' (id={child.id})\n'
                 if user.partner and len(user.get_partner().children) > 0:
                     for child in user.get_partner().get_children():
-                        fulltext += '\t' + child.get_name(bot) + f' (id={child.id})\n'
+                        fulltext += '\t' + child.get_name(bot).replace('(', '_').replace(')', '_') + f' (id={child.id})\n'
 
 
             # Cache user
@@ -313,4 +316,4 @@ class FamilyTreeMember(object):
         return root_user, fulltext.replace(f'(id={self.id})', f"(F, id={self.id})")
 
     def get_name(self, bot):
-        return str(bot.get_user(self.id))
+        return self.substitution.sub('_', str(bot.get_user(self.id)))
