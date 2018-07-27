@@ -1,3 +1,4 @@
+from discord import Guild
 from cogs.utils.custom_bot import CustomBot
 
 
