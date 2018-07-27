@@ -21,10 +21,10 @@ class GuildEvent(object):
         '''
 
         await self.log_channel.send(
-            f"**Added to new guild** (#{len(self.bot.guilds)}\n"
-            f"__Name__: {gulid.name}\n"
-            f"__ID__: {guild.id}\n"
-            f"__Member Count__: {len(guld.members)}\n"
+            f"**Added to new guild** (#{len(self.bot.guilds)})\n"
+            f"**Name**: {guild.name}\n"
+            f"**ID**: {guild.id}\n"
+            f"**Member Count**: {len(guild.members)}\n"
             )
 
 
@@ -34,10 +34,10 @@ class GuildEvent(object):
         '''
 
         await self.log_channel.send(
-            f"**Removed from guild** (#{len(self.bot.guilds)}\n"
-            f"__Name__: {gulid.name}\n"
-            f"__ID__: {guild.id}\n"
-            f"__Member Count__: {len(guld.members)}\n"
+            f"**Removed from guild** (#{len(self.bot.guilds)})\n"
+            f"**Name**: {guild.name}\n"
+            f"**ID**: {guild.id}\n"
+            f"**Member Count**: {len(guild.members)}\n"
             )
 
 
