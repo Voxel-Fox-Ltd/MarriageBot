@@ -39,7 +39,7 @@ async def on_ready():
         except Exception as e:
             print(e)
 
-    print('\nEverything loaded.')
+    print('\nEverything loaded.\n')
 
 
 print('Starting...')
