@@ -6,6 +6,7 @@ from asyncio import sleep
 from discord import Member, File
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
@@ -75,6 +76,7 @@ class Information(object):
 
 
     @command()
+    @can_send_files()
     async def treefile(self, ctx:Context, root:Member=None):
         '''
         Gives you the full family tree of a user
@@ -89,6 +91,7 @@ class Information(object):
 
 
     @command()
+    @can_send_files()
     async def tree(self, ctx:Context, root:Member=None, depth:int=-1):
         '''
         Gets the family tree of a given user
@@ -98,6 +101,7 @@ class Information(object):
 
 
     @command(aliases=['fulltree'])
+    @can_send_files()
     async def globaltree(self, ctx:Context, root:Member=None, depth:int=-1):
         '''
         Gets the global family tree of a given user

@@ -1,6 +1,7 @@
 from discord.ext.commands import Context
 from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.checks.can_send_files import CantSendFiles
 
 
 class ErrorEvent(object):
@@ -19,6 +20,9 @@ class ErrorEvent(object):
             return
         elif isinstance(error, BadArgument):
             await ctx.send(f"Unfortunately, that isn't a valid argument for this command.")
+            return
+        elif isinstance(error, CantSendFiles):
+            await ctx.send("I'm not able to send files into this channel.")
             return
         elif isinstance(error, CommandNotFound):
             x = '\\n'.join(ctx.message.content.split('\n'))
