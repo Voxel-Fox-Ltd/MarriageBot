@@ -139,7 +139,6 @@ class Marriage(object):
 
         # At this point they can only be married
         async with self.bot.database() as db:
-            # await db.divorce(instigator=instigator, target=target, marriage_id=instigator_married[0]['marriage_id'])
             await db('UPDATE marriages SET valid=FALSE where user_id=$1 OR user_id=$2', instigator.id, target.id)
         await ctx.send(f"You and {target.mention} are now divorced. I wish you luck in your lives.")
 

@@ -47,35 +47,10 @@ class DatabaseConnection(object):
             if not x:
                 return idnumber
 
-    async def get_marriage(self, user:Member):
-        '''
-        Gets a marriage dictionary from the database for the given user
-        '''
-
-        x = await self('SELECT * FROM marriages WHERE user_id=$1 AND valid=TRUE', user.id)
-        if x:
-            y = await self('SELECT * FROM marriages WHERE marriage_id=$1 AND valid=TRUE', x[0]['marriage_id'])
-            return [x[0], y[0]]
-        return None
-
-    async def add_event(self, instigator:Member, target:Member, event:str):
-        '''
-        Adds an event to the events table
-        '''
-
-        idnumber = await self.make_id('events', 'event_id')
-        # event_id, event_type, instigator, target, time
-        await self(
-            'INSERT INTO events VALUES ($1, $2, $3, $4, NOW())', 
-            idnumber,
-            event,
-            instigator.id,
-            target.id 
-        )
-
     async def marry(self, instigator:Member, target:Member, marriage_id:str=None):
         '''
         Marries two users together
+        Remains in the Database class solely as you need the "idnumber" field.
         '''
 
         if marriage_id == None:
@@ -89,37 +64,5 @@ class DatabaseConnection(object):
             instigator.id,
             target.id,
         )
-        await self.add_event(instigator, target, 'MARRIAGE')
         if marriage_id == None:
             await self.marry(target, instigator, idnumber)  # Run it again with instigator/target flipped
-
-    async def divorce(self, instigator:Member, target:Member, marriage_id:str):
-        '''
-        Divorces two married people
-        '''
-
-        instigator
-        await self.add_event(instigator=instigator, target=target, event='DIVORCE')
-        await self.add_event(instigator=target, target=instigator, event='DIVORCE')
-        await self('UPDATE marriages SET valid=FALSE WHERE marriage_id=$1', marriage_id)
-
-    async def get_parent(self, user:Member):
-        '''
-        Finds the parentage info of a given user
-        '''
-
-        x = await self('SELECT * FROM parents WHERE child_id=$1', user.id)
-        if x:
-            return x[0]
-        return None
-
-    async def get_children(self, user:Member):
-        '''
-        Finds the IDs of all children of the given member
-        '''
-
-        # children = []
-        x = await self('SELECT * FROM parents WHERE parent_id=$1', user.id)
-        if x:
-            return [i['child_id'] for i in x]
-        return []
