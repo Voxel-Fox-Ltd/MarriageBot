@@ -1,4 +1,5 @@
-from discord import Guild
+from datetime import datetime
+from discord import Guild, Embed
 from cogs.utils.custom_bot import CustomBot
 
 
@@ -20,12 +21,16 @@ class GuildEvent(object):
         When the client is added to a new guild
         '''
 
-        await self.log_channel.send(
-            f"**Added to new guild** (#{len(self.bot.guilds)})\n"
-            f"**Name**: {guild.name}\n"
-            f"**ID**: {guild.id}\n"
-            f"**Member Count**: {len(guild.members)}\n"
-            )
+        embed = Embed(colour=0x00ff00)
+        embed.set_author(name=f'Added to Guild (#{len(self.bot.guilds)})')
+        embed.add_field(name='Guild Name', value=guild.name)
+        embed.add_field(name='Guild ID', value=guild.id)
+        embed.add_field(name='Member Count', value=len(guild.members))
+        embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
+        await self.log_channel.send(embed=embed)
+
+        if len(self.bot.guilds) % 5 == 0:
+            await self.bot.post_guild_count()
 
 
     async def on_guild_remove(self, guild:Guild):
@@ -33,12 +38,16 @@ class GuildEvent(object):
         When the client is removed from a guild
         '''
 
-        await self.log_channel.send(
-            f"**Removed from guild** (#{len(self.bot.guilds)})\n"
-            f"**Name**: {guild.name}\n"
-            f"**ID**: {guild.id}\n"
-            f"**Member Count**: {len(guild.members)}\n"
-            )
+        embed = Embed(colour=0xff0000)
+        embed.set_author(name=f'Removed from Guild (#{len(self.bot.guilds)})')
+        embed.add_field(name='Guild Name', value=guild.name)
+        embed.add_field(name='Guild ID', value=guild.id)
+        embed.add_field(name='Member Count', value=len(guild.members))
+        embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
+        await self.log_channel.send(embed=embed)
+
+        if len(self.bot.guilds) % 5 == 0:
+            await self.bot.post_guild_count()
 
 
 def setup(bot:CustomBot):
