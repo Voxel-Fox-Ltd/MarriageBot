@@ -30,16 +30,14 @@ class Information(object):
         if not user:
             user = ctx.author
 
-        async with self.bot.database() as db:
-            x = await db.get_marriage(user)
-        if not x:
+        # Get the user's info
+        user_info = FamilyTreeMember.get(user.id)
+        if user_info.partner == None:
             await ctx.send(f"`{user!s}` is not currently married.")
             return
-        i = x[0]
 
-        u1 = self.bot.get_user(i['user_id'])
-        u2 = self.bot.get_user(i['partner_id'])
-        await ctx.send(f"`{u1!s}` is currently married to `{u2!s}`.")
+        partner = self.bot.get_user(user_info.partner)
+        await ctx.send(f"`{user!s}` is currently married to `{partner!s}`.")
 
 
     @command(aliases=['child'])
@@ -51,12 +49,16 @@ class Information(object):
         if user == None:
             user = ctx.author
 
-        async with self.bot.database() as db:
-            x = await db('SELECT * FROM parents WHERE parent_id=$1', user.id)
-        if not x:
+        # Get the user's info
+        user_info = FamilyTreeMember.get(user.id)
+        if len(user_info.children) == 0:
             await ctx.send(f"`{user!s}` has no children right now.")
             return
-        await ctx.send(f"`{user!s}` has `{len(x)}` child" + {False:"ren",True:""}.get(len(x)==1) + ": " + ", ".join([f"`{self.bot.get_user(i['child_id'])!s}`" for i in x]))
+        await ctx.send(
+            f"`{user!s}` has `{len(user_info.children)}` child" + 
+            {False:"ren",True:""}.get(len(user_info.children)==1) + ": " + 
+            ", ".join([f"`{self.bot.get_user(i)!s}`" for i in user_info.children])
+            )
 
     @command()
     async def parent(self, ctx:Context, user:Member=None):
@@ -67,12 +69,11 @@ class Information(object):
         if user == None:
             user = ctx.author
 
-        async with self.bot.database() as db:
-            x = await db('SELECT * FROM parents WHERE child_id=$1', user.id)
-        if not x:
+        user_info = FamilyTreeMember.get(user.id)
+        if user_info.parent == None:
             await ctx.send(f"`{user!s}` has no parent.")
             return
-        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(x[0]['parent_id'])!s}`.")
+        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(user_info.parent)!s}`.")
 
 
     @command()
