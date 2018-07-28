@@ -37,6 +37,15 @@ class Misc(object):
         )
 
 
+    @command(aliases=['guild', 'support'])
+    async def server(self, ctx:Context):
+        '''
+        Gives you a server invite link
+        '''
+
+        await ctx.send(self.bot.config['guild'])
+
+
 def setup(bot:CustomBot):
     x = Misc(bot)
     bot.add_cog(x)
