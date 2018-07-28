@@ -15,15 +15,7 @@ class ErrorEvent(object):
     def log_channel(self):
         channel_id = self.bot.config['log_channel']
         channel = self.bot.get_channel(channel_id)
-        return channel   
-
-
-    async def on_command(self, ctx:Context):
-        '''
-        Runs when a command is run
-        '''
-
-        await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
+        return channel
 
 
     async def on_command_error(self, ctx:Context, error):
