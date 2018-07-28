@@ -1,3 +1,4 @@
+from asyncio import sleep
 from discord import Message
 from discord.ext.commands import Context
 from cogs.utils.custom_bot import CustomBot
@@ -7,6 +8,7 @@ class CommandEvent(object):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
+        self.cache = []
 
 
     @property
@@ -22,6 +24,7 @@ class CommandEvent(object):
         '''
 
         await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
+        self.cache.append(ctx.message)
 
 
     async def on_message(self, message:Message):
@@ -30,6 +33,10 @@ class CommandEvent(object):
         elif message.author.bot:
             return
         elif any([i in message.content.casefold() for i in ['marriagebot', 'marriage bot', f'{self.bot.user.id}']]):
+            await sleep(1)
+            if message in self.cache:
+                self.cache.remove(message)
+                return
             await self.log_channel.send(f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`")
 
 

@@ -11,7 +11,7 @@ class CustomBot(AutoShardedBot):
 
     def __init__(self, config_file:str='config.json', *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._config = None  # See the config property
+        self.config = self.reload_config()
         self.config_file = config_file
         self.database = DatabaseConnection
         self.database.config = self.config['database']
@@ -73,14 +73,13 @@ class CustomBot(AutoShardedBot):
                 pass
 
 
-    @property
-    def config(self):
+    def reload_config(self):
         try:
             with open(self.config_file) as a:
-                self._config = load(a)
+                self.config = load(a)
         except Exception as e:
             pass
-        return self._config
+        return self.config
 
 
     def run_all(self):
