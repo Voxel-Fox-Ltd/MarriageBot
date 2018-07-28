@@ -152,7 +152,7 @@ class Information(object):
             './cogs/utils/family_tree/familytreemaker.py', 
             '-a', 
             # self.substitution.sub('_', str(root.get_name(self.bot))), 
-            root.get_name(self.bot), 
+            root.get_name(self.bot).replace('(', '_').replace(')', '_'), 
             f'./trees/{root.id}.txt'
             ], stdout=f)
         f.close()
