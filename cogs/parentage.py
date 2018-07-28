@@ -65,8 +65,6 @@ class Parentage(object):
             return
 
         # No parent, send request
-        async with self.bot.database() as db:
-            await db.add_event(instigator=instigator, target=target, event='PARENT REQUEST')
         await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s parent?")
         self.cache.append(instigator.id)
         self.cache.append(target.id)
@@ -93,8 +91,6 @@ class Parentage(object):
         try:
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
-            async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='TIMEOUT')
             await ctx.send(f"{instigator.mention}, your parent request has timed out. Try again when they're online!")
             self.cache.remove(instigator.id)
             self.cache.remove(target.id)
@@ -103,12 +99,9 @@ class Parentage(object):
         # Valid response recieved, see what their answer was
         response = check(m)
         if response == 'NO':
-            async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='DECLINE ADOPTION')
             await ctx.send("No adoption today, it seems..")
         elif response == 'YES':
             async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='ACCEPT ADOPTION')
                 await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
             await ctx.send(f"{instigator.mention}, your new parent is {target.mention} c:")
             me = FamilyTreeMember.get(instigator.id)
@@ -162,8 +155,6 @@ class Parentage(object):
             return
 
         # No parent, send request
-        async with self.bot.database() as db:
-            await db.add_event(instigator=instigator, target=target, event='PARENT REQUEST')
         await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s child?")
         self.cache.append(instigator.id)
         self.cache.append(target.id)
@@ -190,8 +181,6 @@ class Parentage(object):
         try:
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
-            async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='TIMEOUT')
             await ctx.send(f"{instigator.mention}, your adoption request has timed out. Try again when they're online!")
             self.cache.remove(instigator.id)
             self.cache.remove(target.id)
@@ -200,12 +189,9 @@ class Parentage(object):
         # Valid response recieved, see what their answer was
         response = check(m)
         if response == 'NO':
-            async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='DECLINE ADOPTION')
             await ctx.send("No adoption today, it seems..")
         elif response == 'YES':
             async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='ACCEPT ADOPTION')
                 await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', instigator.id, target.id)
             await ctx.send(f"{target.mention}, your new parent is {instigator.mention} c:")
             me = FamilyTreeMember.get(instigator.id)

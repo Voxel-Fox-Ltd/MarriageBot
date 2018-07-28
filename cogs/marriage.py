@@ -69,8 +69,6 @@ class Marriage(object):
             return
 
         # Neither are married, set up the proposal
-        async with self.bot.database() as db:
-            await db.add_event(instigator=instigator, target=target, event='PROPOSAL')
         await ctx.send(random_text.valid_proposal(instigator, target))
         self.cache.append(instigator.id)
         self.cache.append(target.id)
@@ -97,8 +95,6 @@ class Marriage(object):
         try:
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
-            async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='TIMEOUT')
             await ctx.send(f"{instigator.mention}, your proposal has timed out. Try again when they're online!")
             self.cache.remove(instigator.id)
             self.cache.remove(target.id)
@@ -107,12 +103,9 @@ class Marriage(object):
         # Valid response recieved, see what their answer was
         response = check(m)
         if response == 'NO':
-            async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='I DONT')
             await ctx.send("That's fair. The marriage has been called off.")
         elif response == 'YES':
             async with self.bot.database() as db:
-                await db.add_event(instigator=target, target=instigator, event='I DO')
                 await db.marry(instigator, target)
             await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
             me = FamilyTreeMember.get(instigator.id)
