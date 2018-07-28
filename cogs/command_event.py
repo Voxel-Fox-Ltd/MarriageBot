@@ -21,14 +21,16 @@ class CommandEvent(object):
         Runs when a command is run
         '''
 
-        await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
+        await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
 
 
     async def on_message(self, message:Message):
         if message.author.bot:
             return
         if any([i in message.content.casefold() for i in ['marriagebot', 'marriage bot', f'{self.bot.user.id}']]):
-            await self.log_channel.send(f"Guild: `{message.guild.name}` (`{message.guild.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`")
+            await self.log_channel.send(f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`")
+        elif message.guild == None:
+            await self.log_channel.send(f"Guild: `{message.guild}` | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`")
 
 
 def setup(bot:CustomBot):
