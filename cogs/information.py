@@ -174,10 +174,10 @@ class Information(object):
 
         # Send file and delete cached
         await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{root.id}.png'))
-        await sleep(5)  # Just so the file still isn't sending
-        for i in [f'./trees/{root.id}.txt', f'./trees/{root.id}.dot', f'./trees/{root.id}.png']:
-            _ = remove(i)
-            # pass
+        # await sleep(5)  # Just so the file still isn't sending
+        # for i in [f'./trees/{root.id}.txt', f'./trees/{root.id}.dot', f'./trees/{root.id}.png']:
+        #     _ = remove(i)
+        #     # pass
 
 
 def setup(bot:CustomBot):
