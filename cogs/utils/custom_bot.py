@@ -18,7 +18,6 @@ class CustomBot(AutoShardedBot):
 
         self.startup_method = self.loop.create_task(self.startup())
         self.presence_loop = self.loop.create_task(self.presence_loop())
-        self.dbl_guild_count_loop = self.loop.create_task(self.dbl_guild_count_loop())
 
 
     async def presence_loop(self):
@@ -52,25 +51,26 @@ class CustomBot(AutoShardedBot):
             child = FamilyTreeMember.get(i['child_id'])
             child.parent = i['parent_id']
 
+        # Post guild count
+        await self.wait_until_ready()
+        await self.post_guild_count()
 
-    async def dbl_guild_count_loop(self):
+
+    async def post_guild_count(self):
         '''
         The loop of uploading the guild count to the DBL server
         '''
 
-        await self.wait_until_ready()
-        while not self.is_closed():
-            async with ClientSession(loop=self.loop) as session:
-                url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
-                json = {
-                    'server_count': len(self.guilds),
-                }
-                headers = {
-                    'Authorization': self.config['dbl_token']
-                }
-                async with session.post(url, json=json, headers=headers) as r:
-                    pass
-            await sleep(60*60)  # 1 hour
+        async with ClientSession(loop=self.loop) as session:
+            url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
+            json = {
+                'server_count': len(self.guilds),
+            }
+            headers = {
+                'Authorization': self.config['dbl_token']
+            }
+            async with session.post(url, json=json, headers=headers) as r:
+                pass
 
 
     @property
