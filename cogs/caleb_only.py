@@ -1,5 +1,6 @@
 from traceback import format_exc
 from asyncio import iscoroutine
+from aiohttp import ClientSession
 from discord import Member
 from discord.ext.commands import command, Context, group
 from cogs.utils.custom_bot import CustomBot
@@ -144,6 +145,26 @@ class CalebOnly(object):
             return 
 
         await self.bot.user.edit(username=username)
+        await ctx.send('Done.')
+
+
+    @profile.command(aliases=['photo', 'image', 'avatar'])
+    async def picture(self, ctx:Context, *, image_url:str=None):
+        '''
+        Lets you change the username of the bot
+        '''
+
+        if image_url == None:
+            try:
+                image_url = ctx.message.attachments[0].url 
+            except IndexError:
+                await ctx.send("You need to provide an image.")
+                return
+
+        async with ClientSession(loop=self.bot.loop) as session:
+            async with session.get(image_url) as r:
+                image_content = await r.read()
+        await self.bot.user.edit(avatar=image_content)
         await ctx.send('Done.')
         
 
