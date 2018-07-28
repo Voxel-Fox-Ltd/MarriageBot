@@ -1,8 +1,7 @@
-from subprocess import run
 from os import remove
 from re import compile
 from io import BytesIO
-from asyncio import sleep
+from asyncio import sleep, create_subprocess_exec
 from discord import Member, File, User
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
@@ -148,18 +147,19 @@ class Information(object):
 
         # Convert and write to a dot file
         f = open(f'./trees/{root.id}.dot', 'w')
-        _ = run([
+        treemaker = await create_subprocess_exec(*[
             'python3.6', 
             './cogs/utils/family_tree/familytreemaker.py', 
             '-a', 
             # self.substitution.sub('_', str(root.get_name(self.bot))), 
             root.get_name(self.bot).replace('(', '_').replace(')', '_'), 
             f'./trees/{root.id}.txt'
-            ], stdout=f)
+            ], stdout=f, loop=self.bot.loop)
+        await treemaker.wait()
         f.close()
 
         # Convert to an image
-        _ = run([
+        dot = await create_subprocess_exec(*[
             'dot', 
             '-Tpng', 
             f'./trees/{root.id}.dot', 
@@ -169,11 +169,12 @@ class Information(object):
             '-Gcharset=UTF-8', 
             '-Gsize=200\\!', 
             '-Gdpi=100'
-            ])
+            ], loop=self.bot.loop)
+        await dot.wait()
 
         # Send file and delete cached
         await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{root.id}.png'))
-        await sleep(1)  # Just so the file still isn't sending
+        await sleep(5)  # Just so the file still isn't sending
         for i in [f'./trees/{root.id}.txt', f'./trees/{root.id}.dot', f'./trees/{root.id}.png']:
             _ = remove(i)
             # pass
