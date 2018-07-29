@@ -41,7 +41,7 @@ class Parentage(object):
         if target.id == self.bot.user.id:
             await ctx.send("I'm flattered but no, sweetheart 😘")
             return
-        elif target.bot or instigator.bot:
+        elif instigator.bot:
             await ctx.send("Robots don't make particularly good parents.")
             return
         elif instigator.id == target.id:
@@ -62,7 +62,8 @@ class Parentage(object):
             return
 
         # No parent, send request
-        await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s parent?")
+        if not target.bot:
+            await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s parent?")
         self.bot.proposal_cache.append(instigator.id)
         self.bot.proposal_cache.append(target.id)
 
@@ -86,15 +87,19 @@ class Parentage(object):
 
         # Wait for a response
         try:
+            if target.bot:
+                raise KeyError
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
+            response = check(m)
         except TimeoutError as e:
             await ctx.send(f"{instigator.mention}, your parent request has timed out. Try again when they're online!")
             self.bot.proposal_cache.remove(instigator.id)
             self.bot.proposal_cache.remove(target.id)
             return
+        except KeyError as e:
+            response = 'YES'
 
         # Valid response recieved, see what their answer was
-        response = check(m)
         if response == 'NO':
             await ctx.send("No adoption today, it seems..")
         elif response == 'YES':
@@ -121,10 +126,10 @@ class Parentage(object):
 
         # See if either user is already being proposed to
         if instigator.id in self.bot.proposal_cache:
-            await ctx.send("You can only make one adoption request at a time .-.")
+            await ctx.send("You can only make or recieve one proposition at a time.")
             return
         elif target.id in self.bot.proposal_cache:
-            await ctx.send("That person has already been asked to become someone's child. Please wait.")
+            await ctx.send("That person has already recieved or made a proposition. Please wait.")
             return
 
         # Manage exclusions
