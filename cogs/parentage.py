@@ -19,9 +19,6 @@ class Parentage(object):
         self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
-        # Adoption cache
-        self.cache = []
-
 
     @command()
     async def makeparent(self, ctx:Context, parent:Member):
@@ -33,10 +30,10 @@ class Parentage(object):
         target = parent  # Just so "target" didn't show up in the help message
 
         # See if either user is already being proposed to
-        if instigator.id in self.cache:
+        if instigator.id in self.bot.proposal_cache:
             await ctx.send("You can only make one adoption request at a time .-.")
             return
-        elif target.id in self.cache:
+        elif target.id in self.bot.proposal_cache:
             await ctx.send("That person has already been asked to adopt. Please wait.")
             return
 
@@ -66,8 +63,8 @@ class Parentage(object):
 
         # No parent, send request
         await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s parent?")
-        self.cache.append(instigator.id)
-        self.cache.append(target.id)
+        self.bot.proposal_cache.append(instigator.id)
+        self.bot.proposal_cache.append(target.id)
 
         # Make the check
         def check(message):
@@ -92,8 +89,8 @@ class Parentage(object):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
             await ctx.send(f"{instigator.mention}, your parent request has timed out. Try again when they're online!")
-            self.cache.remove(instigator.id)
-            self.cache.remove(target.id)
+            self.bot.proposal_cache.remove(instigator.id)
+            self.bot.proposal_cache.remove(target.id)
             return
 
         # Valid response recieved, see what their answer was
@@ -109,8 +106,8 @@ class Parentage(object):
             them = FamilyTreeMember.get(target.id)
             them.children.append(instigator.id)
 
-        self.cache.remove(instigator.id)
-        self.cache.remove(target.id)
+        self.bot.proposal_cache.remove(instigator.id)
+        self.bot.proposal_cache.remove(target.id)
 
 
     @command()
@@ -123,10 +120,10 @@ class Parentage(object):
         target = parent  # Just so "target" didn't show up in the help message
 
         # See if either user is already being proposed to
-        if instigator.id in self.cache:
+        if instigator.id in self.bot.proposal_cache:
             await ctx.send("You can only make one adoption request at a time .-.")
             return
-        elif target.id in self.cache:
+        elif target.id in self.bot.proposal_cache:
             await ctx.send("That person has already been asked to become someone's child. Please wait.")
             return
 
@@ -156,8 +153,8 @@ class Parentage(object):
 
         # No parent, send request
         await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s child?")
-        self.cache.append(instigator.id)
-        self.cache.append(target.id)
+        self.bot.proposal_cache.append(instigator.id)
+        self.bot.proposal_cache.append(target.id)
 
         # Make the check
         def check(message):
@@ -182,8 +179,8 @@ class Parentage(object):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
             await ctx.send(f"{instigator.mention}, your adoption request has timed out. Try again when they're online!")
-            self.cache.remove(instigator.id)
-            self.cache.remove(target.id)
+            self.bot.proposal_cache.remove(instigator.id)
+            self.bot.proposal_cache.remove(target.id)
             return
 
         # Valid response recieved, see what their answer was
@@ -199,8 +196,8 @@ class Parentage(object):
             them = FamilyTreeMember.get(target.id)
             them.parent = instigator.id
 
-        self.cache.remove(instigator.id)
-        self.cache.remove(target.id)
+        self.bot.proposal_cache.remove(instigator.id)
+        self.bot.proposal_cache.remove(target.id)
 
 
     @command()

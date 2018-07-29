@@ -11,13 +11,16 @@ class CustomBot(AutoShardedBot):
 
     def __init__(self, config_file:str='config.json', *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.config = self.reload_config()
+        self.config = None
         self.config_file = config_file
+        self.reload_config()
         self.database = DatabaseConnection
         self.database.config = self.config['database']
 
         self.startup_method = self.loop.create_task(self.startup())
         self.presence_loop = self.loop.create_task(self.presence_loop())
+
+        self.proposal_cache = []
 
 
     async def presence_loop(self):
@@ -79,7 +82,6 @@ class CustomBot(AutoShardedBot):
                 self.config = load(a)
         except Exception as e:
             pass
-        return self.config
 
 
     def run_all(self):

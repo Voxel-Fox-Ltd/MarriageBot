@@ -17,11 +17,8 @@ class Marriage(object):
         self.bot = bot
 
         # Proposal text
-        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(m!accept)|")
+        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(m!accept)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
-
-        # Proposal cache
-        self.cache = []
 
 
     @command(aliases=['marry'])
@@ -34,10 +31,10 @@ class Marriage(object):
         target = user  # Just so "target" didn't show up in the help message
 
         # See if either user is already being proposed to
-        if instigator.id in self.cache:
+        if instigator.id in self.bot.proposal_cache:
             await ctx.send("You can only propose to one person at a time .-.")
             return
-        elif target.id in self.cache:
+        elif target.id in self.bot.proposal_cache:
             await ctx.send("That person has already been proposed to. Please wait.")
             return
 
@@ -70,8 +67,8 @@ class Marriage(object):
 
         # Neither are married, set up the proposal
         await ctx.send(random_text.valid_proposal(instigator, target))
-        self.cache.append(instigator.id)
-        self.cache.append(target.id)
+        self.bot.proposal_cache.append(instigator.id)
+        self.bot.proposal_cache.append(target.id)
 
         # Make the check
         def check(message):
@@ -96,8 +93,8 @@ class Marriage(object):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
             await ctx.send(f"{instigator.mention}, your proposal has timed out. Try again when they're online!")
-            self.cache.remove(instigator.id)
-            self.cache.remove(target.id)
+            self.bot.proposal_cache.remove(instigator.id)
+            self.bot.proposal_cache.remove(target.id)
             return
 
         # Valid response recieved, see what their answer was
@@ -113,8 +110,8 @@ class Marriage(object):
             them = FamilyTreeMember.get(target.id)
             them.partner = instigator.id
 
-        self.cache.remove(instigator.id)
-        self.cache.remove(target.id)
+        self.bot.proposal_cache.remove(instigator.id)
+        self.bot.proposal_cache.remove(target.id)
 
 
     @command()
