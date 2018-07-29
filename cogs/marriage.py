@@ -32,10 +32,10 @@ class Marriage(object):
 
         # See if either user is already being proposed to
         if instigator.id in self.bot.proposal_cache:
-            await ctx.send("You can only propose to one person at a time .-.")
+            await ctx.send("You can only make or recieve one proposition at a time.")
             return
         elif target.id in self.bot.proposal_cache:
-            await ctx.send("That person has already been proposed to. Please wait.")
+            await ctx.send("That person has already recieved or made a proposition. Please wait.")
             return
 
         # Manage exclusions
