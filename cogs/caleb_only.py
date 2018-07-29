@@ -1,7 +1,7 @@
 from traceback import format_exc
 from asyncio import iscoroutine
 from aiohttp import ClientSession
-from discord import Member
+from discord import Member, Message
 from discord.ext.commands import command, Context, group
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -16,32 +16,68 @@ class CalebOnly(object):
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.last_tree = None
+        self.stream = None  # May be channel/ID
+
 
     async def __local_check(self, ctx:Context):
         return str(ctx.author) == 'Caleb#2831'
 
 
-    @command(hidden=True)
-    async def addallusers(self, ctx:Context):
+    @property
+    def stream_channel(self):
+        channel_id = self.bot.config['stream_channel']
+        channel = self.bot.get_channel(channel_id)
+        return channel
+
+
+    @command()
+    async def send(self, ctx:Context, *, content:str):
         '''
-        Adds all users to the family tree holder
+        Sends content to the current stream channel
         '''
 
-        await ctx.send('Adding now...')
-        async with self.bot.database() as db:
-            partnerships = await db('SELECT * FROM marriages WHERE valid=TRUE')
-            parents = await db('SELECT * FROM parents')
-        for i in partnerships:
-            FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'])
-        for i in parents:
-            parent = FamilyTreeMember.get(i['parent_id'])
-            parent.children.append(i['child_id'])
-            child = FamilyTreeMember.get(i['child_id'])
-            child.parent = i['parent_id']
-        await ctx.send('Done.')
+        if self.stream == None:
+            await ctx.send("No stream currently set up.")
+            return
+        await self.stream.send(content)
 
 
-    @command(hidden=True)
+    @command(aliases=['cs'])
+    async def channelstream(self, ctx:Context, channel_id:int=None):
+        '''
+        Streams a channel's output to the chat log
+        '''
+
+        if channel_id == None:
+            self.stream = None
+            await ctx.send("Cleared stream.")
+            return
+        self.stream = self.bot.get_channel(channel_id)
+        # self.stream = channel
+        await ctx.send(f"Channel set to `{self.stream.name}` (`{self.stream.id}`)")
+
+
+    async def on_message(self, message:Message):
+        '''
+        Log streamed messages to channel
+        '''
+
+        if not message.channel:
+            return
+        if not self.stream:
+            return
+        if message.channel.id == self.stream.id:
+            attachments = [i.url for i in message.attachments]
+            if message.content:
+                text = f"**Streamed Message** | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`"
+            else:
+                text = f"**Streamed Message** | User: `{message.author!s}` (`{message.author.id}`)\nNo text content in message."
+            if attachments:
+                text += '\nAttachments: ' + ', '.join(attachments)
+            await self.stream_channel.send(text)                
+
+
+    @command()
     async def ev(self, ctx:Context, *, content:str):
         '''
         Runs some text through Python's eval function

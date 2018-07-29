@@ -15,14 +15,14 @@ class CommandEvent(object):
     def log_channel(self):
         channel_id = self.bot.config['log_channel']
         channel = self.bot.get_channel(channel_id)
-        return channel  
+        return channel
 
 
     @property
     def chat_channel(self):
         channel_id = self.bot.config['chat_channel']
         channel = self.bot.get_channel(channel_id)
-        return channel  
+        return channel
 
 
     async def on_command(self, ctx:Context):
