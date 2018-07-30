@@ -132,18 +132,29 @@ class Marriage(object):
             return
         elif target == None:
             target = ctx.guild.get_member(instigator_data.partner)
-        elif instigator_data.partner != target.id:
+            if target == None:
+                target_id = instigator_data.partner 
+            else:
+                target_id = target.id
+        else:
+            target_id = target.id
+
+
+        if instigator_data.partner != target_id:
             await ctx.send("You aren't married to that person .-.")
             return
 
         # At this point they can only be married
         async with self.bot.database() as db:
-            await db('UPDATE marriages SET valid=FALSE where user_id=$1 OR user_id=$2', instigator.id, target.id)
-        await ctx.send(f"You and {target.mention} are now divorced. I wish you luck in your lives.")
+            await db('UPDATE marriages SET valid=FALSE where user_id=$1 OR user_id=$2', instigator.id, target_id)
+        if target:            
+            await ctx.send(f"You and {target.mention} are now divorced. I wish you luck in your lives.")
+        else:
+            await ctx.send(f"You and your partner are now divorced. I wish you luck in your lives.")
 
-        me = FamilyTreeMember.get(instigator.id)
+        me = instigator_data
         me.partner = None
-        them = FamilyTreeMember.get(target.id)
+        them = FamilyTreeMember.get(target_id)
         them.partner = None
 
 

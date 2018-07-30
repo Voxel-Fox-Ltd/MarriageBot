@@ -33,7 +33,7 @@ class ErrorEvent(object):
             await ctx.send("I'm not able to send files into this channel.")
             return
         elif isinstance(error, CommandInvokeError):
-            await ctx.author.send("I'm unable to send messages in that channel.")
+            await ctx.author.send(f"Error encountered running that command: `{error!s}`")
             return
         elif isinstance(error, CheckFailure):
             # The only checks are the CalebOnly commands
