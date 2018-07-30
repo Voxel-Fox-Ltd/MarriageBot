@@ -1,6 +1,7 @@
 from datetime import datetime
 from discord import Guild, Embed
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
 class GuildEvent(object):
@@ -48,6 +49,20 @@ class GuildEvent(object):
 
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
+
+        # Remove users from database if they were in a guild
+        non_present_members = [i for i in guild.members if self.bot.get_user(i.id) == None]
+        non_present_ids = [i.id for i in non_present_members]
+        family_guild_members = [FamilyTreeMember.get(i) for i in non_present_ids]
+        async with self.bot.database() as db:
+            for i in family_guild_members:
+                if i.children:
+                    await db('DELETE FROM parents WHERE parent_id=$1', i.id)
+                if i.parent:
+                    await db('DELETE FROM parents WHERE child_id=$1', i.id)
+                if i.partner:
+                    await db('UPDATE marriages SET valid=False WHERE user_id=$1 OR partner_id=$1', i.id)
+                i.destroy()
 
 
 def setup(bot:CustomBot):
