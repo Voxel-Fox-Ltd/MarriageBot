@@ -231,7 +231,7 @@ class Parentage(object):
 
 
     @command(aliases=['eman'])
-    async def emancipate(self, ctx:Context, parent:Member):
+    async def emancipate(self, ctx:Context, parent:Member=None):
         '''
         Making it so you no longer have a parent
         '''
@@ -241,6 +241,9 @@ class Parentage(object):
 
         user_tree = FamilyTreeMember.get(instigator.id)
         parent = user_tree.parent
+
+        if target == None:
+            target = ctx.guild.get_member(parent)
 
         if target.id != parent:
             await ctx.send(f"That person isn't your parent, {instigator.mention}.")

@@ -115,7 +115,7 @@ class Marriage(object):
 
 
     @command()
-    async def divorce(self, ctx:Context, user:Member):
+    async def divorce(self, ctx:Context, user:Member=None):
         '''
         Divorces you from your current spouse
         '''
@@ -130,6 +130,8 @@ class Marriage(object):
         if instigator_data.partner == None:
             await ctx.send("You're not married. Don't try to divorce strangers .-.")
             return
+        elif target == None:
+            target = ctx.guild.get_member(instigator_data.partner)
         elif instigator_data.partner != target.id:
             await ctx.send("You aren't married to that person .-.")
             return
