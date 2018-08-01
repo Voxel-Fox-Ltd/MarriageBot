@@ -4,7 +4,7 @@
 
 This is a small Discord bot intended to bring love to your Discord servers. What it does is allows two users to get married. There are no benefits or drawbacks to being married. It simply is a thing that you can do. Here's a family tree you can make through marrying and adopting various users:
 
-![A large family tree composed entirely of Discord users](https://sparcli.callumb.co.uk/marriagebot/tree.png)
+![A large family tree composed entirely of Discord users](https://files.callumb.co.uk/marriagebot/tree.png)
 
 ## Me
 
