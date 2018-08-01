@@ -13,5 +13,5 @@ class CustomHelp(HelpFormatter):
         self.context = context
         self.command = command_or_bot
         v = await self.format()
-        v[-1] += '\nAdd a vote on DBL! <https://discordbots.org/bot/468281173072805889/vote>'
+        v[-1] += '\nAdd a vote on DBL (<https://discordbots.org/bot/468281173072805889/vote>) or support me on Patreon (<https://patreon.com/CallumBartlett>) c:'
         return v

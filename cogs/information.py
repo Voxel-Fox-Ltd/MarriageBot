@@ -1,3 +1,5 @@
+from random import choice
+from string import ascii_lowercase
 from os import remove
 from re import compile
 from io import BytesIO
@@ -7,6 +9,9 @@ from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+
+
+get_random_string = lambda: ''.join(choice(ascii_lowercase) for i in range(6))
 
 
 class Information(object):
@@ -140,20 +145,23 @@ class Information(object):
             await ctx.send(f"`{root!s}` has no family to put into a tree .-.")
             return
 
+        # Make the random string that stops things messing up
+        random_string = get_random_string()
+
         # Write their treemaker code to a file
-        with open(f'./trees/{root.id}.txt', 'w', encoding='utf-8') as a:
+        with open(f'./trees/{random_string}_{root.id}.txt', 'w', encoding='utf-8') as a:
             # a.write(self.substitution.sub('_', text))
             a.write(text)
 
         # Convert and write to a dot file
-        f = open(f'./trees/{root.id}.dot', 'w')
+        f = open(f'./trees/{random_string}_{root.id}.dot', 'w')
         treemaker = await create_subprocess_exec(*[
             'python3.6', 
             './cogs/utils/family_tree/familytreemaker.py', 
             '-a', 
             # self.substitution.sub('_', str(root.get_name(self.bot))), 
             root.get_name(self.bot).replace('(', '_').replace(')', '_'), 
-            f'./trees/{root.id}.txt'
+            f'./trees/{random_string}_{root.id}.txt'
             ], stdout=f, loop=self.bot.loop)
         await treemaker.wait()
         f.close()
@@ -162,9 +170,9 @@ class Information(object):
         dot = await create_subprocess_exec(*[
             'dot', 
             '-Tpng', 
-            f'./trees/{root.id}.dot', 
+            f'./trees/{random_string}_{root.id}.dot', 
             '-o', 
-            f'./trees/{root.id}.png', 
+            f'./trees/{random_string}_{root.id}.png', 
             # '-Gcharset=latin1', 
             '-Gcharset=UTF-8', 
             '-Gsize=200\\!', 
@@ -173,10 +181,13 @@ class Information(object):
         await dot.wait()
 
         # Send file and delete cached
-        await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{root.id}.png'))
-        # await sleep(5)  # Just so the file still isn't sending
-        # for i in [f'./trees/{root.id}.txt', f'./trees/{root.id}.dot', f'./trees/{root.id}.png']:
-        #     _ = remove(i)
+        try:
+            await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{random_string}_{root.id}.png'))
+        except Exception as e:
+            pass
+        await sleep(5)  # Just so the file still isn't sending
+        for i in [f'./trees/{random_string}_{root.id}.txt', f'./trees/{random_string}_{root.id}.dot', f'./trees/{random_string}_{root.id}.png']:
+            _ = await self.bot.loop.run_in_executor(None, remove, i)
         #     # pass
 
 
