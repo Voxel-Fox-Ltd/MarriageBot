@@ -92,7 +92,11 @@ class Marriage(object):
         try:
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
-            await ctx.send(f"{instigator.mention}, your proposal has timed out. Try again when they're online!")
+            try:
+                await ctx.send(f"{instigator.mention}, your proposal has timed out. Try again when they're online!")
+            except Exception as e:
+                # If the bot was kicked, or access revoked, for example.
+                pass
             self.bot.proposal_cache.remove(instigator.id)
             self.bot.proposal_cache.remove(target.id)
             return
@@ -104,7 +108,10 @@ class Marriage(object):
         elif response == 'YES':
             async with self.bot.database() as db:
                 await db.marry(instigator, target)
-            await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
+            try:
+                await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
+            except Exception as e:
+                pass
             me = FamilyTreeMember.get(instigator.id)
             me.partner = target.id 
             them = FamilyTreeMember.get(target.id)

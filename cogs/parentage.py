@@ -92,7 +92,11 @@ class Parentage(object):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except TimeoutError as e:
-            await ctx.send(f"{instigator.mention}, your parent request has timed out. Try again when they're online!")
+            try:
+                await ctx.send(f"{instigator.mention}, your parent request has timed out. Try again when they're online!")
+            except Exception as e:
+                # If the bot was kicked, or access revoked, for example.
+                pass
             self.bot.proposal_cache.remove(instigator.id)
             self.bot.proposal_cache.remove(target.id)
             return
@@ -105,7 +109,10 @@ class Parentage(object):
         elif response == 'YES':
             async with self.bot.database() as db:
                 await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
-            await ctx.send(f"{instigator.mention}, your new parent is {target.mention} c:")
+            try:
+                await ctx.send(f"{instigator.mention}, your new parent is {target.mention} c:")
+            except Exception as e:
+                pass
             me = FamilyTreeMember.get(instigator.id)
             me.parent = target.id 
             them = FamilyTreeMember.get(target.id)
@@ -183,7 +190,11 @@ class Parentage(object):
         try:
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
-            await ctx.send(f"{instigator.mention}, your adoption request has timed out. Try again when they're online!")
+            try:
+                await ctx.send(f"{instigator.mention}, your adoption request has timed out. Try again when they're online!")
+            except Exception as e:
+                # If the bot was kicked, or access revoked, for example.
+                pass
             self.bot.proposal_cache.remove(instigator.id)
             self.bot.proposal_cache.remove(target.id)
             return
@@ -195,7 +206,10 @@ class Parentage(object):
         elif response == 'YES':
             async with self.bot.database() as db:
                 await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', instigator.id, target.id)
-            await ctx.send(f"{target.mention}, your new parent is {instigator.mention} c:")
+            try:
+                await ctx.send(f"{target.mention}, your new parent is {instigator.mention} c:")
+            except Exception as e:
+                pass
             me = FamilyTreeMember.get(instigator.id)
             me.children.append(target.id)
             them = FamilyTreeMember.get(target.id)
