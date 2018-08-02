@@ -173,7 +173,6 @@ class Information(object):
             f'./trees/{random_string}_{root.id}.dot', 
             '-o', 
             f'./trees/{random_string}_{root.id}.png', 
-            # '-Gcharset=latin1', 
             '-Gcharset=UTF-8', 
             '-Gsize=200\\!', 
             '-Gdpi=100'
@@ -187,8 +186,9 @@ class Information(object):
             pass
         await sleep(5)  # Just so the file still isn't sending
         for i in [f'./trees/{random_string}_{root.id}.txt', f'./trees/{random_string}_{root.id}.dot', f'./trees/{random_string}_{root.id}.png']:
-            _ = await self.bot.loop.run_in_executor(None, remove, i)
-        #     # pass
+            # _ = await self.bot.loop.run_in_executor(None, remove, i)
+            await create_subprocess_exec('rm', i, loop=self.bot.loop)
+            # pass
 
 
 def setup(bot:CustomBot):

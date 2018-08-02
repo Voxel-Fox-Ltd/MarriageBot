@@ -108,7 +108,10 @@ class Parentage(object):
             await ctx.send("No adoption today, it seems..")
         elif response == 'YES':
             async with self.bot.database() as db:
-                await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
+                try:
+                    await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
+                except Exception as e:
+                    return  # Only thrown when multiple people do at once, just return
             try:
                 await ctx.send(f"{instigator.mention}, your new parent is {target.mention} c:")
             except Exception as e:
@@ -144,7 +147,7 @@ class Parentage(object):
             await ctx.send("I'm flattered but no, sweetheart 😘")
             return
         elif target.bot or instigator.bot:
-            await ctx.send("Robots don't make particularly good parents.")
+            await ctx.send("Robots don't make particularly good children.")
             return
         elif instigator.id == target.id:
             await ctx.send("Are you serious.")
@@ -205,7 +208,10 @@ class Parentage(object):
             await ctx.send("No adoption today, it seems..")
         elif response == 'YES':
             async with self.bot.database() as db:
-                await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', instigator.id, target.id)
+                try:
+                    await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', instigator.id, target.id)
+                except Exception as e:
+                    return  # Only thrown when multiple people do at once, just return
             try:
                 await ctx.send(f"{target.mention}, your new parent is {instigator.mention} c:")
             except Exception as e:

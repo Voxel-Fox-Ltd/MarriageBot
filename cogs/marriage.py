@@ -107,7 +107,10 @@ class Marriage(object):
             await ctx.send("That's fair. The marriage has been called off.")
         elif response == 'YES':
             async with self.bot.database() as db:
-                await db.marry(instigator, target)
+                try:
+                    await db.marry(instigator, target)
+                except Exception as e:
+                    return  # Only thrown if two people try to marry at once, so just return
             try:
                 await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
             except Exception as e:
