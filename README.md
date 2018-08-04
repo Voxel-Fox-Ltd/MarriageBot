@@ -68,6 +68,6 @@ Gives you the full family tree output for the given user as a .ged file.
 
 # Self-Hosting
 
-To host this bot yourself, you will need to install Python 3.6 or above, as well as the Discord.py rewrite. The database that *I* use is Postgres, and the SQL to generate the database and all relevant tables is included in the `config` folder, though you will have to edit and rename the `config/config.json` file to work properly for your database setup.
+To host this bot yourself, you will need to install Python 3.6 or above, as well as the Discord.py rewrite (listed in `requirements.txt`). The database that *I* use is Postgres, and the SQL to generate the database and all relevant tables is included in the `config` folder, though you will have to edit and rename the `config/config.json` file to work properly for your database setup.
 
-After you set up the database, install the requirements (which are just Discord.py rewrite and Graphwiz) and you're good to go.
+After you set up the database, install the requirements (which are just Discord.py rewrite, asyncpg, and Graphwiz) and you're good to go.

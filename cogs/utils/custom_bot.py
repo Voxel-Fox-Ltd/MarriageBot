@@ -64,6 +64,10 @@ class CustomBot(AutoShardedBot):
         The loop of uploading the guild count to the DBL server
         '''
 
+        # Only post if there's actually a DBL token set
+        if not self.config.get('dbl_token'):
+            return
+
         async with ClientSession(loop=self.loop) as session:
             url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
             json = {

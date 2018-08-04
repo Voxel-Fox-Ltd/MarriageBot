@@ -20,7 +20,7 @@ class CalebOnly(object):
 
 
     async def __local_check(self, ctx:Context):
-        return str(ctx.author) == 'Caleb#2831'
+        return ctx.author.id == self.bot.config['owner']
 
 
     @property
@@ -65,6 +65,8 @@ class CalebOnly(object):
         if not message.channel:
             return
         if not self.stream:
+            return
+        if not self.stream_channel:
             return
         if message.channel.id == self.stream.id:
             attachments = [i.url for i in message.attachments]

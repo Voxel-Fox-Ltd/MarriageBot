@@ -12,6 +12,15 @@ class CustomHelp(HelpFormatter):
 
         self.context = context
         self.command = command_or_bot
+        bot = context.bot
         v = await self.format()
-        v[-1] += '\nAdd a vote on DBL (<https://discordbots.org/bot/468281173072805889/vote>) or support me on Patreon (<https://patreon.com/CalebB>) c:'
+        if bot.config.get('dbl_token') and bot.config.get('patreon'):
+            extra_text = f'Add a vote on DBL (<https://discordbots.org/bot/{bot.user.id}/vote>) or support me on Patreon (<{bot.config["patreon"]}>) c:'
+        elif bot.config.get('dbl_token'):
+            extra_text = f'Add a vote on DBL (<https://discordbots.org/bot/{bot.user.id}/vote>) c:'
+        elif bot.config.get('patreon'):
+            extra_text = f'Support me on Patreon (<{bot.config["patreon"]}>) c:'
+        else:
+            extra_text = ''
+        v[-1] += extra_text
         return v

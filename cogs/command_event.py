@@ -30,11 +30,21 @@ class CommandEvent(object):
         Runs when a command is run
         '''
 
+        if not self.log_channel:
+            return
+
         await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
         self.cache.append(ctx.message)
 
 
     async def on_message(self, message:Message):
+        '''
+        Runs to log any time anyone says "marriagebot"
+        '''
+
+        if not self.chat_channel:
+            return
+
         if message.guild == None:
             await self.chat_channel.send(f"Guild: `{message.guild}` | User: `{message.author!s}` (`{message.author.id}`) | Correspondant: `{message.channel.recipient}` (`{message.channel.recipient.id}`)\nContent: `{message.content}`")
         elif message.author.bot:
