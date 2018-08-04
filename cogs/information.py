@@ -129,6 +129,7 @@ class Information(object):
             root = ctx.author
         if depth <= 0:
             depth = -1
+        root_user = root
 
         # Get their family tree
         await ctx.trigger_typing()
@@ -136,13 +137,13 @@ class Information(object):
 
         # Make sure they have one
         if tree.children == [] and tree.partner == None and tree.parent == None:
-            await ctx.send(f"`{root!s}` has no family to put into a tree .-.")
+            await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
 
         # Start the 3-step conversion process
         root, text = tree.to_tree_string(ctx, expand_backwards=depth, depth=depth*2, all_guilds=all_guilds)
         if text == '':
-            await ctx.send(f"`{root!s}` has no family to put into a tree .-.")
+            await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
 
         # Make the random string that stops things messing up
@@ -187,8 +188,8 @@ class Information(object):
         await sleep(5)  # Just so the file still isn't sending
         for i in [f'./trees/{random_string}_{root.id}.txt', f'./trees/{random_string}_{root.id}.dot', f'./trees/{random_string}_{root.id}.png']:
             # _ = await self.bot.loop.run_in_executor(None, remove, i)
-            await create_subprocess_exec('rm', i, loop=self.bot.loop)
-            # pass
+            # await create_subprocess_exec('rm', i, loop=self.bot.loop)
+            pass
 
 
 def setup(bot:CustomBot):

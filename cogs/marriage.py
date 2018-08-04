@@ -4,7 +4,7 @@ from discord import Member
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-import cogs.utils.random_text as random_text
+import cogs.utils.random_text.marriage as random_text
 
 
 class Marriage(object):

@@ -1,46 +1,5 @@
-'''
-Simple generation of random text for any occasion the bot might have to talk.
-Variety is the spice of life.
-'''
-
 from random import choice
 
-
-'''
-Events:
-[x] Proposing to a person
-[x] Proposing to a married person
-[x] Proposing when married
-[x] Proposing to a person in your family
-[ ] Proposing while having proposed to someone else
-[ ] Proposing while they've been proposed to
-[ ] Proposing to the bot
-[ ] Proposing to a different bot
-[ ] Proposing to yourself
-[ ] Accepting a proposal
-[ ] Declining a proposal
-[ ] Proposal timing out
-
-[ ] Picking a parent
-[ ] Picking a family member as a parent
-[ ] Picking the bot as your parent
-[ ] Picking a parent while waiting on a response from another
-[ ] Picking a parent while they've already been asked
-[ ] Picking a different bot as your parent
-[ ] Picking yourself as your parent
-[ ] Parent request timing out
-[ ] Accepting request
-[ ] Declining request
-[ ] Request times out
-
-[ ] Divorcing your partner
-[ ] Divorcing someone who isn't your partner
-
-[ ] Disown your child
-[ ] Disown someone who isn't your child
-
-[ ] No family tree
-'''
 
 def valid_proposal(instigator, target):
     '''
@@ -160,44 +119,3 @@ def proposal_timed_out(instigator, target):
     '''
 
     return choice([])
-
-
-def valid_parent_choice(instigator, target):
-    '''
-    When the instigator asks the target to be their parent
-    '''
-
-    return choice([])
-
-
-def parent_is_family(instigator, target):
-    '''
-    When the instigator picks the target as a parent but they're already family members
-    '''
-
-    return choice([])
-
-
-def parent_is_me(instigator, target):
-    '''
-    The instigator picked the bot as a parent
-    '''
-
-    return choice([])
-
-
-def parent_is_bot(instigator, target):
-    '''
-    The instigator wants to parentify a bot
-    '''
-
-    return choice([])
-
-
-def parent_ask_multiple(instigator, target):
-    '''
-    When the instigator asks the target to be their parent while they've already asked another
-    '''
-
-    return choice([])
-
