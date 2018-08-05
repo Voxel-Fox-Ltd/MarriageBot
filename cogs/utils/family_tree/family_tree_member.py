@@ -33,8 +33,10 @@ class FamilyTreeMember(object):
         return len(self.children) == 0 and self.parent == None and self.partner == None
 
     def destroy(self):
-        self.get_partner().partner = None 
-        self.get_parent().children.remove(self.id)
+        if self.partner:
+            self.get_partner().partner = None 
+        if self.parent:
+            self.get_parent().children.remove(self.id)
         for child in self.get_children():
             child.parent = None 
         del self.all_users[self.id]
@@ -55,6 +57,8 @@ class FamilyTreeMember(object):
         '''
 
         for discord_id, tree_member in cls.all_users.items():
+            if tree_member == None:
+                continue
             if tree_member.is_empty():
                 del cls.all_users[discord_id]
 

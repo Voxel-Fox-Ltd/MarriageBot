@@ -204,7 +204,6 @@ class CalebOnly(object):
                 image_content = await r.read()
         await self.bot.user.edit(avatar=image_content)
         await ctx.send('Done.')
-        
 
 
 def setup(bot:CustomBot):

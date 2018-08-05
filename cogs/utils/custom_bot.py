@@ -42,10 +42,15 @@ class CustomBot(AutoShardedBot):
         Resets and fills the FamilyTreeMember cache with objects
         '''
 
+        # Cache all users for easier tree generation
         FamilyTreeMember.all_users = {None: None}
+
+        # Get all from database
         async with self.database() as db:
             partnerships = await db('SELECT * FROM marriages WHERE valid=TRUE')
             parents = await db('SELECT * FROM parents')
+        
+        # Cache all into FamilyTreeMember objects
         for i in partnerships:
             FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'])
         for i in parents:
@@ -54,8 +59,17 @@ class CustomBot(AutoShardedBot):
             child = FamilyTreeMember.get(i['child_id'])
             child.parent = i['parent_id']
 
-        # Post guild count
-        await self.wait_until_ready()
+        # Remove anyone who's empty or who the bot can't reach
+        await self.wait_until_ready()  # So I can use get_user
+        async with self.database() as db:
+            for user_id, ftm in FamilyTreeMember.all_users.copy().items():
+                if user_id == None or ftm == None:
+                    continue
+                if self.get_user(user_id) == None:
+                    await db.destroy(user_id)
+                    ftm.destroy()
+
+        # And update DBL
         await self.post_guild_count()
 
 

@@ -34,6 +34,14 @@ class DatabaseConnection(object):
             return x
         return None
 
+    async def destroy(self, user_id:int):
+        '''
+        Removes a given user ID form all parts of the database
+        '''
+
+        await self('UPDATE marriages SET valid=False WHERE user_id=$1 OR partner_id=$1', user_id)
+        await self('DELETE FROM parents WHERE child_id=$1 OR parent_id=$1', user_id)
+
     async def make_id(self, table:str, id_field:str) -> str:
         '''
         Makes a random ID that hasn't appeared in the database before for a given table
