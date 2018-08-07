@@ -20,7 +20,8 @@ class CustomBot(AutoShardedBot):
         self.startup_method = self.loop.create_task(self.startup())
         self.presence_loop = self.loop.create_task(self.presence_loop())
 
-        self.proposal_cache = []
+        self.proposal_cache = {}
+        # self.proposal_cache = []
 
 
     async def presence_loop(self):

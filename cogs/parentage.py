@@ -64,8 +64,8 @@ class Parentage(object):
         # No parent, send request
         if not target.bot:
             await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s parent?")
-        self.bot.proposal_cache.append(instigator.id)
-        self.bot.proposal_cache.append(target.id)
+        self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'MAKEPARENT')
+        self.bot.proposal_cache[target.id] = ('TARGET', 'MAKEPARENT')
 
         # Make the check
         def check(message):
@@ -97,8 +97,8 @@ class Parentage(object):
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
-            self.bot.proposal_cache.remove(instigator.id)
-            self.bot.proposal_cache.remove(target.id)
+            del self.bot.proposal_cache[instigator.id]
+            del self.bot.proposal_cache[target.id]
             return
         except KeyError as e:
             response = 'YES'
@@ -121,8 +121,8 @@ class Parentage(object):
             them = FamilyTreeMember.get(target.id)
             them.children.append(instigator.id)
 
-        self.bot.proposal_cache.remove(instigator.id)
-        self.bot.proposal_cache.remove(target.id)
+        del self.bot.proposal_cache[instigator.id]
+        del self.bot.proposal_cache[target.id]
 
 
     @command()
@@ -168,8 +168,8 @@ class Parentage(object):
 
         # No parent, send request
         await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s child?")
-        self.bot.proposal_cache.append(instigator.id)
-        self.bot.proposal_cache.append(target.id)
+        self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'ADOPT')
+        self.bot.proposal_cache[target.id] = ('TARGET', 'ADOPT')
 
         # Make the check
         def check(message):
@@ -198,8 +198,8 @@ class Parentage(object):
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
-            self.bot.proposal_cache.remove(instigator.id)
-            self.bot.proposal_cache.remove(target.id)
+            del self.bot.proposal_cache[instigator.id]
+            del self.bot.proposal_cache[target.id]
             return
 
         # Valid response recieved, see what their answer was
@@ -221,8 +221,8 @@ class Parentage(object):
             them = FamilyTreeMember.get(target.id)
             them.parent = instigator.id
 
-        self.bot.proposal_cache.remove(instigator.id)
-        self.bot.proposal_cache.remove(target.id)
+        del self.bot.proposal_cache[instigator.id]
+        del self.bot.proposal_cache[target.id]
 
 
     @command()

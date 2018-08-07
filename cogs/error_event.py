@@ -45,8 +45,7 @@ class ErrorEvent(object):
             try: 
                 raise error 
             except Exception as e:
-                data = f"**Error**\nUser: `{ctx.author!s}` (`{ctx.author.id}`) | Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Content: `{ctx.message.content}`\n" + 
-                        "```py\n" + format_exc() + "```"
+                data = f"**Error**\nUser: `{ctx.author!s}` (`{ctx.author.id}`) | Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Content: `{ctx.message.content}`\n" + "```py\n" + format_exc() + "```"
                 try:
                     await self.log_channel.send(data)
                 except Exception as e:

@@ -32,10 +32,18 @@ class Marriage(object):
 
         # See if either user is already being proposed to
         if instigator.id in self.bot.proposal_cache:
-            await ctx.send("You can only make or recieve one proposition at a time.")
+            x = self.bot.proposal_cache.get(instigator.id)
+            if x[0] == 'INSTIGATOR':
+                await ctx.send(random_text.proposing_while_instigator(instigator, target))
+            elif x[0] == 'TARGET':
+                await ctx.send(random_text.proposing_while_target(instigator, target))
             return
         elif target.id in self.bot.proposal_cache:
-            await ctx.send("That person has already recieved or made a proposition. Please wait.")
+            x = self.bot.proposal_cache.get(target.id)
+            if x[0] == 'INSTIGATOR':
+                await ctx.send(random_text.proposing_while_waiting(instigator, target))
+            elif x[0] == 'TARGET':
+                await ctx.send(random_text.proposing_when_theyre_popular(instigator, target))
             return
 
         # Manage exclusions
@@ -67,8 +75,8 @@ class Marriage(object):
 
         # Neither are married, set up the proposal
         await ctx.send(random_text.valid_proposal(instigator, target))
-        self.bot.proposal_cache.append(instigator.id)
-        self.bot.proposal_cache.append(target.id)
+        self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'MARRIAGE')
+        self.bot.proposal_cache[target.id] = ('TARGET', 'MARRIAGE')
 
         # Make the check
         def check(message):
@@ -93,18 +101,18 @@ class Marriage(object):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
             try:
-                await ctx.send(f"{instigator.mention}, your proposal has timed out. Try again when they're online!")
+                await ctx.send(random_text.proposal_timed_out(instigator, target))
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
-            self.bot.proposal_cache.remove(instigator.id)
-            self.bot.proposal_cache.remove(target.id)
+            del self.bot.proposal_cache[instigator.id]
+            del self.bot.proposal_cache[target.id]
             return
 
         # Valid response recieved, see what their answer was
         response = check(m)
         if response == 'NO':
-            await ctx.send("That's fair. The marriage has been called off.")
+            await ctx.send(random_text.declining_valid_proposal(instigator, target))
         elif response == 'YES':
             async with self.bot.database() as db:
                 try:
@@ -112,7 +120,7 @@ class Marriage(object):
                 except Exception as e:
                     return  # Only thrown if two people try to marry at once, so just return
             try:
-                await ctx.send(f"{instigator.mention}, {target.mention}, I now pronounce you married.")
+                await ctx.send(random_text.accepting_valid_proposal(instigator, target))
             except Exception as e:
                 pass
             me = FamilyTreeMember.get(instigator.id)
@@ -120,8 +128,8 @@ class Marriage(object):
             them = FamilyTreeMember.get(target.id)
             them.partner = instigator.id
 
-        self.bot.proposal_cache.remove(instigator.id)
-        self.bot.proposal_cache.remove(target.id)
+        del self.bot.proposal_cache[instigator.id]
+        del self.bot.proposal_cache[target.id]
 
 
     @command()
