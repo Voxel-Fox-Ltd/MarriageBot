@@ -13,7 +13,7 @@
     ],
     "google_analytics": {
         "tracking_id": "",
-        "hostname": ""
+        "app_name": ""
     },
     "github": "",
     "patreon": "",

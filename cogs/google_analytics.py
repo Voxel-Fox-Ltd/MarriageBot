@@ -1,6 +1,7 @@
+from random import randint
 from aiohttp import ClientSession
 from discord import Guild
-from discord.ext.commands import Context
+from discord.ext.commands import Context, CommandNotFound
 from cogs.utils.custom_bot import CustomBot
 
 
@@ -15,7 +16,7 @@ class GoogleAnalytics(object):
             "t": "pageview",
             "aip": "1",
             "tid": self.bot.config['google_analytics']['tracking_id'],
-            "dh": self.bot.config['google_analytics']['hostname'],
+            "an": self.bot.config['google_analytics']['app_name'],
         }
 
 
@@ -35,6 +36,9 @@ class GoogleAnalytics(object):
                 "uid": f"{ctx.author.id}",
                 "cs": f"{ctx.guild.id}",
                 "cm": f"{ctx.author.id}",
+                "cd": ctx.command.name,
+                "dt": ctx.command.name,
+                "cc": ctx.message.content,
             })
         else:
             params.update({
@@ -42,9 +46,13 @@ class GoogleAnalytics(object):
                 "uid": f"{ctx.author.id}",
                 "cs": 'PRIVATE_MESSAGE',
                 "cm": f"{ctx.author.id}",
+                "cd": ctx.command.name,
+                "dt": ctx.command.name,
+                "cc": ctx.message.content,
             })
         async with self.session.get(self.url, params=params) as r:
             pass
+            # print(r.url)
 
 
     async def on_guild_add(self, guild:Guild):
@@ -55,8 +63,10 @@ class GoogleAnalytics(object):
         params = self.base_params.copy()
         params.update({
             "dp": f"/events/GUILD_ADD",
-            "cid": f"{ctx.guild.id}",
-            "cs": f"{ctx.guild.id}",
+            "cid": f"{guild.id}",
+            "cs": f"{guild.id}",
+            "cd": "GUILD_ADD",
+            "dt": "GUILD_ADD",
         })
         async with self.session.get(self.url, params=params) as r:
             pass
@@ -70,8 +80,10 @@ class GoogleAnalytics(object):
         params = self.base_params.copy()
         params.update({
             "dp": f"/events/GUILD_REMOVE",
-            "cid": f"{ctx.guild.id}",
-            "cs": f"{ctx.guild.id}",
+            "cid": f"{guild.id}",
+            "cs": f"{guild.id}",
+            "cd": "GUILD_REMOVE",
+            "dt": "GUILD_REMOVE",
         })
         async with self.session.get(self.url, params=params) as r:
             pass
