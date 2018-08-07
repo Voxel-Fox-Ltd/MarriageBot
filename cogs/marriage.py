@@ -41,9 +41,9 @@ class Marriage(object):
         elif target.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR':
-                await ctx.send(random_text.proposing_while_waiting(instigator, target))
+                await ctx.send(random_text.proposing_to_instigator(instigator, target))
             elif x[0] == 'TARGET':
-                await ctx.send(random_text.proposing_when_theyre_popular(instigator, target))
+                await ctx.send(random_text.proposing_to_target(instigator, target))
             return
 
         # Manage exclusions

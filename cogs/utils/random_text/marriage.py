@@ -87,7 +87,9 @@ def proposing_to_instigator(instigator, target):
     When they propose to someone who's already proposed to someone
     '''
 
-    return choice([])
+    return choice([
+        "I'm afraid they've already proposed to someone. Give it a minute - see how it goes."
+    ])
 
 
 def proposing_to_target(instigator, target):
@@ -95,7 +97,9 @@ def proposing_to_target(instigator, target):
     When they propose to someone who's yet to respond to another
     '''
 
-    return choice([])
+    return choice([
+        "They're a popular choice, I see. Wait to see what they say to the other proposal they have before trying yourself."
+    ])
 
 
 def proposing_to_me(instigator, target):
