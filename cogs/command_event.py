@@ -33,7 +33,10 @@ class CommandEvent(object):
         if not self.log_channel:
             return
 
-        await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
+        if ctx.guild:
+            await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
+        else:
+            await self.log_channel.send(f"Guild: `{ctx.guild}` (`{ctx.guild}`) | Channel: `{ctx.channel}` (`{ctx.channel}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
         self.cache.append(ctx.message)
 
 

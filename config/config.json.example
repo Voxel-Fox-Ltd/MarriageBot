@@ -11,6 +11,10 @@
     "presence_text": [
         "m!help"
     ],
+    "google_analytics": {
+        "tracking_id": "",
+        "hostname": ""
+    },
     "github": "",
     "patreon": "",
     "log_channel": 01011,
