@@ -246,12 +246,12 @@ class Family:
 		return	household.parents[0] == person \
 				and household.parents[1] or household.parents[0]
 
-	def display_generation(self, gen):
+	def display_generation(self, gen, file=None):
 		"""Outputs an entire generation in DOT format.
 
 		"""
 		# Display persons
-		print('\t{ rank=same;')
+		print('\t{ rank=same;', file=file)
 
 		prev = None
 		for p in gen:
@@ -259,10 +259,10 @@ class Family:
 
 			if prev:
 				if l <= 1:
-					print('\t\t%s -> %s [style=invis];' % (prev, p.id))
+					print('\t\t%s -> %s [style=invis];' % (prev, p.id), file=file)
 				else:
 					print('\t\t%s -> %s [style=invis];'
-						  % (prev, Family.get_spouse(p.households[0], p).id))
+						  % (prev, Family.get_spouse(p.households[0], p).id), file=file)
 
 			if l == 0:
 				prev = p.id
@@ -276,51 +276,51 @@ class Family:
 			for i in range(0, int(l/2)):
 				h = p.households[i]
 				spouse = Family.get_spouse(h, p)
-				print('\t\t%s -> h%d -> %s;' % (spouse.id, h.id, p.id))
-				print('\t\th%d%s;' % (h.id, Family.invisible))
+				print('\t\t%s -> h%d -> %s;' % (spouse.id, h.id, p.id), file=file)
+				print('\t\th%d%s;' % (h.id, Family.invisible), file=file)
 
 			# Display those on the right (at least one)
 			for i in range(int(l/2), l):
 				h = p.households[i]
 				spouse = Family.get_spouse(h, p)
-				print('\t\t%s -> h%d -> %s;' % (p.id, h.id, spouse.id))
-				print('\t\th%d%s;' % (h.id, Family.invisible))
+				print('\t\t%s -> h%d -> %s;' % (p.id, h.id, spouse.id), file=file)
+				print('\t\th%d%s;' % (h.id, Family.invisible), file=file)
 				prev = spouse.id
-		print('\t}')
+		print('\t}', file=file)
 
 		# Display lines below households
-		print('\t{ rank=same;')
+		print('\t{ rank=same;', file=file)
 		prev = None
 		for p in gen:
 			for h in p.households:
 				if len(h.kids) == 0:
 					continue
 				if prev:
-					print('\t\t%s -> h%d_0 [style=invis];' % (prev, h.id))
+					print('\t\t%s -> h%d_0 [style=invis];' % (prev, h.id), file=file)
 				l = len(h.kids)
 				if l % 2 == 0:
 					# We need to add a node to keep symmetry
 					l += 1
-				print('\t\t' + ' -> '.join(map(lambda x: 'h%d_%d' % (h.id, x), range(l))) + ';')
+				print('\t\t' + ' -> '.join(map(lambda x: 'h%d_%d' % (h.id, x), range(l))) + ';', file=file)
 				for i in range(l):
-					print('\t\th%d_%d%s;' % (h.id, i, Family.invisible))
+					print('\t\th%d_%d%s;' % (h.id, i, Family.invisible), file=file)
 					prev = 'h%d_%d' % (h.id, i)
-		print('\t}')
+		print('\t}', file=file)
 
 		for p in gen:
 			for h in p.households:
 				if len(h.kids) > 0:
 					print('\t\th%d -> h%d_%d;'
-					      % (h.id, h.id, int(len(h.kids)/2)))
+					      % (h.id, h.id, int(len(h.kids)/2)), file=file)
 					i = 0
 					for c in h.kids:
 						print('\t\th%d_%d -> %s;'
-						      % (h.id, i, c.id))
+						      % (h.id, i, c.id), file=file)
 						i += 1
 						if i == len(h.kids)/2:
 							i += 1
 
-	def output_descending_tree(self, ancestor):
+	def output_descending_tree(self, ancestor, file=None):
 		"""Outputs the whole descending family tree from a given ancestor,
 		in DOT format.
 
@@ -330,17 +330,38 @@ class Family:
 
 		print('digraph {\n' + \
 		      '\tnode [shape=box];\n' + \
-		      '\tedge [dir=none];\n')
+		      '\tedge [dir=none];\n', file=file)
 
 		for p in self.everybody.values():
-			print('\t' + p.graphviz() + ';')
-		print('')
+			print('\t' + p.graphviz() + ';', file=file)
+		print('', file=file)
 
 		while gen:
-			self.display_generation(gen)
+			self.display_generation(gen, file)
 			gen = self.next_generation(gen)
 
-		print('}')
+		print('}', file=file)
+
+def generate_dot_file(input_file, ancestor_arg, file=None):
+
+	# Create the family
+	family = Family()
+
+	# Populate the family
+	f = open(input_file, 'r', encoding='utf-8')
+	family.populate(f)
+	f.close()
+
+	# Find the ancestor from whom the tree is built
+	if ancestor_arg:
+		ancestor = family.find_person(ancestor_arg)
+		if not ancestor:
+			raise Exception('Cannot find person "' + ancestor_arg + '"')
+	else:
+		ancestor = family.find_first_ancestor()
+
+	# Output the graph descriptor, in DOT format
+	family.output_descending_tree(ancestor, file)
 
 def main():
 	"""Entry point of the program when called as a script.
@@ -356,24 +377,7 @@ def main():
 						help='the formatted text file representing the family')
 	args = parser.parse_args()
 
-	# Create the family
-	family = Family()
-
-	# Populate the family
-	f = open(args.input, 'r', encoding='utf-8')
-	family.populate(f)
-	f.close()
-
-	# Find the ancestor from whom the tree is built
-	if args.ancestor:
-		ancestor = family.find_person(args.ancestor)
-		if not ancestor:
-			raise Exception('Cannot find person "' + args.ancestor + '"')
-	else:
-		ancestor = family.find_first_ancestor()
-
-	# Output the graph descriptor, in DOT format
-	family.output_descending_tree(ancestor)
+	return generate_dot_file(args.input, args.ancestor)
 
 if __name__ == '__main__':
 	main()

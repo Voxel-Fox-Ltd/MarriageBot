@@ -9,6 +9,7 @@ from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.family_tree.familytreemaker import generate_dot_file
 
 
 get_random_string = lambda: ''.join(choice(ascii_lowercase) for i in range(6))
@@ -125,6 +126,9 @@ class Information(object):
 
     async def treemaker(self, ctx:Context, root:User, depth:int, all_guilds:bool):
 
+        # if str(ctx.author) != 'Caleb#2831': 
+        #     return await ctx.send("This command is temporarily disabled. Apologies.")
+
         if root == None:
             root = ctx.author
         if depth <= 0:
@@ -156,6 +160,12 @@ class Information(object):
 
         # Convert and write to a dot file
         f = open(f'./trees/{random_string}_{root.id}.dot', 'w')
+        # with open(f'./trees/{random_string}_{root.id}.dot', 'w') as f:
+        # generate_dot_file(
+        #     f'./trees/{random_string}_{root.id}.txt',
+        #     root.get_name(self.bot).replace('(', '_').replace(')', '_'),
+        #     f
+        #     )
         treemaker = await create_subprocess_exec(*[
             'python3.6', 
             './cogs/utils/family_tree/familytreemaker.py', 

@@ -266,6 +266,8 @@ class FamilyTreeMember(object):
             elif all_guilds == False:
                 if ctx.guild.get_member(user.id) == None:
                     # Not in guild
+                    # if ctx.guild.get_member(user.partner) or any([ctx.guild.get_member(i) for i in user.children]) or ctx.guild.get_member(user.parent):
+                    #     pass
                     continue
                 elif user.parent and ctx.guild.get_member(user.parent) == None and user.id != initial_user:
                     # Parent not in guild
