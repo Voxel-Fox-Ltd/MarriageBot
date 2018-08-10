@@ -33,6 +33,9 @@ class ErrorEvent(object):
             await ctx.send("I'm not able to send files into this channel.")
             return
         elif isinstance(error, CommandInvokeError):
+            if 'FORBIDDEN' in str(error):
+                await ctx.send("I'm unable to send messages into that channel.")
+                return
             await ctx.author.send(f"Error encountered running that command: `{error!s}`")
             return
         elif isinstance(error, CheckFailure):
