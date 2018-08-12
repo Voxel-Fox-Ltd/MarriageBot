@@ -169,9 +169,9 @@ class Information(object):
         treemaker = await create_subprocess_exec(*[
             'python3.6', 
             './cogs/utils/family_tree/familytreemaker.py', 
-            '-a', 
+            # '-a', 
             # self.substitution.sub('_', str(root.get_name(self.bot))), 
-            root.get_name(self.bot).replace('(', '_').replace(')', '_'), 
+            # root.get_name(self.bot).replace('(', '_').replace(')', '_'), 
             f'./trees/{random_string}_{root.id}.txt'
             ], stdout=f, loop=self.bot.loop)
         await treemaker.wait()
