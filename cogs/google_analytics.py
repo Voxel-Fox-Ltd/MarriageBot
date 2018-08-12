@@ -17,7 +17,25 @@ class GoogleAnalytics(object):
             "aip": "1",
             "tid": self.bot.config['google_analytics']['tracking_id'],
             "an": self.bot.config['google_analytics']['app_name'],
+            "dh": self.bot.config['google_analytics']['document_host'],
         }
+
+        '''
+        v: version
+        t: type (of hit)
+        aip: anonymise IP
+        tid: tracking ID
+        an: application name
+        dp: document path
+        dh: document host
+        uid: user ID
+        cid: client ID
+        cs: campaign source
+        cm: campaign medium
+        cd: screen name
+        dt: document title
+        cc: campaign content
+        '''
 
 
     def __unload(self):
@@ -33,22 +51,20 @@ class GoogleAnalytics(object):
         if ctx.guild:
             params.update({
                 "dp": f"/commands/{ctx.command.name}",
-                "uid": f"{ctx.author.id}",
+                "cid": f"{ctx.author.id}",
                 "cs": f"{ctx.guild.id}",
-                "cm": f"{ctx.author.id}",
-                "cd": ctx.command.name,
+                # "cm": f"{ctx.author.id}",
                 "dt": ctx.command.name,
-                "cc": ctx.message.content,
+                # "cc": ctx.message.content,
             })
         else:
             params.update({
                 "dp": f"/commands/{ctx.command.name}",
-                "uid": f"{ctx.author.id}",
+                "cid": f"{ctx.author.id}",
                 "cs": 'PRIVATE_MESSAGE',
-                "cm": f"{ctx.author.id}",
-                "cd": ctx.command.name,
+                # "cm": f"{ctx.author.id}",
                 "dt": ctx.command.name,
-                "cc": ctx.message.content,
+                # "cc": ctx.message.content,
             })
         async with self.session.get(self.url, params=params) as r:
             pass
@@ -65,7 +81,6 @@ class GoogleAnalytics(object):
             "dp": f"/events/GUILD_ADD",
             "cid": f"{guild.id}",
             "cs": f"{guild.id}",
-            "cd": "GUILD_ADD",
             "dt": "GUILD_ADD",
         })
         async with self.session.get(self.url, params=params) as r:
@@ -82,7 +97,6 @@ class GoogleAnalytics(object):
             "dp": f"/events/GUILD_REMOVE",
             "cid": f"{guild.id}",
             "cs": f"{guild.id}",
-            "cd": "GUILD_REMOVE",
             "dt": "GUILD_REMOVE",
         })
         async with self.session.get(self.url, params=params) as r:
