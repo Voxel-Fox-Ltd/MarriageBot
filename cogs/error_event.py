@@ -1,3 +1,4 @@
+from gc import collect
 from traceback import format_exc
 from discord.ext.commands import Context
 from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError
@@ -35,6 +36,11 @@ class ErrorEvent(object):
         elif isinstance(error, CommandInvokeError):
             if 'FORBIDDEN' in str(error):
                 await ctx.send("I'm unable to send messages into that channel.")
+                return
+            elif 'oserror' in str(error.lower()):
+                number = collect()
+                await self.log_channel.send(f'Deleted `{number}` unreachable objects from memory.')
+                await ctx.send('I was unable to run that command properly - try again in a moment.')
                 return
             await ctx.author.send(f"Error encountered running that command: `{error!s}`")
             return
