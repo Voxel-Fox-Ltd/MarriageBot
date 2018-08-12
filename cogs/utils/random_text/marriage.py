@@ -65,7 +65,7 @@ def proposing_while_instigator(instigator, target):
 
     return choice([
         f"You've already proposed to someone, {instigator.mention}, just wait for a response.",
-        f"You can only make one proposal at a time.",
+        "You can only make one proposal at a time.",
         f"One proposal at a time is the max limit, {instigator.mention}.",
     ])
 
@@ -76,8 +76,8 @@ def proposing_while_target(instigator, target):
     '''
 
     return choice([
-        f"Sorry but you've gotta answer your current proposal before you can make one of your own.",
-        f"You need to answer the proposal you have already before you can make a new one.",
+        "Sorry but you've gotta answer your current proposal before you can make one of your own.",
+        "You need to answer the proposal you have already before you can make a new one.",
         f"You've been proposed to already, {instigator.mention}. Please respond before moving on.",
     ])
 
@@ -88,7 +88,9 @@ def proposing_to_instigator(instigator, target):
     '''
 
     return choice([
-        "I'm afraid they've already proposed to someone. Give it a minute - see how it goes."
+        "I'm afraid they've already proposed to someone. Give it a minute - see how it goes.",
+        "They seem to have just proposed to someone. See how that goes before you try yourself.",
+        "Hold your horses - they've just proposed to someone else.",
     ])
 
 
@@ -98,7 +100,9 @@ def proposing_to_target(instigator, target):
     '''
 
     return choice([
-        "They're a popular choice, I see. Wait to see what they say to the other proposal they have before trying yourself."
+        "They're a popular choice, I see. Wait to see what they say to the other proposal they have before trying yourself.",
+        "Someone just proposed to them. See what they say there first.",
+        "Woah, hold on a minute - someone else proposed first. I wonder what they'll say...",
     ])
 
 
@@ -108,10 +112,11 @@ def proposing_to_me(instigator, target):
     '''
 
     return choice([
-        f"I'm flattered, but my heart belongs to another.",
-        f"Unfortunately, my standards raise above you.",
-        f"My love is exlusive to one other...",
-        f"Though I'd love to make an exception for you, I can't marry a human.",
+        "I'm flattered, but my heart belongs to another.",
+        "Unfortunately, my standards raise above you.",
+        "My love is exlusive to one other...",
+        "Though I'd love to make an exception for you, I can't marry a human.",
+        "I'm flattered but no, sweetheart 😘",
     ])
 
 
@@ -121,10 +126,10 @@ def proposing_to_bot(instigator, target):
     '''
 
     return choice([
-        f"To the best of my knowledge, most robots can't consent.",
-        f"The majority of robots are incapable of love, I'm afraid.",
-        f"You can't marry a robot _quite yet_ in this country. Give it a few years.",
-        f"Robots, although attractive, aren't great spouses.",
+        "To the best of my knowledge, most robots can't consent.",
+        "The majority of robots are incapable of love, I'm afraid.",
+        "You can't marry a robot _quite yet_ in this country. Give it a few years.",
+        "Robots, although attractive, aren't great spouses.",
     ])
 
 
@@ -134,9 +139,9 @@ def proposing_to_themselves(instigator, target):
     '''
 
     return choice([
-        f"That is you. You cannot marry the you.",
-        f"Are... are you serious? No.",
-        f"Marriage is a union between two people. You are one people. No.",
+        "That is you. You cannot marry the you.",
+        "Are... are you serious? No.",
+        "Marriage is a union between two people. You are one people. No.",
         f"{target.mention}, do you accept {instigator.mention}'s proposal?\n... Wait, no, you're the same person. The marriage is off!",
     ])
 
@@ -148,6 +153,9 @@ def accepting_valid_proposal(instigator, target):
 
     return choice([
         f"{instigator.mention}, {target.mention}, I now pronounce you married.",
+        f"{instigator.mention}, you're now married to {target.mention} c:",
+        f"And with that, {instigator.mention} and {target.mention} are partners.",
+        f"After all the love and pining, it is done. {instigator.mention}, {target.mention}, you're now married.",
     ])
 
 
@@ -158,6 +166,9 @@ def declining_valid_proposal(instigator, target):
 
     return choice([
         "That's fair. The marriage has been called off.",
+        "Oh boy. The wedding is off. You two talk it out.",
+        f"I hate to say it, {instigator.mention}, but they said no...",
+        "Oh boy. They said no. That can't be good.",
     ])
 
 
@@ -168,4 +179,6 @@ def proposal_timed_out(instigator, target):
 
     return choice([
         f"{instigator.mention}, your proposal has timed out. Try again when they're online!",
+        f"Huh. Seems like they didn't respond. Maybe try again later, {instigator.mention}?",
+        f"Apparently you aren't even deemed worthy a response. That rude. Try later, {instigator.mention}.",
     ])

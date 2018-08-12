@@ -48,13 +48,13 @@ class Marriage(object):
 
         # Manage exclusions
         if target.id == self.bot.user.id:
-            await ctx.send("I'm flattered but no, sweetheart 😘")
+            await ctx.send(random_text.proposing_to_me(instigator, target))
             return
         elif target.bot or instigator.bot:
-            await ctx.send("Gay marriage _was_ a slippery slope, but not quite slippery enough to let you marry robots. The answer is no.")
+            await ctx.send(random_text.proposing_to_bot(instigator, target))
             return
         elif instigator.id == target.id:
-            await ctx.send("Are you serious.")
+            await ctx.send(random_text.proposing_to_themselves(instigator, target))
             return
 
         # See if they're married or in the family already
