@@ -3,3 +3,5 @@ __pycache__/*
 config/config.json
 *sublime*
 _*
+*.code*
+trees/*

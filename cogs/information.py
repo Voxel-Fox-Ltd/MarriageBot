@@ -96,7 +96,7 @@ class Information(object):
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command()
+    @command(aliases=['familytree'])
     @can_send_files()
     async def tree(self, ctx:Context, root:Member=None, depth:int=-1):
         '''

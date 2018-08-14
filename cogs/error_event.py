@@ -35,11 +35,11 @@ class ErrorEvent(object):
             return
         elif isinstance(error, CommandInvokeError):
             if 'FORBIDDEN' in str(error):
-                await ctx.send("I'm unable to send messages into that channel.")
+                await ctx.author.send("I'm unable to send messages into that channel.")
                 return
-            elif 'oserror' in str(error.lower()):
+            elif 'oserror' in str(error).lower():
                 number = collect()
-                await self.log_channel.send(f'Deleted `{number}` unreachable objects from memory.')
+                await self.log_channel.send(f'Deleted `{number}` unreachable objects from memory, <@141231597155385344>')
                 await ctx.send('I was unable to run that command properly - try again in a moment.')
                 return
             await ctx.author.send(f"Error encountered running that command: `{error!s}`")
