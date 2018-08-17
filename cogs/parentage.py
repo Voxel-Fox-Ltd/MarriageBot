@@ -97,8 +97,8 @@ class Parentage(object):
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
-            del self.bot.proposal_cache[instigator.id]
-            del self.bot.proposal_cache[target.id]
+            self.bot.proposal_cache.remove(instigator.id)
+            self.bot.proposal_cache.remove(target.id)
             return
         except KeyError as e:
             response = 'YES'
@@ -121,8 +121,8 @@ class Parentage(object):
             them = FamilyTreeMember.get(target.id)
             them.children.append(instigator.id)
 
-        del self.bot.proposal_cache[instigator.id]
-        del self.bot.proposal_cache[target.id]
+        self.bot.proposal_cache.remove(instigator.id)
+        self.bot.proposal_cache.remove(target.id)
 
 
     @command()
@@ -198,8 +198,8 @@ class Parentage(object):
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
-            del self.bot.proposal_cache[instigator.id]
-            del self.bot.proposal_cache[target.id]
+            self.bot.proposal_cache.remove(instigator.id)
+            self.bot.proposal_cache.remove(target.id)
             return
 
         # Valid response recieved, see what their answer was
@@ -221,8 +221,8 @@ class Parentage(object):
             them = FamilyTreeMember.get(target.id)
             them.parent = instigator.id
 
-        del self.bot.proposal_cache[instigator.id]
-        del self.bot.proposal_cache[target.id]
+        self.bot.proposal_cache.remove(instigator.id)
+        self.bot.proposal_cache.remove(target.id)
 
 
     @command()

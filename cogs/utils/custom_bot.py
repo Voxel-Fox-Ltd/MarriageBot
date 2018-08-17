@@ -6,6 +6,7 @@ from discord import Game
 from discord.ext.commands import AutoShardedBot
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.removal_dict import RemovalDict
 
 
 class CustomBot(AutoShardedBot):
@@ -23,7 +24,8 @@ class CustomBot(AutoShardedBot):
         self.startup_method = self.loop.create_task(self.startup())
         self.presence_loop = self.loop.create_task(self.presence_loop())
 
-        self.proposal_cache = {}
+        self.proposal_cache = RemovalDict()
+        # self.proposal_cache = {}
         # self.proposal_cache = []
 
 
