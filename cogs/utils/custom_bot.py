@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 from json import load
 from asyncio import sleep
 from aiohttp import ClientSession
@@ -16,6 +17,8 @@ class CustomBot(AutoShardedBot):
         self.reload_config()
         self.database = DatabaseConnection
         self.database.config = self.config['database']
+
+        self.startup_time = dt.now()
 
         self.startup_method = self.loop.create_task(self.startup())
         self.presence_loop = self.loop.create_task(self.presence_loop())
@@ -93,6 +96,16 @@ class CustomBot(AutoShardedBot):
             }
             async with session.post(url, json=json, headers=headers) as r:
                 pass
+
+
+    async def destroy(self, user_id:int):
+        '''
+        Removes a user ID from the database and cache
+        '''
+
+        async with self.database() as db:
+            await db.destroy(user_id)
+        FamilyTreeMember.get(user_id).destroy()
 
 
     def reload_config(self):

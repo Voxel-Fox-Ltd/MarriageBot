@@ -155,23 +155,13 @@ class Information(object):
 
         # Write their treemaker code to a file
         with open(f'./trees/{random_string}_{root.id}.txt', 'w', encoding='utf-8') as a:
-            # a.write(self.substitution.sub('_', text))
             a.write(text)
 
         # Convert and write to a dot file
         f = open(f'./trees/{random_string}_{root.id}.dot', 'w')
-        # with open(f'./trees/{random_string}_{root.id}.dot', 'w') as f:
-        # generate_dot_file(
-        #     f'./trees/{random_string}_{root.id}.txt',
-        #     root.get_name(self.bot).replace('(', '_').replace(')', '_'),
-        #     f
-        #     )
         treemaker = await create_subprocess_exec(*[
             'python3.6', 
             './cogs/utils/family_tree/familytreemaker.py', 
-            # '-a', 
-            # self.substitution.sub('_', str(root.get_name(self.bot))), 
-            # root.get_name(self.bot).replace('(', '_').replace(')', '_'), 
             f'./trees/{random_string}_{root.id}.txt'
             ], stdout=f, loop=self.bot.loop)
         await treemaker.wait()
@@ -194,12 +184,13 @@ class Information(object):
         try:
             await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{random_string}_{root.id}.png'))
         except Exception as e:
-            pass
-        await sleep(5)  # Just so the file still isn't sending
-        for i in [f'./trees/{random_string}_{root.id}.txt', f'./trees/{random_string}_{root.id}.dot', f'./trees/{random_string}_{root.id}.png']:
-            # _ = await self.bot.loop.run_in_executor(None, remove, i)
-            # await create_subprocess_exec('rm', i, loop=self.bot.loop)
-            pass
+            return 
+        return
+        # await sleep(5)  # Just so the file still isn't sending
+        # for i in [f'./trees/{random_string}_{root.id}.txt', f'./trees/{random_string}_{root.id}.dot', f'./trees/{random_string}_{root.id}.png']:
+        #     # _ = await self.bot.loop.run_in_executor(None, remove, i)
+        #     # await create_subprocess_exec('rm', i, loop=self.bot.loop)
+        #     pass
 
 
 def setup(bot:CustomBot):

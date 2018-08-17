@@ -49,7 +49,7 @@ class ErrorEvent(object):
             return
         elif isinstance(error, CommandNotFound):
             x = '\\n'.join(ctx.message.content.split('\n'))
-            print(f"Command not found: {x}")
+            # print(f"Command not found: {x}")
         else:
             try: 
                 raise error 
