@@ -1,6 +1,7 @@
 from random import choice
 from discord import Member
 from asyncpg import connect
+from asyncio import create_subprocess_exec, get_event_loop
 
 
 RANDOM_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_'
@@ -9,12 +10,25 @@ RANDOM_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567
 class DatabaseConnection(object):
 
     config = None
+    restarting = False
 
     def __init__(self):
         self.db = None
 
     async def __aenter__(self):
-        self.db = await connect(**self.config)
+        try:
+            self.db = await connect(**self.config)
+        except Exception as e:
+            # Database connection failed - restart Postgres connection
+            if self.restarting:
+                raise Exception("Database in the process of restarting, please try again in a moment.")
+            self.restarting = True
+            restart_loop = await create_subprocess_exec(*[
+                "systemctl", "restart", "postgresql"
+            ], loop=get_event_loop())
+            await restart_loop.wait()
+            self.restarting = False
+            raise e
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
