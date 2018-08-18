@@ -114,7 +114,7 @@ def proposing_to_me(instigator, target):
     return choice([
         "I'm flattered, but my heart belongs to another.",
         "Unfortunately, my standards raise above you.",
-        "My love is exlusive to one other...",
+        "My love is exclusive to one other...",
         "Though I'd love to make an exception for you, I can't marry a human.",
         "I'm flattered but no, sweetheart 😘",
     ])
@@ -180,5 +180,5 @@ def proposal_timed_out(instigator, target):
     return choice([
         f"{instigator.mention}, your proposal has timed out. Try again when they're online!",
         f"Huh. Seems like they didn't respond. Maybe try again later, {instigator.mention}?",
-        f"Apparently you aren't even deemed worthy a response. That rude. Try later, {instigator.mention}.",
+        f"Apparently you aren't even deemed worthy a response. That's rude. Try later, {instigator.mention}.",
     ])
