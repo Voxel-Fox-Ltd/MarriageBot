@@ -1,5 +1,8 @@
+from asyncio import Task
+from discord import Embed, __version__ as dpy_version
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot 
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
 class Misc(object):
@@ -44,6 +47,31 @@ class Misc(object):
         '''
 
         await ctx.send(self.bot.config['guild'])
+
+
+    @command()
+    async def stats(self, ctx:Context):
+        '''
+        Gives you the stats for the bot
+        '''
+
+        embed = Embed(
+            colour=0x1e90ff
+        )
+        embed.set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar_url)
+        embed.add_field(name="MarriageBot", value="A robot for marrying your friends and adopting your enemies.")
+        creator = self.bot.get_user(self.bot.config["owner"])
+        embed.add_field(name="Creator", value=f"{creator!s}\n{creator.id}")
+        embed.add_field(name="Library", value=f"Discord.py {dpy_version}")
+        embed.add_field(name="Guild Count", value=len(self.bot.guilds))
+        embed.add_field(name="Member Count", value=sum((len(i.members) for i in self.bot.guilds)))
+        embed.add_field(name="Coroutines", value=f"{len([i for i in Task.all_tasks() if not i.done()])} running, {len(Task.all_tasks())} total.")
+        embed.add_field(name="Uptime", value=f"{self.bot.loop.time():.2f} seconds.")
+        embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
+        try:
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send("I tried to send an embed, but I couldn't.")
 
 
 def setup(bot:CustomBot):
