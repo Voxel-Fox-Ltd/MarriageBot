@@ -3,7 +3,7 @@ from string import ascii_lowercase
 from os import remove
 from re import compile
 from io import BytesIO
-from asyncio import sleep, create_subprocess_exec
+from asyncio import sleep, create_subprocess_exec, wait_for
 from discord import Member, File, User
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
@@ -164,7 +164,9 @@ class Information(object):
             './cogs/utils/family_tree/familytreemaker.py', 
             f'./trees/{random_string}_{root.id}.txt'
             ], stdout=f, loop=self.bot.loop)
-        await treemaker.wait()
+        # await treemaker.wait()
+        await wait_for(treemaker, 10.0, loop=self.bot.loop)
+        treemaker.kill()
         f.close()
 
         # Convert to an image
@@ -178,7 +180,9 @@ class Information(object):
             '-Gsize=200\\!', 
             '-Gdpi=100'
             ], loop=self.bot.loop)
-        await dot.wait()
+        # await dot.wait()
+        await wait_for(dot, 10.0, loop=self.bot.loop)
+        dot.kill()
 
         # Send file and delete cached
         try:
