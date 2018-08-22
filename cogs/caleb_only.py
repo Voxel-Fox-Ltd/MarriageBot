@@ -95,6 +95,22 @@ class CalebOnly(object):
         await ctx.send('```py\n' + str(ans) + '```')
 
 
+    @command()
+    async def nev(self, ctx:Context, *, content:str):
+        '''
+        Runs some text through Python's eval function
+        '''
+
+        try:
+            ans = eval(content, globals(), locals())
+        except Exception as e:
+            await ctx.send('```py\n' + format_exc() + '```')
+            return
+        if iscoroutine(ans):
+            ans = await ans
+        await ctx.send(str(ans))
+
+
     @command(aliases=['rld'])
     async def reload(self, ctx:Context, *cog_name:str):
         '''
