@@ -1,6 +1,6 @@
 from re import compile
 from asyncio import TimeoutError
-from discord import Member
+from discord import Member, User
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -230,7 +230,7 @@ class Parentage(object):
 
 
     @command()
-    async def disown(self, ctx:Context, child:Member):
+    async def disown(self, ctx:Context, child:User):
         '''
         Lets you remove a user from being your child
         '''
@@ -246,10 +246,13 @@ class Parentage(object):
             return
         async with self.bot.database() as db:
             await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2', target.id, instigator.id)
-        await ctx.send(f"Sorry, {target.mention}, but you're an orphan now. You're free, {instigator.mention}!")
+        if ctx.guild.get_member(child.id):            
+            await ctx.send(f"Sorry, {target.mention}, but you're an orphan now. You're free, {instigator.mention}!")
+        else:
+            await ctx.send(f"You're free, {instigator.mention}, they're no longer your child!")
 
         me = FamilyTreeMember.get(instigator.id)
-        me.children.remove(target.id )
+        me.children.remove(target.id)
         them = FamilyTreeMember.get(target.id)
         them.parent = None
 
