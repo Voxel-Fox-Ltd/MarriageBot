@@ -165,8 +165,11 @@ class Information(object):
             f'./trees/{random_string}_{root.id}.txt'
             ], stdout=f, loop=self.bot.loop)
         # await treemaker.wait()
-        await wait_for(treemaker, 10.0, loop=self.bot.loop)
-        treemaker.kill()
+        await wait_for(treemaker.wait(), 10.0, loop=self.bot.loop)
+        try:
+            treemaker.kill()
+        except Exception as e: 
+            pass
         f.close()
 
         # Convert to an image
@@ -181,8 +184,11 @@ class Information(object):
             '-Gdpi=100'
             ], loop=self.bot.loop)
         # await dot.wait()
-        await wait_for(dot, 10.0, loop=self.bot.loop)
-        dot.kill()
+        await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
+        try:
+            dot.kill()
+        except Exception as e: 
+            pass
 
         # Send file and delete cached
         try:
