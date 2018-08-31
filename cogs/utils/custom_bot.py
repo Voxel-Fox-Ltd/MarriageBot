@@ -3,7 +3,9 @@ from json import load
 from asyncio import sleep
 from aiohttp import ClientSession
 from discord import Game
-from discord.ext.commands import AutoShardedBot
+from discord.ext.commands import AutoShardedBot, cooldown
+from discord.ext.commands.bot import _default_help_command
+from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.removal_dict import RemovalDict
@@ -27,6 +29,9 @@ class CustomBot(AutoShardedBot):
         self.proposal_cache = RemovalDict()
 
         self.blacklisted_guilds = []
+        
+        self.remove_command('help')
+        cooldown(1, 5, BucketType.user)(self.command(**self.help_attrs)(_default_help_command))
 
 
     async def presence_loop(self):
