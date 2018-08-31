@@ -1,4 +1,5 @@
 from glob import glob
+from discord import Game, Status
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_help import CustomHelp
 
@@ -6,7 +7,9 @@ from cogs.utils.custom_help import CustomHelp
 bot = CustomBot(
     command_prefix=['m!', '<@468281173072805889> ', '<@!468281173072805889> '], 
     config_file='config/config.json',
-    formatter=CustomHelp()
+    formatter=CustomHelp(),
+    activity=Game(name="Restarting..."),
+    status=Status.dnd
     )
 
 
@@ -16,7 +19,8 @@ def get_extensions() -> list:
     '''
 
     ext = glob('cogs/[!_]*.py')
-    return [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext]
+    rand = glob('cogs/utils/random_text/[!_]*.py')
+    return [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
 
 
 @bot.event

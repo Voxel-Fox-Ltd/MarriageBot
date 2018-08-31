@@ -1,6 +1,7 @@
 from re import compile
 from random import choice
 from discord import User, File
+from unidecode import unidecode
 
 
 generate_id = lambda: ''.join([choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for i in range(10)])
@@ -18,7 +19,7 @@ class FamilyTreeMember(object):
     '''
 
     all_users = {None: None}  # id: FamilyTreeMember
-    substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
+    substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"')
 
 
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
@@ -342,4 +343,5 @@ class FamilyTreeMember(object):
         return root_user, fulltext.replace(f'(id={self.id})', f"(F, id={self.id})")
 
     def get_name(self, bot):
-        return self.substitution.sub('_', str(bot.get_user(self.id)))
+        # return self.substitution.sub('_', str(bot.get_user(self.id)))
+        return self.substitution.sub("_", unidecode(str(bot.get_user(self.id))))
