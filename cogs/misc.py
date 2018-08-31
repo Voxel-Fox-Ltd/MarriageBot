@@ -49,6 +49,15 @@ class Misc(object):
         await ctx.send(self.bot.config['guild'])
 
 
+    @command(hidden=True)
+    async def echo(self, ctx:Context, *, content:str):
+        '''
+        Echos a saying
+        '''
+
+        await ctx.send(content)
+
+
     @command()
     async def stats(self, ctx:Context):
         '''

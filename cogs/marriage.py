@@ -4,7 +4,6 @@ from discord import Member
 from discord.ext.commands import command, Context
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-import cogs.utils.random_text.marriage as random_text
 
 
 class Marriage(object):
@@ -20,6 +19,16 @@ class Marriage(object):
         self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(m!accept)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
+        # Get random text for this cog
+        self._random_text = None
+
+
+    @property
+    def random_text(self):
+        if not self._random_text:
+            self._random_text = self.bot.cogs['MarriageRandomText']
+        return self._random_text
+
 
     @command(aliases=['marry'])
     async def propose(self, ctx:Context, user:Member):
@@ -34,27 +43,27 @@ class Marriage(object):
         if instigator.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR':
-                await ctx.send(random_text.proposing_while_instigator(instigator, target))
+                await ctx.send(self.random_text.proposing_while_instigator(instigator, target))
             elif x[0] == 'TARGET':
-                await ctx.send(random_text.proposing_while_target(instigator, target))
+                await ctx.send(self.random_text.proposing_while_target(instigator, target))
             return
         elif target.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR':
-                await ctx.send(random_text.proposing_to_instigator(instigator, target))
+                await ctx.send(self.random_text.proposing_to_instigator(instigator, target))
             elif x[0] == 'TARGET':
-                await ctx.send(random_text.proposing_to_target(instigator, target))
+                await ctx.send(self.random_text.proposing_to_target(instigator, target))
             return
 
         # Manage exclusions
         if target.id == self.bot.user.id:
-            await ctx.send(random_text.proposing_to_me(instigator, target))
+            await ctx.send(self.random_text.proposing_to_me(instigator, target))
             return
         elif target.bot or instigator.bot:
-            await ctx.send(random_text.proposing_to_bot(instigator, target))
+            await ctx.send(self.random_text.proposing_to_bot(instigator, target))
             return
         elif instigator.id == target.id:
-            await ctx.send(random_text.proposing_to_themselves(instigator, target))
+            await ctx.send(self.random_text.proposing_to_themselves(instigator, target))
             return
 
         # See if they're married or in the family already
@@ -64,17 +73,17 @@ class Marriage(object):
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
-            await ctx.send(random_text.proposing_to_family(instigator, target))
+            await ctx.send(self.random_text.proposing_to_family(instigator, target))
             return
         if user_tree.partner:
-            await ctx.send(random_text.proposing_when_married(instigator, target))
+            await ctx.send(self.random_text.proposing_when_married(instigator, target))
             return
         elif FamilyTreeMember.get(target.id).partner:
-            await ctx.send(random_text.proposing_to_married(instigator, target))
+            await ctx.send(self.random_text.proposing_to_married(instigator, target))
             return
 
         # Neither are married, set up the proposal
-        await ctx.send(random_text.valid_proposal(instigator, target))
+        await ctx.send(self.random_text.valid_proposal(instigator, target))
         self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'MARRIAGE')
         self.bot.proposal_cache[target.id] = ('TARGET', 'MARRIAGE')
 
@@ -103,7 +112,7 @@ class Marriage(object):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
             try:
-                await ctx.send(random_text.proposal_timed_out(instigator, target))
+                await ctx.send(self.random_text.proposal_timed_out(instigator, target))
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
@@ -114,7 +123,7 @@ class Marriage(object):
         # Valid response recieved, see what their answer was
         response = check(m)
         if response == 'NO':
-            await ctx.send(random_text.declining_valid_proposal(instigator, target))
+            await ctx.send(self.random_text.declining_valid_proposal(instigator, target))
         elif response == 'YES':
             async with self.bot.database() as db:
                 try:
@@ -122,7 +131,7 @@ class Marriage(object):
                 except Exception as e:
                     return  # Only thrown if two people try to marry at once, so just return
             try:
-                await ctx.send(random_text.accepting_valid_proposal(instigator, target))
+                await ctx.send(self.random_text.accepting_valid_proposal(instigator, target))
             except Exception as e:
                 pass
             me = FamilyTreeMember.get(instigator.id)
