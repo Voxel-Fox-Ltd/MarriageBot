@@ -22,3 +22,10 @@ CREATE TABLE parents(
 );
 -- Since a child will only appear once, you can set child_id to the primary key
 -- A parent can have many children, a child will have only one parent
+
+
+CREATE TABLE blacklisted_guilds(
+    guild_id BIGINT NOT NULL,
+    PRIMARY KEY (guild_id)
+);
+-- Basically a big ol' list of blacklisted guild IDs

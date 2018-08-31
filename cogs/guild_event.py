@@ -28,6 +28,12 @@ class GuildEvent(object):
         embed.add_field(name='Guild ID', value=guild.id)
         embed.add_field(name='Member Count', value=len(guild.members))
         embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
+
+        if guild.id in self.bot.blacklisted_guilds:
+            embed.colour = 0xff0000
+            embed.set_author(name=f'Added to Blacklisted Guild')
+            await guild.leave()
+
         await self.log_channel.send(embed=embed)
 
         if len(self.bot.guilds) % 5 == 0:

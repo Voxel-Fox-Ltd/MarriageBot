@@ -25,8 +25,8 @@ class CustomBot(AutoShardedBot):
         self.presence_loop = self.loop.create_task(self.presence_loop())
 
         self.proposal_cache = RemovalDict()
-        # self.proposal_cache = {}
-        # self.proposal_cache = []
+
+        self.blacklisted_guilds = []
 
 
     async def presence_loop(self):
@@ -64,6 +64,11 @@ class CustomBot(AutoShardedBot):
             parent.children.append(i['child_id'])
             child = FamilyTreeMember.get(i['child_id'])
             child.parent = i['parent_id']
+
+        # Pick up the blacklisted guilds from the db
+        async with self.database() as db:
+            blacklisted = await db('SELECT * FROM blacklisted_guilds')
+        self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
         # Remove anyone who's empty or who the bot can't reach
         await self.wait_until_ready()  # So I can use get_user
