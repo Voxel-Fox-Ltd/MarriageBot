@@ -5,7 +5,8 @@ from re import compile
 from io import BytesIO
 from asyncio import sleep, create_subprocess_exec, wait_for
 from discord import Member, File, User
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -27,6 +28,7 @@ class Information(object):
 
 
     @command(aliases=['spouse', 'husband', 'wife'])
+    @cooldown(1, 5, BucketType.user)
     async def partner(self, ctx:Context, user:Member=None):
         '''
         Shows you the partner of a given user
@@ -46,6 +48,7 @@ class Information(object):
 
 
     @command(aliases=['child'])
+    @cooldown(1, 5, BucketType.user)
     async def children(self, ctx:Context, user:Member=None):
         '''
         Gives you a list of all of your children
@@ -66,6 +69,7 @@ class Information(object):
             )
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def parent(self, ctx:Context, user:Member=None):
         '''
         Tells you who your parent is
@@ -83,6 +87,7 @@ class Information(object):
 
     @command()
     @can_send_files()
+    @cooldown(1, 30, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):
         '''
         Gives you the full family tree of a user
@@ -98,6 +103,7 @@ class Information(object):
 
     @command(aliases=['familytree'])
     @can_send_files()
+    @cooldown(1, 30, BucketType.user)
     async def tree(self, ctx:Context, root:Member=None, depth:int=-1):
         '''
         Gets the family tree of a given user
@@ -112,6 +118,7 @@ class Information(object):
 
     @command(aliases=['fulltree'])
     @can_send_files()
+    @cooldown(1, 30, BucketType.user)
     async def globaltree(self, ctx:Context, root:User=None, depth:int=-1):
         '''
         Gets the global family tree of a given user

@@ -1,7 +1,7 @@
 from gc import collect
 from traceback import format_exc
 from discord.ext.commands import Context
-from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError
+from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError, CommandOnCooldown
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import CantSendFiles
 
@@ -43,6 +43,9 @@ class ErrorEvent(object):
                 await ctx.send('I was unable to run that command properly - try again in a moment.')
                 return
             await ctx.author.send(f"Error encountered running that command: `{error!s}`")
+            return
+        elif isinstance(error, CommandOnCooldown):
+            # Ratelimited user so no error text
             return
         elif isinstance(error, CheckFailure):
             # The only checks are the CalebOnly commands

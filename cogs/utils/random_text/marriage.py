@@ -79,8 +79,9 @@ class MarriageRandomText(object):
 
         return choice([
             f"You've already proposed to someone, {instigator.mention}, just wait for a response.",
-            "You can only make one proposal at a time.",
+            f"You can only make one proposal at a time, {instigator.mention}.",
             f"One proposal at a time is the max limit, {instigator.mention}.",
+            f"Calm it, {instigator.mention}, you already proposed to someone!",
         ])
 
 
@@ -94,6 +95,8 @@ class MarriageRandomText(object):
             "Sorry but you've gotta answer your current proposal before you can make one of your own.",
             "You need to answer the proposal you have already before you can make a new one.",
             f"You've been proposed to already, {instigator.mention}. Please respond before moving on.",
+            "Don't you want to answer the proposal you have already?",
+            f"Someone already proposed to you though! Answer them first, {instigator.mention}.",
         ])
 
 
@@ -107,6 +110,8 @@ class MarriageRandomText(object):
             "I'm afraid they've already proposed to someone. Give it a minute - see how it goes.",
             "They seem to have just proposed to someone. See how that goes before you try yourself.",
             "Hold your horses - they've just proposed to someone else.",
+            "They're waiting on a response from soneone else; give it a minute.",
+            "I think they're interested in someone else, having just proposed to them.",
         ])
 
 
@@ -135,6 +140,13 @@ class MarriageRandomText(object):
             "My love is exclusive to one other...",
             "Though I'd love to make an exception for you, I can't marry a human.",
             "I'm flattered but no, sweetheart 😘",
+            "I'm a robot. I would recommend asking someone else.",
+            "Perhaps pick a user with sentience.",
+            "There's desperate, and then there's proposing to a bot.",
+            "No.",
+            "Thanks, but I could do better.",
+            "Are you serious? No.",
+            "I'm a robot, I'm not interested, and you could do better, sweetheart.",
         ])
 
 

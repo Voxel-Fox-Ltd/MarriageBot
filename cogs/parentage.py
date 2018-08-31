@@ -1,7 +1,8 @@
 from re import compile
 from asyncio import TimeoutError
 from discord import Member, User
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
@@ -21,6 +22,7 @@ class Parentage(object):
 
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def makeparent(self, ctx:Context, parent:Member):
         '''
         Picks a user that you want to be your parent
@@ -128,6 +130,7 @@ class Parentage(object):
 
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def adopt(self, ctx:Context, parent:Member):
         '''
         Adopt another user into your family
@@ -230,6 +233,7 @@ class Parentage(object):
 
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def disown(self, ctx:Context, child:User):
         '''
         Lets you remove a user from being your child
@@ -258,6 +262,7 @@ class Parentage(object):
 
 
     @command(aliases=['eman'])
+    @cooldown(1, 5, BucketType.user)
     async def emancipate(self, ctx:Context, parent:Member=None):
         '''
         Making it so you no longer have a parent

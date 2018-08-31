@@ -1,6 +1,7 @@
 from asyncio import Task
 from discord import Embed, __version__ as dpy_version
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot 
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
@@ -12,6 +13,7 @@ class Misc(object):
 
 
     @command(aliases=['git', 'code'])
+    @cooldown(1, 5, BucketType.user)
     async def github(self, ctx:Context):
         '''
         Gives you a link to the bot's code repository
@@ -21,6 +23,7 @@ class Misc(object):
 
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def patreon(self, ctx:Context):
         '''
         Gives you the creator's Patreon link
@@ -30,6 +33,7 @@ class Misc(object):
 
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def invite(self, ctx:Context):
         '''
         Gives you an invite link for the bot
@@ -41,6 +45,7 @@ class Misc(object):
 
 
     @command(aliases=['guild', 'support'])
+    @cooldown(1, 5, BucketType.user)
     async def server(self, ctx:Context):
         '''
         Gives you a server invite link
@@ -50,6 +55,7 @@ class Misc(object):
 
 
     @command(hidden=True)
+    @cooldown(1, 5, BucketType.user)
     async def echo(self, ctx:Context, *, content:str):
         '''
         Echos a saying
@@ -59,6 +65,7 @@ class Misc(object):
 
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def stats(self, ctx:Context):
         '''
         Gives you the stats for the bot

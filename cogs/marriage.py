@@ -1,9 +1,11 @@
 from re import compile
 from asyncio import TimeoutError
 from discord import Member
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+
 
 
 class Marriage(object):
@@ -26,11 +28,12 @@ class Marriage(object):
     @property
     def random_text(self):
         if not self._random_text:
-            self._random_text = self.bot.cogs['MarriageRandomText']
+            self._random_text = self.bot.cogs.get('MarriageRandomText')
         return self._random_text
 
 
     @command(aliases=['marry'])
+    @cooldown(1, 5, BucketType.user)
     async def propose(self, ctx:Context, user:Member):
         '''
         Lets you propose to another Discord user
@@ -144,6 +147,7 @@ class Marriage(object):
 
 
     @command()
+    @cooldown(1, 5, BucketType.user)
     async def divorce(self, ctx:Context, user:Member=None):
         '''
         Divorces you from your current spouse
