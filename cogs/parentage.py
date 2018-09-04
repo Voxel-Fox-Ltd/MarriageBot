@@ -44,7 +44,7 @@ class Parentage(object):
             await ctx.send("I'm flattered but no, sweetheart 😘")
             return
         elif instigator.bot:
-            await ctx.send("Robots don't make particularly good parents.")
+            # Silently deny robots
             return
         elif instigator.id == target.id:
             await ctx.send("Are you serious.")
@@ -232,7 +232,7 @@ class Parentage(object):
         self.bot.proposal_cache.remove(target.id)
 
 
-    @command()
+    @command(aliases=['abort'])
     @cooldown(1, 5, BucketType.user)
     async def disown(self, ctx:Context, child:User):
         '''

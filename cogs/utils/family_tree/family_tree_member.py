@@ -343,5 +343,7 @@ class FamilyTreeMember(object):
         return root_user, fulltext.replace(f'(id={self.id})', f"(F, id={self.id})")
 
     def get_name(self, bot):
-        # return self.substitution.sub('_', str(bot.get_user(self.id)))
-        return self.substitution.sub("_", unidecode(str(bot.get_user(self.id))))
+        x = self.substitution.sub("_", unidecode(str(bot.get_user(self.id))))
+        if len(x) <= 5:
+            x = self.substitution.sub("_", str(bot.get_user(self.id)))
+        return x
