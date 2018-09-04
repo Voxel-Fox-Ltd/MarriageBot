@@ -20,7 +20,7 @@ class CalebOnly(object):
 
 
     async def __local_check(self, ctx:Context):
-        return ctx.author.id == self.bot.config['owner']
+        return ctx.author.id in self.bot.config['owners']
 
 
     @property

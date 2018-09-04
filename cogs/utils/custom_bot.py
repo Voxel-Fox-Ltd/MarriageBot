@@ -30,8 +30,7 @@ class CustomBot(AutoShardedBot):
 
         self.blacklisted_guilds = []
         
-        self.remove_command('help')
-        cooldown(1, 5, BucketType.user)(self.command(**self.help_attrs)(_default_help_command))
+        cooldown(1, 5, BucketType.user)(self.get_command('help'))
 
 
     async def presence_loop(self):

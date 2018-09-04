@@ -5,7 +5,7 @@ from cogs.utils.custom_bot import CustomBot
 class MarriageRandomText(object):
 
 
-    def __init__(self, bot):
+    def __init__(self, bot:CustomBot):
         self.bot = bot
 
 

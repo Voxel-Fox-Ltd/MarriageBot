@@ -76,7 +76,7 @@ class Misc(object):
         )
         embed.set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar_url)
         embed.add_field(name="MarriageBot", value="A robot for marrying your friends and adopting your enemies.")
-        creator = self.bot.get_user(self.bot.config["owner"])
+        creator = self.bot.get_user(self.bot.config["owners"][0])
         embed.add_field(name="Creator", value=f"{creator!s}\n{creator.id}")
         embed.add_field(name="Library", value=f"Discord.py {dpy_version}")
         embed.add_field(name="Guild Count", value=len(self.bot.guilds))
