@@ -11,14 +11,19 @@ class Hidden(object):
         self.bot = bot 
 
 
+    def __local_check(self, ctx:Context):
+        if ctx.author.id in self.bot.config['owners']:
+            return True
+        return choice(range(0, 10)) == 0
+
+
     @command(hidden=True)
     @cooldown(1, 5, BucketType.user)
     async def purpose(self, ctx:Context, user=None):
         '''
         Gives you the purpose of a person
         '''
-
-        if choice(range(0, 10)) != 0: return
+        
         responses = [
             "What is anyone's purpose, truly?",
             "Does anyone really have a purpose in today's society?",
@@ -35,8 +40,7 @@ class Hidden(object):
         '''
         Propse. Ha. Classic.
         '''
-
-        if choice(range(0, 10)) != 0: return
+        
         responses = [
             "Really? Propse? I don't think you deserve to get married, with spelling like that.",
             "Propse? Nice. Good spelling there, mate.",
@@ -53,8 +57,7 @@ class Hidden(object):
         '''
         Porpose
         '''
-
-        if choice(range(0, 10)) != 0: return
+        
         responses = [
             "I could be wrongm but I think you meant \"propose\".",
             "You're either saying propose or porpoise but I'm not super sure which.",
@@ -71,8 +74,7 @@ class Hidden(object):
         '''
         Do you really want to kill a person?
         '''
-
-        if choice(range(0, 10)) != 0: return
+        
         responses = [
             "That would violate at least one of the laws of robotics.",
             "I am a text-based bot. I cannot kill.",
@@ -91,7 +93,6 @@ class Hidden(object):
         uwu
         '''
 
-        if choice(range(0, 10)) != 0: return
         responses = [
             "uwu",
             "What's this?",
