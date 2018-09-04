@@ -82,7 +82,14 @@ class Misc(object):
         embed.add_field(name="Guild Count", value=len(self.bot.guilds))
         embed.add_field(name="Member Count", value=sum((len(i.members) for i in self.bot.guilds)))
         embed.add_field(name="Coroutines", value=f"{len([i for i in Task.all_tasks() if not i.done()])} running, {len(Task.all_tasks())} total.")
-        embed.add_field(name="Uptime", value=f"{self.bot.loop.time():.2f} seconds.")
+        ut = self.bot.loop.time()  # Uptime
+        uptime = [
+            int(ut // (60*60*24)),
+            int((ut % (60*60*24)) // (60*60)),
+            int(((ut % (60*60*24)) % (60*60)) // 60),
+            ((ut % (60*60*24)) % (60*60)) % 60,
+        ]
+        embed.add_field(name="Uptime", value=f"{uptime[0]} days, {uptime[1]} hours, {uptime[2]} minutes, and {uptime[3]:.2f} seconds.")
         embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
         try:
             await ctx.send(embed=embed)
