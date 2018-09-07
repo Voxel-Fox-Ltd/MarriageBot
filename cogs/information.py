@@ -109,6 +109,10 @@ class Information(object):
         Gets the family tree of a given user
         '''
 
+        if ctx.guild == None:
+            await ctx.send("This command cannot be used in private messages. Please use the `fulltree` command in its place.")
+            return
+
         try:
             return await self.treemaker(ctx, root, depth, False)
         except Exception as e:
