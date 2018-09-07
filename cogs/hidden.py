@@ -14,11 +14,10 @@ class Hidden(object):
     def __local_check(self, ctx:Context):
         if ctx.author.id in self.bot.config['owners']:
             return True
-        return choice(range(0, 10)) == 0
+        return choice(range(0, 4)) == 0
 
 
     @command(hidden=True)
-    @cooldown(1, 5, BucketType.user)
     async def purpose(self, ctx:Context, user=None):
         '''
         Gives you the purpose of a person
@@ -35,7 +34,6 @@ class Hidden(object):
 
     
     @command(hidden=True)
-    @cooldown(1, 5, BucketType.user)
     async def propse(self, ctx:Context, user=None):
         '''
         Propse. Ha. Classic.
@@ -52,7 +50,6 @@ class Hidden(object):
 
 
     @command(hidden=True)
-    @cooldown(1, 5, BucketType.user)
     async def porpose(self, ctx:Context, user=None):
         '''
         Porpose
@@ -69,7 +66,6 @@ class Hidden(object):
 
 
     @command(hidden=True, aliases=['murder'])
-    @cooldown(1, 5, BucketType.user)
     async def kill(self, ctx:Context, user=None):
         '''
         Do you really want to kill a person?
@@ -87,7 +83,6 @@ class Hidden(object):
 
 
     @command(hidden=True, aliases=['OwO'])
-    @cooldown(1, 5, BucketType.user)
     async def owo(self, ctx:Context):
         '''
         uwu
@@ -101,6 +96,26 @@ class Hidden(object):
             "_nuzzles u_ x3",
         ]
         await ctx.send(choice(responses))
+
+
+    @command(hidden=True, aliases=['🍨'])
+    async def icecream(self, ctx:Context):
+        '''
+        Let's sit down and have some ice cream together
+        '''
+
+        await ctx.send("🍨")
+
+    
+    @command(hidden=True)
+    async def vitoa(self, ctx:Context):
+        '''
+        Very indignant turtles obey America
+        '''
+
+        await ctx.send(
+            f"Sorry {ctx.author.mention}, but you've been sacrificed for the glory of VITOA!"
+        )
 
 
 def setup(bot:CustomBot):
