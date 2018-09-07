@@ -22,14 +22,17 @@ class Marriage(object):
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
         # Get random text for this cog
-        self._random_text = None
+        self.random_text = None
+        self.bot.loop.create_task(self.get_random_text())
+
+    
+    async def get_random_text(self):
+        await self.bot.wait_until_ready()
+        self.random_text = self.bot.cogs.get('MarriageRandomText')
 
 
-    @property
-    def random_text(self):
-        if not self._random_text:
-            self._random_text = self.bot.cogs.get('MarriageRandomText')
-        return self._random_text
+    def __local_check(self, ctx:Context):
+        return self.random_text != None
 
 
     @command(aliases=['marry'])

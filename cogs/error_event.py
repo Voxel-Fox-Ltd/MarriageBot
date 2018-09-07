@@ -48,7 +48,7 @@ class ErrorEvent(object):
             # Ratelimited user so no error text
             return
         elif isinstance(error, CheckFailure):
-            # The only checks are the CalebOnly commands
+            # The only checks are the CalebOnly and hidden commands
             return
         elif isinstance(error, CommandNotFound):
             x = '\\n'.join(ctx.message.content.split('\n'))
