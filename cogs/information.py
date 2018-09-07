@@ -44,7 +44,7 @@ class Information(object):
             return
 
         partner = self.bot.get_user(user_info.partner)
-        await ctx.send(f"`{user!s}` is currently married to `{partner!s}`.")
+        await ctx.send(f"`{user!s}` is currently married to `{partner!s}` (`{partner.id}`).")
 
 
     @command(aliases=['child'])
@@ -65,8 +65,8 @@ class Information(object):
         await ctx.send(
             f"`{user!s}` has `{len(user_info.children)}` child" + 
             {False:"ren",True:""}.get(len(user_info.children)==1) + ": " + 
-            ", ".join([f"`{self.bot.get_user(i)!s}`" for i in user_info.children])
-            )
+            ", ".join([f"`{self.bot.get_user(i)!s}` (`{i}`)" for i in user_info.children])
+        )
 
     @command()
     @cooldown(1, 5, BucketType.user)
@@ -82,7 +82,7 @@ class Information(object):
         if user_info.parent == None:
             await ctx.send(f"`{user!s}` has no parent.")
             return
-        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(user_info.parent)!s}`.")
+        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(user_info.parent)!s}` (`{user_info.parent}`).")
 
 
     @command()

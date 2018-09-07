@@ -263,13 +263,12 @@ class Parentage(object):
 
     @command(aliases=['eman'])
     @cooldown(1, 5, BucketType.user)
-    async def emancipate(self, ctx:Context, parent:Member=None):
+    async def emancipate(self, ctx:Context):
         '''
         Making it so you no longer have a parent
         '''
 
         instigator = ctx.author
-        target = parent
 
         user_tree = FamilyTreeMember.get(instigator.id)
         parent = user_tree.parent
@@ -277,23 +276,18 @@ class Parentage(object):
         if parent == None:
             await ctx.send(f"You don't have a parent, {instigator.mention}")
             return
-        if target == None:
-            target = self.bot.get_user(parent)
-        target_id = parent 
+        target = self.bot.get_user(parent)
 
-        if target_id != parent:
-            await ctx.send(f"That person isn't your parent, {instigator.mention}.")
-            return
         async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2', target_id, instigator.id)
-        if ctx.guild.get_member(target_id):
+            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2', target.id, instigator.id)
+        if ctx.guild.get_member(target.id):
             await ctx.send(f"You're an orphan now, {instigator.mention}. Sorry {target.mention}!")
         else:
             await ctx.send(f"You're an orphan now, {instigator.mention}.")
 
         me = FamilyTreeMember.get(instigator.id)
         me.parent = None
-        them = FamilyTreeMember.get(target_id)
+        them = FamilyTreeMember.get(target.id)
         them.children.remove(instigator.id)
 
 

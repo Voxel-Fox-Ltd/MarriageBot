@@ -148,13 +148,12 @@ class Marriage(object):
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def divorce(self, ctx:Context, user:Member=None):
+    async def divorce(self, ctx:Context):
         '''
         Divorces you from your current spouse
         '''
 
         instigator = ctx.author
-        target = user  # Just so "target" didn't show up in the help message
 
         # Get marriage data for the user
         instigator_data = FamilyTreeMember.get(instigator.id)
@@ -163,12 +162,9 @@ class Marriage(object):
         if instigator_data.partner == None:
             await ctx.send("You're not married. Don't try to divorce strangers .-.")
             return
-        elif target == None:
-            target = ctx.guild.get_member(instigator_data.partner)
-            if target == None:
-                target_id = instigator_data.partner 
-            else:
-                target_id = target.id
+        target = ctx.guild.get_member(instigator_data.partner)
+        if target == None:
+            target_id = instigator_data.partner 
         else:
             target_id = target.id
 
