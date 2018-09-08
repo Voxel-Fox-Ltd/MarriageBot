@@ -71,6 +71,7 @@ class Misc(object):
         Gives you the stats for the bot
         '''
 
+        await ctx.channel.trigger_typing()
         embed = Embed(
             colour=0x1e90ff
         )
@@ -91,6 +92,16 @@ class Misc(object):
         ]
         embed.add_field(name="Uptime", value=f"{uptime[0]} days, {uptime[1]} hours, {uptime[2]} minutes, and {uptime[3]:.2f} seconds.")
         embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
+        family_members = []
+        family_count = 0
+        for i in list(FamilyTreeMember.all_users.values()):
+            if i in family_members:
+                continue 
+            if not i:
+                continue
+            family_count += 1
+            family_members += i.span(expand_upwards=True, add_parent=True)
+        embed.add_field(name="Families", value=family_count)
         try:
             await ctx.send(embed=embed)
         except Exception as e:
