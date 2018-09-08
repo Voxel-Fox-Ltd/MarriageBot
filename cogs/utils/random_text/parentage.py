@@ -13,12 +13,21 @@ class ParentageRandomText(object):
         When the instigator asks the target to be their parent
         '''
 
+        # return choice([
+        #     f"{instigator.mention} wants to adopt you, {target.mention}. Do you accept?",
+        #     f"{instigator.mention} wants to share the love and make you their child, {target.mention}. What do you think?",
+        #     f"{instigator.mention} would love to adopt you, {target.mention}. What do you think?",
+        #     f"{target.mention}, today's your lucky day. {instigator.mention} wants to adopt you. Do you accept?",
+        #     f"{target.mention}, {instigator.mention} wants to be your parent. What do you say?",
+        #     f"{target.mention}, do you want to be {instigator.mention}'s parent?",
+        # ])
+
         return choice([
-            f"{instigator.mention} wants to adopt you, {target.mention}. Do you accept?",
-            f"{instigator.mention} wants to share the love and make you their child, {target.mention}. What do you think?",
-            f"{instigator.mention} would love to adopt you, {target.mention}. What do you think?",
-            f"{target.mention}, today's your lucky day. {instigator.mention} wants to adopt you. Do you accept?",
-            f"{target.mention}, {instigator.mention} wants to be your parent. What do you say?",
+            f"{instigator.mention} wants to be your child, {target.mention}. Do you accept?",
+            f"{instigator.mention} is willing to give their love to you and make you their parent, {target.mention}. What do you say?",
+            f"{instigator.mention} would love to be adopted by you, {target.mention}. What do you think?",
+            f"Today could be your day, {instigator.mention}. {target.mention}, will you adopt them?",
+            f"{target.mention}, {instigator.mention} wants to be your child. What do you say?",
             f"{target.mention}, do you want to be {instigator.mention}'s parent?",
         ])
 

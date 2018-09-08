@@ -48,16 +48,16 @@ class Parentage(object):
         if instigator.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR':
-                await ctx.send(self.random_text.parent_while_instigator(instigator, target))
+                await ctx.send(self.parentage_random_text.parent_while_instigator(instigator, target))
             elif x[0] == 'TARGET':
-                await ctx.send(self.random_text.parent_while_target(instigator, target))
+                await ctx.send(self.parentage_random_text.parent_while_target(instigator, target))
             return
         elif target.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR':
-                await ctx.send(self.random_text.parent_to_instigator(instigator, target))
+                await ctx.send(self.parentage_random_text.parent_to_instigator(instigator, target))
             elif x[0] == 'TARGET':
-                await ctx.send(self.random_text.parent_to_target(instigator, target))
+                await ctx.send(self.parentage_random_text.parent_to_target(instigator, target))
             return
 
         # Manage exclusions
