@@ -49,7 +49,7 @@ class CommandEvent(object):
             return
 
         if message.guild == None:
-            await self.chat_channel.send(f"Guild: `{message.guild}` | User: `{message.author!s}` (`{message.author.id}`) | Correspondant: `{message.channel.recipient}` (`{message.channel.recipient.id}`)\nContent: `{message.content}`")
+            text = f"Guild: `{message.guild}` | User: `{message.author!s}` (`{message.author.id}`) | Correspondant: `{message.channel.recipient}` (`{message.channel.recipient.id}`)\nContent: `{message.content}`"
         elif message.author.bot:
             return
         elif any([i in message.content.casefold() for i in ['marriagebot', 'marriage bot', f'{self.bot.user.id}']]):
@@ -57,7 +57,11 @@ class CommandEvent(object):
             if message in self.cache:
                 self.cache.remove(message)
                 return
-            await self.chat_channel.send(f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`")
+            text = f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`"
+        attachments = [i.url for i in message.attachments]
+        if attachments:
+            text += '\nAttachments: ' + ', '.join(attachments)   
+        await self.chat_channel.send(text)         
 
 
 def setup(bot:CustomBot):
