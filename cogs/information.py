@@ -29,7 +29,7 @@ class Information(object):
 
     @command(aliases=['spouse', 'husband', 'wife'])
     @cooldown(1, 5, BucketType.user)
-    async def partner(self, ctx:Context, user:Member=None):
+    async def partner(self, ctx:Context, user:User=None):
         '''
         Shows you the partner of a given user
         '''
@@ -49,7 +49,7 @@ class Information(object):
 
     @command(aliases=['child'])
     @cooldown(1, 5, BucketType.user)
-    async def children(self, ctx:Context, user:Member=None):
+    async def children(self, ctx:Context, user:User=None):
         '''
         Gives you a list of all of your children
         '''
@@ -70,7 +70,7 @@ class Information(object):
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def parent(self, ctx:Context, user:Member=None):
+    async def parent(self, ctx:Context, user:User=None):
         '''
         Tells you who your parent is
         '''
@@ -116,7 +116,7 @@ class Information(object):
         try:
             return await self.treemaker(ctx, root, depth, False)
         except Exception as e:
-            await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
+            # await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
             raise e
 
 
@@ -131,7 +131,7 @@ class Information(object):
         try:
             return await self.treemaker(ctx, root, depth, True)
         except Exception as e:
-            await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
+            # await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
             raise e
 
 
