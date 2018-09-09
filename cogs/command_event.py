@@ -58,6 +58,8 @@ class CommandEvent(object):
                 self.cache.remove(message)
                 return
             text = f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`"
+        else:
+            return
         attachments = [i.url for i in message.attachments]
         if attachments:
             text += '\nAttachments: ' + ', '.join(attachments)   
