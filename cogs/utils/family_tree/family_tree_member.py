@@ -56,11 +56,11 @@ class FamilyTreeMember(object):
 
     def destroy(self):
         if self.partner:
-            self.partner.partner = None 
+            self.partner._partner = None 
         if self.parent:
-            self.parent.children.remove(self.id)
+            self.parent._children.remove(self.id)
         for child in self.children:
-            child.parent = None 
+            child._parent = None 
         del self.all_users[self.id]
 
 
@@ -256,12 +256,18 @@ class FamilyTreeMember(object):
         # Get the relevant root user
         root_user = self.get_root(guild=guild)
 
-        # Iterate through all family members
+        # Remove dupes
         span = root_user.span(guild=guild)
         span.insert(0, root_user.partner)
         span.insert(0, root_user.parent)
-        for i in span: span.remove(i) if span.count(i) > 1 else None
-        for user in span:
+        nodupe_span = []
+        for i in span:
+            if i in nodupe_span:
+                continue
+            nodupe_span.append(i)
+
+        # Iterate through the whole family
+        for user in nodupe_span:
 
             # Only add people with relevance
             if user == None:

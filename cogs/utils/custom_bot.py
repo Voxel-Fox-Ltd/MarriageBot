@@ -71,9 +71,9 @@ class CustomBot(AutoShardedBot):
             child._parent = i['parent_id']
 
         # Pick up the blacklisted guilds from the db
-        async with self.database() as db:
-            blacklisted = await db('SELECT * FROM blacklisted_guilds')
-        self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
+        # async with self.database() as db:
+        #     blacklisted = await db('SELECT * FROM blacklisted_guilds')
+        # self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
         # Remove anyone who's empty or who the bot can't reach
         await self.wait_until_ready()  # So I can use get_user
