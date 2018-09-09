@@ -44,6 +44,7 @@ class CustomBot(AutoShardedBot):
             for string in presence_text:
                 game = Game(string)
                 await self.change_presence(activity=game)
+                return
                 await sleep(60)
 
 

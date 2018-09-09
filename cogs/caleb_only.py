@@ -1,7 +1,7 @@
 from traceback import format_exc
 from asyncio import iscoroutine
 from aiohttp import ClientSession
-from discord import Member, Message
+from discord import Member, Message, Activity, ActivityType
 from discord.ext.commands import command, Context, group
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -220,6 +220,17 @@ class CalebOnly(object):
                 image_content = await r.read()
         await self.bot.user.edit(avatar=image_content)
         await ctx.send('Done.')
+
+
+    @profile.command(aliases=['game'])
+    async def activity(self, ctx:Context, activity_type:str, *, name:str=None):
+        '''
+        Changes the activity of the bot
+        '''
+
+        activity = Activity(name=name, type=getattr(ActivityType, activity_type.lower()))
+        await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
+
 
 
 def setup(bot:CustomBot):
