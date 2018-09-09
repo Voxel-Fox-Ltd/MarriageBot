@@ -133,24 +133,19 @@ class FamilyTreeMember(object):
 
         # Add your parent
         if expand_upwards and add_parent and self.parent:
-            people_list = self.parent.span(people_list, add_parent=True,expand_upwards=expand_upwards)
+            people_list = self.parent.span(people_list, add_parent=True,expand_upwards=expand_upwards, guild=guild)
 
         # Add your children
         if self.children:
             for child in self.children:
-                people_list = child.span(people_list, add_parent=False, expand_upwards=expand_upwards)
+                people_list = child.span(people_list, add_parent=False, expand_upwards=expand_upwards, guild=guild)
 
         # Add your partner
         if self.partner:
-            people_list = self.partner.span(people_list, add_parent=True,expand_upwards=expand_upwards)
+            people_list = self.partner.span(people_list, add_parent=True,expand_upwards=expand_upwards, guild=guild)
 
         # Remove dupes, should they be in there
-        nodupe = []
-        for i in people_list:
-            if i in nodupe:
-                continue
-            nodupe.append(i)
-        return nodupe
+        return people_list
 
 
     def get_root(self, guild:Guild=None):
@@ -259,21 +254,18 @@ class FamilyTreeMember(object):
         added_to_tree = []  # list of IDs that have been added
 
         # Get the relevant root user
-        if guild == None:
-            root_user = self.get_root()
-        else:
-            root_user = self.get_root(guild=guild)
-
-        # Get the right span
-        if guild == None:
-            span = root_user.span()
-        else:
-            span = root_user.span(guild=guild)
+        root_user = self.get_root(guild=guild)
 
         # Iterate through all family members
+        span = root_user.span(guild=guild)
+        span.insert(0, root_user.partner)
+        span.insert(0, root_user.parent)
+        for i in span: span.remove(i) if span.count(i) > 1 else None
         for user in span:
 
             # Only add people with relevance
+            if user == None:
+                continue
             if user.partner == None and len(user.children) == 0:
                 continue
             if user.id in added_to_tree:
@@ -282,12 +274,12 @@ class FamilyTreeMember(object):
             # Add a user, their spouse, and their children
             full_text.append(f"{user.get_name(bot)} (id={user.id})")
             added_to_tree.append(user.id)
-            if user.partner:
+            if user.partner and user.partner in span:
                 full_text.append(f"{user.partner.get_name(bot)} (id={user.partner.id})")
                 added_to_tree.append(user.partner.id)
-            children = user.children 
-            if user.partner:
-                children.extend(user.partner.children)
+            children = [i for i in user.children if i in span]
+            if user.partner and user.partner in span:
+                children.extend([i for i in user.partner.children if i in span])
             for child in children:
                 full_text.append(f"\t{child.get_name(bot)} (id={child.id})")
             full_text.append("")

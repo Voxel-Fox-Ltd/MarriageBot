@@ -54,6 +54,6 @@ async def on_ready():
 
     print('\nEverything loaded.\n')
 
-
-print('Starting...')
-bot.run_all()  # Custom run
+if __name__ == '__main__':
+    print('Starting...')
+    bot.run_all()  # Custom run

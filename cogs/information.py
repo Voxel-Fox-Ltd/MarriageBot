@@ -138,7 +138,7 @@ class Information(object):
 
     async def treemaker(self, ctx:Context, root:User, all_guilds:bool):
 
-        # if str(ctx.author) != 'Caleb#2831': 
+        # if ctx.author.id not in self.bot.config['owners']: 
         #     return await ctx.send("This command is temporarily disabled. Apologies.")
 
         if root == None:
@@ -171,8 +171,8 @@ class Information(object):
             '-Gcharset=UTF-8', 
             '-Gsize=200\\!', 
             '-Gdpi=100'
-            ], loop=self.bot.loop)
-        # await dot.wait()
+            ], loop=self.bot.loop
+        )
         await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
         try:
             dot.kill()

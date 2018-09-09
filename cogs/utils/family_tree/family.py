@@ -86,7 +86,7 @@ class Family(object):
         '''
 
         household = Household()
-        lines = text.strip().split('\n')
+        lines = text.strip().split('\n') + ['']
         for line in lines:
             line = line.rstrip()  # Only strip the right - maintain in case of child
             
@@ -189,7 +189,7 @@ class Family(object):
             spouse = Family.get_partner(household, person)
             if spouse == None:
                 # For one-person households
-                if len(generation) == 1:
+                if len(generation) in [0, 1]:
                     all_text.append(f'\t\t{person.id};')
                 continue
             else:
@@ -277,13 +277,13 @@ class Family(object):
 
 
     @classmethod
-    def get_full_tree(cls, ctx:Context, tree:FamilyTreeMember, all_guilds:bool=True) -> str:
+    def get_full_tree(cls, ctx:Context, tree:FamilyTreeMember, all_guilds:bool) -> str:
 
         # Create the family
         family = cls()
 
         # Populate the family
-        if all_guilds: 
+        if all_guilds == True: 
             guild = None 
         else:
             guild = ctx.guild

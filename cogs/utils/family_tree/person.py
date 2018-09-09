@@ -18,7 +18,6 @@ class Person(object):
         self.households = []
         self.id = ''
         self.colour = 'white'
-        self.follow_kids = True
         self.name = ''
 
         self.name, attr_str = information[0:-1].split('(')  # Split at the parenthesis

@@ -24,6 +24,9 @@ class ErrorEvent(object):
         Runs when there's an error thrown somewhere in the bot
         '''
 
+        if ctx.author.id in self.bot.config['owners']:
+            raise error
+
         if isinstance(error, MissingRequiredArgument):
             await ctx.send(f"You passed too few arguments to use that command.")
             return
