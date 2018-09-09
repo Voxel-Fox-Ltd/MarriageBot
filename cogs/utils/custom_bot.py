@@ -66,9 +66,9 @@ class CustomBot(AutoShardedBot):
             FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'])
         for i in parents:
             parent = FamilyTreeMember.get(i['parent_id'])
-            parent.children.append(i['child_id'])
+            parent._children.append(i['child_id'])
             child = FamilyTreeMember.get(i['child_id'])
-            child.parent = i['parent_id']
+            child._parent = i['parent_id']
 
         # Pick up the blacklisted guilds from the db
         async with self.database() as db:

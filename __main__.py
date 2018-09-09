@@ -1,16 +1,25 @@
 from glob import glob
 from discord import Game, Status
+from discord.ext.commands import when_mentioned_or
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_help import CustomHelp
 
 
 bot = CustomBot(
-    command_prefix=['m!', '<@468281173072805889> ', '<@!468281173072805889> '], 
+    command_prefix=when_mentioned_or('m!'), 
     config_file='config/config.json',
     formatter=CustomHelp(),
     activity=Game(name="Restarting..."),
     status=Status.dnd
     )
+
+
+# @bot.check
+# async def disable_all(ctx):
+#     if str(ctx.author) != 'Caleb#2831': 
+#         await ctx.send("This command is temporarily disabled. Apologies.")
+#         return False 
+#     return True
 
 
 def get_extensions() -> list:

@@ -75,7 +75,7 @@ class Marriage(object):
         # See if they're married or in the family already
         await ctx.trigger_typing()
         user_tree = FamilyTreeMember.get(instigator.id)
-        root = user_tree.expand_backwards(-1)
+        root = user_tree.get_root()
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
@@ -141,9 +141,9 @@ class Marriage(object):
             except Exception as e:
                 pass
             me = FamilyTreeMember.get(instigator.id)
-            me.partner = target.id 
+            me._partner = target.id 
             them = FamilyTreeMember.get(target.id)
-            them.partner = instigator.id
+            them._partner = instigator.id
 
         self.bot.proposal_cache.remove(instigator.id)
         self.bot.proposal_cache.remove(target.id)
@@ -165,14 +165,14 @@ class Marriage(object):
         if instigator_data.partner == None:
             await ctx.send("You're not married. Don't try to divorce strangers .-.")
             return
-        target = ctx.guild.get_member(instigator_data.partner)
+        target = ctx.guild.get_member(instigator_data.partner.id)
         if target == None:
-            target_id = instigator_data.partner 
+            target_id = instigator_data.partner.id
         else:
             target_id = target.id
 
 
-        if instigator_data.partner != target_id:
+        if instigator_data.partner.id != target_id:
             await ctx.send("You aren't married to that person .-.")
             return
 
@@ -185,9 +185,9 @@ class Marriage(object):
             await ctx.send(f"You and your partner are now divorced. I wish you luck in your lives.")
 
         me = instigator_data
-        me.partner = None
+        me._partner = None
         them = FamilyTreeMember.get(target_id)
-        them.partner = None
+        them._partner = None
 
 
 def setup(bot:CustomBot):

@@ -10,7 +10,7 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils.family_tree.familytreemaker import generate_dot_file
+from cogs.utils.family_tree.family import Family
 
 
 get_random_string = lambda: ''.join(choice(ascii_lowercase) for i in range(6))
@@ -25,6 +25,7 @@ class Information(object):
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
+        self.fam = None
 
 
     @command(aliases=['spouse', 'husband', 'wife'])
@@ -43,7 +44,7 @@ class Information(object):
             await ctx.send(f"`{user!s}` is not currently married.")
             return
 
-        partner = self.bot.get_user(user_info.partner)
+        partner = self.bot.get_user(user_info.partner.id)
         await ctx.send(f"`{user!s}` is currently married to `{partner!s}` (`{partner.id}`).")
 
 
@@ -65,7 +66,7 @@ class Information(object):
         await ctx.send(
             f"`{user!s}` has `{len(user_info.children)}` child" + 
             {False:"ren",True:""}.get(len(user_info.children)==1) + ": " + 
-            ", ".join([f"`{self.bot.get_user(i)!s}` (`{i}`)" for i in user_info.children])
+            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.children])
         )
 
     @command()
@@ -82,7 +83,7 @@ class Information(object):
         if user_info.parent == None:
             await ctx.send(f"`{user!s}` has no parent.")
             return
-        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(user_info.parent)!s}` (`{user_info.parent}`).")
+        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(user_info.parent.id)!s}` (`{user_info.parent.id}`).")
 
 
     @command()
@@ -96,7 +97,7 @@ class Information(object):
         if root == None:
             root = ctx.author
 
-        text = FamilyTreeMember.get(root.id).generate_gedcom_file(self.bot)
+        text = FamilyTreeMember.get(root.id).generate_gedcom_script(self.bot)
         file = BytesIO(text.encode())
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
@@ -104,7 +105,7 @@ class Information(object):
     @command(aliases=['familytree'])
     @can_send_files()
     @cooldown(1, 30, BucketType.user)
-    async def tree(self, ctx:Context, root:Member=None, depth:int=-1):
+    async def tree(self, ctx:Context, root:Member=None):
         '''
         Gets the family tree of a given user
         '''
@@ -114,7 +115,7 @@ class Information(object):
             return
 
         try:
-            return await self.treemaker(ctx, root, depth, False)
+            return await self.treemaker(ctx, root, False)
         except Exception as e:
             # await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
             raise e
@@ -123,41 +124,33 @@ class Information(object):
     @command(aliases=['fulltree'])
     @can_send_files()
     @cooldown(1, 30, BucketType.user)
-    async def globaltree(self, ctx:Context, root:User=None, depth:int=-1):
+    async def globaltree(self, ctx:Context, root:User=None):
         '''
         Gets the global family tree of a given user
         '''
 
         try:
-            return await self.treemaker(ctx, root, depth, True)
+            return await self.treemaker(ctx, root, True)
         except Exception as e:
             # await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
             raise e
 
 
-    async def treemaker(self, ctx:Context, root:User, depth:int, all_guilds:bool):
+    async def treemaker(self, ctx:Context, root:User, all_guilds:bool):
 
         # if str(ctx.author) != 'Caleb#2831': 
         #     return await ctx.send("This command is temporarily disabled. Apologies.")
 
         if root == None:
             root = ctx.author
-        if depth <= 0:
-            depth = -1
         root_user = root
 
         # Get their family tree
         await ctx.trigger_typing()
-        tree = FamilyTreeMember.get(root.id)
+        tree = FamilyTreeMember.get(root_user.id)
 
         # Make sure they have one
-        if tree.children == [] and tree.partner == None and tree.parent == None:
-            await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
-            return
-
-        # Start the 3-step conversion process
-        root, text = tree.to_tree_string(ctx, expand_backwards=depth, depth=depth*2, all_guilds=all_guilds)
-        if text == '':
+        if tree.is_empty:
             await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
 
@@ -165,31 +158,16 @@ class Information(object):
         random_string = get_random_string()
 
         # Write their treemaker code to a file
-        with open(f'./trees/{random_string}_{root.id}.txt', 'w', encoding='utf-8') as a:
-            a.write(text)
-
-        # Convert and write to a dot file
-        f = open(f'./trees/{random_string}_{root.id}.dot', 'w')
-        treemaker = await create_subprocess_exec(*[
-            'python3.6', 
-            './cogs/utils/family_tree/familytreemaker.py', 
-            f'./trees/{random_string}_{root.id}.txt'
-            ], stdout=f, loop=self.bot.loop)
-        # await treemaker.wait()
-        await wait_for(treemaker.wait(), 10.0, loop=self.bot.loop)
-        try:
-            treemaker.kill()
-        except Exception as e: 
-            pass
-        f.close()
+        with open(f'./trees/{random_string}_{root_user.id}.dot', 'w', encoding='utf-8') as a:
+            a.write(Family.get_full_tree(ctx, tree, all_guilds=all_guilds))
 
         # Convert to an image
         dot = await create_subprocess_exec(*[
             'dot', 
             '-Tpng', 
-            f'./trees/{random_string}_{root.id}.dot', 
+            f'./trees/{random_string}_{root_user.id}.dot', 
             '-o', 
-            f'./trees/{random_string}_{root.id}.png', 
+            f'./trees/{random_string}_{root_user.id}.png', 
             '-Gcharset=UTF-8', 
             '-Gsize=200\\!', 
             '-Gdpi=100'

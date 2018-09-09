@@ -74,7 +74,7 @@ class Parentage(object):
         # See if they already have a parent
         await ctx.trigger_typing()
         user_tree = FamilyTreeMember.get(instigator.id)
-        root = user_tree.expand_backwards(-1)
+        root = user_tree.get_root()
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
@@ -142,9 +142,9 @@ class Parentage(object):
             except Exception as e:
                 pass
             me = FamilyTreeMember.get(instigator.id)
-            me.parent = target.id 
+            me._parent = target.id 
             them = FamilyTreeMember.get(target.id)
-            them.children.append(instigator.id)
+            them._children.append(instigator.id)
 
         self.bot.proposal_cache.remove(instigator.id)
         self.bot.proposal_cache.remove(target.id)
@@ -182,7 +182,7 @@ class Parentage(object):
         # See if they already have a parent
         await ctx.trigger_typing()
         user_tree = FamilyTreeMember.get(instigator.id)
-        root = user_tree.expand_backwards(-1)
+        root = user_tree.get_root()
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
@@ -245,9 +245,9 @@ class Parentage(object):
             except Exception as e:
                 pass
             me = FamilyTreeMember.get(instigator.id)
-            me.children.append(target.id)
+            me._children.append(target.id)
             them = FamilyTreeMember.get(target.id)
-            them.parent = instigator.id
+            them._parent = instigator.id
 
         self.bot.proposal_cache.remove(instigator.id)
         self.bot.proposal_cache.remove(target.id)
@@ -264,7 +264,7 @@ class Parentage(object):
         target = child
 
         user_tree = FamilyTreeMember.get(instigator.id)
-        children_ids = user_tree.children
+        children_ids = user_tree._children
 
         if target.id not in children_ids:
             await ctx.send(f"That person isn't your child, {instigator.mention}.")
@@ -277,9 +277,9 @@ class Parentage(object):
             await ctx.send(f"You're free, {instigator.mention}, they're no longer your child!")
 
         me = FamilyTreeMember.get(instigator.id)
-        me.children.remove(target.id)
+        me._children.remove(target.id)
         them = FamilyTreeMember.get(target.id)
-        them.parent = None
+        them._parent = None
 
 
     @command(aliases=['eman'])
@@ -292,7 +292,7 @@ class Parentage(object):
         instigator = ctx.author
 
         user_tree = FamilyTreeMember.get(instigator.id)
-        parent_id = user_tree.parent
+        parent_id = user_tree.parent.id
 
         if parent_id == None:
             await ctx.send(f"You don't have a parent, {instigator.mention}")
@@ -306,9 +306,9 @@ class Parentage(object):
             await ctx.send(f"You're an orphan now, {instigator.mention}.")
 
         me = FamilyTreeMember.get(instigator.id)
-        me.parent = None
+        me._parent = None
         them = FamilyTreeMember.get(parent_id)
-        them.children.remove(instigator.id)
+        them._children.remove(instigator.id)
 
 
 def setup(bot:CustomBot):
