@@ -191,6 +191,7 @@ class Family(object):
                 # For one-person households
                 if len(generation) in [0, 1]:
                     all_text.append(f'\t\t{person.id};')
+                previous_person = person.id
                 continue
             else:
                 all_text.append(f'\t\t{person.id} -> h{household.id} -> {spouse.id};')
