@@ -292,23 +292,22 @@ class Parentage(object):
         instigator = ctx.author
 
         user_tree = FamilyTreeMember.get(instigator.id)
-        parent = user_tree.parent
+        parent_id = user_tree.parent
 
-        if parent == None:
+        if parent_id == None:
             await ctx.send(f"You don't have a parent, {instigator.mention}")
             return
-        target = self.bot.get_user(parent)
 
         async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2', target.id, instigator.id)
-        if ctx.guild.get_member(target.id):
-            await ctx.send(f"You're an orphan now, {instigator.mention}. Sorry {target.mention}!")
+            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2', parent_id, instigator.id)
+        if ctx.guild.get_member(parent_id):
+            await ctx.send(f"You're an orphan now, {instigator.mention}. Sorry <@{parent_id}>!")
         else:
             await ctx.send(f"You're an orphan now, {instigator.mention}.")
 
         me = FamilyTreeMember.get(instigator.id)
         me.parent = None
-        them = FamilyTreeMember.get(target.id)
+        them = FamilyTreeMember.get(parent_id)
         them.children.remove(instigator.id)
 
 
