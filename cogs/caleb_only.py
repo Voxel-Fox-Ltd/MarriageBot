@@ -1,7 +1,7 @@
 from traceback import format_exc
 from asyncio import iscoroutine
 from aiohttp import ClientSession
-from discord import Member, Message, Activity, ActivityType
+from discord import Member, Message, Activity, ActivityType, User
 from discord.ext.commands import command, Context, group
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -31,7 +31,7 @@ class CalebOnly(object):
         return channel
 
 
-    @command()
+    @command(aliases=['s'])
     async def send(self, ctx:Context, *, content:str):
         '''
         Sends content to the current stream channel
@@ -77,7 +77,52 @@ class CalebOnly(object):
                 text = f"**Streamed Message** | User: `{message.author!s}` (`{message.author.id}`)\nNo text content in message."
             if attachments:
                 text += '\nAttachments: ' + ', '.join(attachments)
-            await self.stream_channel.send(text)                
+            await self.stream_channel.send(text) 
+
+
+    @command(aliases=['pm', 'dm'])
+    async def message(self, ctx:Context, user:User, *, content:str):
+        '''
+        Messages a user the given content
+        '''
+
+        await user.send(content)
+
+
+    @command()
+    async def forcemarry(self, ctx:Context, user_a:User, user_b:User):
+        '''
+        Marries the two specified users
+        '''
+
+        async with self.bot.database() as db:
+            try:
+                await db.marry(user_a, user_b)
+            except Exception as e:
+                return  # Only thrown if two people try to marry at once, so just return
+        me = FamilyTreeMember.get(user_a.id)
+        me._partner = user_b.id 
+        them = FamilyTreeMember.get(user_b.id)
+        them._partner = user_a.id
+        await ctx.send("Consider it done.")
+
+
+    @command()
+    async def forceadopt(self, ctx:Context, parent:User, child:User):
+        '''
+        Adds the child to the specified parent
+        '''
+
+        async with self.bot.database() as db:
+            try:
+                await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', instigator.id, target.id)
+            except Exception as e:
+                return  # Only thrown when multiple people do at once, just return
+        me = FamilyTreeMember.get(parent.id)
+        me._children.append(child.id)
+        them = FamilyTreeMember.get(child.id)
+        them._parent = parent.id
+        await ctx.send("Consider it done.")
 
 
     @command()

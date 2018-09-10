@@ -88,7 +88,7 @@ class Information(object):
 
     @command()
     @can_send_files()
-    @cooldown(1, 30, BucketType.user)
+    @cooldown(1, 5, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):
         '''
         Gives you the full family tree of a user
@@ -104,7 +104,7 @@ class Information(object):
 
     @command(aliases=['familytree'])
     @can_send_files()
-    @cooldown(1, 30, BucketType.user)
+    @cooldown(1, 5, BucketType.user)
     async def tree(self, ctx:Context, root:Member=None):
         '''
         Gets the family tree of a given user
@@ -123,7 +123,7 @@ class Information(object):
 
     @command(aliases=['fulltree'])
     @can_send_files()
-    @cooldown(1, 30, BucketType.user)
+    @cooldown(1, 5, BucketType.user)
     async def globaltree(self, ctx:Context, root:User=None):
         '''
         Gets the global family tree of a given user
