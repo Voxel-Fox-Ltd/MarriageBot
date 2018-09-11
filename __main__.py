@@ -6,7 +6,6 @@ from cogs.utils.custom_help import CustomHelp
 
 
 bot = CustomBot(
-    command_prefix=when_mentioned_or('m!'), 
     config_file='config/config.json',
     formatter=CustomHelp(),
     activity=Game(name="Restarting..."),

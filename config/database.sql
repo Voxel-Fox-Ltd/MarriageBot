@@ -29,3 +29,11 @@ CREATE TABLE blacklisted_guilds(
     PRIMARY KEY (guild_id)
 );
 -- Basically a big ol' list of blacklisted guild IDs
+
+
+CREATE TABLE guild_settings(
+    guild_id BIGINT NOT NULL,
+    prefix VARCHAR(30),
+    PRIMARY KEY (guild_id)
+);
+-- A config for a guild to change their prefix

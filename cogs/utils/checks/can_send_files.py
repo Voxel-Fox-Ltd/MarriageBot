@@ -1,7 +1,7 @@
-from discord.ext.commands import check, CommandError
+from discord.ext.commands import check, CheckFailure
 
 
-class CantSendFiles(CommandError):
+class CantSendFiles(CheckFailure):
     pass
 
 

@@ -1,7 +1,7 @@
 from gc import collect
 from traceback import format_exc
 from discord.ext.commands import Context
-from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError, CommandOnCooldown
+from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError, CommandOnCooldown, NotOwner, MissingPermissions
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import CantSendFiles
 
@@ -36,6 +36,9 @@ class ErrorEvent(object):
         elif isinstance(error, CantSendFiles):
             await ctx.send("I'm not able to send files into this channel.")
             return
+        elif isinstance(error, MissingPermissions):
+            await ctx.send("You're missing the required permissions to run that command.")
+            return
         elif isinstance(error, CommandInvokeError):
             if 'FORBIDDEN' in str(error):
                 await ctx.author.send("I'm unable to send messages into that channel.")
@@ -50,8 +53,11 @@ class ErrorEvent(object):
         elif isinstance(error, CommandOnCooldown):
             # Ratelimited user so no error text
             return
+        elif isinstance(error, NotOwner):
+            # Only error found on the calebonly commands
+            return
         elif isinstance(error, CheckFailure):
-            # The only checks are the CalebOnly and hidden commands
+            # The only checks are the hidden commands
             return
         elif isinstance(error, CommandNotFound):
             x = '\\n'.join(ctx.message.content.split('\n'))

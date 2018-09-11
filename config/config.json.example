@@ -9,6 +9,7 @@
         "host": "127.0.0.1"
     },
     "presence_text": "m!help",
+    "default_prefix": "m!",
     "google_analytics": {
         "tracking_id": "",
         "app_name": "",

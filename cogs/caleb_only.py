@@ -2,7 +2,7 @@ from traceback import format_exc
 from asyncio import iscoroutine
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status
-from discord.ext.commands import command, Context, group
+from discord.ext.commands import command, Context, group, NotOwner
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.family_tree.family import Family
@@ -20,8 +20,10 @@ class CalebOnly(object):
         self.stream = None  # May be channel/ID
 
 
-    async def __local_check(self, ctx:Context):
-        return ctx.author.id in self.bot.config['owners']
+    def __local_check(self, ctx:Context):
+        if ctx.author.id in self.bot.config['owners']:
+            return True
+        raise NotOwner
 
 
     @property
@@ -288,7 +290,7 @@ class CalebOnly(object):
         Changes the bot's status
         '''
 
-        status_o = getattr(Status, status.lower()
+        status_o = getattr(Status, status.lower())
         await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_o)
 
 

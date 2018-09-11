@@ -2,49 +2,55 @@ from datetime import datetime as dt
 from json import load
 from asyncio import sleep
 from aiohttp import ClientSession
-from discord import Game
-from discord.ext.commands import AutoShardedBot, cooldown
-from discord.ext.commands.bot import _default_help_command
+from discord import Game, Message
+from discord.ext.commands import AutoShardedBot, cooldown, when_mentioned_or
 from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.removal_dict import RemovalDict
 
 
+def get_prefix(bot, message:Message):
+    '''
+    Gives the prefix for the given guild
+    '''
+
+    try:
+        x = bot.guild_prefixes.get(message.guild.id, bot.config['default_prefix'])
+    except AttributeError:
+        x = bot.config['default_prefix']
+    return when_mentioned_or(x)(bot, message)
+
+
 class CustomBot(AutoShardedBot):
 
     def __init__(self, config_file:str='config.json', *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        # Things I would need anyway
+        super().__init__(command_prefix=get_prefix, *args, **kwargs)
+
+        # Store the config file for later
         self.config = None
         self.config_file = config_file
         self.reload_config()
+
+        # Allow database connections like this
         self.database = DatabaseConnection
         self.database.config = self.config['database']
 
-        self.startup_time = dt.now()
-
+        # Store the startup method so I can see if it completed successfully
         self.startup_method = self.loop.create_task(self.startup())
 
+        # Add a cache for proposing users
         self.proposal_cache = RemovalDict()
 
+        # Add a list of blacklisted guilds
         self.blacklisted_guilds = []
+
+        # Dictionary of custom prefixes
+        self.guild_prefixes = {}  # guild_id: prefix
         
+        # Add a cooldown to help
         cooldown(1, 5, BucketType.user)(self.get_command('help'))
-
-
-    async def presence_loop(self):
-        '''
-        A loop of changing the presence for the botto
-        '''
-
-        await self.wait_until_ready()
-        while not self.is_closed():
-            presence_text = self.config['presence_text']
-            for string in presence_text:
-                game = Game(string)
-                await self.change_presence(activity=game)
-                return
-                await sleep(60)
 
 
     async def startup(self):
@@ -77,6 +83,12 @@ class CustomBot(AutoShardedBot):
         await self.wait_until_ready()
         await self.set_default_presence()
 
+        # Grab the command prefixes per guild
+        async with self.database() as db:
+            settings = await db('SELECT * FROM guild_settings')
+        for guild_setting in settings:
+            self.guild_prefixes[guild_setting['guild_id']] = guild_setting['prefix']
+
         # Remove anyone who's empty or who the bot can't reach
         async with self.database() as db:
             for user_id, ftm in FamilyTreeMember.all_users.copy().items():
@@ -97,9 +109,9 @@ class CustomBot(AutoShardedBot):
         
         # Update presence
         presence_text = self.config['presence_text']
-        if len(self.shard_ids) > 1:
-            for i in self.shard_ids:
-                game = Game(f"{presence_text} | Shard {i}")
+        if self.shard_count > 1:
+            for i in range(self.shard_count):
+                game = Game(f"{presence_text} (shard {i})")
                 await self.change_presence(activity=game, shard_id=i)
         else:
             game = Game(presence_text)
