@@ -264,6 +264,8 @@ class FamilyTreeMember(object):
         for i in span:
             if i in nodupe_span:
                 continue
+            if i == None:
+                continue
             nodupe_span.append(i)
 
         # Iterate through the whole family
@@ -287,7 +289,7 @@ class FamilyTreeMember(object):
             if user.partner and user.partner in span:
                 children.extend([i for i in user.partner.children if i in span])
             for child in children:
-                full_text.append(f"\t{child.get_name(bot)} (id={child.id})")
+                full_text.append(f"\t{child.get_name(bot)} (id={child.id}, parent={child.parent.id})")
             full_text.append("")
 
         # Return text, changing the colour of the root post

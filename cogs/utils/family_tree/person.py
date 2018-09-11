@@ -13,7 +13,7 @@ class Person(object):
 
     def __init__(self, information:str):
         information = information.strip()
-        self.attr = {}
+        self.attrs = {}
         self.parents = []
         self.households = []
         self.id = ''
@@ -24,13 +24,14 @@ class Person(object):
         self.name = self.name.strip()
         attr_list = map(lambda x: x.strip(), attr_str.split(','))
         for a in attr_list:
+            a = a.strip()
             if '=' in a:
                 k, v = a.split('=')
-                self.attr[k] = v
+                self.attrs[k] = v
             else:
-                self.attr[a] = True
-        self.id = self.attr['id']
-        if 'F' in self.attr: self.colour = 'bisque'
+                self.attrs[a] = True
+        self.id = self.attrs['id']
+        if 'F' in self.attrs: self.colour = 'bisque'
 
     def graphviz(self):
         label = self.name

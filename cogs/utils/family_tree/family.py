@@ -36,7 +36,7 @@ class Family(object):
 
         # Save their [new] information
         if person.id in self.everybody:
-            self.everybody[person.id].attr.update(person.attr)
+            self.everybody[person.id].attrs.update(person.attrs)
         else:
             self.everybody[person.id] = person
 
@@ -194,8 +194,9 @@ class Family(object):
                 previous_person = person.id
                 continue
             else:
-                all_text.append(f'\t\t{person.id} -> h{household.id} -> {spouse.id};')
-                all_text.append(f'\t\th{household.id}{self.INVISIBLE};')
+                all_text.append(f'\t\t{person.id} -> {spouse.id};')
+                # all_text.append(f'\t\t{person.id} -> h{household.id} -> {spouse.id};')
+                # all_text.append(f'\t\th{household.id}{self.INVISIBLE};')
                 previous_person = spouse.id
         all_text.append('\t}')
 
@@ -209,43 +210,55 @@ class Family(object):
                 if len(household.children) == 0:
                     continue
 
-                # Draw invisible link to previous node to maintain a line
-                if previous_node != None:
-                    all_text.append(f'\t\t{previous_node} -> h{household.id}_0 [style=invis];')
+                # Go through each child and add lines for their children
+                for parent, sub_id in zip(household.parents, 'abcdefghijklmnopqrstuvwxyz'):
+                    # Get the children, skip if none
+                    children = [i for i in household.children if i.attrs['parent']==parent.id]
+                    child_count = len(children)
+                    if child_count == 0:
+                        continue
 
-                # Draw nodes per children
-                child_count = len(household.children)
-                if child_count % 2 == 0:
-                    child_count += 1  # Add a node to keep symmetry 
-                all_text.append('\t\t' + ' -> '.join(map(lambda x: f'h{household.id}_{x}', range(child_count))) + ';')
-                for i in range(child_count):
-                    all_text.append(f'\t\th{household.id}_{i}{self.INVISIBLE};')
-                    previous_node = f'h{household.id}_{i}'
+                    # Add link to previous to keep in line
+                    if previous_node != None:
+                        all_text.append(f'\t\t{previous_node} -> h{household.id}_{sub_id}_0 [style=invis];')
+
+                    # Add a node to keep symmetry
+                    if child_count % 2 == 0:
+                        child_count += 1
+
+                    # Draw links between nodes
+                    all_text.append('\t\t' + ' -> '.join(map(lambda x: f'h{household.id}_{sub_id}_{x}', range(child_count))) + ';')
+
+                    # Make the nodes invisible
+                    for i in range(child_count):
+                        all_text.append(f'\t\th{household.id}_{sub_id}_{i}{self.INVISIBLE};')
+                        previous_node = f'h{household.id}_{sub_id}_{i}'
+
         all_text.append('\t}')
 
         # Draw lines to children from household lines
         for person in generation:
             for household in person.households:
 
-                if len(household.children) > 0:
+                # Go through each parent and add lines to their children
+                for parent, sub_id in zip(household.parents, 'abcdefghijklmnopqrstuvwxyz'):
+                    # Get the children, skip if none
+                    children = [i for i in household.children if i.attrs['parent']==parent.id]
+                    child_count = len(children)
+                    if child_count == 0:
+                        continue
 
-                    # Draw line from marriage to children line
-                    if len(household.parents) == 2:
-                        all_text.append(f'\t\th{household.id} -> h{household.id}_{int(len(household.children)/2)};')
-                    elif len(household.parents) == 1:
-                        all_text.append(f'\t\t{household.parents[0].id} -> h{household.id}_{int(len(household.children)/2)};')
-                    else:
-                        raise Exception("You can have one or two users in a household")    
+                    # Link parent to their children line
+                    all_text.append(f'\t\t{parent.id} -> h{household.id}_{sub_id}_{int(child_count/2)};')
 
                     # Draw lines from children line to child
                     i = 0
-                    for child in household.children:
-                        all_text.append(f'\t\th{household.id}_{i} -> {child.id};')
+                    for child in children:
+                        all_text.append(f'\t\th{household.id}_{sub_id}_{i} -> {child.id};')
                         i += 1
-
-                        # Don't draw to the center if even amount of children, just to the ends
-                        if i == len(household.children)/2:
+                        if i == child_count/2:
                             i += 1
+
         return all_text
 
 
