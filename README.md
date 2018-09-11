@@ -55,6 +55,9 @@ Shows the family tree of the given user across all servers (since families persi
 * `m!treefile [@User#1231]`
 Gives you the full family tree output for the given user as a .ged file.
 
+* `m!prefix [Prefix]`
+For when `m!` isn't good enough (you must have the `manage_guild` permission to run this command. You'll always be able to mention the bot to get its attention, so don't worry about forgetting the prefix).
+
 # Testimonials
 
 ![Testimonial 1](https://files.callumb.co.uk/marriagebot/1.png)
