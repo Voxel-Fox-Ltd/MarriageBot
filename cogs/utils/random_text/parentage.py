@@ -190,6 +190,7 @@ class ParentageRandomText(object):
             f"{target.mention}, you have sucessfully adopted {instigator.mention}!",
             f"I'm happy to introduce {instigator.mention} to the {target.mention} family!",
             f"They accepted, {instigator.mention}! Welcome to the new family.",
+            f"{instigator.mention}, your new parent is {target.mention} c:",
         ])
 
 
@@ -203,7 +204,6 @@ class ParentageRandomText(object):
             f"Sorry, {instigator.mention}, but they said no.",
             f"Unfortunately they said no, {instigator.mention}. Better luck next time!",
             f"It seems they aren't ready to be your parent, {instigator.mention}.",
-            f"{instigator.mention}, your new parent is {target.mention} c:",
         ])
 
 

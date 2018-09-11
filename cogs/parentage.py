@@ -292,9 +292,9 @@ class Parentage(object):
         instigator = ctx.author
 
         user_tree = FamilyTreeMember.get(instigator.id)
-        parent_id = user_tree.parent.id
-
-        if parent_id == None:
+        try:
+            parent_id = user_tree.parent.id
+        except AttributeError:
             await ctx.send(f"You don't have a parent, {instigator.mention}")
             return
 
