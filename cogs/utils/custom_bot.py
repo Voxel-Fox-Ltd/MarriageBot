@@ -24,7 +24,6 @@ class CustomBot(AutoShardedBot):
         self.startup_time = dt.now()
 
         self.startup_method = self.loop.create_task(self.startup())
-        self.presence_loop = self.loop.create_task(self.presence_loop())
 
         self.proposal_cache = RemovalDict()
 
@@ -75,8 +74,10 @@ class CustomBot(AutoShardedBot):
         #     blacklisted = await db('SELECT * FROM blacklisted_guilds')
         # self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
+        await self.wait_until_ready()
+        await self.set_default_presence()
+
         # Remove anyone who's empty or who the bot can't reach
-        await self.wait_until_ready()  # So I can use get_user
         async with self.database() as db:
             for user_id, ftm in FamilyTreeMember.all_users.copy().items():
                 if user_id == None or ftm == None:
@@ -87,6 +88,22 @@ class CustomBot(AutoShardedBot):
 
         # And update DBL
         await self.post_guild_count()
+
+
+    async def set_default_presence(self):
+        '''
+        Sets the default presence of the bot as appears in the config file
+        '''
+        
+        # Update presence
+        presence_text = self.config['presence_text']
+        if len(self.shard_ids) > 1:
+            for i in self.shard_ids:
+                game = Game(f"{presence_text} | Shard {i}")
+                await self.change_presence(activity=game, shard_id=i)
+        else:
+            game = Game(presence_text)
+            await self.change_presence(activity=game)
 
 
     async def post_guild_count(self):

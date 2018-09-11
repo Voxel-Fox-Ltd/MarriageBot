@@ -1,7 +1,7 @@
 from traceback import format_exc
 from asyncio import iscoroutine
 from aiohttp import ClientSession
-from discord import Member, Message, Activity, ActivityType, User
+from discord import Member, Message, Activity, ActivityType, User, Status
 from discord.ext.commands import command, Context, group
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -115,7 +115,7 @@ class CalebOnly(object):
 
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', instigator.id, target.id)
+                await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', parent.id, child.id)
             except Exception as e:
                 return  # Only thrown when multiple people do at once, just return
         me = FamilyTreeMember.get(parent.id)
@@ -274,9 +274,22 @@ class CalebOnly(object):
         Changes the activity of the bot
         '''
 
-        activity = Activity(name=name, type=getattr(ActivityType, activity_type.lower()))
+        if name:
+            activity = Activity(name=name, type=getattr(ActivityType, activity_type.lower()))
+        else:
+            await self.bot.set_default_presence()
+            return
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
+
+    @profile.command()
+    async def status(self, ctx:Context, status:str):
+        '''
+        Changes the bot's status
+        '''
+
+        status_o = getattr(Status, status.lower()
+        await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_o)
 
 
 def setup(bot:CustomBot):
