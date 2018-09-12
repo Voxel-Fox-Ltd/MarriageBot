@@ -163,18 +163,21 @@ class FamilyTreeMember(object):
                 If you want to get users only from a given guild, supply a guild here
         '''
 
-        previous = None
         root_user = self
         while True:
-            previous = root_user
+            if guild:
+                if root_user.parent and guild.get_member(root_user.parent.id):
+                    root_user = root_user.parent
+                elif root_user.partner and guild.get_member(root_user.partner.id) and root_user.partner.parent and guild.get_member(root_user.partner.parent.id):
+                    root_user = root_user.partner.parent
+                else:
+                    break
+            else:
             if root_user.parent:
                 root_user = root_user.parent
-            elif root_user.partner and root_user.partner.parent:
+                elif root_user.partner and root_user.partner.parent :
                 root_user = root_user.partner.parent
             else:
-                break
-            if guild and guild.get_member(root_user.id) == None:
-                root_user = previous
                 break
         return root_user
 
@@ -311,16 +314,21 @@ class FamilyTreeMember(object):
         '''
 
         # Get the generation spanning tree
-        # root_user = self.get_root(guild=guild)
-        gen_span = self.generational_span(guild=guild)
-        if self.partner and self.partner not in gen_span.get(0, list()):
-            x = gen_span.get(0, list())
+        root_user = self.get_root(guild=guild)
+        gen_span = root_user.generational_span(guild=guild)
+        my_depth = None
+        for depth, l in gen_span.items():
+            if self in l:
+                my_depth = depth
+                break
+        if self.partner and self.partner not in gen_span.get(my_depth, list()):
+            x = gen_span.get(my_depth, list())
             x.append(self.partner)
-            gen_span[0] = x
-        if self.parent and self.parent not in gen_span.get(-1, list()):
-            x = gen_span.get(-1, list())
+            gen_span[my_depth] = x
+        if self.parent and self.parent not in gen_span.get(my_depth-1, list()):
+            x = gen_span.get(my_depth-1, list())
             x.append(self.parent)
-            gen_span[-1] = x
+            gen_span[my_depth-1] = x
 
         # Add the labels for each user
         all_text = [
