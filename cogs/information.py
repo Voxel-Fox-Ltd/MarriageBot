@@ -157,16 +157,16 @@ class Information(object):
         random_string = get_random_string()
 
         # Write their treemaker code to a file
-        with open(f'./trees/{random_string}_{root_user.id}.dot', 'w', encoding='utf-8') as a:
+        with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.dot', 'w', encoding='utf-8') as a:
             a.write(tree.to_dot_script(ctx.bot, guild=None if all_guilds else ctx.guild))
 
         # Convert to an image
         dot = await create_subprocess_exec(*[
             'dot', 
             '-Tpng', 
-            f'./trees/{random_string}_{root_user.id}.dot', 
+            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.dot', 
             '-o', 
-            f'./trees/{random_string}_{root_user.id}.png', 
+            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png', 
             '-Gcharset=UTF-8', 
             '-Gsize=200\\!', 
             '-Gdpi=100'
@@ -180,7 +180,7 @@ class Information(object):
 
         # Send file and delete cached
         try:
-            await ctx.send(ctx.author.mention, file=File(fp=f'./trees/{random_string}_{root.id}.png'))
+            await ctx.send(ctx.author.mention, file=File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png'))
         except Exception as e:
             return 
         return

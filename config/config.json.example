@@ -16,6 +16,7 @@
         "document_host": ""
     },
     "initial_cogs": [],
+    "tree_file_location": "./trees",
     "dbl_vainity": "",
     "github": "",
     "patreon": "",
