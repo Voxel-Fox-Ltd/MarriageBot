@@ -46,6 +46,8 @@ class DatabaseConnection(object):
         # If it got something, return the dict, else None
         if x:
             return x
+        if 'select' in sql.lower().split(' ') or 'returning' in sql.lower().split(' '):
+            return []
         return None
 
     async def destroy(self, user_id:int):

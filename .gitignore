@@ -1,6 +1,6 @@
 __pycache__/*
 *.pyc
-config/config.json
+config/*.json
 *sublime*
 _*
 *.code*

@@ -1,3 +1,4 @@
+from sys import argv
 from glob import glob
 from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
@@ -6,7 +7,7 @@ from cogs.utils.custom_help import CustomHelp
 
 
 bot = CustomBot(
-    config_file='config/config.json',
+    config_file=argv[1],
     formatter=CustomHelp(),
     activity=Game(name="Restarting..."),
     status=Status.dnd
@@ -43,13 +44,25 @@ async def on_ready():
     print(f'\t{bot.user.id}')
 
     print('Loading extensions... ')
-    for i in get_extensions():
-        print('\t' + i + '... ', end='')
-        try:
-            bot.load_extension(i)
-            print('success')
-        except Exception as e:
-            print(e)
+    # See if inital ones were specified in config
+    x = bot.config.get('initial_cogs')
+    if x:
+        for i in x:
+            print('\t' + i + '... ', end='')
+            try:
+                bot.load_extension(i)
+                print('success')
+            except Exception as e:
+                print(e)
+    # They weren't, grab them all
+    else:
+        for i in get_extensions():
+            print('\t' + i + '... ', end='')
+            try:
+                bot.load_extension(i)
+                print('success')
+            except Exception as e:
+                print(e)
 
     print('\nEverything loaded.\n')
 
