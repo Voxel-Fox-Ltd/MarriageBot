@@ -5,6 +5,8 @@ from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.random_text.makeparent import MakeParentRandomText
+from cogs.utils.random_text.adopt import AdoptRandomText
 
 
 class Parentage(object):
@@ -21,17 +23,24 @@ class Parentage(object):
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
         # Get random text for this cog
-        self.parentage_random_text = None
-        self.bot.loop.create_task(self.get_parentage_random_text())
+        self.makeparent_random_text = MakeParentRandomText
+        self.adopt_random_text = AdoptRandomText
+        self.bot.loop.create_task(self.get_makeparent_random_text())
+        self.bot.loop.create_task(self.get_adopt_random_text())
 
     
-    async def get_parentage_random_text(self):
+    async def get_makeparent_random_text(self):
         await self.bot.wait_until_ready()
-        self.parentage_random_text = self.bot.cogs.get('ParentageRandomText')
+        self.makeparent_random_text = self.bot.cogs.get('MakeParentRandomText')
+
+    
+    async def get_adopt_random_text(self):
+        await self.bot.wait_until_ready()
+        self.adopt_random_text = self.bot.cogs.get('AdoptRandomText')
 
 
     def __local_check(self, ctx:Context):
-        return self.parentage_random_text != None
+        return self.makeparent_random_text != None and self.adopt_random_text != None
 
 
     @command()
@@ -48,27 +57,27 @@ class Parentage(object):
         if instigator.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR':
-                await ctx.send(self.parentage_random_text.parent_while_instigator(instigator, target))
+                await ctx.send(self.makeparent_random_text.instigator_is_instigator(instigator, target))
             elif x[0] == 'TARGET':
-                await ctx.send(self.parentage_random_text.parent_while_target(instigator, target))
+                await ctx.send(self.makeparent_random_text.instigator_is_target(instigator, target))
             return
         elif target.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR':
-                await ctx.send(self.parentage_random_text.parent_to_instigator(instigator, target))
+                await ctx.send(self.makeparent_random_text.target_is_instigator(instigator, target))
             elif x[0] == 'TARGET':
-                await ctx.send(self.parentage_random_text.parent_to_target(instigator, target))
+                await ctx.send(self.makeparent_random_text.target_is_target(instigator, target))
             return
 
         # Manage exclusions
         if target.id == self.bot.user.id:
-            await ctx.send(self.parentage_random_text.parent_is_me(instigator, target))
+            await ctx.send(self.makeparent_random_text.target_is_me(instigator, target))
             return
         elif instigator.bot:
             # Silently deny robots
             return
         elif instigator.id == target.id:
-            await ctx.send(self.parentage_random_text.parent_yourself(instigator, target))
+            await ctx.send(self.makeparent_random_text.target_is_you(instigator, target))
             return
 
         # See if they already have a parent
@@ -78,15 +87,15 @@ class Parentage(object):
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
-            await ctx.send(self.parentage_random_text.parent_is_family(instigator, target))
+            await ctx.send(self.makeparent_random_text.target_is_family(instigator, target))
             return
         elif user_tree.parent:
-            await ctx.send(self.parentage_random_text.parent_while_adopted(instigator, target))
+            await ctx.send(self.makeparent_random_text.instigator_is_unqualified(instigator, target))
             return
 
         # No parent, send request
         if not target.bot:
-            await ctx.send(self.parentage_random_text.valid_parent_choice(instigator, target))
+            await ctx.send(self.makeparent_random_text.valid_target(instigator, target))
         self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'MAKEPARENT')
         self.bot.proposal_cache[target.id] = ('TARGET', 'MAKEPARENT')
 
@@ -118,7 +127,7 @@ class Parentage(object):
             response = check(m)
         except TimeoutError as e:
             try:
-                await ctx.send(self.parentage_random_text.parent_request_timeout(instigator, target))
+                await ctx.send(self.makeparent_random_text.request_timeout(instigator, target))
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
@@ -130,7 +139,7 @@ class Parentage(object):
 
         # Valid response recieved, see what their answer was
         if response == 'NO':
-            await ctx.send(self.parentage_random_text.parent_request_deny(instigator, target))
+            await ctx.send(self.makeparent_random_text.request_denied(instigator, target))
         elif response == 'YES':
             async with self.bot.database() as db:
                 try:
@@ -138,7 +147,7 @@ class Parentage(object):
                 except Exception as e:
                     return  # Only thrown when multiple people do at once, just return
             try:
-                await ctx.send(self.parentage_random_text.parent_request_accept(instigator, target))
+                await ctx.send(self.makeparent_random_text.request_accepted(instigator, target))
             except Exception as e:
                 pass
             me = FamilyTreeMember.get(instigator.id)
@@ -162,21 +171,29 @@ class Parentage(object):
 
         # See if either user is already being proposed to
         if instigator.id in self.bot.proposal_cache:
-            await ctx.send("You can only make or recieve one proposition at a time.")
+            x = self.bot.proposal_cache.get(instigator.id)
+            if x[0] == 'INSTIGATOR':
+                await ctx.send(self.adopt_random_text.instigator_is_instigator(instigator, target))
+            elif x[0] == 'TARGET':
+                await ctx.send(self.adopt_random_text.instigator_is_target(instigator, target))
             return
         elif target.id in self.bot.proposal_cache:
-            await ctx.send("That person has already recieved or made a proposition. Please wait.")
+            x = self.bot.proposal_cache.get(target.id)
+            if x[0] == 'INSTIGATOR':
+                await ctx.send(self.adopt_random_text.target_is_instigator(instigator, target))
+            elif x[0] == 'TARGET':
+                await ctx.send(self.adopt_random_text.target_is_target(instigator, target))
             return
 
         # Manage exclusions
         if target.id == self.bot.user.id:
-            await ctx.send("I'm flattered but no, sweetheart 😘")
+            await ctx.send(self.adopt_random_text.target_is_me(instigator, target))
             return
         elif target.bot or instigator.bot:
-            await ctx.send("Robots don't make particularly good children.")
+            await ctx.send(self.adopt_random_text.target_is_bot(instigator, target))
             return
         elif instigator.id == target.id:
-            await ctx.send("Are you serious.")
+            await ctx.send(self.adopt_random_text.target_is_you(instigator, target))
             return
 
         # See if they already have a parent
@@ -186,14 +203,14 @@ class Parentage(object):
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
-            await ctx.send(f"{instigator.mention}, they're already part of your family.")
+            await ctx.send(self.adopt_random_text.target_is_family(instigator, target))
             return
         elif FamilyTreeMember.get(target.id).parent:
-            await ctx.send(f"Sorry, but `{target!s}` already has a parent.")
+            await ctx.send(self.adopt_random_text.target_is_unqualified(instigator, target))
             return
 
         # No parent, send request
-        await ctx.send(f"{target.mention}, do you want to be {instigator.mention}'s child?")
+        await ctx.send(self.adopt_random_text.valid_target(instigator, target))
         self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'ADOPT')
         self.bot.proposal_cache[target.id] = ('TARGET', 'ADOPT')
 
@@ -222,7 +239,7 @@ class Parentage(object):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except TimeoutError as e:
             try:
-                await ctx.send(f"{instigator.mention}, your adoption request has timed out. Try again when they're online!")
+                await ctx.send(self.adopt_random_text.request_timeout(instigator, target))
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
@@ -233,7 +250,7 @@ class Parentage(object):
         # Valid response recieved, see what their answer was
         response = check(m)
         if response == 'NO':
-            await ctx.send("No adoption today, it seems..")
+            await ctx.send(self.adopt_random_text.request_denied(instigator, target))
         elif response == 'YES':
             async with self.bot.database() as db:
                 try:
@@ -241,7 +258,7 @@ class Parentage(object):
                 except Exception as e:
                     return  # Only thrown when multiple people do at once, just return
             try:
-                await ctx.send(f"{target.mention}, your new parent is {instigator.mention} c:")
+                await ctx.send(self.adopt_random_text.request_accepted(instigator, target))
             except Exception as e:
                 pass
             me = FamilyTreeMember.get(instigator.id)

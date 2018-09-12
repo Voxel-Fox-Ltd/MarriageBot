@@ -2,25 +2,16 @@ from random import choice
 from cogs.utils.custom_bot import CustomBot
 
 
-class ParentageRandomText(object):
+class MakeParentRandomText(object):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
 
     @staticmethod
-    def valid_parent_choice(instigator, target):
+    def valid_target(instigator, target):
         '''
         When the instigator asks the target to be their parent
         '''
-
-        # return choice([
-        #     f"{instigator.mention} wants to adopt you, {target.mention}. Do you accept?",
-        #     f"{instigator.mention} wants to share the love and make you their child, {target.mention}. What do you think?",
-        #     f"{instigator.mention} would love to adopt you, {target.mention}. What do you think?",
-        #     f"{target.mention}, today's your lucky day. {instigator.mention} wants to adopt you. Do you accept?",
-        #     f"{target.mention}, {instigator.mention} wants to be your parent. What do you say?",
-        #     f"{target.mention}, do you want to be {instigator.mention}'s parent?",
-        # ])
 
         return choice([
             f"{instigator.mention} wants to be your child, {target.mention}. Do you accept?",
@@ -33,7 +24,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_is_family(instigator, target):
+    def target_is_family(instigator, target):
         '''
         When the instigator picks the target as a parent but they're already family members
         '''
@@ -47,7 +38,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_is_me(instigator, target):
+    def target_is_me(instigator, target):
         '''
         The instigator picked the bot as a parent
         '''
@@ -63,7 +54,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_is_bot(instigator, target):
+    def target_is_bot(instigator, target):
         '''
         The instigator wants to parentify a bot
         '''
@@ -77,7 +68,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_while_instigator(instigator, target):
+    def instigator_is_instigator(instigator, target):
         '''
         When the instigator asks the target to be their parent while they've already asked another
         '''
@@ -92,7 +83,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_to_instigator(instigator, target):
+    def target_is_instigator(instigator, target):
         '''
         When the person you're responding to asked someone out
         '''
@@ -106,7 +97,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_while_target(instigator, target):
+    def instigator_is_target(instigator, target):
         '''
         When the instigator has another proposal to respond to
         '''
@@ -120,7 +111,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_to_target(instigator, target):
+    def target_is_target(instigator, target):
         '''
         When the target is also someone elses' target
         '''
@@ -134,7 +125,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_yourself(instigator, target):
+    def target_is_you(instigator, target):
         '''
         Picking yourself as your parent
         '''
@@ -149,7 +140,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_while_adopted(instigator, target):
+    def instigator_is_unqualified(instigator, target):
         '''
         Picking a parent while you already have one
         '''
@@ -163,7 +154,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_request_timeout(instigator, target):
+    def request_timeout(instigator, target):
         '''
         Parent request timed out
         '''
@@ -180,7 +171,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_request_accept(instigator, target):
+    def request_accepted(instigator, target):
         '''
         Accepted parent request
         '''
@@ -195,7 +186,7 @@ class ParentageRandomText(object):
 
 
     @staticmethod
-    def parent_request_deny(instigator, target):
+    def request_denied(instigator, target):
         '''
         When the parent request is denied
         '''
@@ -208,5 +199,5 @@ class ParentageRandomText(object):
 
 
 def setup(bot:CustomBot):
-    x = ParentageRandomText(bot)
+    x = MakeParentRandomText(bot)
     bot.add_cog(x)

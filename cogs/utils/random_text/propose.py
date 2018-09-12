@@ -2,7 +2,7 @@ from random import choice
 from cogs.utils.custom_bot import CustomBot
 
 
-class MarriageRandomText(object):
+class ProposeRandomText(object):
 
 
     def __init__(self, bot:CustomBot):
@@ -203,6 +203,8 @@ class MarriageRandomText(object):
             "Oh boy. The wedding is off. You two talk it out.",
             f"I hate to say it, {instigator.mention}, but they said no...",
             "Oh boy. They said no. That can't be good.",
+            f"Maybe a night in a cheap motel with you, but marriage is too much commitment for `{target!s}`.",
+            f"Roses are red,\nViolets are blue,\nIt looks like they don't want to be with you, {instigator.mention}.",
         ])
 
 
@@ -220,5 +222,5 @@ class MarriageRandomText(object):
 
 
 def setup(bot:CustomBot):
-    x = MarriageRandomText(bot)
+    x = ProposeRandomText(bot)
     bot.add_cog(x)

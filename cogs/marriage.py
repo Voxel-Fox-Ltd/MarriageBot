@@ -28,7 +28,7 @@ class Marriage(object):
     
     async def get_random_text(self):
         await self.bot.wait_until_ready()
-        self.random_text = self.bot.cogs.get('MarriageRandomText')
+        self.random_text = self.bot.cogs.get('ProposeRandomText')
 
 
     def __local_check(self, ctx:Context):
