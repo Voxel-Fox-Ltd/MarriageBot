@@ -5,7 +5,6 @@ from discord import Member, Message, Activity, ActivityType, User, Status
 from discord.ext.commands import command, Context, group, NotOwner
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils.family_tree.family import Family
 
 
 class CalebOnly(object):

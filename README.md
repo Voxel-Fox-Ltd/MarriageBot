@@ -14,7 +14,7 @@ I'm `Caleb#2831`. Feel free to ask for help at any time. If you like what I do, 
 
 Thanks to all of you on the Landfall Games server for helping with the testing, especially Danny who I agreed I would give a specific shoutout too.
 
-Thank you to [Adrien Vergé for familytreemaker.py](https://github.com/adrienverge/familytreemaker), which I am shamelessly using in my own project.
+Thank you to [Adrien Vergé for familytreemaker.py](https://github.com/adrienverge/familytreemaker), which I used for a long while before I came up with my own code for the same thing.
 
 Thanks to Graphwiz for being a free piece of software that I can use at my leisure.
 

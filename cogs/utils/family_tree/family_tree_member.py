@@ -23,6 +23,7 @@ class FamilyTreeMember(object):
 
     all_users = {None: None}  # id: FamilyTreeMember
     substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
+    INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
 
 
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
@@ -32,6 +33,10 @@ class FamilyTreeMember(object):
         self._parent = parent_id
         self._partner = partner_id
         self.all_users[self.id] = self
+
+    
+    def __repr__(self):
+        return f"FamilyTreeMember[{self.id}]"
 
 
     @property
@@ -133,7 +138,7 @@ class FamilyTreeMember(object):
 
         # Add your parent
         if expand_upwards and add_parent and self.parent:
-            people_list = self.parent.span(people_list, add_parent=True,expand_upwards=expand_upwards, guild=guild)
+            people_list = self.parent.span(people_list, add_parent=True, expand_upwards=expand_upwards, guild=guild)
 
         # Add your children
         if self.children:
@@ -142,7 +147,7 @@ class FamilyTreeMember(object):
 
         # Add your partner
         if self.partner:
-            people_list = self.partner.span(people_list, add_parent=True,expand_upwards=expand_upwards, guild=guild)
+            people_list = self.partner.span(people_list, add_parent=True, expand_upwards=expand_upwards, guild=guild)
 
         # Remove dupes, should they be in there
         return people_list
@@ -238,7 +243,62 @@ class FamilyTreeMember(object):
         return x
 
 
-    def to_tree_string(self, bot, guild:Guild=None) -> str:
+    def generational_span(self, people_dict:dict=None, depth:int=0, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None) -> dict:
+        '''
+        Gets a list of every user related to this one
+        If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
+        even if they're related through marriage's parents etc
+
+        Params:
+            people_dict: dict 
+                The dict of users who are currently in the tree (so as to avoid recursion)
+            depth: int = 0
+                The current depth of the span
+            add_parent: bool = False
+                Whether or not to add the parent of this user to the people list
+            expand_upwards: bool = False
+                Whether or not to expand upwards in the tree
+            guild: Guild = None
+                If added, span will return users only if they're in the given guild
+
+        Returns:
+            A list of all people on the family for this user, in no particular order
+        '''
+
+        # Don't add yourself again
+        if people_dict == None:
+            people_dict = {}
+        if self in people_dict.get(depth, list()):
+            return people_dict
+
+        # Filter out non-guild members
+        if guild:
+            if not guild.get_member(self.id):
+                return people_dict
+
+        # Add to dict
+        x = people_dict.get(depth, list())
+        x.append(self)
+        people_dict[depth] = x
+
+        # Add your parent
+        if expand_upwards and add_parent and self.parent:
+            people_dict = self.parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild)
+
+        # Add your children
+        if self.children:
+            for child in self.children:
+                people_dict = child.generational_span(people_dict, depth=depth+1, add_parent=False, expand_upwards=expand_upwards, guild=guild)
+
+        # Add your partner
+        if self.partner:
+            people_dict = self.partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild)
+
+        # Remove dupes, should they be in there
+        return people_dict
+
+
+    def to_dot_script(self, bot, guild:Guild=None) -> str:
         '''
         Gives you a string of the current family tree that will go through Family
 
@@ -250,47 +310,75 @@ class FamilyTreeMember(object):
                 members to the tree that are in the given guild
         '''
 
-        full_text = []  # list of lines
-        added_to_tree = []  # list of IDs that have been added
+        # Get the generation spanning tree
+        # root_user = self.get_root(guild=guild)
+        gen_span = self.generational_span(guild=guild)
+        if self.partner and self.partner not in gen_span.get(0, list()):
+            x = gen_span.get(0, list())
+            x.append(self.partner)
+            gen_span[0] = x
+        if self.parent and self.parent not in gen_span.get(-1, list()):
+            x = gen_span.get(-1, list())
+            x.append(self.parent)
+            gen_span[-1] = x
 
-        # Get the relevant root user
-        root_user = self.get_root(guild=guild)
+        # Add the labels for each user
+        all_text = [
+            'digraph {',
+            '\tnode [shape=box, fontcolor=white, color=white, fillcolor=black, style=filled];',
+            '\tedge [dir=none, color=white];',
+            # '\tbgcolor=black;'
+            '\tbgcolor=transparent;'
+            '',
+        ]
+        all_users = []
+        for generation in gen_span.values():
+            for i in generation:
+                all_users.append(i)
+                if i == self:
+                    all_text.append(f'\t{i.id}[label="{i.get_name(bot)}", fillcolor=dodgerblue4];')
+                else:
+                    all_text.append(f'\t{i.id}[label="{i.get_name(bot)}"];')
+        
+        # Order the generations
+        generation_numbers = sorted(list(gen_span.keys()))
 
-        # Remove dupes
-        span = root_user.span(guild=guild)
-        span.insert(0, root_user.partner)
-        span.insert(0, root_user.parent)
-        nodupe_span = []
-        for i in span:
-            if i in nodupe_span:
-                continue
-            if i == None:
-                continue
-            nodupe_span.append(i)
+        # Go through each generation's users
+        for generation_number in generation_numbers:
+            generation = gen_span.get(generation_number)
 
-        # Iterate through the whole family
-        for user in nodupe_span:
+            # Add each user and their spouse
+            added_already = []
+            all_text.append("\t{ rank=same;")
+            previous_person = None
+            for person in generation:
+                if person in added_already:
+                    continue
+                added_already.append(person)
+                if previous_person:
+                    all_text.append(f"\t\t{previous_person.id} -> {person.id} [style=invis];")
+                if person.partner and person.partner in generation:
+                    all_text.append(f"\t\t{person.id} -> {person.partner.id};")
+                    added_already.append(person.partner)
+                    previous_person = person.partner
+                else:
+                    all_text.append(f"\t\t{person.id};")
+                    previous_person = person
+            all_text.append("\t}")
 
-            # Only add people with relevance
-            if user == None:
-                continue
-            if user.partner == None and len(user.children) == 0:
-                continue
-            if user.id in added_to_tree:
-                continue
+            # Add the connecting node from parent to child
+            all_text.append("\t{")
+            for person in generation:
+                if person.children and any([i in all_users for i in person.children]):
+                    all_text.append(f"\t\th{person.id}{self.INVISIBLE};")
+            all_text.append("\t}")
 
-            # Add a user, their spouse, and their children
-            full_text.append(f"{user.get_name(bot)} (id={user.id})")
-            added_to_tree.append(user.id)
-            if user.partner and user.partner in span:
-                full_text.append(f"{user.partner.get_name(bot)} (id={user.partner.id})")
-                added_to_tree.append(user.partner.id)
-            children = [i for i in user.children if i in span]
-            if user.partner and user.partner in span:
-                children.extend([i for i in user.partner.children if i in span])
-            for child in children:
-                full_text.append(f"\t{child.get_name(bot)} (id={child.id}, parent={child.parent.id})")
-            full_text.append("")
+            # Add the lines from parent to node to child
+            for person in generation:
+                if person.children and any([i in all_users for i in person.children]):
+                    all_text.append(f"\t\t{person.id} -> h{person.id};")
+                    for child in [i for i in person.children if i in all_users]:
+                        all_text.append(f"\t\th{person.id} -> {child.id};")
+        all_text.append("}")
 
-        # Return text, changing the colour of the root post
-        return '\n'.join(full_text).replace('\t', '    ').replace(f'(id={self.id})', f"(F, id={self.id})")
+        return '\n'.join(all_text)

@@ -10,7 +10,6 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils.family_tree.family import Family
 
 
 get_random_string = lambda: ''.join(choice(ascii_lowercase) for i in range(6))
@@ -159,7 +158,7 @@ class Information(object):
 
         # Write their treemaker code to a file
         with open(f'./trees/{random_string}_{root_user.id}.dot', 'w', encoding='utf-8') as a:
-            a.write(Family.get_full_tree(ctx, tree, all_guilds=all_guilds))
+            a.write(tree.to_dot_script(ctx.bot, guild=None if all_guilds else ctx.guild))
 
         # Convert to an image
         dot = await create_subprocess_exec(*[
