@@ -34,7 +34,10 @@ class ErrorEvent(object):
             await ctx.send(f"Unfortunately, that isn't a valid argument for this command.")
             return
         elif isinstance(error, CantSendFiles):
-            await ctx.send("I'm not able to send files into this channel.")
+            try:
+                await ctx.send("I'm not able to send files into this channel.")
+            except Exception as e:
+                await ctx.author.send("I'm unable to send messages into that channel.")
             return
         elif isinstance(error, MissingPermissions):
             await ctx.send("You're missing the required permissions to run that command.")
