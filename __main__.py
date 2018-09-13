@@ -1,25 +1,47 @@
-from sys import argv
+from argparse import ArgumentParser
 from glob import glob
+from aiohttp.web import run_app, Application
 from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_help import CustomHelp
+from website.index import routes
 
 
+# Parse arguments
+parser = ArgumentParser()
+parser.add_argument(
+    "config_file", 
+    help="The configuration for the bot."
+)
+parser.add_argument(
+    "-n", "--noserver", 
+    action="store_true", 
+    default=False, 
+    help="Starts the bot with no web server."
+)
+parser.add_argument(
+    "-p", "--port", 
+    type=int,
+    default=8080, 
+    help="The port to run the webserver on."
+)
+args = parser.parse_args()
+
+
+# Create bot object
 bot = CustomBot(
-    config_file=argv[1],
+    config_file=args.config_file,
     formatter=CustomHelp(),
     activity=Game(name="Restarting..."),
     status=Status.dnd
-    )
+)
 
 
-# @bot.check
-# async def disable_all(ctx):
-#     if str(ctx.author) != 'Caleb#2831': 
-#         await ctx.send("This command is temporarily disabled. Apologies.")
-#         return False 
-#     return True
+# Create website
+app = Application(loop=bot.loop)
+app.add_routes(routes)
+app['bot'] = bot
 
 
 def get_extensions() -> list:
@@ -66,6 +88,22 @@ async def on_ready():
 
     print('\nEverything loaded.\n')
 
+
 if __name__ == '__main__':
-    print('Starting...')
-    bot.run_all()  # Custom run
+    print("Starting bot...")
+    loop = bot.loop
+    bot.loop.create_task(bot.start_all())
+
+    # Run with no server
+    if args.noserver:
+        try:
+            loop.run_forever()
+        except Exception: 
+            loop.run_until_complete(bot.logout())
+        finally:
+            loop.close()
+
+    # Run with the server
+    else:
+        print("Starting server...")
+        run_app(app, port=args.port)

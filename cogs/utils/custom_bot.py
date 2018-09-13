@@ -159,5 +159,9 @@ class CustomBot(AutoShardedBot):
 
     def run_all(self):
         self.run(self.config['token'])
+
+
+    async def start_all(self):
+        await self.start(self.config['token'])
     
 
