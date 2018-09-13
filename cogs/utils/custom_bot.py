@@ -1,7 +1,9 @@
 from datetime import datetime as dt
 from json import load
+from importlib import import_module
 from asyncio import sleep
 from aiohttp import ClientSession
+from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Message
 from discord.ext.commands import AutoShardedBot, cooldown, when_mentioned_or
 from discord.ext.commands.cooldowns import BucketType
@@ -24,7 +26,7 @@ def get_prefix(bot, message:Message):
 
 class CustomBot(AutoShardedBot):
 
-    def __init__(self, config_file:str='config.json', *args, **kwargs):
+    def __init__(self, config_file:str='config.json', commandline_args=None, *args, **kwargs):
         # Things I would need anyway
         super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
@@ -32,6 +34,10 @@ class CustomBot(AutoShardedBot):
         self.config = None
         self.config_file = config_file
         self.reload_config()
+        self.commandline_args = commandline_args
+
+        # Add webserver stuff so I can come back to it later
+        self.web_runner = None
 
         # Allow database connections like this
         self.database = DatabaseConnection
@@ -163,5 +169,36 @@ class CustomBot(AutoShardedBot):
 
     async def start_all(self):
         await self.start(self.config['token'])
+
+
+    async def restart_webserver(self, *imports):
+        '''
+        Stops the current running webserver and starts a new one
+
+        Args:
+            *imports: str
+                A list of modules to import that contain a "routes" attribute
+        '''
+
+        try:
+            await self.web_runner.cleanup()
+        except Exception as e:
+            print("Error with closing previous server: ", e)
+
+        # Make and link all the relevant options
+        app = Application(loop=self.loop)
+        for i in imports:
+            x = import_module(i)
+            app.add_routes(x.routes)
+        app['bot'] = self
+
+        # Run the site
+        self.web_runner = AppRunner(app)
+        await self.web_runner.setup()
+        site = TCPSite(self.web_runner, self.commandline_args.host, self.commandline_args.port)
+        await site.start()
+
+        print(f"Server started: http://{self.commandline_args.host}:{self.commandline_args.port}/")
+
     
 

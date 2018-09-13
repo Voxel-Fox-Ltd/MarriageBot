@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from glob import glob
-from aiohttp.web import run_app, Application
+from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
 from cogs.utils.custom_bot import CustomBot
@@ -21,6 +21,12 @@ parser.add_argument(
     help="Starts the bot with no web server."
 )
 parser.add_argument(
+    "-i", "--host", 
+    type=str,
+    default='0.0.0.0', 
+    help="The host IP to run the webserver on."
+)
+parser.add_argument(
     "-p", "--port", 
     type=int,
     default=8080, 
@@ -34,7 +40,8 @@ bot = CustomBot(
     config_file=args.config_file,
     formatter=CustomHelp(),
     activity=Game(name="Restarting..."),
-    status=Status.dnd
+    status=Status.dnd,
+    commandline_args=args,
 )
 
 
@@ -86,24 +93,46 @@ async def on_ready():
             except Exception as e:
                 print(e)
 
-    print('\nEverything loaded.\n')
+    print('Bot loaded.')
 
 
 if __name__ == '__main__':
+    '''
+    Starts the bot (and webserver if specified) and runs forever
+    '''
+
+    loop = bot.loop 
+
     print("Starting bot...")
-    loop = bot.loop
     bot.loop.create_task(bot.start_all())
 
-    # Run with no server
-    if args.noserver:
-        try:
-            loop.run_forever()
-        except Exception: 
-            loop.run_until_complete(bot.logout())
-        finally:
-            loop.close()
-
-    # Run with the server
-    else:
+    if not args.noserver:
         print("Starting server...")
-        run_app(app, port=args.port)
+        web_runner = AppRunner(app)
+        loop.run_until_complete(web_runner.setup())
+        site = TCPSite(web_runner, args.host, args.port)
+        loop.run_until_complete(site.start())
+        print(f"Server started: http://{args.host}:{args.port}/")
+
+        # Store stuff in the bot for later
+        bot.web_runner = web_runner
+
+    # This is the forever loop
+    try:
+        loop.run_forever()
+    except (Exception, KeyboardInterrupt): 
+        pass
+    finally:
+        # Logout the bot
+        loop.run_until_complete(bot.logout())
+
+        if not args.noserver:
+            # Try and gracefully close the server
+            try:
+                loop.run_until_complete(bot.web_runner.cleanup())
+            except Exception as e:
+                # Maybe I restarted the server via the bot at runtime
+                print(e)
+
+    # Close the loop
+    loop.close()
