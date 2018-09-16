@@ -1,5 +1,3 @@
-from random import choice
-from string import ascii_lowercase
 from os import remove
 from re import compile
 from io import BytesIO
@@ -10,9 +8,6 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-
-
-get_random_string = lambda: ''.join(choice(ascii_lowercase) for i in range(6))
 
 
 class Information(object):
@@ -153,9 +148,6 @@ class Information(object):
             await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
 
-        # Make the random string that stops things messing up
-        random_string = get_random_string()
-
         # Write their treemaker code to a file
         with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.dot', 'w', encoding='utf-8') as a:
             a.write(tree.to_dot_script(ctx.bot, guild=None if all_guilds else ctx.guild))
@@ -180,7 +172,8 @@ class Information(object):
 
         # Send file and delete cached
         try:
-            await ctx.send(ctx.author.mention, file=File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png'))
+            file = File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
+            await ctx.send(ctx.author.mention, file=file)
         except Exception as e:
             return 
         return

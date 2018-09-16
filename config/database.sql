@@ -37,3 +37,16 @@ CREATE TABLE guild_settings(
     PRIMARY KEY (guild_id)
 );
 -- A config for a guild to change their prefix
+
+
+CREATE TABLE customisation(
+    user_id BIGINT NOT NULL,
+    edge INTEGER DEFAULT NULL,
+    node INTEGER DEFAULT NULL,
+    font INTEGER DEFAULT NULL,
+    highlighted_font INTEGER DEFAULT NULL,
+    highlighted_node INTEGER DEFAULT NULL,
+    background INTEGER DEFAULT NULL,
+    PRIMARY KEY (user_id)
+);
+-- A table for user tree customisations

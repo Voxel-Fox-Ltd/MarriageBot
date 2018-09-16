@@ -9,6 +9,7 @@ from discord.ext.commands import AutoShardedBot, cooldown, when_mentioned_or
 from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.removal_dict import RemovalDict
 
 
@@ -71,8 +72,9 @@ class CustomBot(AutoShardedBot):
         async with self.database() as db:
             partnerships = await db('SELECT * FROM marriages WHERE valid=TRUE')
             parents = await db('SELECT * FROM parents')
+            customisations = await db('SELECT * FROM customisation')
         
-        # Cache all into FamilyTreeMember objects
+        # Cache all into objects
         for i in partnerships:
             FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'])
         for i in parents:
@@ -80,6 +82,8 @@ class CustomBot(AutoShardedBot):
             parent._children.append(i['child_id'])
             child = FamilyTreeMember.get(i['child_id'])
             child._parent = i['parent_id']
+        for i in customisations:
+            CustomisedTreeUser(**i)
 
         # Pick up the blacklisted guilds from the db
         # async with self.database() as db:

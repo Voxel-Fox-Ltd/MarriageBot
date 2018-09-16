@@ -2,6 +2,7 @@ from re import compile
 from random import choice
 from discord import User, File, Guild
 from unidecode import unidecode
+from cogs.utils.customised_tree_user import CustomisedTreeUser
 
 
 def generate_id():
@@ -22,8 +23,19 @@ class FamilyTreeMember(object):
     '''
 
     all_users = {None: None}  # id: FamilyTreeMember
-    substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
+    NAME_SUBSTITUTION = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
     INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
+
+    # Set up a bunch of substitutions for the relation generator
+    # CHILD_TO_GRANDCHILD = compile(r"child's child")  # grandchild
+    # GRANDCHILD_TO_GREAT = compile(r"grandchild's child")  # great grandchild
+    # PARENT_TO_GRANDPARENT = compile(r"parent's parent")  # grandparent
+    # GRANDPARENT_TO_GREAT = compile(r"grandparent's parent")  # great grandparent
+    # CHILD_TO_UNCLE
+    # CHILD_TO_COUSIN = compile(r"grandparent's grandchild")  # cousin
+    # CHILD_TO_SIBLING = compile(r"parent's child")  # sibling
+    # CHILD_TO_NEPHEW = compile(r"sibling's child")  # nephew
+    # CHILD_TO_REMOVED_COUSIN
 
 
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
@@ -70,9 +82,9 @@ class FamilyTreeMember(object):
 
 
     def get_name(self, bot):
-        x = self.substitution.sub("_", unidecode(str(bot.get_user(self.id))))
+        x = self.NAME_SUBSTITUTION.sub("_", unidecode(str(bot.get_user(self.id))))
         if len(x) <= 5:
-            x = self.substitution.sub("_", str(bot.get_user(self.id)))
+            x = self.NAME_SUBSTITUTION.sub("_", str(bot.get_user(self.id)))
         return x
 
 
@@ -173,13 +185,43 @@ class FamilyTreeMember(object):
                 else:
                     break
             else:
-            if root_user.parent:
-                root_user = root_user.parent
+                if root_user.parent:
+                    root_user = root_user.parent
                 elif root_user.partner and root_user.partner.parent :
-                root_user = root_user.partner.parent
-            else:
-                break
+                    root_user = root_user.partner.parent
+                else:
+                    break
         return root_user
+
+    
+    # def get_relation(self, other, working_relation:list=None, added_already:list=None) -> str:
+    #     '''
+    #     Gets your relation to the other given user or None
+    #     '''
+
+    #     if working_relation == None:
+    #         working_relation = []
+    #     if added_already == None:
+    #         added_already = []
+    #     if self in added_already:
+    #         return None
+    #     if other == self:
+    #         ret_string = "'s ".join(working_relation)
+
+    #     added_already.append(self)
+
+    #     if self.parent and self.parent not in added_already:
+    #         x = self.parent.get_relation(other, working_relation=working_relation+['parent'], added_already=added_already)
+    #         if x: return x 
+    #     if self.partner and self.parent not in added_already:
+    #         x = self.partner.get_relation(other, working_relation=working_relation+['partner'], added_already=added_already)
+    #         if x: return x 
+    #     if self.children:
+    #         for i in [o for o in self.children if i not in added_already]:
+    #             x = self.partner.get_relation(other, working_relation=working_relation+['child'], added_already=added_already)
+    #             if x: return x 
+    #     return None
+
 
     def generate_gedcom_script(self, bot) -> str:
         '''
@@ -314,6 +356,7 @@ class FamilyTreeMember(object):
         '''
 
         # Get the generation spanning tree
+        ctu = CustomisedTreeUser.get(self.id)
         root_user = self.get_root(guild=guild)
         gen_span = root_user.generational_span(guild=guild)
         my_depth = None
@@ -333,10 +376,9 @@ class FamilyTreeMember(object):
         # Add the labels for each user
         all_text = [
             'digraph {',
-            '\tnode [shape=box, fontcolor=white, color=white, fillcolor=black, style=filled];',
-            '\tedge [dir=none, color=white];',
-            # '\tbgcolor=black;'
-            '\tbgcolor=transparent;'
+            f"\tnode [shape=box, fontcolor={ctu.hex['font']}, color={ctu.hex['edge']}, fillcolor={ctu.hex['node']}, style=filled];",
+            f"\tedge [dir=none, color={ctu.hex['edge']}];",
+            f"\tbgcolor={ctu.hex['background']}",
             '',
         ]
         all_users = []
@@ -344,7 +386,7 @@ class FamilyTreeMember(object):
             for i in generation:
                 all_users.append(i)
                 if i == self:
-                    all_text.append(f'\t{i.id}[label="{i.get_name(bot)}", fillcolor=dodgerblue4];')
+                    all_text.append(f'\t{i.id}[label="{i.get_name(bot)}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];')
                 else:
                     all_text.append(f'\t{i.id}[label="{i.get_name(bot)}"];')
         
