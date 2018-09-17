@@ -23,11 +23,41 @@ class CustomisedTreeUser(object):
 
     @property 
     def hex(self) -> dict:
+        if self.edge != None:
+            edge =  f'"#{self.edge:06X}"' if self.edge >= 0 else 'transparent'
+        else:
+            edge = 'black'
+
+        if self.font != None:
+            font =  f'"#{self.font:06X}"' if self.font >= 0 else 'transparent'
+        else:
+            font = 'black'
+
+        if self.node != None:
+            node =  f'"#{self.node:06X}"' if self.node >= 0 else 'transparent'
+        else:
+            node = 'white'
+
+        if self.highlighted_font != None:
+            highlighted_font =  f'"#{self.highlighted_font:06X}"' if self.highlighted_font >= 0 else 'transparent'
+        else:
+            highlighted_font = 'white'
+
+        if self.highlighted_node != None:
+            highlighted_node =  f'"#{self.highlighted_node:06X}"' if self.highlighted_node >= 0 else 'transparent'
+        else:
+            highlighted_node = 'blue'
+
+        if self.background != None:
+            background =  f'"#{self.background:06X}"' if self.background >= 0 else 'transparent'
+        else:
+            background = 'white'
+
         return {
-            'edge': f'"#{self.edge:06X}"' if self.edge else 'white',
-            'node': f'"#{self.node:06X}"' if self.node else 'black',
-            'font': f'"#{self.font:06X}"' if self.font else 'white',
-            'highlighted_font': f'"#{self.highlighted_font:06X}"' if self.highlighted_font else 'white',
-            'highlighted_node': f'"#{self.highlighted_node:06X}"' if self.highlighted_node else 'dodgerblue4',
-            'background': f'"#{self.background:06X}"' if self.background else 'transparent',
+            'edge': edge,
+            'node': node,
+            'font': font,
+            'highlighted_font': highlighted_font,
+            'highlighted_node': highlighted_node,
+            'background': background,
         }

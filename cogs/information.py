@@ -115,7 +115,7 @@ class Information(object):
             raise e
 
 
-    @command(aliases=['fulltree'])
+    @command(aliases=['fulltree', 'ft', 'gt'])
     @can_send_files()
     @cooldown(1, 5, BucketType.user)
     async def globaltree(self, ctx:Context, root:User=None):
@@ -167,13 +167,14 @@ class Information(object):
         await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
         try:
             dot.kill()
-        except Exception as e: 
+        except Exception: 
             pass
 
         # Send file and delete cached
         try:
             file = File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-            await ctx.send(ctx.author.mention, file=file)
+            text = f"{ctx.author.mention}, you can update how your tree looks with `{ctx.prefix}help customise` c:"
+            await ctx.send(text, file=file)
         except Exception as e:
             return 
         return
