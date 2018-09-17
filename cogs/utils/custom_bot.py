@@ -4,9 +4,11 @@ from importlib import import_module
 from asyncio import sleep
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
+
 from discord import Game, Message
 from discord.ext.commands import AutoShardedBot, cooldown, when_mentioned_or
 from discord.ext.commands.cooldowns import BucketType
+
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
@@ -46,6 +48,7 @@ class CustomBot(AutoShardedBot):
 
         # Store the startup method so I can see if it completed successfully
         self.startup_method = self.loop.create_task(self.startup())
+        self.deletion_method = self.loop.create_task(self.delete_loop())
 
         # Add a cache for proposing users
         self.proposal_cache = RemovalDict()
@@ -86,10 +89,11 @@ class CustomBot(AutoShardedBot):
             CustomisedTreeUser(**i)
 
         # Pick up the blacklisted guilds from the db
-        # async with self.database() as db:
-        #     blacklisted = await db('SELECT * FROM blacklisted_guilds')
-        # self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
+        async with self.database() as db:
+            blacklisted = await db('SELECT * FROM blacklisted_guilds')
+        self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
+        # Now wait for the stuff you need to actually be online for
         await self.wait_until_ready()
         await self.set_default_presence()
 
@@ -147,6 +151,17 @@ class CustomBot(AutoShardedBot):
             }
             async with session.post(url, json=json, headers=headers) as r:
                 pass
+
+
+    async def delete_loop(self):
+        '''
+        A loop that runs every hour, deletes all files in the tree storage directory
+        '''
+
+        await self.wait_until_ready()
+        while not self.is_closed: 
+            await create_subprocess_exec('rm', f'{self.config["tree_file_location"]}/*', loop=self.bot.loop)
+            await sleep(60*60)
 
 
     async def destroy(self, user_id:int):

@@ -1,7 +1,8 @@
 from random import choice
+from asyncio import create_subprocess_exec, get_event_loop
+
 from discord import Member
 from asyncpg import connect
-from asyncio import create_subprocess_exec, get_event_loop
 
 
 RANDOM_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_'

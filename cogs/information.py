@@ -2,9 +2,11 @@ from os import remove
 from re import compile
 from io import BytesIO
 from asyncio import sleep, create_subprocess_exec, wait_for
+
 from discord import Member, File, User
 from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands.cooldowns import BucketType
+
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -175,14 +177,9 @@ class Information(object):
             file = File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
             text = f"{ctx.author.mention}, you can update how your tree looks with `{ctx.prefix}help customise` c:"
             await ctx.send(text, file=file)
-        except Exception as e:
+        except Exception:
             return 
         return
-        # await sleep(5)  # Just so the file still isn't sending
-        # for i in [f'./trees/{random_string}_{root.id}.txt', f'./trees/{random_string}_{root.id}.dot', f'./trees/{random_string}_{root.id}.png']:
-        #     # _ = await self.bot.loop.run_in_executor(None, remove, i)
-        #     # await create_subprocess_exec('rm', i, loop=self.bot.loop)
-        #     pass
 
 
 def setup(bot:CustomBot):
