@@ -178,7 +178,7 @@ class CustomBot(AutoShardedBot):
         try:
             with open(self.config_file) as a:
                 self.config = load(a)
-        except Exception as e:
+        except Exception:
             pass
 
 
@@ -188,6 +188,15 @@ class CustomBot(AutoShardedBot):
 
     async def start_all(self):
         await self.start(self.config['token'])
+
+
+    async def logout(self):
+        '''
+        An override of the default logout that also closes the webserver
+        '''
+
+        await self.web_runner.cleanup()
+        await self.close()
 
 
     async def restart_webserver(self, *imports):
