@@ -1,1 +1,0 @@
-py . config/config.json

@@ -9,6 +9,8 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.random_text.makeparent import MakeParentRandomText
 from cogs.utils.random_text.adopt import AdoptRandomText
+from cogs.utils.random_text.disown import DisownRandomText
+from cogs.utils.random_text.emancipate import EmancipateRandomText
 
 
 class Parentage(object):
@@ -25,10 +27,14 @@ class Parentage(object):
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
         # Get random text for this cog
-        self.makeparent_random_text = MakeParentRandomText
-        self.adopt_random_text = AdoptRandomText
+        self.makeparent_random_text = None
+        self.adopt_random_text = None
+        self.disown_random_text = None
+        self.emancipate_random_text = None
         self.bot.loop.create_task(self.get_makeparent_random_text())
         self.bot.loop.create_task(self.get_adopt_random_text())
+        self.bot.loop.create_task(self.get_disown_random_text())
+        self.bot.loop.create_task(self.get_emancipate_random_text())
 
     
     async def get_makeparent_random_text(self):
@@ -40,9 +46,24 @@ class Parentage(object):
         await self.bot.wait_until_ready()
         self.adopt_random_text = self.bot.cogs.get('AdoptRandomText')
 
+    
+    async def get_disown_random_text(self):
+        await self.bot.wait_until_ready()
+        self.disown_random_text = self.bot.cogs.get('DisownRandomText')
+
+    
+    async def get_emancipate_random_text(self):
+        await self.bot.wait_until_ready()
+        self.emancipate_random_text = self.bot.cogs.get('EmancipateRandomText')
+
 
     def __local_check(self, ctx:Context):
-        return self.makeparent_random_text != None and self.adopt_random_text != None
+        return all([
+            self.makeparent_random_text != None,
+            self.adopt_random_text != None,
+            self.disown_random_text != None,
+            self.emancipate_random_text != None,
+        ])
 
 
     @command()
@@ -286,14 +307,11 @@ class Parentage(object):
         children_ids = user_tree._children
 
         if target.id not in children_ids:
-            await ctx.send(f"That person isn't your child, {instigator.mention}.")
+            await ctx.send(self.disown_random_text.invalid_target(instigator, target))
             return
         async with self.bot.database() as db:
             await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2', target.id, instigator.id)
-        if ctx.guild.get_member(child.id):            
-            await ctx.send(f"Sorry, {target.mention}, but you're an orphan now. You're free, {instigator.mention}!")
-        else:
-            await ctx.send(f"You're free, {instigator.mention}, they're no longer your child!")
+        await ctx.send(self.disown_random_text.valid_target(instigator, ctx.guild.get_member(child.id)))
 
         me = FamilyTreeMember.get(instigator.id)
         me._children.remove(target.id)
@@ -314,15 +332,12 @@ class Parentage(object):
         try:
             parent_id = user_tree.parent.id
         except AttributeError:
-            await ctx.send(f"You don't have a parent, {instigator.mention}")
+            await ctx.send(self.emancipate_random_text.invalid_target(instigator, None))
             return
 
         async with self.bot.database() as db:
             await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2', parent_id, instigator.id)
-        if ctx.guild.get_member(parent_id):
-            await ctx.send(f"You're an orphan now, {instigator.mention}. Sorry <@{parent_id}>!")
-        else:
-            await ctx.send(f"You're an orphan now, {instigator.mention}.")
+        await ctx.send(self.emancipate_random_text.valid_target(instigator, ctx.guild.get_member(parent_id)))
 
         me = FamilyTreeMember.get(instigator.id)
         me._parent = None
