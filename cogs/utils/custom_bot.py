@@ -29,9 +29,12 @@ def get_prefix(bot, message:Message):
 
 class CustomBot(AutoShardedBot):
 
-    def __init__(self, config_file:str='config.json', commandline_args=None, *args, **kwargs):
+    def __init__(self, config_file:str='config/config.json', commandline_args=None, *args, **kwargs):
         # Things I would need anyway
-        super().__init__(command_prefix=get_prefix, *args, **kwargs)
+        if kwargs.get('command_prefix'):
+            super().__init__(*args, **kwargs)
+        else:
+            super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
         # Store the config file for later
         self.config = None
