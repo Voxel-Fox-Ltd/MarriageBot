@@ -219,9 +219,12 @@ class Parentage(object):
             await ctx.send(self.adopt_random_text.target_is_you(instigator, target))
             return
 
-        # See if they already have a parent
+        # Check current tree
         await ctx.trigger_typing()
         user_tree = FamilyTreeMember.get(instigator.id)
+        if len(user_tree._children) >= 30:
+            await ctx.send("You don't need more than 30 children. Please enter the chill zone.")
+            return
         root = user_tree.get_root()
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 

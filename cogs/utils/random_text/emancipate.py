@@ -16,14 +16,14 @@ class EmancipateRandomText(object):
 
         if target:
             return choice([
-                f"Looks like {target.mention} left you, {instigator.mention}. I'm sorry for your loss."
-                f"You're free of {target.mention}, {instigator.mention}!"
-                f"Say goodbye to {target.mention}, {instigator.mention}! You're parentless now!"
+                f"Looks like {target.mention} left you, {instigator.mention}. I'm sorry for your loss.",
+                f"You're free of {target.mention}, {instigator.mention}!",
+                f"Say goodbye to {target.mention}, {instigator.mention}! You're parentless now!",
             ])
         return choice([
             f"Freedom for you, {instigator.mention}!",
             "Have fun living in the streets!",
-            "You no longer have a parent.\n... Don't think too hard about it."
+            "You no longer have a parent.\n... Don't think too hard about it.",
         ])
 
 
@@ -33,6 +33,8 @@ class EmancipateRandomText(object):
         '''
 
         return choice([
+            "You don't actually have a parent. This is awkward.",
+            "You're already an orphan though!",
         ])
 
 
