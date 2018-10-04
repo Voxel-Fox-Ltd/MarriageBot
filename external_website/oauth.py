@@ -1,14 +1,23 @@
 import requests
+from urllib.parse import urlencode
 from user import User
 from discord import Permissions
 from guild import Guild
-class Oauth:
-    def __init__(self):
-        self.redirect_uri = "http://127.0.0.1:5000/login"
-        self.scope = "identify%20guilds"
-        self.client_id = "468281173072805889"
-        self.client_secret = "ilP5Igpn-eXjWzilciBK02JdtkecCxDP"
-        self.authorization_url = "https://discordapp.com/oauth2/authorize?client_id="+self.client_id+"&redirect_uri="+self.redirect_uri+"&response_type=code&scope="+self.scope+""
+
+
+class Oauth(object):
+
+    def __init__(self, *, client_id:str=None, client_secret:str=None):
+        self.redirect_uri = "http://mb.callumb.co.uk:5000/login"
+        self.scopes = "identify guilds"
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.authorization_url = "https://discordapp.com/oauth2/authorize?" + urlencode({
+            "client_id": self.client_id,
+            "redirect_uri": self.redirect_uri,
+            "response_type": "code",
+            "scope": self.scopes
+        })
         self.discord_api_endpoint = "https://discordapp.com/api/oauth2/token"
 
 
@@ -58,7 +67,7 @@ class Oauth:
             "grant_type": "authorization_code",
             "code": self.code,
             "redirect_uri": self.redirect_uri,
-            "scope": self.scope
+            "scope": self.scopes
         }
         headers = {
             "Content-Type": "application/x-www-form-urlencoded" 
