@@ -18,6 +18,8 @@ Thank you to [Adrien Vergé for familytreemaker.py](https://github.com/adrienver
 
 Thanks to Graphwiz for being a free piece of software that I can use at my leisure.
 
+A thank you to @Binasaurus-Hex for making the external website for me while I worked on other stuff.
+
 # Commands
 
 Note: there's no command to accept or decline a proposal. Just say something along the lines of "yes" or "no" into chat, and it'll interpret that from there.

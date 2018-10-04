@@ -1,0 +1,14 @@
+{% extends "bootstrap.html" %}
+
+{% block header %}
+<div class = "jumbotron text-center" style="background-color:#7289DA">
+    <h1 class = "display-5 text-white"><img src ="{{ marriagebot_logo }}" width="80px" height ="80px" style = "border-radius: 50%;margin-right: 10px">MarriageBot</h1>
+</div>
+{% endblock %}
+{% block content %}
+<div class = "row" style = "padding:10%">
+    <div class = "col-md-12 text-center">
+        <a class = "btn btn-lg text-white" style = "background: #7289DA" role = "button" href = "{{ discord_oauth_url }}">Login With Discord</a>
+    </div>
+</div>
+{% endblock %}

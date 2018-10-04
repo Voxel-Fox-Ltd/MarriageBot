@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class = "container" style = "float:left">
+        <h4 class = "display-4">Colours</h4>
+        <form method = "POST" action = "/submit_colours" style = "max-width:500px">
+            <div class = "form-group">
+                <label class = "" for="edge_colour">Edge: </label>
+                <input name = "edge_colour" id = "edge_colour" value="#{{ edge_colour }}">
+            </div>
+            <div class = "form-group">
+                <label class = "" for="node_colour">Node: </label>
+                <input name = "node_colour" value="#{{ node_colour }}" id = "node_colour">
+            </div>
+            <div class = "form-group">
+                <label class = "" for="font_colour">Font: </label>
+                <input name = "font_colour" value="#{{ font_colour }}" id = "font_colour">
+            </div>
+            <div class = "form-group">
+                <label class = "" for="background_colour">Background: </label>
+                <input name = "background_colour" value="#{{ background_colour }}" id = "background_colour">
+            </div>
+            <div class = "form-group">
+                <label class = "" for="highlighted_font_colour">Highlighted Font: </label>
+                <input name = "highlighted_font_colour" value="#{{ highlighted_font_colour }}" id = "highlighted_font_colour">
+            </div>
+            <div class = "form-group">
+                <label class = "" for="highlighted_node_colour">Highlighted Node: </label>
+                <input name = "highlighted_node_colour" value="#{{ highlighted_node_colour }}" id = "highlighted_node_colour">
+            </div>
+
+            <script>
+                $("#edge_colour").spectrum({ color: "{{ edge_colour }}", preferredFormat: "hex", showInput: true });
+                $("#node_colour").spectrum({ color: "{{ node_colour }}", preferredFormat: "hex", showInput: true });
+                $("#font_colour").spectrum({ color: "{{ font_colour }}", preferredFormat: "hex", showInput: true });
+                $("#background_colour").spectrum({ color: "{{ background_colour }}", preferredFormat: "hex", showInput: true });
+                $("#highlighted_font_colour").spectrum({ color: "{{ highlighted_font_colour }}", preferredFormat: "hex", showInput: true });
+                $("#highlighted_node_colour").spectrum({ color: "{{ highlighted_node_colour }}", preferredFormat: "hex", showInput: true });
+            </script>
+
+            <button type = "submit" class = "btn " style = "background-color: #7289DA;color: white">Submit</button>
+        </form>
+    </div>    
+{% endblock %}

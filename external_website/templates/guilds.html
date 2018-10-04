@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class = "container" style="float:left;max-width:500px">
+    <h1 class = "display-4">Guild:</h1>
+    <h4 style = "background-color:#99AAB5;color: white;padding:1%;border-radius: 10px">
+        <img src = "{{ selected_guild.get_icon_url() }}" width = "30" height = "30" style = "border-radius:50%" class = "d-inline-block align-top">
+        {{ selected_guild.name }}
+    </h4>
+    <form method = "POST" action = "/submit_prefix/{{ selected_guild.id }}">
+        <div class = "form-group">
+            <label for="prefix">Prefix: </label>
+            <input name = "prefix" type = "text" style = "float:right" id = "prefix" placeholder="{{ selected_guild.prefix }}">
+        </div>
+        <button class = "btn" type = "submit" name ="submit" style = "color:white;background-color: #7289DA">
+            submit
+        </button>
+    </form>
+</div>
+{% endblock %}
