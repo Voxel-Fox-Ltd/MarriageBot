@@ -48,7 +48,7 @@ class AdoptRandomText(object):
         '''
 
         return choice([
-            "I don't think that's approriate.",
+            "I don't think that's appropriate.",
             "I would rather not.",
             "Thank you for the offer, but I'll have to refuse.",
             "No thank you.",

@@ -209,7 +209,7 @@ COLOURS = {
     "pale turquoise": 0xafeeee,
     "palevioletred": 0xdb7093,
     "pale violetred": 0xdb7093,
-    "pale viole tred": 0xdb7093,
+    "pale violet red": 0xdb7093,
     "papayawhip": 0xffefd5,
     "papaya whip": 0xffefd5,
     "peachpuff": 0xffdab9,

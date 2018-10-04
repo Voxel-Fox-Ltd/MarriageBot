@@ -51,7 +51,7 @@ class Customisation(object):
         # Valid colour, save
         async with self.bot.database() as db:
             try:
-                await db(f'INSERT INTO customisation (user_id, {attribute}) VALUES ($1. $2)', ctx.author.id, hex_colour)
+                await db(f'INSERT INTO customisation (user_id, {attribute}) VALUES ($1, $2)', ctx.author.id, hex_colour)
             except Exception:
                 await db(f'UPDATE customisation SET {attribute}=$1 WHERE user_id=$2', hex_colour, ctx.author.id)
 

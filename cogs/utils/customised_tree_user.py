@@ -26,32 +26,32 @@ class CustomisedTreeUser(object):
         if self.edge != None:
             edge =  f'"#{self.edge:06X}"' if self.edge >= 0 else 'transparent'
         else:
-            edge = 'black'
+            edge = '"#000000"'
 
         if self.font != None:
             font =  f'"#{self.font:06X}"' if self.font >= 0 else 'transparent'
         else:
-            font = 'black'
+            font = '"#000000"'
 
         if self.node != None:
             node =  f'"#{self.node:06X}"' if self.node >= 0 else 'transparent'
         else:
-            node = 'white'
+            node = '"#FFFFFF"'
 
         if self.highlighted_font != None:
             highlighted_font =  f'"#{self.highlighted_font:06X}"' if self.highlighted_font >= 0 else 'transparent'
         else:
-            highlighted_font = 'white'
+            highlighted_font = '"#FFFFFF"'
 
         if self.highlighted_node != None:
             highlighted_node =  f'"#{self.highlighted_node:06X}"' if self.highlighted_node >= 0 else 'transparent'
         else:
-            highlighted_node = 'blue'
+            highlighted_node = '"#0000FF"'
 
         if self.background != None:
             background =  f'"#{self.background:06X}"' if self.background >= 0 else 'transparent'
         else:
-            background = 'white'
+            background = '"#FFFFFF"'
 
         return {
             'edge': edge,

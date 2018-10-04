@@ -1,4 +1,5 @@
 from asyncio import Task
+from random import choice
 
 from discord import Embed, __version__ as dpy_version
 from discord.ext.commands import command, Context, cooldown
@@ -108,6 +109,11 @@ class Misc(object):
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send("I tried to send an embed, but I couldn't.")
+
+
+    @command(hidden=True)
+    async def hogwarts(self, ctx:Context):
+        await ctx.send(choice(["Hufflepuff!", "Griffindor!", "Slytherin!", "Ravenclaw!"]))
 
 
 def setup(bot:CustomBot):

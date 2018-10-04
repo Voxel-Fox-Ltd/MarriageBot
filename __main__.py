@@ -5,7 +5,7 @@ from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_help import CustomHelp
-from website.index import routes
+from integrated_website.index import routes
 
 
 # Parse arguments
