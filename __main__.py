@@ -42,6 +42,7 @@ bot = CustomBot(
     activity=Game(name="Restarting..."),
     status=Status.dnd,
     commandline_args=args,
+    case_insensitive=True,
 )
 
 
