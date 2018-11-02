@@ -84,7 +84,7 @@ class Hidden(object):
         await ctx.send(choice(responses))
 
 
-    @command(hidden=True, aliases=['OwO'])
+    @command(hidden=True)
     async def owo(self, ctx:Context):
         '''
         uwu

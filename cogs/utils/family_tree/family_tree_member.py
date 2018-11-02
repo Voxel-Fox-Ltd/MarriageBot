@@ -1,5 +1,6 @@
 from re import compile
-from random import choice
+from random import choice, choices
+from string import ascii_letters
 
 from discord import User, File, Guild
 from unidecode import unidecode
@@ -7,10 +8,8 @@ from unidecode import unidecode
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 
 
-def generate_id():
-    return ''.join([
-        choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for i in range(10)
-    ])
+def get_random_string(length:int=10):
+    return ''.join(choices(ascii_letters, k=length))
 
 
 class FamilyTreeMember(object):
@@ -42,7 +41,6 @@ class FamilyTreeMember(object):
 
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
         self.id = discord_id
-        self.tree_id = generate_id()
         self._children = children
         self._parent = parent_id
         self._partner = partner_id
@@ -384,6 +382,7 @@ class FamilyTreeMember(object):
             '',
         ]
         all_users = []
+        user_parent_tree = {}  # Parent: random_string
         for generation in gen_span.values():
             for i in generation:
                 all_users.append(i)
@@ -406,11 +405,14 @@ class FamilyTreeMember(object):
             for person in generation:
                 if person in added_already:
                     continue
+                user_parent_tree[person] = person.id
                 added_already.append(person)
                 if previous_person:
                     all_text.append(f"\t\t{previous_person.id} -> {person.id} [style=invis];")
                 if person.partner and person.partner in generation:
-                    all_text.append(f"\t\t{person.id} -> {person.partner.id};")
+                    user_parent_tree[person.partner] = user_parent_tree[person] = get_random_string()
+                    all_text.append(f"\t\t{person.id} -> {user_parent_tree[person]} -> {person.partner.id};")
+                    all_text.append(f"\t\t{user_parent_tree[person]} {self.INVISIBLE}")
                     added_already.append(person.partner)
                     previous_person = person.partner
                 else:
@@ -422,15 +424,20 @@ class FamilyTreeMember(object):
             all_text.append("\t{")
             for person in generation:
                 if person.children and any([i in all_users for i in person.children]):
-                    all_text.append(f"\t\th{person.id}{self.INVISIBLE};")
+                    all_text.append(f"\t\th{user_parent_tree[person]} {self.INVISIBLE};")
             all_text.append("\t}")
 
             # Add the lines from parent to node to child
+            added_already.clear()
             for person in generation:
                 if person.children and any([i in all_users for i in person.children]):
-                    all_text.append(f"\t\t{person.id} -> h{person.id};")
+                    if user_parent_tree[person] in added_already:
+                        pass
+                    else:
+                        all_text.append(f"\t\t{user_parent_tree[person]} -> h{user_parent_tree[person]};")
+                        added_already.append(user_parent_tree[person])
                     for child in [i for i in person.children if i in all_users]:
-                        all_text.append(f"\t\th{person.id} -> {child.id};")
+                        all_text.append(f"\t\th{user_parent_tree[person]} -> {child.id};")
         all_text.append("}")
 
         return '\n'.join(all_text)
