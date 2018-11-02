@@ -151,8 +151,15 @@ class Information(object):
             return
 
         # Write their treemaker code to a file
+        # dot_code = tree.to_dot_script(ctx.bot, guild=None if all_guilds else ctx.guild)
+        awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_dot_script, self.bot, None if all_guilds else ctx.guild)
+        try:
+            dot_code = await wait_for(awaitable_dot_code, timeout=10.0, loop=self.bot.loop)
+        except TimeoutError:
+            await ctx.send("Your tree generation has timed out. This is usually due to a loop somewhere in your family tree.")
+            return
         with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.dot', 'w', encoding='utf-8') as a:
-            a.write(tree.to_dot_script(ctx.bot, guild=None if all_guilds else ctx.guild))
+            a.write(dot_code)
 
         # Convert to an image
         dot = await create_subprocess_exec(*[
