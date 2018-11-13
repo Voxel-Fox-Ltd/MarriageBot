@@ -18,10 +18,32 @@ class Information(object):
     Handles all marriage/divorce/etc commands
     '''
 
+    # Set up a bunch of substitutions for the relation generator
+
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
         self.fam = None
+        self.operations = [
+            lambda x: x.replace("parent's partner", "parent"),
+            lambda x: x.replace("partner's child", "child"),
+            lambda x: x.replace("grandchild's child", "great grandchild"),
+            lambda x: x.replace("child's child", "grandchild"),
+            lambda x: x.replace("parent's parent", "grandparent"),
+            lambda x: x.replace("grandparent's parent", "great grandparent"),
+            lambda x: x.replace("parent's subling", "aunt/uncle"),
+            lambda x: x.replace("aunt/uncle's child", "cousin"),
+            lambda x: x.replace("parent's child", "sibling"),
+            lambda x: x.replace("sibling's child", "niece/nephew"),
+            lambda x: x.replace("sibling's partner's child", "niece/nephew"),
+            lambda x: x.replace("niece/nephew's child", "grand-niece/nephew"),
+            lambda x: x.replace("grand-niece/nephew's child", "great grand-niece/nephew"),
+            lambda x: x.replace("grandchild's grandchild", "great grandchild"),
+            lambda x: x.replace("grandsibling", "great aunt/uncle"),
+            lambda x: x.replace("great great aunt/uncle", "great grand-aunt/uncle"),
+            lambda x: x.replace("parent's grandchild", "niece/nephew"),
+            lambda x: x.replace("niece/nephew's sibling", "niece/nephew"),
+        ]
 
 
     @command(aliases=['spouse', 'husband', 'wife'])
@@ -82,7 +104,40 @@ class Information(object):
         await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(user_info.parent.id)!s}` (`{user_info.parent.id}`).")
 
 
-    @command()
+    @command(aliases=['relation'])
+    @cooldown(1, 5, BucketType.user)
+    async def relationship(self, ctx:Context, user:User, other:User=None):
+        '''
+        Gets the relationship between the two specified users
+        '''
+
+        if other == None:
+            user, other = ctx.author, user
+        user, other = FamilyTreeMember.get(user.id), FamilyTreeMember.get(other.id)
+        relation = user.get_relation(other)
+        if relation == None:
+            await ctx.send(f"`{user.get_name(self.bot)}` is not related to `{other.get_name(self.bot)}`.")
+            return
+        for i in range(10):
+            for o in self.operations:
+                relation = o(relation)
+        await ctx.send(f"`{other.get_name(self.bot)}` is `{user.get_name(self.bot)}`'s {relation}.")
+
+
+    @command(aliases=['treesize'])
+    @cooldown(1, 5, BucketType.user)
+    async def familysize(self, ctx:Context, user:User=None):
+        '''
+        Gives you the size of your family tree
+        '''
+
+        if user == None:
+            user = ctx.author 
+        user = FamilyTreeMember.get(user.id)
+        await ctx.send(f"There are `{len(user.span(expand_upwards=True, add_parent=True))}` people in `{user.get_name(self.bot)}`'s family tree.")
+
+
+    @command(enabled=False)
     @can_send_files()
     @cooldown(1, 5, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):

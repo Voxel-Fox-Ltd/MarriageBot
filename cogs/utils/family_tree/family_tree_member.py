@@ -27,18 +27,6 @@ class FamilyTreeMember(object):
     NAME_SUBSTITUTION = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
     INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
 
-    # Set up a bunch of substitutions for the relation generator
-    # CHILD_TO_GRANDCHILD = compile(r"child's child")  # grandchild
-    # GRANDCHILD_TO_GREAT = compile(r"grandchild's child")  # great grandchild
-    # PARENT_TO_GRANDPARENT = compile(r"parent's parent")  # grandparent
-    # GRANDPARENT_TO_GREAT = compile(r"grandparent's parent")  # great grandparent
-    # CHILD_TO_UNCLE
-    # CHILD_TO_COUSIN = compile(r"grandparent's grandchild")  # cousin
-    # CHILD_TO_SIBLING = compile(r"parent's child")  # sibling
-    # CHILD_TO_NEPHEW = compile(r"sibling's child")  # nephew
-    # CHILD_TO_REMOVED_COUSIN
-
-
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
         self.id = discord_id
         self._children = children
@@ -194,33 +182,34 @@ class FamilyTreeMember(object):
         return root_user
 
     
-    # def get_relation(self, other, working_relation:list=None, added_already:list=None) -> str:
-    #     '''
-    #     Gets your relation to the other given user or None
-    #     '''
+    def get_relation(self, other, working_relation:list=None, added_already:list=None) -> str:
+        '''
+        Gets your relation to the other given user or None
+        '''
 
-    #     if working_relation == None:
-    #         working_relation = []
-    #     if added_already == None:
-    #         added_already = []
-    #     if self in added_already:
-    #         return None
-    #     if other == self:
-    #         ret_string = "'s ".join(working_relation)
+        if working_relation == None:
+            working_relation = []
+        if added_already == None:
+            added_already = []
+        if self in added_already:
+            return None
+        if other == self:
+            ret_string = "'s ".join(working_relation)
+            return ret_string
 
-    #     added_already.append(self)
+        added_already.append(self)
 
-    #     if self.parent and self.parent not in added_already:
-    #         x = self.parent.get_relation(other, working_relation=working_relation+['parent'], added_already=added_already)
-    #         if x: return x 
-    #     if self.partner and self.parent not in added_already:
-    #         x = self.partner.get_relation(other, working_relation=working_relation+['partner'], added_already=added_already)
-    #         if x: return x 
-    #     if self.children:
-    #         for i in [o for o in self.children if i not in added_already]:
-    #             x = self.partner.get_relation(other, working_relation=working_relation+['child'], added_already=added_already)
-    #             if x: return x 
-    #     return None
+        if self.parent and self.parent not in added_already:
+            x = self.parent.get_relation(other, working_relation=working_relation+['parent'], added_already=added_already)
+            if x: return x 
+        if self.partner and self.partner not in added_already:
+            x = self.partner.get_relation(other, working_relation=working_relation+['partner'], added_already=added_already)
+            if x: return x 
+        if self.children:
+            for i in [o for o in self.children if o not in added_already]:
+                x = i.get_relation(other, working_relation=working_relation+['child'], added_already=added_already)
+                if x: return x 
+        return None
 
 
     def generate_gedcom_script(self, bot) -> str:

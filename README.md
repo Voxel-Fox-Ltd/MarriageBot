@@ -48,6 +48,12 @@ Shows who the user's partner is. Defaults to yourself.
 * `m!parent [@User#1231]`
 Shows who the user's parent is. Defaults to yourself.
 
+* `m!relationship @User#1231 [@User2#4564]`
+Shows you the relationship beteween the two given users (or the first user and yourself).
+
+* `m!familysize [@User#1231]`
+Gives you the amount of people in your family tree.
+
 * `m!tree [@User#1231]`
 Shows the family tree of the given user on the server the command was called from. Defaults to yourself. The bot needs to be able to send images to do this.
 
