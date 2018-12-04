@@ -189,7 +189,7 @@ class Information(object):
         await ctx.send(f"There are `{len(user.span(expand_upwards=True, add_parent=True))}` people in `{user.get_name(self.bot)}`'s family tree.")
 
 
-    @command(enabled=False)
+    @command()
     @can_send_files()
     @cooldown(1, 5, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):

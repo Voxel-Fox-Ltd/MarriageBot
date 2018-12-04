@@ -32,6 +32,7 @@ class FamilyTreeMember(object):
         self._children = children
         self._parent = parent_id
         self._partner = partner_id
+        self.tree_id = get_random_string()
         self.all_users[self.id] = self
 
     
