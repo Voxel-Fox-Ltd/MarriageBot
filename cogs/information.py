@@ -176,7 +176,7 @@ class Information(object):
         await ctx.send(f"`{other.get_name(self.bot)}` is `{user.get_name(self.bot)}`'s {relation}.")
 
 
-    @command(aliases=['treesize'])
+    @command(aliases=['treesize','fs','ts'])
     @cooldown(1, 5, BucketType.user)
     async def familysize(self, ctx:Context, user:User=None):
         '''
