@@ -114,17 +114,45 @@ async def guild_post_handler(request:Request):
 
 
 @routes.post('/webhook')
-async def webhook_handler(bot:CustomBot, request:Request):
+async def webhook_handler(request:Request):
     '''
     Sends a PM to the user with the webhook attached if user in owners
     '''
-
+    
+    # Set up some stuff
     bot = request.app['bot']
+    success = Response(
+        text=dumps({"success": True}),
+        content_type="application/json"
+    )
+    failure = Response(
+        text=dumps({"success": False}),
+        content_type="application/json"
+    )
     x = await request.json()
-    print(dumps(x))
-    if x['bot'] != bot.user.id:
-        return
-    if x['user'] in bot.owners:
-        owner = bot.get_user(x['user'])
-        await owner.send(dumps(x))
-    return Response(text='')
+
+    # See if it's all valid
+    if 'bot' in x and 'user' in x and 'type' in x:
+        pass 
+    else:
+        return failure  # No valid points
+    try:
+        if int(x['bot']) != bot.user.id:
+            return failure
+    except ValueError:
+        # Bot ID wasn't an integer
+        return failure
+    try:
+        user = bot.get_user(int(x['user']))
+    except ValueError:
+        # User ID wasn't an integer
+        return failure
+    if x['type'] not in ['upvote', 'test']:
+        return failure
+
+    # Send proper thanks to the user
+    await user.send("Thank you for upvoting MarriageBot!")
+    return Response(
+        text=dumps({"success": True}),
+        content_type="application/json"
+    )

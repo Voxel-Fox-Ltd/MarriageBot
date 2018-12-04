@@ -27,7 +27,9 @@ class ErrorEvent(object):
         '''
 
         if ctx.author.id in self.bot.config['owners']:
-            raise error
+            await ctx.author.send(f'```py\n{error}```')
+            return
+            # raise error
 
         if isinstance(error, MissingRequiredArgument):
             await ctx.send(f"You passed too few arguments to use that command.")

@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 from json import load
 from importlib import import_module
-from asyncio import sleep
+from asyncio import sleep, create_subprocess_exec
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
 
@@ -198,7 +198,10 @@ class CustomBot(AutoShardedBot):
         An override of the default logout that also closes the webserver
         '''
 
-        await self.web_runner.cleanup()
+        try:
+            await self.web_runner.cleanup()
+        except Exception as e:
+            print("Error with closing previous server: ", e)
         await self.close()
 
 
@@ -230,6 +233,3 @@ class CustomBot(AutoShardedBot):
         await site.start()
 
         print(f"Server started: http://{self.commandline_args.host}:{self.commandline_args.port}/")
-
-    
-
