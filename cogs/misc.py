@@ -21,7 +21,10 @@ class Misc(object):
         Gives you a link to upvote the bot
         '''
 
-        await ctx.send(https://discordbots.org/bot/MarriageBot/vote)
+        if self.bot.config['dbl_vainity']:
+            await ctx.send(f"<https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote>")
+        else:
+            await ctx.send(f"<https://discordbots.org/bot/{self.bot.user.id}/vote>")
 
 
     @command(aliases=['git', 'code'])
