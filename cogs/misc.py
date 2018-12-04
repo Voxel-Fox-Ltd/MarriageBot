@@ -14,6 +14,15 @@ class Misc(object):
     def __init__(self, bot:CustomBot):
         self.bot = bot 
 
+    @command(aliases=['vote'])
+    @cooldown(1, 5, BucketType.user)
+    async def upvote(self, ctx:Context):
+        '''
+        Gives you a link to upvote the bot
+        '''
+
+        await ctx.send(https://discordbots.org/bot/MarriageBot/vote)
+
 
     @command(aliases=['git', 'code'])
     @cooldown(1, 5, BucketType.user)
