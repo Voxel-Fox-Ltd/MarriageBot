@@ -34,6 +34,26 @@ class Simulation(object):
 
     @command()
     @cooldown(1, 5, BucketType.user)
+    async def kiss(self, ctx:Context, member:Member):
+        '''
+        Kisses a mentioned user
+        '''
+
+        await ctx.send(f"*Kisses {member}*")
+
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def snuggle(self, ctx:Context, member:Member):
+        '''
+        Snuggles a mentioned user
+        '''
+
+        await ctx.send(f"*Snuggles {member}*")
+
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
     async def slap(self, ctx:Context, member:Member):
         '''
         Slaps a mentioned user
