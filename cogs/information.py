@@ -160,6 +160,8 @@ class Information(object):
         '''
         Gets the relationship between the two specified users
         '''
+      if user == ctx.author:
+            await ctx.send(f"You are you...")
 
         if other == None:
             user, other = ctx.author, user
