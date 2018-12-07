@@ -161,6 +161,10 @@ class Information(object):
         Gets the relationship between the two specified users
         '''
 
+        if user == ctx.author:
+            await ctx.send(f"You are you...")
+            return
+
         if other == None:
             user, other = ctx.author, user
         user, other = FamilyTreeMember.get(user.id), FamilyTreeMember.get(other.id)
