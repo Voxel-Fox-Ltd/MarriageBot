@@ -126,16 +126,34 @@ class Information(object):
         if user == None:
             user = ctx.author
 
+        # Setup output variable
+        output = ''
+
         # Get the user's info
         user_info = FamilyTreeMember.get(user.id)
         if len(user_info.children) == 0:
-            await ctx.send(f"`{user!s}` has no children right now.")
+            output += f"`{user!s}` has no children right now."
+        else:
+            output += f"`{user!s}` has `{len(user_info.children)}` child" + \
+            {False:"ren", True:""}.get(len(user_info.children)==1) + ": " + \
+            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.children]) + '. '
+
+        # Get their partner's info, if any
+        if user_info.partner == None:
+            await ctx.send(output)
             return
-        await ctx.send(
-            f"`{user!s}` has `{len(user_info.children)}` child" + 
-            {False:"ren",True:""}.get(len(user_info.children)==1) + ": " + 
-            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.children])
-        )
+        user_info = user_info.partner
+        user = self.bot.get_user(user_info.id)
+        if len(user_info.children) == 0:
+            output += f"\nTheir partner, `{user!s}`, has no children right now."
+        else:
+            output += f"\nTheir partner, `{user!s}`, has `{len(user_info.children)}` child" + \
+            {False:"ren", True:""}.get(len(user_info.children)==1) + ": " + \
+            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.children]) + '. '
+
+        # Return all output
+        await ctx.send(output)
+
 
     @command()
     @cooldown(1, 5, BucketType.user)
