@@ -154,6 +154,43 @@ class Information(object):
         # Return all output
         await ctx.send(output)
 
+    @command(aliases=['sibling'])
+    @cooldown(1, 5, BucketType.user)
+    async def sibling(self, ctx:Context, user:User=None):
+        '''
+        Gives you a list of all of your siblings
+        '''
+
+        if user == None:
+            user = ctx.author
+
+        # Setup output variable
+        output = ''
+
+        # Get the parent's info
+        user_info.parent = FamilyTreeMember.get(user.id)
+        if len(user_info.parent.children) == 0:
+            output += f"`{user!s}` has no siblings right now from their parent's side."
+        else:
+            output += f"`{user!s}` has `{len(user_info.parent.children)}` sibling(s) from their parent's side" + \
+            {False:"ren", True:""}.get(len(user_info.parent.children)==1) + ": " + \
+            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.parent.children]) + '. '
+
+        # Get parent's partner's info, if any
+        if user_info.parent.partner == None:
+            await ctx.send(output)
+            return
+        user_info = user_info.parent.partner
+        user = self.bot.get_user(user_info.id)
+        if len(user_info.parent.partner.children) == 0:
+            output += f"\n `{user!s}` has no siblings from their parent's partner's side"
+        else:
+            output += f"\n `{user!s}` has `{len(user_info.parent.partner.children)}` siblings from their parent's partner's side" + \
+            {False:"ren", True:""}.get(len(user_info.parent.partner.children)==1) + ": " + \
+            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.parent.partner.children]) + '. '
+
+        # Return all output
+        await ctx.send(output)
 
     @command()
     @cooldown(1, 5, BucketType.user)
