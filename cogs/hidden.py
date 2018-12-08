@@ -58,7 +58,7 @@ class Hidden(object):
         '''
         
         responses = [
-            "I could be wrongm but I think you meant \"propose\".",
+            "I could be wrong but I think you meant \"propose\".",
             "You're either saying propose or porpoise but I'm not super sure which.",
             "Work on your spelling tbh.",
             "Porpose.",
