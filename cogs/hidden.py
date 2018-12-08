@@ -66,6 +66,22 @@ class Hidden(object):
         ]
         await ctx.send(choice(responses))
 
+  
+     @command(hidden=True)
+     async def ActivateMasterControl(self, ctx:Context, user=None):
+         '''
+         ???
+         '''
+        
+         responses = [
+             "CODE 106: ERROR. ACTIVATE PROTOCOL 627",
+             "Master Control Activated. Gave {ctx.author.mention} owner permissions.",
+             "CODE RED. CODE RED. CODE RED. UNAUTHORIZED ENTRY DETECTED. PROTOCOL 1.",
+             "I mean, at least you tried?",
+             "Pfft, good one.",
+        ]
+        await ctx.send(choice(responses))
+
 
     @command(hidden=True, aliases=['murder'])
     async def kill(self, ctx:Context, user=None):
