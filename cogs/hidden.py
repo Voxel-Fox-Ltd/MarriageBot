@@ -65,6 +65,21 @@ class Hidden(object):
             "Maybe... Just maybe... You should work on you spelling.",
         ]
         await ctx.send(choice(responses))
+    
+     @command(hidden=True)
+    async def ActivateMasterControl(self, ctx:Context, user=None):
+        '''
+        ???
+        '''
+        
+        responses = [
+            "CODE 106: ERROR. ACTIVATE PROTOCOL 627",
+            "Master Control Activated. Gave {ctx.author.mention} owner permissions.",
+            "CODE RED. CODE RED. CODE RED.",
+            "I mean, atleast you tried?",
+            "Pfft, good one.",
+        ]
+        await ctx.send(choice(responses))
 
 
     @command(hidden=True, aliases=['murder'])
