@@ -19,23 +19,23 @@ class Simulation(object):
         Feeds a mentioned user
         '''
 
-       if user == ctx.author:
-       responses = [
-            "You feed yourself candy",
-            "You have been fed",
-            "You feed yourself",
-            "You feed yourself some chicken",
-            "You fed yourself too much.",
+        if user == ctx.author:
+        responses = [
+            f"You feed yourself candy",
+            f"You have been fed",
+            f"You feed yourself",
+            f"You feed yourself some chicken",
+            f"You fed yourself too much.",
         ]
         await ctx.send(choice(responses))
         return
 
         responses = [
-            "*Feeds {member} some candy.*",
-            "{member} has been fed.",
-            "You feed {member}.",
-            "*Feeds {member} some chicken.",
-            "You feed {member} too much.",
+            f"*Feeds {member} some candy.*",
+            f"{member} has been fed.",
+            f"You feed {member}.",
+            f"*Feeds {member} some chicken.",
+            f"You feed {member} too much.",
         ]
         await ctx.send(choice(responses))
 
