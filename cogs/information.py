@@ -154,7 +154,7 @@ class Information(object):
         # Return all output
         await ctx.send(output)
 
-    @command(aliases=['sibling'])
+    @command(aliases=['siblings'])
     @cooldown(1, 5, BucketType.user)
     async def sibling(self, ctx:Context, user:User=None):
         '''
@@ -168,25 +168,28 @@ class Information(object):
         output = ''
 
         # Get the parent's info
-        user_info.parent = FamilyTreeMember.get(user.id)
-        if len(user_info.parent.children) == 0:
-            output += f"`{user!s}` has no siblings right now from their parent's side."
+        user_info = FamilyTreeMember.get(user.id)
+        if user_info.parent == None:
+            output += f"`{user!s}` has no parent right now."
+        elif len(user_info.parent.children) <= 1:
+            output += f"`{user!s}` has no siblings on their side of the family."
         else:
-            output += f"`{user!s}` has `{len(user_info.parent.children)}` sibling(s) from their parent's side" + \
-            {False:"ren", True:""}.get(len(user_info.parent.children)==1) + ": " + \
-            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.parent.children]) + '. '
+            output += f"`{user!s}` has `{len(user_info.parent.children) - 1}` sibling" + \
+            {False:"s", True:""}.get(len(user_info.parent.children)==2) + \
+            " from their parent's side: " + \
+            ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.parent.children if i.id != user.id]) + '. '
 
         # Get parent's partner's info, if any
-        if user_info.parent.partner == None:
-            await ctx.send(output)
-            return
-        user_info = user_info.parent.partner
-        user = self.bot.get_user(user_info.id)
-        if len(user_info.parent.partner.children) == 0:
-            output += f"\n `{user!s}` has no siblings from their parent's partner's side"
+        if user_info.parent == None:
+            pass
+        elif user_info.parent.partner == None:
+            pass
+        elif len(user_info.parent.partner.children) == 0:
+            output += f"\nThey also have no siblings from their parent's partner's side of the family."
         else:
-            output += f"\n `{user!s}` has `{len(user_info.parent.partner.children)}` siblings from their parent's partner's side" + \
-            {False:"ren", True:""}.get(len(user_info.parent.partner.children)==1) + ": " + \
+            output += f"\nThey also have `{len(user_info.parent.partner.children)}` sibling" + \
+            {False:"s", True:""}.get(len(user_info.parent.partner.children)==1) + \
+            " from their parent's partner's side of the family: " + \
             ", ".join([f"`{self.bot.get_user(i.id)!s}` (`{i.id}`)" for i in user_info.parent.partner.children]) + '. '
 
         # Return all output
