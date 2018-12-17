@@ -36,9 +36,9 @@ class CommandEvent(object):
             return
 
         if ctx.guild:
-            await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
+            await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nMessage (`{ctx.message.id}`) Content: `{ctx.message.content}`")
         else:
-            await self.log_channel.send(f"Guild: `{ctx.guild}` (`{ctx.guild}`) | Channel: `{ctx.channel}` (`{ctx.channel}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nContent: `{ctx.message.content}`")
+            await self.log_channel.send(f"Guild: `{ctx.guild}` (`{ctx.guild}`) | Channel: `{ctx.channel}` (`{ctx.channel}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nMessage (`{ctx.message.id}`) Content: `{ctx.message.content}`")
         self.cache.append(ctx.message)
 
 
@@ -51,7 +51,7 @@ class CommandEvent(object):
             return
 
         if message.guild == None:
-            text = f"Guild: `{message.guild}` | User: `{message.author!s}` (`{message.author.id}`) | Correspondant: `{message.channel.recipient}` (`{message.channel.recipient.id}`)\nContent: `{message.content}`"
+            text = f"Guild: `{message.guild}` | User: `{message.author!s}` (`{message.author.id}`) | Correspondant: `{message.channel.recipient}` (`{message.channel.recipient.id}`)\nMessage (`{message.id}`) Content: `{message.content}`"
         elif message.author.bot:
             return
         elif any([i in message.content.casefold() for i in ['marriagebot', 'marriage bot', f'{self.bot.user.id}']]):
@@ -59,7 +59,7 @@ class CommandEvent(object):
             if message in self.cache:
                 self.cache.remove(message)
                 return
-            text = f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`"
+            text = f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nMessage (`{message.id}`) Content: `{message.content}`"
         else:
             return
         attachments = [i.url for i in message.attachments]
