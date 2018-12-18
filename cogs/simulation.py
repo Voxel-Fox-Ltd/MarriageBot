@@ -19,8 +19,25 @@ class Simulation(object):
         Feeds a mentioned user
         '''
 
-        await ctx.send(f"*Feeds {member} some candy*")
+        if user == ctx.author:
+        responses = [
+            f"You feed yourself candy",
+            f"You have been fed",
+            f"You feed yourself",
+            f"You feed yourself some chicken",
+            f"You fed yourself too much.",
+        ]
+        await ctx.send(choice(responses))
+        return
 
+        responses = [
+            f"*Feeds {member} some candy.*",
+            f"{member} has been fed.",
+            f"You feed {member}.",
+            f"*Feeds {member} some chicken.",
+            f"You feed {member} too much.",
+        ]
+        await ctx.send(choice(responses))
 
     @command()
     @cooldown(1, 5, BucketType.user)
@@ -28,6 +45,10 @@ class Simulation(object):
         '''
         Hugs a mentioned user
         '''
+
+        if user == ctx.author:
+            await ctx.send(f"*You hug yourself... and start crying.*")
+            return
 
         await ctx.send(f"*Hugs {member}*")
 
@@ -38,6 +59,9 @@ class Simulation(object):
         '''
         Kisses a mentioned user
         '''
+        if user == ctx.author:
+            await ctx.send(f"How does one even manage to do that?")
+            return
 
         await ctx.send(f"*Kisses {member}*")
 
@@ -58,6 +82,9 @@ class Simulation(object):
         '''
         Snuggles a mentioned user
         '''
+        if user == ctx.author:
+            await ctx.send(f"*You snuggle yourself... and start crying.*")
+            return
 
         await ctx.send(f"*Snuggles {member}*")
 
@@ -68,6 +95,9 @@ class Simulation(object):
         '''
         Slaps a mentioned user
         '''
+        if user == ctx.author:
+            await ctx.send(f"*You slapped yourself... for some reason.*")
+            return
 
         await ctx.send(f"*Slaps {member}*")
 
@@ -78,6 +108,10 @@ class Simulation(object):
         '''
         Punches a mentioned user
         '''
+        if user == ctx.author:
+            await ctx.send(f"*You punched yourself... for some reason.*")
+            return
+
 
         await ctx.send(f"*Punches {member} right in the nose*")
 
