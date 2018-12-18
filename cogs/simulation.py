@@ -41,6 +41,16 @@ class Simulation(object):
 
         await ctx.send(f"*Kisses {member}*")
 
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def smash(self, ctx:Context, member:Member):
+        '''
+        Smashes a mentioned user
+        '''
+
+        await ctx.send(f"*Smashes {member} :smirk:*")
+
+
 
     @command()
     @cooldown(1, 5, BucketType.user)
