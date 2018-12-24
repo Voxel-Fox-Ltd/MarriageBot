@@ -148,7 +148,7 @@ class CustomBot(AutoShardedBot):
             url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
             json = {
                 'server_count': len(self.guilds),
-                'shard_count': self.bot.shard_count,
+                'shard_count': self.shard_count,
                 'shard_id': 0,
             }
             headers = {
