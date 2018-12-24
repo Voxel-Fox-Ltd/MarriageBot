@@ -15,8 +15,8 @@ class ErrorEvent(object):
 
 
     @property
-    def log_channel(self):
-        channel_id = self.bot.config['log_channel']
+    def event_log_channel(self):
+        channel_id = self.bot.config['event_log_channel']
         channel = self.bot.get_channel(channel_id)
         return channel
 
@@ -52,7 +52,7 @@ class ErrorEvent(object):
                 return
             elif 'oserror' in str(error).lower():
                 number = collect()
-                await self.log_channel.send(f'Deleted `{number}` unreachable objects from memory, <@141231597155385344>')
+                await self.event_log_channel.send(f'Deleted `{number}` unreachable objects from memory, <@141231597155385344>')
                 await ctx.send('I was unable to run that command properly - try again in a moment.')
                 return
             await ctx.author.send(f"Error encountered running that command: `{error!s}`")
@@ -75,7 +75,7 @@ class ErrorEvent(object):
             except Exception as e:
                 data = f"**Error**\nUser: `{ctx.author!s}` (`{ctx.author.id}`) | Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Content: `{ctx.message.content}`\n" + "```py\n" + format_exc() + "```"
                 try:
-                    await self.log_channel.send(data)
+                    await self.event_log_channel.send(data)
                 except Exception as e:
                     print(data)
 

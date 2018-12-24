@@ -13,8 +13,8 @@ class GuildEvent(object):
 
 
     @property
-    def log_channel(self):
-        channel_id = self.bot.config['log_channel']
+    def event_log_channel(self):
+        channel_id = self.bot.config['event_log_channel']
         channel = self.bot.get_channel(channel_id)
         return channel    
 
@@ -36,7 +36,7 @@ class GuildEvent(object):
             embed.set_author(name=f'Added to Blacklisted Guild')
             await guild.leave()
 
-        await self.log_channel.send(embed=embed)
+        await self.event_log_channel.send(embed=embed)
 
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
@@ -53,7 +53,7 @@ class GuildEvent(object):
         embed.add_field(name='Guild ID', value=guild.id)
         embed.add_field(name='Member Count', value=len(guild.members))
         embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
-        await self.log_channel.send(embed=embed)
+        await self.event_log_channel.send(embed=embed)
 
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()

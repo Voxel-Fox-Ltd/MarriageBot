@@ -14,8 +14,8 @@ class CommandEvent(object):
 
 
     @property
-    def log_channel(self):
-        channel_id = self.bot.config['log_channel']
+    def command_log_channel(self):
+        channel_id = self.bot.config['command_log_channel']
         channel = self.bot.get_channel(channel_id)
         return channel
 
@@ -32,13 +32,13 @@ class CommandEvent(object):
         Runs when a command is run
         '''
 
-        if not self.log_channel:
+        if not self.command_log_channel:
             return
 
         if ctx.guild:
-            await self.log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nMessage (`{ctx.message.id}`) Content: `{ctx.message.content}`")
+            await self.command_log_channel.send(f"Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Channel: `{ctx.channel.name}` (`{ctx.channel.id}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nMessage (`{ctx.message.id}`) Content: `{ctx.message.content}`")
         else:
-            await self.log_channel.send(f"Guild: `{ctx.guild}` (`{ctx.guild}`) | Channel: `{ctx.channel}` (`{ctx.channel}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nMessage (`{ctx.message.id}`) Content: `{ctx.message.content}`")
+            await self.command_log_channel.send(f"Guild: `{ctx.guild}` (`{ctx.guild}`) | Channel: `{ctx.channel}` (`{ctx.channel}`) | User: `{ctx.author!s}` (`{ctx.author.id}`)\nMessage (`{ctx.message.id}`) Content: `{ctx.message.content}`")
         self.cache.append(ctx.message)
 
 

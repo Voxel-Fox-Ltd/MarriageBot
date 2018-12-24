@@ -21,7 +21,8 @@
     "dbl_vainity": "",
     "github": "",
     "patreon": "",
-    "log_channel": 01011,
+    "command_log_channel": 01011,
+    "event_log_channel": 01011,
     "chat_channel": 01011,
     "stream_channel": 01011,
     "guild": ""
