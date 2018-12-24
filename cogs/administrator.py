@@ -23,7 +23,7 @@ class Administrator(object):
         '''
 
         if not prefix:
-            prefix = self.bot.config['deafult_prefix']
+            prefix = self.bot.config['default_prefix']
         if len(prefix) > 30:
             await ctx.send("Your prefix can't be longer than 30 characters, I'm afraid.")
             return
