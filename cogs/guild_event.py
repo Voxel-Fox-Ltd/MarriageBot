@@ -24,19 +24,26 @@ class GuildEvent(object):
         When the client is added to a new guild
         '''
 
-        embed = Embed(colour=0x00ff00)
-        embed.set_author(name=f'Added to Guild (#{len(self.bot.guilds)})')
-        embed.add_field(name='Guild Name', value=guild.name)
-        embed.add_field(name='Guild ID', value=guild.id)
-        embed.add_field(name='Member Count', value=len(guild.members))
-        embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
+        # embed = Embed(colour=0x00ff00)
+        # embed.set_author(name=f'Added to Guild (#{len(self.bot.guilds)})')
+        # embed.add_field(name='Guild Name', value=guild.name)
+        # embed.add_field(name='Guild ID', value=guild.id)
+        # embed.add_field(name='Member Count', value=len(guild.members))
+        # embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
+        text = f'''Added to Guild (#{len(self.bot.guilds)})
+            Guild Name: {guild.name}
+            Guild ID: {guild.id}
+            Member Count: {len(guild.members)} (Humans/Bots - {len([i for i in guild.members if not i.bot])}/{len([i for i in guild.members if i.bot])})
+            Current Datetime: {datetime.now().strftime("%A, %x %X")}'''.replace('\t\t\t', '').replace(' '*12, '')
 
         if guild.id in self.bot.blacklisted_guilds:
-            embed.colour = 0xff0000
-            embed.set_author(name=f'Added to Blacklisted Guild')
+            # embed.colour = 0xff0000
+            # embed.set_author(name=f'Added to Blacklisted Guild')
+            text = text.replace('Added to Guild', 'Added to Blacklisted Guild')
             await guild.leave()
 
-        await self.event_log_channel.send(embed=embed)
+        # await self.event_log_channel.send(embed=embed)
+        await self.event_log_channel.send(text)
 
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
@@ -47,13 +54,19 @@ class GuildEvent(object):
         When the client is removed from a guild
         '''
 
-        embed = Embed(colour=0xff0000)
-        embed.set_author(name=f'Removed from Guild (#{len(self.bot.guilds)})')
-        embed.add_field(name='Guild Name', value=guild.name)
-        embed.add_field(name='Guild ID', value=guild.id)
-        embed.add_field(name='Member Count', value=len(guild.members))
-        embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
-        await self.event_log_channel.send(embed=embed)
+        # embed = Embed(colour=0xff0000)
+        # embed.set_author(name=f'Removed from Guild (#{len(self.bot.guilds)})')
+        # embed.add_field(name='Guild Name', value=guild.name)
+        # embed.add_field(name='Guild ID', value=guild.id)
+        # embed.add_field(name='Member Count', value=len(guild.members))
+        # embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
+        # await self.event_log_channel.send(embed=embed)
+        text = f'''Removed from Guild (#{len(self.bot.guilds)})
+            Guild Name: {guild.name}
+            Guild ID: {guild.id}
+            Member Count: {len(guild.members)} (Humans/Bots - {len([i for i in guild.members if not i.bot])}/{len([i for i in guild.members if i.bot])})
+            Current Datetime: {datetime.now().strftime("%A, %x %X")}'''.replace('\t\t\t', '').replace(' '*12, '')
+        await self.event_log_channel.send(text)
 
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
