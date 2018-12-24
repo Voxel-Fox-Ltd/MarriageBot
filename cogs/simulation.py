@@ -31,11 +31,11 @@ class Simulation(object):
             ]
         else:
             responses = [
-                f"*Feeds {member} some candy.*",
-                f"{member} has been fed.",
-                f"You feed {member}.",
-                f"*Feeds {member} some chicken.",
-                f"You feed {member} too much.",
+                f"*Feeds {user} some candy.*",
+                f"{user} has been fed.",
+                f"You feed {user}.",
+                f"*Feeds {user} some chicken.",
+                f"You feed {user} too much.",
             ]
         await ctx.send(choice(responses))
 
@@ -51,7 +51,7 @@ class Simulation(object):
             await ctx.send(f"*You hug yourself... and start crying.*")
             return
 
-        await ctx.send(f"*Hugs {member}*")
+        await ctx.send(f"*Hugs {user}*")
 
 
     @command()
@@ -65,7 +65,7 @@ class Simulation(object):
             await ctx.send(f"How does one even manage to do that?")
             return
 
-        await ctx.send(f"*Kisses {member}*")
+        await ctx.send(f"*Kisses {user}*")
 
 
     @command()
