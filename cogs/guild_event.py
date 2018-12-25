@@ -30,11 +30,11 @@ class GuildEvent(object):
         # embed.add_field(name='Guild ID', value=guild.id)
         # embed.add_field(name='Member Count', value=len(guild.members))
         # embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
-        text = f'''Added to Guild (#{len(self.bot.guilds)})
-            Guild Name: {guild.name}
-            Guild ID: {guild.id}
-            Member Count: {len(guild.members)} (Humans/Bots - {len([i for i in guild.members if not i.bot])}/{len([i for i in guild.members if i.bot])})
-            Current Datetime: {datetime.now().strftime("%A, %x %X")}'''.replace('\t\t\t', '').replace(' '*12, '')
+        text = f'''**Added to Guild** (`#{len(self.bot.guilds)}`)
+            Guild Name: `{guild.name}`
+            Guild ID: `{guild.id}`
+            Member Count: `{len(guild.members)}` (Humans/Bots - `{len([i for i in guild.members if not i.bot])}`/`{len([i for i in guild.members if i.bot])}`)
+            Current Datetime: `{datetime.now().strftime("%A, %x %X")}`'''.replace('\t\t\t', '').replace(' '*12, '')
 
         if guild.id in self.bot.blacklisted_guilds:
             # embed.colour = 0xff0000
@@ -61,11 +61,11 @@ class GuildEvent(object):
         # embed.add_field(name='Member Count', value=len(guild.members))
         # embed.set_footer(text=datetime.now().strftime('%A, %x %X'))
         # await self.event_log_channel.send(embed=embed)
-        text = f'''Removed from Guild (#{len(self.bot.guilds)})
-            Guild Name: {guild.name}
-            Guild ID: {guild.id}
-            Member Count: {len(guild.members)} (Humans/Bots - {len([i for i in guild.members if not i.bot])}/{len([i for i in guild.members if i.bot])})
-            Current Datetime: {datetime.now().strftime("%A, %x %X")}'''.replace('\t\t\t', '').replace(' '*12, '')
+        text = f'''**Removed from Guild** (`#{len(self.bot.guilds)}`)
+            Guild Name: `{guild.name}`
+            Guild ID: `{guild.id}`
+            Member Count: `{len(guild.members)}` (Humans/Bots - `{len([i for i in guild.members if not i.bot])}`/`{len([i for i in guild.members if i.bot])}`)
+            Current Datetime: `{datetime.now().strftime("%A, %x %X")}`'''.replace('\t\t\t', '').replace(' '*12, '')
         await self.event_log_channel.send(text)
 
         if len(self.bot.guilds) % 5 == 0:

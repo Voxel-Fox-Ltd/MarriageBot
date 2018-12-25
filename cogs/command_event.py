@@ -1,6 +1,6 @@
 from asyncio import sleep
 
-from discord import Message
+from discord import Message, Embed
 from discord.ext.commands import Context
 
 from cogs.utils.custom_bot import CustomBot
@@ -51,21 +51,35 @@ class CommandEvent(object):
             return
 
         if message.guild == None:
-            text = f"Guild: `{message.guild}` | User: `{message.author!s}` (`{message.author.id}`) | Correspondant: `{message.channel.recipient}` (`{message.channel.recipient.id}`)\nMessage (`{message.id}`) Content: `{message.content}`"
+            text = f"""Guild: `{message.guild}`
+                    User: `{message.author!s}` (`{message.author.id}`)
+                    Correspondant: `{message.channel.recipient}` (`{message.channel.recipient.id}`)
+                    Message (`{message.id}`)""".replace('\t'*5, '').replace(' '*5*4, '')
         elif message.author.bot:
             return
         elif any([i in message.content.casefold() for i in ['marriagebot', 'marriage bot', f'{self.bot.user.id}']]):
-            await sleep(1)
+            await sleep(0.1)
             if message in self.cache:
                 self.cache.remove(message)
                 return
-            text = f"Guild: `{message.guild.name}` (`{message.guild.id}`) | Channel: `{message.channel.name}` (`{message.channel.id}`) | User: `{message.author!s}` (`{message.author.id}`)\nMessage (`{message.id}`) Content: `{message.content}`"
+            text = f"""Guild: `{message.guild.name}` (`{message.guild.id}`)
+                    Channel: `{message.channel.name}` (`{message.channel.id}`)
+                    User: `{message.author!s}` (`{message.author.id}`)
+                    Message (`{message.id}`)""".replace('\t'*5, '').replace(' '*5*4, '')
         else:
             return
         attachments = [i.url for i in message.attachments]
         if attachments:
-            text += '\nAttachments: ' + ', '.join(attachments)   
-        await self.chat_channel.send(text)         
+            text += '\nAttachments: ' + ', '.join(attachments)
+        
+        # Construct the embed
+        if message.author.guild:
+            embed = Embed(colour=message.author.top_role.colour.value)
+        else:
+            embed = Embed()
+        embed.set_author(name=message.author, icon_url=message.author.avatar_url) 
+        embed.description = message.clean_content
+        await self.chat_channel.send(text, embed=embed)         
 
 
 def setup(bot:CustomBot):

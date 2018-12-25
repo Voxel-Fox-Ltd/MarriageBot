@@ -2,7 +2,7 @@ from traceback import format_exc
 from asyncio import iscoroutine
 
 from aiohttp import ClientSession
-from discord import Member, Message, Activity, ActivityType, User, Status
+from discord import Member, Message, Activity, ActivityType, User, Status, Embed
 from discord.ext.commands import command, Context, group, NotOwner
 
 from cogs.utils.custom_bot import CustomBot
@@ -74,14 +74,24 @@ class CalebOnly(object):
         if not self.stream_channel:
             return
         if message.channel.id == self.stream.id:
-            attachments = [i.url for i in message.attachments]
-            if message.content:
-                text = f"**Streamed Message** | User: `{message.author!s}` (`{message.author.id}`)\nContent: `{message.content}`"
-            else:
-                text = f"**Streamed Message** | User: `{message.author!s}` (`{message.author.id}`)\nNo text content in message."
-            if attachments:
-                text += '\nAttachments: ' + ', '.join(attachments)
-            await self.stream_channel.send(text) 
+            pass 
+        else: 
+            return 
+
+
+        text = f"""User: `{message.author!s}` (`{message.author.id}`) | Message (`{message.id}`)""".replace('\t'*4, '').replace(' '*4*4, '')
+        attachments = [i.url for i in message.attachments]
+        if attachments:
+            text += '\nAttachments: ' + ', '.join(attachments)
+        
+        # Construct the embed
+        if message.author.guild:
+            embed = Embed(colour=message.author.top_role.colour.value)
+        else:
+            embed = Embed()
+        embed.set_author(name=message.author, icon_url=message.author.avatar_url) 
+        embed.description = message.clean_content
+        await self.stream_channel.send(text, embed=embed)
 
 
     @command(aliases=['pm', 'dm'])
