@@ -104,42 +104,6 @@ class CalebOnly(object):
 
 
     @command()
-    async def forcemarry(self, ctx:Context, user_a:User, user_b:User):
-        '''
-        Marries the two specified users
-        '''
-
-        async with self.bot.database() as db:
-            try:
-                await db.marry(user_a, user_b)
-            except Exception as e:
-                return  # Only thrown if two people try to marry at once, so just return
-        me = FamilyTreeMember.get(user_a.id)
-        me._partner = user_b.id 
-        them = FamilyTreeMember.get(user_b.id)
-        them._partner = user_a.id
-        await ctx.send("Consider it done.")
-
-
-    @command()
-    async def forceadopt(self, ctx:Context, parent:User, child:User):
-        '''
-        Adds the child to the specified parent
-        '''
-
-        async with self.bot.database() as db:
-            try:
-                await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', parent.id, child.id)
-            except Exception as e:
-                return  # Only thrown when multiple people do at once, just return
-        me = FamilyTreeMember.get(parent.id)
-        me._children.append(child.id)
-        them = FamilyTreeMember.get(child.id)
-        them._parent = parent.id
-        await ctx.send("Consider it done.")
-
-
-    @command()
     async def ev(self, ctx:Context, *, content:str):
         '''
         Runs some text through Python's eval function
