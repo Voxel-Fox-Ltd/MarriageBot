@@ -7,6 +7,7 @@ from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
 class Simulation(object):
@@ -69,9 +70,25 @@ class Simulation(object):
             await ctx.send(f"How does one even manage to do that?")
             return
 
+        #Check if they are related
+        x = FamilyTreeMember.get(ctx.author.id)
+        y = FamilyTreeMember.get(user.id)
+        
+        relationship = x.get_relationship(y)
+        if relationship = None:
         await ctx.send(f"*Kisses {user}*")
+        return
+    
+        else:
+            responses = [
+                f"Well you two lovebirds may be related but... I'll allow it :smirk:",
+                f"Woah woah, you two are family!",
+                f"Incest is wincest, I guess.",
+                f"You two are related but go off I guess.",
+            ]
+        await ctx.send(choice(responses))
 
-
+        
     @command()
     @cooldown(1, 5, BucketType.user)
     async def snuggle(self, ctx:Context, user:Member):
@@ -157,7 +174,7 @@ class Simulation(object):
         except TimeoutError as e:
             try:
                 responses = [
-                    f"Looks like the requst timed out, {ctx.author.mention}!",
+                    f"Looks like the request timed out, {ctx.author.mention}!",
                     f"Looks like they fell asleep, {ctx.author.mention} .-.",
                 ]
                 await ctx.send(choice(responses))
