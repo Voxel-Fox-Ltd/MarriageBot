@@ -14,9 +14,10 @@ class Hidden(object):
 
 
     def __local_check(self, ctx:Context):
-        if ctx.author.id in self.bot.config['owners']:
-            return True
-        return choice(range(0, 4)) == 0
+        # if ctx.author.id in self.bot.config['owners']:
+        #     return True
+        return True
+        # return choice(range(0, 4)) == 0
 
 
     @command(hidden=True)
