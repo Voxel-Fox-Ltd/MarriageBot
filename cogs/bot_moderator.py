@@ -103,7 +103,7 @@ class ModeratorOnly(object):
             except Exception as e:
                 return  # Should only be thrown when the database can't connect
         me = FamilyTreeMember.get(user.id)
-        if not user.parent:
+        if not me.parent:
             await ctx.send("That user doesn't even have a parent .-.")
             return 
         me.parent._children.remove(user.id)
