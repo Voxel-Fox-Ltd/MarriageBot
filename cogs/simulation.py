@@ -75,9 +75,9 @@ class Simulation(object):
         y = FamilyTreeMember.get(user.id)
         
         relationship = x.get_relationship(y)
-        if relationship = None:
-        await ctx.send(f"*Kisses {user}*")
-        return
+        if relationship == None:
+            await ctx.send(f"*Kisses {user}*")
+            return
     
         else:
             responses = [
