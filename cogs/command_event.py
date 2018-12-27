@@ -73,7 +73,7 @@ class CommandEvent(object):
             text += '\nAttachments: ' + ', '.join(attachments)
         
         # Construct the embed
-        if message.author.guild:
+        if message.guild and message.author.guild:
             embed = Embed(colour=message.author.top_role.colour.value)
         else:
             embed = Embed()
