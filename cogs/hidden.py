@@ -33,6 +33,8 @@ class Hidden(object):
             await ctx.send(f"Too little value")
             return
 
+        await ctx.send("They are very valuable")
+
         
     @command(hidden=True)
     async def purpose(self, ctx:Context, user=None):
