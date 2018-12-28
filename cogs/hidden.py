@@ -19,7 +19,21 @@ class Hidden(object):
         return True
         # return choice(range(0, 4)) == 0
 
+        
+    @command()
+    async def value(self, ctx:Context, user:Member):
+        '''
+        Finds the value of a user
+        '''
+        if user == ctx.author:
+            await ctx.send(f"You are very valuable")
+            return
 
+        if user.id == 454392332788301847:
+            await ctx.send(f"Too little value")
+            return
+
+        
     @command(hidden=True)
     async def purpose(self, ctx:Context, user=None):
         '''
