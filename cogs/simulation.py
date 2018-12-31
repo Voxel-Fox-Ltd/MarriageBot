@@ -18,6 +18,15 @@ class Simulation(object):
         self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
+        # Get random text for this cog
+        self.copulate_random_text = None
+        self.bot.loop.create_task(self.get_copulate_random_text())
+
+    
+    async def get_copulate_random_text(self):
+        await self.bot.wait_until_ready()
+        self.copulate_random_text = self.bot.cogs.get('CopulateRandomText')
+
 
     @command()
     @cooldown(1, 5, BucketType.user)
@@ -74,7 +83,7 @@ class Simulation(object):
         x = FamilyTreeMember.get(ctx.author.id)
         y = FamilyTreeMember.get(user.id)
         
-        relationship = x.get_relationship(y)
+        relationship = x.get_relation(y)
         if relationship == None:
             await ctx.send(f"*Kisses {user}*")
             return
@@ -140,7 +149,7 @@ class Simulation(object):
         '''
         
         if user == ctx.author:
-            await ctx.send(f"Not on my Christian Minecraft server.")
+            await ctx.send(self.copulate_random_text.proposing_to_themselves(ctx.author))
             return
 
         # Make the check
@@ -163,7 +172,7 @@ class Simulation(object):
                 return 'NO' if no else 'YES'
             return False
 
-        x = await ctx.send(f"Hey, {user.mention}, do you wanna?")
+        x = await ctx.send(self.copulate_random_text.valid_proposal(ctx.author, user))
 
         # Wait for a response
         try:
@@ -173,41 +182,30 @@ class Simulation(object):
             response = check(m)
         except TimeoutError as e:
             try:
-                responses = [
-                    f"Looks like the request timed out, {ctx.author.mention}!",
-                    f"Looks like they fell asleep, {ctx.author.mention} .-.",
-                ]
-                await ctx.send(choice(responses))
-                return
+                await ctx.send(self.copulate_random_text.proposal_timed_out(ctx.author))
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
             return
         except KeyError as e:
-            response = 'YES'
+            if user.author.id == self.bot.user.id:
+                await ctx.send(self.copulate_random_text.target_is_me(ctx.author))
+            else:
+                await ctx.send(self.copulate_random_text.target_is_bot(ctx.author))
+            return 
 
         if response == "NO":
-            await ctx.send(f"Looks like they don't wanna smash, {ctx.author.mention}!")
+            await ctx.send(self.copulate_random_text.declining_valid_proposal(ctx.author))
             return
 
-        responses = [
-            f"{ctx.author.mention} and {user.mention} got frisky~",
-            f"{ctx.author.mention} and {user.mention} spent some alone time together ~~wink wonk~~ ",
-            f"{ctx.author.mention} and {user.mention} made sexy time together ;3",
-            f"{ctx.author.mention} and {user.mention} attempted to make babies",
-            f"{ctx.author.mention} and {user.mention} tried to have relations but couldn't find the hole",
-            f"{ctx.author.mention} and {user.mention} went into the wrong hole",
-            f"{ctx.author.mention} and {user.mention} tried your hardest, but {user.mention} came too early .-.",
-            f"{ctx.author.mention} and {user.mention} slobbed each other's knobs",
-            f"{ctx.author.mention} and {user.mention} had some frisky time in the pool and your doodoo got stuck because of pressure",
-            f"{ctx.author.mention} and {user.mention} had sex and you've contracted an STI. uh oh!",
-            f"{ctx.author.mention} and {user.mention} had sex but you finished early and now it's just a tad awkward.",
-            f"Jesus saw what {ctx.author.mention} and {user.mention} did.",
-            f"{ctx.author.mention} and {user.mention} did a lot of screaming"
-            f"{ctx.author.mention} and {user.mention} had sex and pulled a muscle. No more hanky panky for a while!",
-        ]
-
-        await ctx.send(choice(responses))
+        #Check if they are related
+        x = FamilyTreeMember.get(ctx.author.id)
+        y = FamilyTreeMember.get(user.id)
+        relationship = x.get_relation(y)
+        if relationship == None or relationship.casefold() == 'partner':
+            await ctx.send(self.copulate_random_text.valid_target(ctx.author, user))
+        else:
+            await ctx.send(self.copulate_random_text.target_is_relation(ctx.author, user, relationship))
 
 
 def setup(bot:CustomBot):
