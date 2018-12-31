@@ -86,6 +86,7 @@ class CopulateRandomText(object):
             f"What’s up {target.mention} you dtf?",
             f"Yoooo, you up to _smash_?",
             f"Hey {target.mention}, u wan sum fuk?",
+            f"Hey, {target.mention}, ready to mingle? B)",
         ])
 
 
