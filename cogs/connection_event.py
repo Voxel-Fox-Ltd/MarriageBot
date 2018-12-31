@@ -16,12 +16,12 @@ class ConnectionEvent(object):
         return channel
 
 
-    async def on_connect(self):
-        await self.event_log_channel.send("`on_connect` called.")
+    # async def on_connect(self):
+    #     await self.event_log_channel.send("`on_connect` called.")
 
 
-    async def on_ready(self):
-        await self.event_log_channel.send("`on_ready` called.")
+    # async def on_ready(self):
+    #     await self.event_log_channel.send("`on_ready` called.")
 
 
     async def on_shard_ready(self, shard_id:int):
