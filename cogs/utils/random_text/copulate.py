@@ -90,7 +90,7 @@ class CopulateRandomText(object):
 
 
     @staticmethod 
-    def proposing_to_themselves(target, instigator=None):
+    def proposing_to_themselves(instigator, target=None):
         '''
         When they propose to themself
         '''
@@ -106,7 +106,7 @@ class CopulateRandomText(object):
 
 
     @staticmethod 
-    def target_is_bot(target, instigator=None):
+    def target_is_bot(instigator, target=None):
         '''
         When they propose to a bot
         '''
@@ -120,7 +120,7 @@ class CopulateRandomText(object):
 
 
     @staticmethod 
-    def target_is_me(target, instigator=None):
+    def target_is_me(instigator, target=None):
         '''
         When they propose to MB
         '''
@@ -137,7 +137,7 @@ class CopulateRandomText(object):
 
     
     @staticmethod 
-    def target_is_relation(target, instigator, realtionship):
+    def target_is_relation(instigator, target, relationship):
         '''
         When the target is related to the instigator
         '''

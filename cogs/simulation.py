@@ -149,7 +149,25 @@ class Simulation(object):
         '''
         
         if user == ctx.author:
-            await ctx.send(self.copulate_random_text.proposing_to_themselves(ctx.author))
+            await ctx.send(self.copulate_random_text.proposing_to_themselves(ctx.author, user))
+            return
+
+        # Check for a bot
+        if user.id == self.bot.user.id:
+            await ctx.send(self.copulate_random_text.target_is_me(ctx.author, user))
+            return
+        elif user.bot:
+            await ctx.send(self.copulate_random_text.target_is_bot(ctx.author, user))
+            return 
+
+        #Check if they are related
+        x = FamilyTreeMember.get(ctx.author.id)
+        y = FamilyTreeMember.get(user.id)
+        relationship = x.get_relation(y)
+        if relationship == None or relationship.casefold() == 'partner':
+            pass 
+        else:
+            await ctx.send(self.copulate_random_text.target_is_relation(ctx.author, user, relationship))
             return
 
         # Make the check
@@ -172,40 +190,24 @@ class Simulation(object):
                 return 'NO' if no else 'YES'
             return False
 
-        x = await ctx.send(self.copulate_random_text.valid_proposal(ctx.author, user))
-
         # Wait for a response
         try:
-            if user.bot:
-                raise KeyError
+            await ctx.send(self.copulate_random_text.valid_proposal(ctx.author, user))
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except TimeoutError as e:
             try:
-                await ctx.send(self.copulate_random_text.proposal_timed_out(ctx.author))
+                await ctx.send(self.copulate_random_text.proposal_timed_out(ctx.author, user))
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
             return
-        except KeyError as e:
-            if user.author.id == self.bot.user.id:
-                await ctx.send(self.copulate_random_text.target_is_me(ctx.author))
-            else:
-                await ctx.send(self.copulate_random_text.target_is_bot(ctx.author))
-            return 
 
         if response == "NO":
-            await ctx.send(self.copulate_random_text.declining_valid_proposal(ctx.author))
+            await ctx.send(self.copulate_random_text.declining_valid_proposal(ctx.author, user))
             return
 
-        #Check if they are related
-        x = FamilyTreeMember.get(ctx.author.id)
-        y = FamilyTreeMember.get(user.id)
-        relationship = x.get_relation(y)
-        if relationship == None or relationship.casefold() == 'partner':
-            await ctx.send(self.copulate_random_text.valid_target(ctx.author, user))
-        else:
-            await ctx.send(self.copulate_random_text.target_is_relation(ctx.author, user, relationship))
+        await ctx.send(self.copulate_random_text.valid_target(ctx.author, user))
 
 
 def setup(bot:CustomBot):
