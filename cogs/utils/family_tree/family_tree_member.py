@@ -27,6 +27,30 @@ class FamilyTreeMember(object):
     NAME_SUBSTITUTION = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
     INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
 
+    operations = [
+        lambda x: x.replace("parent's partner", "parent"),
+        lambda x: x.replace("partner's child", "child"),
+        lambda x: x.replace("parent's sibling", "aunt/uncle"),
+        lambda x: x.replace("aunt/uncle's child", "cousin"),
+        lambda x: x.replace("parent's child", "sibling"),
+        lambda x: x.replace("sibling's child", "niece/nephew"),
+        lambda x: x.replace("sibling's partner's child", "niece/nephew"),
+        lambda x: x.replace("parent's niece/nephew", "cousin"),
+        lambda x: x.replace("aunt/uncle's child", "cousin"),
+        # lambda x: x.replace("niece/nephew's child", "grand-niece/nephew"),
+        # lambda x: x.replace("grand-niece/nephew's child", "great grand-niece/nephew"),
+        # lambda x: x.replace("grandsibling", "great aunt/uncle"),
+        # lambda x: x.replace("great great aunt/uncle", "great grand-aunt/uncle"),
+        # lambda x: x.replace("parent's grandchild", "niece/nephew"),
+        lambda x: x.replace("niece/nephew's sibling", "niece/nephew"),
+    ]
+    post_operations = [
+        lambda x: FamilyTreeMember.relation_simplify_simple(x, "child"),
+        lambda x: FamilyTreeMember.relation_simplify_simple(x, "parent"),
+        lambda x: x.replace("grandsibling", "great aunt/uncle"),
+    ]
+
+
     def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
         self.id = discord_id
         self._children = children
@@ -34,6 +58,55 @@ class FamilyTreeMember(object):
         self._partner = partner_id
         self.tree_id = get_random_string()
         self.all_users[self.id] = self
+
+
+    @staticmethod
+    def relation_simplify_simple(string:str, search_string:str) -> str:
+        '''
+        Simplifies down a range of "child's child's child's..." to one set of "[great...] grandchild
+
+        Params:
+            string: str
+                The string to be searched and modified
+            search_string: str
+                The name to be searched for and expanded upon
+        '''
+
+        # Split it to be able to iterate through
+        split = string.strip().split(' ')
+        new_string = ''
+        counter = 0
+        for i in split:
+            if i in [f"{search_string}'s", search_string]:
+                counter += 1
+            elif counter == 1:
+                new_string += f"{search_string}'s {i} "
+                counter = 0
+            elif counter == 2:
+                new_string += f"grand{search_string}'s {i} "
+                counter = 0
+            elif counter > 2:
+                new_string += f"{'great ' * (counter - 2)}grand{search_string}'s {i} "
+                counter = 0
+            else:
+                new_string += i + ' '
+
+        # And repeat again for outside of the loop
+        if counter == 1:
+            new_string += f"{search_string}'s "
+            counter = 0
+        elif counter == 2:
+            new_string += f"grand{search_string}'s "
+            counter = 0
+        elif counter > 2:
+            new_string += f"{'great ' * (counter - 2)}grand{search_string}'s"
+            counter = 0
+
+        # Return new string
+        new_string = new_string.strip()
+        if new_string.endswith("'s"):
+            return new_string[:-2]
+        return new_string
 
     
     def __repr__(self):
@@ -182,8 +255,24 @@ class FamilyTreeMember(object):
                     break
         return root_user
 
+
+    def get_relation(self, other):
+        '''
+        Gets the relationship between two users, shortening it to a readable amount of text
+        '''
+
+        x = self.get_unshortened_relation(other)
+        if not x:
+            return None 
+        for i in range(10):
+            for o in self.operations:
+                x = o(x)
+        for o in self.post_operations:
+            x = o(x)
+        return x
+
     
-    def get_relation(self, other, working_relation:list=None, added_already:list=None) -> str:
+    def get_unshortened_relation(self, other, working_relation:list=None, added_already:list=None) -> str:
         '''
         Gets your relation to the other given user or None
         '''
@@ -201,14 +290,14 @@ class FamilyTreeMember(object):
         added_already.append(self)
 
         if self.parent and self.parent not in added_already:
-            x = self.parent.get_relation(other, working_relation=working_relation+['parent'], added_already=added_already)
+            x = self.parent.get_unshortened_relation(other, working_relation=working_relation+['parent'], added_already=added_already)
             if x: return x 
         if self.partner and self.partner not in added_already:
-            x = self.partner.get_relation(other, working_relation=working_relation+['partner'], added_already=added_already)
+            x = self.partner.get_unshortened_relation(other, working_relation=working_relation+['partner'], added_already=added_already)
             if x: return x 
         if self.children:
             for i in [o for o in self.children if o not in added_already]:
-                x = i.get_relation(other, working_relation=working_relation+['child'], added_already=added_already)
+                x = i.get_unshortened_relation(other, working_relation=working_relation+['child'], added_already=added_already)
                 if x: return x 
         return None
 

@@ -18,82 +18,9 @@ class Information(object):
     Handles all marriage/divorce/etc commands
     '''
 
-    # Set up a bunch of substitutions for the relation generator
-
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
-        self.fam = None
-        self.operations = [
-            lambda x: x.replace("parent's partner", "parent"),
-            lambda x: x.replace("partner's child", "child"),
-            lambda x: x.replace("parent's sibling", "aunt/uncle"),
-            lambda x: x.replace("aunt/uncle's child", "cousin"),
-            lambda x: x.replace("parent's child", "sibling"),
-            lambda x: x.replace("sibling's child", "niece/nephew"),
-            lambda x: x.replace("sibling's partner's child", "niece/nephew"),
-            lambda x: x.replace("parent's niece/nephew", "cousin"),
-            lambda x: x.replace("aunt/uncle's child", "cousin"),
-            # lambda x: x.replace("niece/nephew's child", "grand-niece/nephew"),
-            # lambda x: x.replace("grand-niece/nephew's child", "great grand-niece/nephew"),
-            # lambda x: x.replace("grandsibling", "great aunt/uncle"),
-            # lambda x: x.replace("great great aunt/uncle", "great grand-aunt/uncle"),
-            # lambda x: x.replace("parent's grandchild", "niece/nephew"),
-            lambda x: x.replace("niece/nephew's sibling", "niece/nephew"),
-        ]
-        self.post_operations = [
-            lambda x: self.relation_simplify_simple(x, "child"),
-            lambda x: self.relation_simplify_simple(x, "parent"),
-            lambda x: x.replace("grandsibling", "great aunt/uncle"),
-        ]
-
-
-    def relation_simplify_simple(self, string:str, search_string:str) -> str:
-        '''
-        Simplifies down a range of "child's child's child's..." to one set of "[great...] grandchild
-
-        Params:
-            string: str
-                The string to be searched and modified
-            search_string: str
-                The name to be searched for and expanded upon
-        '''
-
-        # Split it to be able to iterate through
-        split = string.strip().split(' ')
-        new_string = ''
-        counter = 0
-        for i in split:
-            if i in [f"{search_string}'s", search_string]:
-                counter += 1
-            elif counter == 1:
-                new_string += f"{search_string}'s {i} "
-                counter = 0
-            elif counter == 2:
-                new_string += f"grand{search_string}'s {i} "
-                counter = 0
-            elif counter > 2:
-                new_string += f"{'great ' * (counter - 2)}grand{search_string}'s {i} "
-                counter = 0
-            else:
-                new_string += i + ' '
-
-        # And repeat again for outside of the loop
-        if counter == 1:
-            new_string += f"{search_string}'s "
-            counter = 0
-        elif counter == 2:
-            new_string += f"grand{search_string}'s "
-            counter = 0
-        elif counter > 2:
-            new_string += f"{'great ' * (counter - 2)}grand{search_string}'s"
-            counter = 0
-
-        # Return new string
-        new_string = new_string.strip()
-        if new_string.endswith("'s"):
-            return new_string[:-2]
-        return new_string
 
 
     @command(aliases=['spouse', 'husband', 'wife'])
@@ -230,11 +157,6 @@ class Information(object):
         if relation == None:
             await ctx.send(f"`{user.get_name(self.bot)}` is not related to `{other.get_name(self.bot)}`.")
             return
-        for i in range(10):
-            for o in self.operations:
-                relation = o(relation)
-        for o in self.post_operations:
-            relation = o(relation)
         await ctx.send(f"`{other.get_name(self.bot)}` is `{user.get_name(self.bot)}`'s {relation}.")
 
 
