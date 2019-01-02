@@ -140,6 +140,28 @@ class Simulation(object):
 
         await ctx.send(f"*Punches {user} right in the nose*")
 
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def sue(self, ctx:Context, user:Member):
+        '''
+        Sues a mentioned user
+        '''
+
+        if user == ctx.author:
+            responses = [
+                f"You sued... yourself.",
+                f"You have been sued",
+            ]
+        else:
+            responses = [
+                f"*Sued {user}.*",
+                f"{user} has been sued.",
+                f"You sue {user}.",
+                f"You got $1,000!",
+                f"You are now broke!",
+            ]
+        await ctx.send(choice(responses))
+
 
     @command(aliases=['intercourse', 'fuck', 'smash'])
     @cooldown(1, 5, BucketType.user)
