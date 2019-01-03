@@ -38,9 +38,9 @@ class DatabaseConnection(object):
         self.parent = parent
 
 
-    @staticmethod
-    async def create_pool(self):
-        pool = await _create_pool(**self.config)
+    @classmethod
+    async def create_pool(cls):
+        pool = await _create_pool(**cls.config)
         return DatabasePoolHolder(pool)
 
 
