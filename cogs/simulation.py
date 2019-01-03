@@ -82,12 +82,10 @@ class Simulation(object):
         #Check if they are related
         x = FamilyTreeMember.get(ctx.author.id)
         y = FamilyTreeMember.get(user.id)
-        
         relationship = x.get_relation(y)
-        if relationship == None:
+        if relationship == None or relationship.casefold() == 'partner':
             await ctx.send(f"*Kisses {user}*")
             return
-    
         else:
             responses = [
                 f"Well you two lovebirds may be related but... I'll allow it :smirk:",
