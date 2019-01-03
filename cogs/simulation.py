@@ -45,11 +45,11 @@ class Simulation(object):
             ]
         else:
             responses = [
-                f"*Feeds {user} some candy.*",
-                f"{user} has been fed.",
-                f"You feed {user}.",
-                f"*Feeds {user} some chicken.",
-                f"You feed {user} too much.",
+                f"*Feeds {user.mention} some candy.*",
+                f"{user.mention} has been fed.",
+                f"You feed {user.mention}.",
+                f"*Feeds {user.mention} some chicken.",
+                f"You feed {user.mention} too much.",
             ]
         await ctx.send(choice(responses))
 
@@ -65,7 +65,7 @@ class Simulation(object):
             await ctx.send(f"*You hug yourself... and start crying.*")
             return
 
-        await ctx.send(f"*Hugs {user}*")
+        await ctx.send(f"*Hugs {user.mention}*")
 
 
     @command()
@@ -84,7 +84,7 @@ class Simulation(object):
         y = FamilyTreeMember.get(user.id)
         relationship = x.get_relation(y)
         if relationship == None or relationship.casefold() == 'partner':
-            await ctx.send(f"*Kisses {user}*")
+            await ctx.send(f"*Kisses {user.mention}*")
             return
         else:
             responses = [
@@ -107,7 +107,7 @@ class Simulation(object):
             await ctx.send(f"*You snuggle yourself... and start crying.*")
             return
 
-        await ctx.send(f"*Snuggles {user}*")
+        await ctx.send(f"*Snuggles {user.mention}*")
 
 
     @command()
@@ -121,7 +121,7 @@ class Simulation(object):
             await ctx.send(f"*You slapped yourself... for some reason.*")
             return
 
-        await ctx.send(f"*Slaps {user}*")
+        await ctx.send(f"*Slaps {user.mention}*")
 
 
     @command()
@@ -136,7 +136,7 @@ class Simulation(object):
             return
 
 
-        await ctx.send(f"*Punches {user} right in the nose*")
+        await ctx.send(f"*Punches {user.mention} right in the nose*")
 
 
     @command(aliases=['intercourse', 'fuck', 'smash'])
