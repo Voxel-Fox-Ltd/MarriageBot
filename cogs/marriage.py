@@ -1,5 +1,5 @@
 from re import compile
-from asyncio import TimeoutError
+from asyncio import TimeoutError, wait_for
 
 from discord import Member
 from discord.ext.commands import command, Context, cooldown
@@ -84,7 +84,14 @@ class Marriage(object):
         # See if they're married or in the family already
         await ctx.trigger_typing()
         user_tree = FamilyTreeMember.get(instigator.id)
-        root = user_tree.get_root()
+
+        # Make get_root awaitable 
+        awaitable_root = self.bot.loop.run_in_executor(None, user_tree.get_root)
+        try:
+            root = await wait_for(awaitable_root, timeout=10.0, loop=self.bot.loop)
+        except TimeoutError:
+            await ctx.send("The `get_root` method for your family tree has failed. This is usually due to a loop somewhere in your tree.")
+            return
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
         if target.id in tree_id_list:
