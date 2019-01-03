@@ -1,5 +1,5 @@
 from re import compile
-from asyncio import TimeoutError, wait_for
+from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 
 from discord import Member
 from discord.ext.commands import command, Context, cooldown
@@ -89,7 +89,7 @@ class Marriage(object):
         awaitable_root = self.bot.loop.run_in_executor(None, user_tree.get_root)
         try:
             root = await wait_for(awaitable_root, timeout=10.0, loop=self.bot.loop)
-        except TimeoutError:
+        except AsyncTimeoutError:
             await ctx.send("The `get_root` method for your family tree has failed. This is usually due to a loop somewhere in your tree.")
             return
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
@@ -132,7 +132,7 @@ class Marriage(object):
         # Wait for a response
         try:
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
-        except TimeoutError as e:
+        except AsyncTimeoutError as e:
             try:
                 await ctx.send(self.marriage_random_text.proposal_timed_out(instigator, target))
             except Exception as e:

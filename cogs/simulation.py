@@ -1,6 +1,6 @@
 from re import compile
 from random import choice
-from asyncio import TimeoutError
+from asyncio import TimeoutError as AsyncTimeoutError
 
 from discord import Member
 from discord.ext.commands import command, Context, cooldown
@@ -193,7 +193,7 @@ class Simulation(object):
             await ctx.send(self.copulate_random_text.valid_proposal(ctx.author, user))
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
-        except TimeoutError as e:
+        except AsyncTimeoutError as e:
             try:
                 await ctx.send(self.copulate_random_text.proposal_timed_out(ctx.author, user))
             except Exception as e:

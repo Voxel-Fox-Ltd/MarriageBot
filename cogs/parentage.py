@@ -1,5 +1,5 @@
 from re import compile
-from asyncio import TimeoutError, wait_for
+from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 
 from discord import Member, User
 from discord.ext.commands import command, Context, cooldown
@@ -148,7 +148,7 @@ class Parentage(object):
                 raise KeyError
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
-        except TimeoutError as e:
+        except AsyncTimeoutError as e:
             try:
                 await ctx.send(self.makeparent_random_text.request_timeout(instigator, target))
             except Exception as e:
@@ -230,7 +230,7 @@ class Parentage(object):
         awaitable_root = self.bot.loop.run_in_executor(None, user_tree.get_root)
         try:
             root = await wait_for(awaitable_root, timeout=10.0, loop=self.bot.loop)
-        except TimeoutError:
+        except AsyncTimeoutError:
             await ctx.send("The `get_root` method for your family tree has failed. This is usually due to a loop somewhere in your tree.")
             return
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
@@ -270,7 +270,7 @@ class Parentage(object):
         # Wait for a response
         try:
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
-        except TimeoutError as e:
+        except AsyncTimeoutError as e:
             try:
                 await ctx.send(self.adopt_random_text.request_timeout(instigator, target))
             except Exception as e:
