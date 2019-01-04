@@ -138,7 +138,22 @@ class Simulation(object):
 
         await ctx.send(f"*Punches {user.mention} right in the nose*")
 
+    
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def kick(self, ctx:Context, user:Member):
+        '''
+        Kicks a mentioned user
+        '''
+        
+        if user == ctx.author:
+            await ctx.send(f"*You kicked yourself... for some reason.*")
+            return
 
+
+        await ctx.send(f"*Kicks {user.mention} right where it hurts.*")
+        
+        
     @command(aliases=['intercourse', 'fuck', 'smash'])
     @cooldown(1, 5, BucketType.user)
     async def copulate(self, ctx:Context, user:Member):
