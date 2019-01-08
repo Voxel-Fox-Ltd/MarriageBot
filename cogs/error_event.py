@@ -41,14 +41,22 @@ class ErrorEvent(object):
             try:
                 await ctx.send("I'm not able to send files into this channel.")
             except Exception as e:
-                await ctx.author.send("I'm unable to send messages into that channel.")
+                try:
+                    await ctx.author.send("I'm unable to send messages into that channel.")
+                except Exception:
+                    # Couldn't send them a PM
+                    pass
             return
         elif isinstance(error, MissingPermissions):
             await ctx.send("You're missing the required permissions to run that command.")
             return
         elif isinstance(error, CommandInvokeError):
             if 'FORBIDDEN' in str(error):
-                await ctx.author.send("I'm unable to send messages into that channel.")
+                try:
+                    await ctx.author.send("I'm unable to send messages into that channel.")
+                except Exception:
+                    # Couldn't send them a PM
+                    pass
                 return
             elif 'oserror' in str(error).lower():
                 number = collect()
