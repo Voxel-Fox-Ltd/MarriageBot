@@ -1,6 +1,8 @@
+from os import getpid
 from asyncio import Task
 from random import choice
 
+from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version
 from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands.cooldowns import BucketType
@@ -13,6 +15,10 @@ class Misc(object):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot 
+        pid = getpid()
+        self.process = Process(pid)
+        self.process.cpu_percent()
+
 
     @command(aliases=['vote'])
     @cooldown(1, 5, BucketType.user)
@@ -79,7 +85,7 @@ class Misc(object):
         await ctx.send(content)
 
 
-    @command()
+    @command(aliases=['status'])
     @cooldown(1, 5, BucketType.user)
     async def stats(self, ctx:Context):
         '''
@@ -98,6 +104,9 @@ class Misc(object):
         embed.add_field(name="Guild Count", value=len(self.bot.guilds))
         embed.add_field(name="Member Count", value=sum((len(i.members) for i in self.bot.guilds)))
         embed.add_field(name="Coroutines", value=f"{len([i for i in Task.all_tasks() if not i.done()])} running, {len(Task.all_tasks())} total.")
+        embed.add_field(name="Process ID", value=self.process.pid)
+        embed.add_field(name="CPU Usage", value=f"{self.process.cpu_percent():.2f}")
+        embed.add_field(name="Memory Usage", value=f"{self.process.memory_info()[0]/2**20:.2f}MB/{virtual_memory()[0]/2**20:.2f}MB")
         ut = self.bot.loop.time()  # Uptime
         uptime = [
             int(ut // (60*60*24)),
@@ -107,25 +116,10 @@ class Misc(object):
         ]
         embed.add_field(name="Uptime", value=f"{uptime[0]} days, {uptime[1]} hours, {uptime[2]} minutes, and {uptime[3]:.2f} seconds.")
         embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
-        # family_members = []
-        # family_count = 0
-        # for i in list(FamilyTreeMember.all_users.values()):
-        #     if i in family_members:
-        #         continue 
-        #     if not i:
-        #         continue
-        #     family_count += 1
-        #     family_members += i.span(expand_upwards=True, add_parent=True)
-        # embed.add_field(name="Families", value=family_count)
         try:
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send("I tried to send an embed, but I couldn't.")
-
-
-    @command(hidden=True)
-    async def hogwarts(self, ctx:Context):
-        await ctx.send(choice(["Hufflepuff!", "Griffindor!", "Slytherin!", "Ravenclaw!"]))
 
 
 def setup(bot:CustomBot):
