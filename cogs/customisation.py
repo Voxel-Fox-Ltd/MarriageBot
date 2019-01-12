@@ -119,7 +119,7 @@ class Customisation(object):
         await self.coloursetter(ctx, colour, 'highlighted_node')
 
 
-    @customise.command(aliases=['background'])
+    @customise.command(aliases=['background', 'BG'])
     async def bg(self, ctx:Context, *, colour:str=None):
         '''
         Changes the colour of the background of the tree
