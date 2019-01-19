@@ -20,7 +20,7 @@ class DivorceRandomText(object):
                 f"Sorry, {target.mention}, looks like you're single now. Congrats, {instigator.mention}!",
                 f"I hope you figure it out some day, but for now it looks like the two of you are divorced, {instigator.mention}, {target.mention}.",
                 f"At least you don't have to deal with {instigator.mention} any more, {target.mention}, right...?",
-                f"Not the happiest of news, {instigator.mention}, but it looks like {target.mention} just left you...",
+                f"Not the happiest of news for you, {target.mention}, but it looks like {instigator.mention} just left you...",
                 f"You and {target.mention} are now divorced. I wish you luck in your lives.",
             ])
         return choice([
