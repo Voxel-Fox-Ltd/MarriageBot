@@ -405,10 +405,6 @@ class FamilyTreeMember(object):
         x.append(self)
         people_dict[depth] = x
 
-        # Add your parent
-        if expand_upwards and add_parent and self.parent:
-            people_dict = self.parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild)
-
         # Add your children
         if self.children:
             for child in self.children:
@@ -417,6 +413,10 @@ class FamilyTreeMember(object):
         # Add your partner
         if self.partner:
             people_dict = self.partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild)
+
+        # Add your parent
+        if expand_upwards and add_parent and self.parent:
+            people_dict = self.parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild)
 
         # Remove dupes, should they be in there
         return people_dict
@@ -438,6 +438,7 @@ class FamilyTreeMember(object):
         ctu = CustomisedTreeUser.get(self.id)
         root_user = self.get_root(guild=guild)
         gen_span = root_user.generational_span(guild=guild)
+        # gen_span = root_user.generational_span(guild=guild, expand_upwards=True, add_parent=True)
         my_depth = None
         for depth, l in gen_span.items():
             if self in l:

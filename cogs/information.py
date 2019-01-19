@@ -1,3 +1,4 @@
+from random import choice
 from os import remove
 from re import compile
 from io import BytesIO
@@ -273,7 +274,15 @@ class Information(object):
         # Send file and delete cached
         try:
             file = File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-            text = f"{ctx.author.mention}, you can update how your tree looks with `{ctx.prefix}help customise` c:"
+            text = f"{ctx.author.mention}, " + choice([
+                f"you can update how your tree looks with `{ctx.prefix}help customise` c:",
+                f"feel free to help out the bot's development by `{ctx.prefix}donate`-ing c:",
+                f"pitch in ideas, suggestions, and code help at `{ctx.prefix}git` c:",
+                f"join the MarriageBot server at any time by running `{ctx.prefix}server` c:",
+                f"know that whatever happens I love you very much c:",
+                f"make sure to `{ctx.prefix}hug` and `{ctx.prefix}kiss` your partner! c:",
+                f"vote for MarriageBot by running `{ctx.prefix}vote` c:",
+            ])
             await ctx.send(text, file=file)
         except Exception:
             return 
