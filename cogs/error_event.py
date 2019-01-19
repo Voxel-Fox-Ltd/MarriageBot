@@ -60,6 +60,11 @@ class ErrorEvent(object):
                 return
             elif 'oserror' in str(error).lower():
                 number = collect()
+                data = f"**Error**\nUser: `{ctx.author!s}` (`{ctx.author.id}`) | Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Content: `{ctx.message.content}`\n" + "```py\n" + format_exc() + "```"
+                try:
+                    await self.event_log_channel.send(data)
+                except Exception as e:
+                    print(data)
                 await self.event_log_channel.send(f'Deleted `{number}` unreachable objects from memory, <@141231597155385344>')
                 await ctx.send('I was unable to run that command properly - try again in a moment.')
                 return
