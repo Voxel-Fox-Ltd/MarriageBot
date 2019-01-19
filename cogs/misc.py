@@ -43,14 +43,21 @@ class Misc(object):
         await ctx.send(f"<{self.bot.config['github']}>")
 
 
-    @command()
+    @command(aliases=['patreon', 'paypal'])
     @cooldown(1, 5, BucketType.user)
-    async def patreon(self, ctx:Context):
+    async def donate(self, ctx:Context):
         '''
-        Gives you the creator's Patreon link
+        Gives you the creator's donation links
         '''
 
-        await ctx.send(f"<{self.bot.config['patreon']}>")
+        links = []
+        if self.bot.config['paypal']:
+            links.append(f"PayPal: <{self.bot.config['paypal']}>")
+        if self.bot.config['patreon']:
+            links.append(f"Patreon: <{self.bot.config['patreon']}>")
+        if not links:
+            return 
+        await ctx.send('\n'.join(links))        
 
 
     @command()
