@@ -145,6 +145,10 @@ class Simulation(object):
         '''
         Lets you heck someone
         '''
+
+        if not ctx.channel.is_nsfw():
+            await ctx.send("This command can't be run in a non-NSFW channel.")
+            return
         
         if user == ctx.author:
             await ctx.send(self.copulate_random_text.proposing_to_themselves(ctx.author, user))
