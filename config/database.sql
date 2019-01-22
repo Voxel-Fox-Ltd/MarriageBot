@@ -61,5 +61,7 @@ CREATE TABLE command_log(
     command_name VARCHAR(100),
     invoked_with VARCHAR(100),
     command_prefix VARCHAR(2000),
-    timestamp TIMESTAMP
+    timestamp TIMESTAMP,
+    command_failed BOOLEAN,
+    valid BOOLEAN
 );
