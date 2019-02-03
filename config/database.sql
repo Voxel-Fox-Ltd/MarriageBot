@@ -63,5 +63,6 @@ CREATE TABLE command_log(
     command_prefix VARCHAR(2000),
     timestamp TIMESTAMP,
     command_failed BOOLEAN,
-    valid BOOLEAN
+    valid BOOLEAN,
+    shard_id SMALLINT
 );

@@ -47,10 +47,6 @@ class CommandEvent(object):
         self.command_cache.clear()
             
         # Log commands
-        command_sql = '''INSERT INTO command_log
-                (guild_id, channel_id, user_id, message_id, content, command_name, invoked_with, command_prefix, timestamp, command_failed, valid)
-                VALUES
-                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)'''
         command_values = [[
                 ctx.guild.id if ctx.guild else None,
                 ctx.channel.id, 
@@ -63,13 +59,14 @@ class CommandEvent(object):
                 ctx.message.created_at,
                 ctx.command_failed,
                 ctx.valid,
+                ctx.guild.shard_id if ctx.guild else 0,
         ] for ctx in commands]
 
         # Save to DB
         async with self.bot.database() as db:
             await db.conn.copy_records_to_table(
                 'command_log',
-                columns=['guild_id', 'channel_id', 'user_id', 'message_id', 'content', 'command_name', 'invoked_with', 'command_prefix', 'timestamp', 'command_failed', 'valid'],
+                columns=['guild_id', 'channel_id', 'user_id', 'message_id', 'content', 'command_name', 'invoked_with', 'command_prefix', 'timestamp', 'command_failed', 'valid', 'shard_id'],
                 records=command_values,
             )
 
