@@ -3,9 +3,14 @@ from random import choice, choices
 from string import ascii_letters
 
 from discord import User, File, Guild
+from discord.ext.commands import CommandError
 from unidecode import unidecode
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
+
+
+class TreeRecursionError(CommandError): 
+    pass
 
 
 def get_random_string(length:int=10):
@@ -341,7 +346,7 @@ class FamilyTreeMember(object):
 
             # If you have children or a partner, generate a family
             if i.children or i.partner:
-                current_text = '\n'.join(gedcom_text)
+                # current_text = '\n'.join(gedcom_text)
 
                 # See if you need to make a new family or be added to one already made
                 try:
@@ -367,7 +372,7 @@ class FamilyTreeMember(object):
         return x
 
 
-    def generational_span(self, people_dict:dict=None, depth:int=0, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None) -> dict:
+    def generational_span(self, people_dict:dict=None, depth:int=0, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None, all_people:list=None) -> dict:
         '''
         Gets a list of every user related to this one
         If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
@@ -392,8 +397,13 @@ class FamilyTreeMember(object):
         # Don't add yourself again
         if people_dict == None:
             people_dict = {}
-        if self in people_dict.get(depth, list()):
+        if all_people == None:
+            all_people = []
+        # if self in people_dict.get(depth, list()):
+        #     return people_dict
+        if self in all_people:
             return people_dict
+        all_people.append(self)
 
         # Filter out non-guild members
         if guild:
@@ -408,15 +418,15 @@ class FamilyTreeMember(object):
         # Add your children
         if self.children:
             for child in self.children:
-                people_dict = child.generational_span(people_dict, depth=depth+1, add_parent=False, expand_upwards=expand_upwards, guild=guild)
+                people_dict = child.generational_span(people_dict, depth=depth+1, add_parent=False, expand_upwards=expand_upwards, guild=guild, all_people=all_people)
 
         # Add your partner
         if self.partner:
-            people_dict = self.partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild)
+            people_dict = self.partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people)
 
         # Add your parent
         if expand_upwards and add_parent and self.parent:
-            people_dict = self.parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild)
+            people_dict = self.parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people)
 
         # Remove dupes, should they be in there
         return people_dict

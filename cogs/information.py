@@ -192,7 +192,7 @@ class Information(object):
 
     @command(aliases=['familytree'])
     @can_send_files()
-    @cooldown(1, 5, BucketType.user)
+    @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
         '''
         Gets the family tree of a given user
@@ -205,13 +205,12 @@ class Information(object):
         try:
             return await self.treemaker(ctx, root, False)
         except Exception as e:
-            # await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
             raise e
 
 
     @command(aliases=['fulltree', 'ft', 'gt'])
     @can_send_files()
-    @cooldown(1, 5, BucketType.user)
+    @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):
         '''
         Gets the global family tree of a given user
@@ -220,14 +219,10 @@ class Information(object):
         try:
             return await self.treemaker(ctx, root, True)
         except Exception as e:
-            # await ctx.send("I encountered an error while trying to generate your family tree. Could you inform `Caleb#2831`, so he can fix this in future for you?")
             raise e
 
 
     async def treemaker(self, ctx:Context, root:User, all_guilds:bool):
-
-        # if ctx.author.id not in self.bot.config['owners']: 
-        #     return await ctx.send("This command is temporarily disabled. Apologies.")
 
         if root == None:
             root = ctx.author
