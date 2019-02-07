@@ -42,11 +42,6 @@ class FamilyTreeMember(object):
         lambda x: x.replace("sibling's partner's child", "niece/nephew"),
         lambda x: x.replace("parent's niece/nephew", "cousin"),
         lambda x: x.replace("aunt/uncle's child", "cousin"),
-        # lambda x: x.replace("niece/nephew's child", "grand-niece/nephew"),
-        # lambda x: x.replace("grand-niece/nephew's child", "great grand-niece/nephew"),
-        # lambda x: x.replace("grandsibling", "great aunt/uncle"),
-        # lambda x: x.replace("great great aunt/uncle", "great grand-aunt/uncle"),
-        # lambda x: x.replace("parent's grandchild", "niece/nephew"),
         lambda x: x.replace("niece/nephew's sibling", "niece/nephew"),
     ]
     post_operations = [
@@ -372,7 +367,7 @@ class FamilyTreeMember(object):
         return x
 
 
-    def generational_span(self, people_dict:dict=None, depth:int=0, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None, all_people:list=None) -> dict:
+    def generational_span(self, people_dict:dict=None, depth:int=0, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None, all_people:list=None, recursive_depth:int=0) -> dict:
         '''
         Gets a list of every user related to this one
         If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
@@ -382,13 +377,15 @@ class FamilyTreeMember(object):
             people_dict: dict 
                 The dict of users who are currently in the tree (so as to avoid recursion)
             depth: int = 0
-                The current depth of the span
+                The current generation of the tree span
             add_parent: bool = False
                 Whether or not to add the parent of this user to the people list
             expand_upwards: bool = False
                 Whether or not to expand upwards in the tree
             guild: Guild = None
                 If added, span will return users only if they're in the given guild
+            recursive_depth: int = 0
+                How far into the recursion you have gone - this is so we don't get recursion errors
 
         Returns:
             A list of all people on the family for this user, in no particular order
@@ -399,9 +396,9 @@ class FamilyTreeMember(object):
             people_dict = {}
         if all_people == None:
             all_people = []
-        # if self in people_dict.get(depth, list()):
-        #     return people_dict
         if self in all_people:
+            return people_dict
+        if recursive_depth >= 500:
             return people_dict
         all_people.append(self)
 
@@ -418,15 +415,15 @@ class FamilyTreeMember(object):
         # Add your children
         if self.children:
             for child in self.children:
-                people_dict = child.generational_span(people_dict, depth=depth+1, add_parent=False, expand_upwards=expand_upwards, guild=guild, all_people=all_people)
+                people_dict = child.generational_span(people_dict, depth=depth+1, add_parent=False, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth+1)
 
         # Add your partner
         if self.partner:
-            people_dict = self.partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people)
+            people_dict = self.partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth+1)
 
         # Add your parent
         if expand_upwards and add_parent and self.parent:
-            people_dict = self.parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people)
+            people_dict = self.parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth+1)
 
         # Remove dupes, should they be in there
         return people_dict
