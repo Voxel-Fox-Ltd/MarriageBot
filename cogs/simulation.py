@@ -30,28 +30,43 @@ class Simulation(object):
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def feed(self, ctx:Context, user:Member):
+    async def feed(self, ctx:Context, user:Member, food:str=None):
         '''
         Feeds a mentioned user
         '''
-
-        if user == ctx.author:
+        
+        #Checks to see if food exists and then gives responses
+        if food != None:
+          
             responses = [
-                f"You feed yourself candy",
-                f"You have been fed",
-                f"You feed yourself",
-                f"You feed yourself some chicken",
-                f"You fed yourself too much.",
-            ]
-        else:
-            responses = [
-                f"*Feeds {user.mention} some candy.*",
-                f"{user.mention} has been fed.",
-                f"You feed {user.mention}.",
-                f"*Feeds {user.mention} some chicken.",
-                f"You feed {user.mention} too much.",
+                f"{user.mention} has been fed {food}.",
+                f"You feed {user.mention} some {food}.",
+                f"*Feeds {user.mention} some {food}.*",
+                f"You feed {user.mention} too much {food}.",
             ]
         await ctx.send(choice(responses))
+        
+        
+       #If food doesn't exist:    
+        else:
+            
+            if user == ctx.author:
+                responses = [
+                    f"You feed yourself candy",
+                    f"You have been fed",
+                    f"You feed yourself",
+                    f"You feed yourself some chicken",
+                    f"You fed yourself too much.",
+                ]
+            else:
+                responses = [
+                    f"*Feeds {user.mention} some candy.*",
+                    f"{user.mention} has been fed.",
+                    f"You feed {user.mention}.",
+                    f"*Feeds {user.mention} some chicken.",
+                    f"You feed {user.mention} too much.",
+                ]
+            await ctx.send(choice(responses))
 
 
     @command()
@@ -139,21 +154,6 @@ class Simulation(object):
         await ctx.send(f"*Punches {user.mention} right in the nose*")
 
 
-    @command()
-    @cooldown(1, 5, BucketType.user)
-    async def cookie(self, ctx:Context, user:Member):
-        '''
-        Gives a cookie to a mentioned user
-        '''
-        
-        if user == ctx.author:
-            await ctx.send(f"*You gave yourself a cookie.*")
-            return
-
-
-        await ctx.send(f"*Gives {user.mention} a cookie*")
-
-        
     @command(aliases=['intercourse', 'fuck', 'smash'])
     @cooldown(1, 5, BucketType.user)
     async def copulate(self, ctx:Context, user:Member):
