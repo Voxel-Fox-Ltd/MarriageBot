@@ -50,6 +50,7 @@ class CustomBot(AutoShardedBot):
         self.database.config = self.config['database']
 
         # Store the startup method so I can see if it completed successfully
+        self.startup_time = dt.now()
         self.startup_method = self.loop.create_task(self.startup())
         self.deletion_method = self.loop.create_task(self.delete_loop())
 
@@ -117,6 +118,14 @@ class CustomBot(AutoShardedBot):
 
         # And update DBL
         await self.post_guild_count()
+
+
+    def get_uptime(self):
+        '''
+        Gets the uptime of the bot
+        '''
+
+        return (dt.now() - self.startup_time).total_seconds()
 
 
     async def set_default_presence(self):

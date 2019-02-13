@@ -1,6 +1,7 @@
 from os import getpid
 from asyncio import Task
 from random import choice
+from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version
@@ -97,7 +98,7 @@ class Misc(object):
     async def stats(self, ctx:Context):
         '''
         Gives you the stats for the bot
-        '''
+        '''       
 
         # await ctx.channel.trigger_typing()
         embed = Embed(
@@ -109,12 +110,14 @@ class Misc(object):
         embed.add_field(name="Creator", value=f"{creator!s}\n{creator.id}")
         embed.add_field(name="Library", value=f"Discord.py {dpy_version}")
         embed.add_field(name="Guild Count", value=len(self.bot.guilds))
+        embed.add_field(name="Shard Count", value=self.bot.shard_count)
+        embed.add_field(name="Average Latency", value=f"{(self.bot.latency * 1000):.2f}ms")
         embed.add_field(name="Member Count", value=sum((len(i.members) for i in self.bot.guilds)))
         embed.add_field(name="Coroutines", value=f"{len([i for i in Task.all_tasks() if not i.done()])} running, {len(Task.all_tasks())} total.")
         embed.add_field(name="Process ID", value=self.process.pid)
         embed.add_field(name="CPU Usage", value=f"{self.process.cpu_percent():.2f}")
         embed.add_field(name="Memory Usage", value=f"{self.process.memory_info()[0]/2**20:.2f}MB/{virtual_memory()[0]/2**20:.2f}MB")
-        ut = self.bot.loop.time()  # Uptime
+        ut = self.bot.get_uptime()  # Uptime
         uptime = [
             int(ut // (60*60*24)),
             int((ut % (60*60*24)) // (60*60)),
@@ -125,7 +128,7 @@ class Misc(object):
         embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
         try:
             await ctx.send(embed=embed)
-        except Exception as e:
+        except Exception:
             await ctx.send("I tried to send an embed, but I couldn't.")
 
 
