@@ -16,7 +16,7 @@ class EmancipateRandomText(object):
 
         if target:
             return choice([
-                f"Looks like {target.mention} left you, {instigator.mention}. I'm sorry for your loss.",
+                f"Looks like {instigator.mention} left you, {target.mention}. I'm sorry for your loss.",
                 f"You're free of {target.mention}, {instigator.mention}!",
                 f"Say goodbye to {target.mention}, {instigator.mention}! You're parentless now!",
             ])
