@@ -238,22 +238,25 @@ class FamilyTreeMember(object):
         '''
 
         root_user = self
+        already_processed = []
         while True:
+            if root_user in already_processed:
+                return root_user
+            already_processed.append(root_user)
             if guild:
                 if root_user.parent and guild.get_member(root_user.parent.id):
                     root_user = root_user.parent
                 elif root_user.partner and guild.get_member(root_user.partner.id) and root_user.partner.parent and guild.get_member(root_user.partner.parent.id):
                     root_user = root_user.partner.parent
                 else:
-                    break
+                    return root_user
             else:
                 if root_user.parent:
                     root_user = root_user.parent
-                elif root_user.partner and root_user.partner.parent :
+                elif root_user.partner and root_user.partner.parent:
                     root_user = root_user.partner.parent
                 else:
-                    break
-        return root_user
+                    return root_user
 
 
     def get_relation(self, other):
