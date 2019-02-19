@@ -132,6 +132,19 @@ class Misc(object):
             await ctx.send("I tried to send an embed, but I couldn't.")
 
 
+    @command(aliases=['clean'])
+    async def clear(self, ctx:Context):
+        '''
+        Clears the bot's commands from chat
+        '''
+
+        if ctx.channel.permissions_for(ctx.guild.me).manage_messages:
+            _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id)
+        else:
+            _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
+        await ctx.send(f"Cleared `{len(_)}` messages from chat.")
+
+
 def setup(bot:CustomBot):
     x = Misc(bot)
     bot.add_cog(x)
