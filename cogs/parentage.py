@@ -2,10 +2,11 @@ from re import compile
 from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 
 from discord import Member, User
-from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands import command, Context
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.checks.cooldown import cooldown
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.random_text.makeparent import MakeParentRandomText
 from cogs.utils.random_text.adopt import AdoptRandomText

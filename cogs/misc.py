@@ -5,10 +5,11 @@ from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version
-from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands import command, Context
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot 
+from cogs.utils.checks.cooldown import cooldown
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 

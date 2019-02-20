@@ -5,11 +5,12 @@ from io import BytesIO
 from asyncio import sleep, create_subprocess_exec, wait_for, TimeoutError as AsyncTimeoutError
 
 from discord import Member, File, User
-from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands import command, Context
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
+from cogs.utils.checks.cooldown import cooldown
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
