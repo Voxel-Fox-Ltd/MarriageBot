@@ -25,7 +25,7 @@ class Administrator(Cog):
             if ctx.author.id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
-                await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f}` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+                await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return
 
 
