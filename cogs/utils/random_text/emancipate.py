@@ -1,9 +1,11 @@
 from random import choice
 
+from discord.ext.commands import Cog
+
 from cogs.utils.custom_bot import CustomBot
 
 
-class EmancipateRandomText(object):
+class EmancipateRandomText(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot

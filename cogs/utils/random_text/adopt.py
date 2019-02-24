@@ -1,9 +1,11 @@
 from random import choice
 
+from discord.ext.commands import Cog
+
 from cogs.utils.custom_bot import CustomBot
 
 
-class AdoptRandomText(object):
+class AdoptRandomText(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot

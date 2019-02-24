@@ -5,7 +5,7 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
-class LeaveEvent(object):
+class LeaveEvent(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot 
