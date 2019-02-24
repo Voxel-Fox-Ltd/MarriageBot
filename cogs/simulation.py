@@ -19,10 +19,6 @@ class Simulation(Cog):
         self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
-        # Get random text for this cog
-        self.copulate_random_text = None
-        self.bot.loop.create_task(self.get_copulate_random_text())
-
 
     async def cog_command_error(self, ctx:Context, error):
         '''
@@ -47,11 +43,6 @@ class Simulation(Cog):
             argument_text = self.bot.bad_argument.search(str(error)).group(2)
             await ctx.send(f"User `{argument_text}` could not be found.")
             return
-
-    
-    async def get_copulate_random_text(self):
-        await self.bot.wait_until_ready()
-        self.copulate_random_text = self.bot.cogs.get('CopulateRandomText')
 
 
     @command()
@@ -192,15 +183,15 @@ class Simulation(Cog):
             return
         
         if user == ctx.author:
-            await ctx.send(self.copulate_random_text.proposing_to_themselves(ctx.author, user))
+            await ctx.send(self.bot.get_cog('CopulateRandomText').proposing_to_themselves(ctx.author, user))
             return
 
         # Check for a bot
         if user.id == self.bot.user.id:
-            await ctx.send(self.copulate_random_text.target_is_me(ctx.author, user))
+            await ctx.send(self.bot.get_cog('CopulateRandomText').target_is_me(ctx.author, user))
             return
         elif user.bot:
-            await ctx.send(self.copulate_random_text.target_is_bot(ctx.author, user))
+            await ctx.send(self.bot.get_cog('CopulateRandomText').target_is_bot(ctx.author, user))
             return 
 
         #Check if they are related
@@ -210,7 +201,7 @@ class Simulation(Cog):
         if relationship == None or relationship.casefold() == 'partner':
             pass 
         else:
-            await ctx.send(self.copulate_random_text.target_is_relation(ctx.author, user, relationship))
+            await ctx.send(self.bot.get_cog('CopulateRandomText').target_is_relation(ctx.author, user, relationship))
             return
 
         # Make the check
@@ -235,22 +226,22 @@ class Simulation(Cog):
 
         # Wait for a response
         try:
-            await ctx.send(self.copulate_random_text.valid_proposal(ctx.author, user))
+            await ctx.send(self.bot.get_cog('CopulateRandomText').valid_proposal(ctx.author, user))
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except AsyncTimeoutError as e:
             try:
-                await ctx.send(self.copulate_random_text.proposal_timed_out(ctx.author, user))
+                await ctx.send(self.bot.get_cog('CopulateRandomText').proposal_timed_out(ctx.author, user))
             except Exception as e:
                 # If the bot was kicked, or access revoked, for example.
                 pass
             return
 
         if response == "NO":
-            await ctx.send(self.copulate_random_text.declining_valid_proposal(ctx.author, user))
+            await ctx.send(self.bot.get_cog('CopulateRandomText').declining_valid_proposal(ctx.author, user))
             return
 
-        await ctx.send(self.copulate_random_text.valid_target(ctx.author, user))
+        await ctx.send(self.bot.get_cog('CopulateRandomText').valid_target(ctx.author, user))
 
 
 def setup(bot:CustomBot):
