@@ -1,10 +1,11 @@
 from argparse import ArgumentParser
 from glob import glob
+
 from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
+
 from cogs.utils.custom_bot import CustomBot
-from cogs.utils.custom_help import CustomHelp
 from integrated_website.index import routes
 
 
@@ -38,12 +39,12 @@ args = parser.parse_args()
 # Create bot object
 bot = CustomBot(
     config_file=args.config_file,
-    formatter=CustomHelp(),
     activity=Game(name="Restarting..."),
     status=Status.dnd,
     commandline_args=args,
     case_insensitive=True,
 )
+bot.remove_command('help')
 
 
 # Create website

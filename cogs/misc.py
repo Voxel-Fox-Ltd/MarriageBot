@@ -1,6 +1,6 @@
 from os import getpid
 from asyncio import Task
-from random import choice
+from random import choice, randint
 from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
@@ -144,6 +144,69 @@ class Misc(Cog):
         else:
             _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
         await ctx.send(f"Cleared `{len(_)}` messages from chat.")
+
+
+    @command(name='help', hidden=True)
+    async def newhelp(self, ctx:Context, *, command_name:str=None):
+        '''
+        Gives you the new help command uwu
+        '''
+
+        # Get all the cogs
+        cogs = self.bot.cogs.values()
+
+        # Get all the commands from the cogs
+        cog_commands = [cog.get_commands() for cog in cogs]
+
+        # See which the user can run
+        runnable_commands = []
+        for cog in cog_commands:
+            runnable_cog = []
+            for command in cog:
+                try:
+                    runnable = await command.can_run(ctx) and command.hidden == False
+                except Exception:
+                    runnable = False 
+                if runnable:
+                    runnable_cog.append(command) 
+            runnable_cog.sort(key=lambda x: x.name.lower())
+            if len(runnable_cog) > 0:
+                runnable_commands.append(runnable_cog)
+
+        # Sort cogs list based on name
+        runnable_commands.sort(key=lambda x: x[0].cog_name.lower())
+
+        # Make an embed
+        help_embed = Embed()
+        help_embed.set_author(name=self.bot.user, icon_url=self.bot.user.avatar_url)
+        help_embed.colour = randint(1, 0xffffff)
+        dbl_link = self.bot.config['dbl_vainity'] or self.bot.user.id
+        extra = [
+            {'text': 'MarriageBot - Made by Caleb#2831'},
+            {'text': f'MarriageBot - Add me to your own server! ({ctx.prefix}invite)'}
+        ]
+        if self.bot.config.get('dbl_token'):
+            extra.append({'text': f'MarriageBot - Add a vote on Discord Bot List! ({ctx.prefix}vote)'})
+        if self.bot.config.get('patreon'):
+            extra.append({'text': f'MarriageBot - Support me on Patreon! ({ctx.prefix}patreon)'})
+        if self.bot.config.get('guild'):
+            extra.append({'text': f'MarriageBot - Join the official Discord server! ({ctx.prefix}server)'})
+        help_embed.set_footer(**choice(extra))
+
+        # Add commands to it
+        for cog_commands in runnable_commands:
+            value = '\n'.join([f"{ctx.prefix}{command.qualified_name} - *{command.short_doc}*" for command in cog_commands])
+            help_embed.add_field(
+                name=cog_commands[0].cog_name,
+                value=value
+            )
+        
+        # Send it to the user
+        try:
+            await ctx.author.send(embed=help_embed)
+            await ctx.send('Sent you a PM!')
+        except Exception:
+            await ctx.send("I couldn't send you a PM :c")
 
 
 def setup(bot:CustomBot):
