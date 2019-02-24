@@ -1,11 +1,11 @@
-from discord.ext.commands import command, group, Context
+from discord.ext.commands import command, group, Context, Cog
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.colour_dict import COLOURS
 
 
-class Customisation(object):
+class Customisation(Cog):
     '''
     A set of commands that let you customise what your family tree looks like
     '''

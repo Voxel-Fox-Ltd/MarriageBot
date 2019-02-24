@@ -3,14 +3,14 @@ from asyncio import iscoroutine
 
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed
-from discord.ext.commands import command, Context, group, NotOwner
+from discord.ext.commands import command, Context, group, NotOwner, Cog
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 
 
-class CalebOnly(object):
+class CalebOnly(Cog):
     '''
     The parentage cog
     Handles the adoption of parents
@@ -19,79 +19,12 @@ class CalebOnly(object):
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.last_tree = None
-        self.stream = None  # May be channel/ID
 
 
-    def __local_check(self, ctx:Context):
+    async def cog_check(self, ctx:Context):
         if ctx.author.id in self.bot.config['owners']:
             return True
         raise NotOwner
-
-
-    @property
-    def stream_channel(self):
-        channel_id = self.bot.config['stream_channel']
-        channel = self.bot.get_channel(channel_id)
-        return channel
-
-
-    @command(aliases=['s'])
-    async def send(self, ctx:Context, *, content:str):
-        '''
-        Sends content to the current stream channel
-        '''
-
-        if self.stream == None:
-            await ctx.send("No stream currently set up.")
-            return
-        await self.stream.send(content)
-
-
-    @command(aliases=['cs'])
-    async def channelstream(self, ctx:Context, channel_id:int=None):
-        '''
-        Streams a channel's output to the chat log
-        '''
-
-        if channel_id == None:
-            self.stream = None
-            await ctx.send("Cleared stream.")
-            return
-        self.stream = self.bot.get_channel(channel_id)
-        # self.stream = channel
-        await ctx.send(f"Channel set to `{self.stream.name}` (`{self.stream.id}`)")
-
-
-    async def on_message(self, message:Message):
-        '''
-        Log streamed messages to channel
-        '''
-
-        if not message.channel:
-            return
-        if not self.stream:
-            return
-        if not self.stream_channel:
-            return
-        if message.channel.id == self.stream.id:
-            pass 
-        else: 
-            return 
-
-
-        text = f"""User: `{message.author!s}` (`{message.author.id}`) | Message (`{message.id}`)""".replace('\t'*4, '').replace(' '*4*4, '')
-        attachments = [i.url for i in message.attachments]
-        if attachments:
-            text += '\nAttachments: ' + ', '.join(attachments)
-        
-        # Construct the embed
-        if message.author.guild:
-            embed = Embed(colour=message.author.top_role.colour.value)
-        else:
-            embed = Embed()
-        embed.set_author(name=message.author, icon_url=message.author.avatar_url) 
-        embed.description = message.clean_content
-        await self.stream_channel.send(text, embed=embed)
 
 
     @command(aliases=['pm', 'dm'])

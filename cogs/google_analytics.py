@@ -2,12 +2,12 @@ from random import randint
 
 from aiohttp import ClientSession
 from discord import Guild
-from discord.ext.commands import Context, CommandNotFound
+from discord.ext.commands import Context, CommandNotFound, Cog
 
 from cogs.utils.custom_bot import CustomBot
 
 
-class GoogleAnalytics(object): 
+class GoogleAnalytics(Cog): 
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
@@ -40,10 +40,11 @@ class GoogleAnalytics(object):
         '''
 
 
-    def __unload(self):
+    def cog_unload(self):
         self.session.close()
 
 
+    @Cog.listener()
     async def on_command(self, ctx:Context):
         '''
         Logs a command that's been sent
@@ -73,6 +74,7 @@ class GoogleAnalytics(object):
             # print(r.url)
 
 
+    @Cog.listener()
     async def on_guild_add(self, guild:Guild):
         '''
         Logs when added to a guild
@@ -89,6 +91,7 @@ class GoogleAnalytics(object):
             pass
 
 
+    @Cog.listener()
     async def on_guild_remove(self, guild:Guild):
         '''
         Logs when a guild is removed from the client

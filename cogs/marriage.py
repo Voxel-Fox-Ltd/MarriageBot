@@ -2,7 +2,7 @@ from re import compile
 from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 
 from discord import Member
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, Cog
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -11,7 +11,7 @@ from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
 
-class Marriage(object):
+class Marriage(Cog):
     '''
     The marriage cog
     Handles all marriage/divorce/etc commands
@@ -41,7 +41,7 @@ class Marriage(object):
         self.divorce_random_text = self.bot.cogs.get('DivorceRandomText')
 
 
-    def __local_check(self, ctx:Context):
+    async def cog_check(self, ctx:Context):
         return self.marriage_random_text != None and self.divorce_random_text != None
 
 

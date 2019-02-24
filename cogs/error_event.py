@@ -1,14 +1,14 @@
 from gc import collect
 from traceback import format_exc
 
-from discord.ext.commands import Context
+from discord.ext.commands import Context, Cog
 from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError, CommandOnCooldown, NotOwner, MissingPermissions
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import CantSendFiles
 
 
-class ErrorEvent(object):
+class ErrorEvent(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
@@ -21,6 +21,7 @@ class ErrorEvent(object):
         return channel
 
 
+    @Cog.listener()
     async def on_command_error(self, ctx:Context, error):
         '''
         Runs when there's an error thrown somewhere in the bot

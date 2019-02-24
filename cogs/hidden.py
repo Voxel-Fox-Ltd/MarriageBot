@@ -1,24 +1,17 @@
 from random import choice
 
 from discord import Member
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, Cog
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.cooldown import cooldown
 
 
-class Hidden(object):
+class Hidden(Cog, command_attrs=dict(hidden=True)):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot 
-
-
-    def __local_check(self, ctx:Context):
-        # if ctx.author.id in self.bot.config['owners']:
-        #     return True
-        return True
-        # return choice(range(0, 4)) == 0
 
 
     @command(hidden=True)

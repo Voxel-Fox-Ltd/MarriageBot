@@ -2,7 +2,7 @@ from re import compile
 from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 
 from discord import Member, User
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, Cog
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -14,7 +14,7 @@ from cogs.utils.random_text.disown import DisownRandomText
 from cogs.utils.random_text.emancipate import EmancipateRandomText
 
 
-class Parentage(object):
+class Parentage(Cog):
     '''
     The parentage cog
     Handles the adoption of parents
@@ -58,7 +58,7 @@ class Parentage(object):
         self.emancipate_random_text = self.bot.cogs.get('EmancipateRandomText')
 
 
-    def __local_check(self, ctx:Context):
+    async def cog_check(self, ctx:Context):
         return all([
             self.makeparent_random_text != None,
             self.adopt_random_text != None,

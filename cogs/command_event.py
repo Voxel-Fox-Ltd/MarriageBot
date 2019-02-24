@@ -1,12 +1,12 @@
 from asyncio import sleep
 
 from discord import Message, Embed
-from discord.ext.commands import Context
+from discord.ext.commands import Context, Cog
 
 from cogs.utils.custom_bot import CustomBot
 
 
-class CommandEvent(object):
+class CommandEvent(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
@@ -14,14 +14,16 @@ class CommandEvent(object):
         self.command_cache = []
 
 
-    def __unload(self):
+    def cog_unload(self):
         self.bot.loop.create_task(self.empty_cache())
 
 
+    @Cog.listener()
     async def on_command_completion(self, ctx:Context):
         self.command_cache.append(ctx)
 
 
+    @Cog.listener()
     async def on_command_error(self, ctx:Context, error):
         self.command_cache.append(ctx)
 

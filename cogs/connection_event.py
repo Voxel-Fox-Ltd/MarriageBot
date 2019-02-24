@@ -1,9 +1,11 @@
 from discord import Game
 
+from discord.ext.commands import Cog
+
 from cogs.utils.custom_bot import CustomBot
 
 
-class ConnectionEvent(object):
+class ConnectionEvent(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot 
@@ -16,14 +18,7 @@ class ConnectionEvent(object):
         return channel
 
 
-    # async def on_connect(self):
-    #     await self.event_log_channel.send("`on_connect` called.")
-
-
-    # async def on_ready(self):
-    #     await self.event_log_channel.send("`on_ready` called.")
-
-
+    @Cog.listener()
     async def on_shard_ready(self, shard_id:int):
         await self.event_log_channel.send(f"`on_shard_ready` called for shard ID `{shard_id}`.")
         presence_text = self.bot.config['presence_text']

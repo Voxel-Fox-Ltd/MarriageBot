@@ -1,5 +1,5 @@
 from discord import User
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, Cog
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -7,13 +7,13 @@ from cogs.utils.checks.cooldown import cooldown
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
-class ModeratorOnly(object):
+class ModeratorOnly(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot 
 
 
-    def __local_check(self, ctx:Context):
+    async def cog_check(self, ctx:Context):
         if ctx.author.id in self.bot.config['owners']:
             return True
         elif ctx.guild == None:

@@ -1,16 +1,16 @@
-from discord.ext.commands import command, Context, MissingPermissions, BucketType
+from discord.ext.commands import command, Context, MissingPermissions, BucketType, Cog
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.cooldown import cooldown
 
 
-class Administrator(object): 
+class Administrator(Cog): 
 
     def __init__(self,bot:CustomBot):
         self.bot = bot 
 
 
-    def __local_check(self, ctx:Context):
+    async def cog_check(self, ctx:Context):
         if ctx.author.permissions_in(ctx.channel).manage_guild:
             return True
         raise MissingPermissions(["manage_guild"])

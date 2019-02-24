@@ -3,7 +3,7 @@ from random import choice
 from asyncio import TimeoutError as AsyncTimeoutError
 
 from discord import Member
-from discord.ext.commands import command, Context,
+from discord.ext.commands import command, Context, Cog
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -11,7 +11,7 @@ from cogs.utils.checks.cooldown import cooldown
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
-class Simulation(object):
+class Simulation(Cog):
 
 
     def __init__(self, bot:CustomBot):
