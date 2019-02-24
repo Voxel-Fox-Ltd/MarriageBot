@@ -31,7 +31,6 @@ class CalebOnly(Cog):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
-        await ctx.send(f"Only the bot owner can run the {ctx.command.name} command.")
 
 
     async def cog_check(self, ctx:Context):
