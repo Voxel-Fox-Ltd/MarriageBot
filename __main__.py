@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from glob import glob
 
 from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Status
@@ -53,16 +52,6 @@ app.add_routes(routes)
 app['bot'] = bot
 
 
-def get_extensions() -> list:
-    '''
-    Gets the filenames of all the loadable cogs
-    '''
-
-    ext = glob('cogs/[!_]*.py')
-    rand = glob('cogs/utils/random_text/[!_]*.py')
-    return [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
-
-
 @bot.event
 async def on_ready():
     '''
@@ -87,13 +76,7 @@ async def on_ready():
                 print(e)
     # They weren't, grab them all
     else:
-        for i in get_extensions():
-            print('\t' + i + '... ', end='')
-            try:
-                bot.load_extension(i)
-                print('success')
-            except Exception as e:
-                print(e)
+        bot.load_all_extensions()
 
     print('Bot loaded.')
 

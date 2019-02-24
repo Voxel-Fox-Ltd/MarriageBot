@@ -2,9 +2,11 @@ from datetime import datetime as dt
 from json import load
 from importlib import import_module
 from asyncio import sleep, create_subprocess_exec
+from glob import glob
+from re import compile
+
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
-
 from discord import Game, Message
 from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
@@ -41,6 +43,7 @@ class CustomBot(AutoShardedBot):
         self.config_file = config_file
         self.reload_config()
         self.commandline_args = commandline_args
+        self.bad_argument = compile(r'(User|Member) "(.*)" not found')
 
         # Add webserver stuff so I can come back to it later
         self.web_runner = None
@@ -126,6 +129,33 @@ class CustomBot(AutoShardedBot):
         '''
 
         return (dt.now() - self.startup_time).total_seconds()
+
+
+    def get_extensions(self) -> list:
+        '''
+        Gets the filenames of all the loadable cogs
+        '''
+
+        ext = glob('cogs/[!_]*.py')
+        rand = glob('cogs/utils/random_text/[!_]*.py')
+        return [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
+
+
+    def load_all_extensions(self):
+        '''
+        Loads all extensions from .get_extensions()
+        '''
+
+        print('Loading extensions... ')
+        for i in self.get_extensions():
+            self.unload_extension(i)
+        for i in self.get_extensions():
+            print('\t' + i + '... ', end='')
+            try:
+                self.load_extension(i)
+                print('success')
+            except Exception as e:
+                print(e)
 
 
     async def set_default_presence(self):

@@ -6,6 +6,7 @@ from datetime import datetime as dt, timedelta
 from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version
 from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot 
@@ -19,6 +20,20 @@ class Misc(Cog):
         pid = getpid()
         self.process = Process(pid)
         self.process.cpu_percent()
+
+
+    async def cog_command_error(self, ctx:Context, error):
+        '''
+        Local error handler for the cog
+        '''
+
+        # Cooldown
+        if isinstance(error, CommandOnCooldown):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f}` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return
 
 
     @command(aliases=['vote'])

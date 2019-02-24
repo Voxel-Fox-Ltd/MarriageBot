@@ -4,6 +4,7 @@ from asyncio import TimeoutError as AsyncTimeoutError
 
 from discord import Member
 from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import MissingRequiredArgument, CommandOnCooldown, BadArgument
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -21,6 +22,31 @@ class Simulation(Cog):
         # Get random text for this cog
         self.copulate_random_text = None
         self.bot.loop.create_task(self.get_copulate_random_text())
+
+
+    async def cog_command_error(self, ctx:Context, error):
+        '''
+        Local error handler for the cog
+        '''
+
+        # Missing argument
+        if isinstance(error, MissingRequiredArgument):
+            await ctx.send("You need to specify a person for this command to work properly.")
+            return
+
+        # Cooldown
+        elif isinstance(error, CommandOnCooldown):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f}` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return
+    
+        # Argument conversion error
+        elif isinstance(error, BadArgument):
+            argument_text = self.bot.bad_argument.search(str(error)).group(2)
+            await ctx.send(f"User `{argument_text}` could not be found.")
+            return
 
     
     async def get_copulate_random_text(self):

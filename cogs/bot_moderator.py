@@ -1,5 +1,6 @@
 from discord import User
 from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -12,14 +13,37 @@ class ModeratorOnly(Cog):
         self.bot = bot 
 
 
+    async def cog_command_error(self, ctx:Context, error):
+        '''
+        Local error handler for the cog
+        '''
+
+        # Missing argument
+        if isinstance(error, MissingRequiredArgument):
+            await ctx.send("You need to specify a person for this command to work properly.")
+            return
+
+    
+        # Argument conversion error
+        elif isinstance(error, BadArgument):
+            argument_text = self.bot.bad_argument.search(str(error)).group(2)
+            await ctx.send(f"User `{argument_text}` could not be found.")
+            return
+
+        # Missing permissions
+        elif isinstance(error, MissingPermissions):
+            await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
+            return
+
+
     async def cog_check(self, ctx:Context):
         if ctx.author.id in self.bot.config['owners']:
             return True
         elif ctx.guild == None:
-            return False
+            raise MissingPermissions(['MarriageBot moderator'])
         if self.bot.config['bot_admin_role'] in [i.id for i in ctx.author.roles]:
             return True
-        return False
+        raise MissingPermissions(['MarriageBot moderator'])
 
 
     @command()

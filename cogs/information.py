@@ -5,7 +5,8 @@ from io import BytesIO
 from asyncio import sleep, create_subprocess_exec, wait_for, TimeoutError as AsyncTimeoutError
 
 from discord import Member, File, User
-from discord.ext.commands import command, Context, Cog, CommandOnCooldown, cooldown
+from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import CommandOnCooldown, MissingRequiredArgument, BadArgument
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -22,6 +23,31 @@ class Information(Cog):
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
+
+
+    async def cog_command_error(self, ctx:Context, error):
+        '''
+        Local error handler for the cog
+        '''
+
+        # Missing argument
+        if isinstance(error, MissingRequiredArgument):
+            await ctx.send("You need to specify a person for this command to work properly.")
+            return
+
+        # Cooldown
+        elif isinstance(error, CommandOnCooldown):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f}` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return
+    
+        # Argument conversion error
+        elif isinstance(error, BadArgument):
+            argument_text = self.bot.bad_argument.search(str(error)).group(2)
+            await ctx.send(f"User `{argument_text}` could not be found.")
+            return
 
 
     @command(aliases=['spouse', 'husband', 'wife'])
@@ -220,17 +246,6 @@ class Information(Cog):
             return await self.treemaker(ctx, root, True)
         except Exception as e:
             raise e
-
-
-    @globaltree.error 
-    @tree.error 
-    async def tree_error_handler(self, ctx:Context, error):
-        '''
-        Handles ratelimiting mostly
-        '''
-
-        if isinstance(error, CommandOnCooldown):
-            await ctx.send(f"You can only use this command once every `{error.cooldown.per}` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
 
 
     async def treemaker(self, ctx:Context, root:User, all_guilds:bool):

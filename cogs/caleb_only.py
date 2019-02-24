@@ -21,6 +21,19 @@ class CalebOnly(Cog):
         self.last_tree = None
 
 
+    async def cog_command_error(self, ctx:Context, error):
+        '''
+        Local error handler for the cog
+        '''
+
+        # Throw errors properly for me
+        if ctx.author.id in self.bot.config['owners']:
+            text = f'```py\n{error}```'
+            await ctx.send(text)
+            raise error
+        await ctx.send(f"Only the bot owner can run the {ctx.command.name} command.")
+
+
     async def cog_check(self, ctx:Context):
         if ctx.author.id in self.bot.config['owners']:
             return True

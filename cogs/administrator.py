@@ -1,4 +1,5 @@
-from discord.ext.commands import command, Context, MissingPermissions, BucketType, Cog, cooldown
+from discord.ext.commands import command, Context, BucketType, Cog, cooldown
+from discord.ext.commands import MissingPermissions, CommandOnCooldown
 
 from cogs.utils.custom_bot import CustomBot
 
@@ -7,6 +8,25 @@ class Administrator(Cog):
 
     def __init__(self,bot:CustomBot):
         self.bot = bot 
+
+
+    async def cog_command_error(self, ctx:Context, error):
+        '''
+        Local error handler for the cog
+        '''
+
+        # Missing permissions
+        if isinstance(error, MissingPermissions):
+            await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
+            return
+
+        # Cooldown
+        elif isinstance(error, CommandOnCooldown):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f}` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return
 
 
     async def cog_check(self, ctx:Context):
