@@ -5,12 +5,11 @@ from io import BytesIO
 from asyncio import sleep, create_subprocess_exec, wait_for, TimeoutError as AsyncTimeoutError
 
 from discord import Member, File, User
-from discord.ext.commands import command, Context, Cog
+from discord.ext.commands import command, Context, Cog, CommandOnCooldown, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
-from cogs.utils.checks.cooldown import cooldown
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
@@ -221,6 +220,17 @@ class Information(Cog):
             return await self.treemaker(ctx, root, True)
         except Exception as e:
             raise e
+
+
+    @globaltree.error 
+    @tree.error 
+    async def tree_error_handler(self, ctx:Context, error):
+        '''
+        Handles ratelimiting mostly
+        '''
+
+        if isinstance(error, CommandOnCooldown):
+            await ctx.send(f"You can only use this command once every `{error.cooldown.per}` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
 
 
     async def treemaker(self, ctx:Context, root:User, all_guilds:bool):

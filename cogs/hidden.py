@@ -1,11 +1,10 @@
 from random import choice
 
 from discord import Member
-from discord.ext.commands import command, Context, Cog
+from discord.ext.commands import command, Context, Cog, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
-from cogs.utils.checks.cooldown import cooldown
 
 
 class Hidden(Cog, command_attrs=dict(hidden=True)):

@@ -77,8 +77,9 @@ class ErrorEvent(Cog):
 
         # Command ratelimited
         elif isinstance(error, CommandOnCooldown):
-            if ctx.command.name in ['tree', 'globaltree']:
-                await ctx.send(f"You can only use this command once every minute per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            # Let owners actually run it
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
             return
 
         # Check failed for no particular reason

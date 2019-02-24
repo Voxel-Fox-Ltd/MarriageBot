@@ -1,7 +1,6 @@
-from discord.ext.commands import command, Context, MissingPermissions, BucketType, Cog
+from discord.ext.commands import command, Context, MissingPermissions, BucketType, Cog, cooldown
 
 from cogs.utils.custom_bot import CustomBot
-from cogs.utils.checks.cooldown import cooldown
 
 
 class Administrator(Cog): 
