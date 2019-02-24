@@ -6,9 +6,10 @@ from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
 
 from discord import Game, Message
-from discord.ext.commands import AutoShardedBot, cooldown, when_mentioned_or
+from discord.ext.commands import AutoShardedBot, when_mentioned_or
 from discord.ext.commands.cooldowns import BucketType
 
+from cogs.utils.checks.cooldown import cooldown
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
@@ -189,11 +190,8 @@ class CustomBot(AutoShardedBot):
 
 
     def reload_config(self):
-        try:
-            with open(self.config_file) as a:
-                self.config = load(a)
-        except Exception:
-            pass
+        with open(self.config_file) as a:
+            self.config = load(a)
 
 
     def run_all(self):
