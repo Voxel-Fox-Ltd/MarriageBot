@@ -5,7 +5,7 @@ from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version
-from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import command, Context, Cog, cooldown, Group
 from discord.ext.commands import CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
@@ -167,10 +167,21 @@ class Misc(Cog):
         '''
 
         # Get all the cogs
-        cogs = self.bot.cogs.values()
-
-        # Get all the commands from the cogs
-        cog_commands = [cog.get_commands() for cog in cogs]
+        if not command_name:
+            cogs = self.bot.cogs.values()
+            cog_commands = [cog.get_commands() for cog in cogs]
+        else:
+            command = self.bot
+            for i in command_name.split():
+                command = command.get_command(i)
+                if not command:
+                    await ctx.send(f"The command `{command_name}` could not be found.")
+                    return
+            base_command = command
+            if isinstance(base_command, Group):
+                cog_commands = [list(set(command.walk_commands()))]
+            else:
+                cog_commands = []
 
         # See which the user can run
         runnable_commands = []
@@ -208,6 +219,11 @@ class Misc(Cog):
         help_embed.set_footer(**choice(extra))
 
         # Add commands to it
+        if command_name:
+            # if isinstance(base_command, Group):
+            help_embed.add_field(name=f"{ctx.prefix}{base_command.signature}", value=f"{base_command.help}")
+            # else:
+            #     help_embed.description = f"{ctx.prefix}{base_command.signature}\n\n{base_command.help}"
         for cog_commands in runnable_commands:
             value = '\n'.join([f"{ctx.prefix}{command.qualified_name} - *{command.short_doc}*" for command in cog_commands])
             help_embed.add_field(
@@ -218,7 +234,8 @@ class Misc(Cog):
         # Send it to the user
         try:
             await ctx.author.send(embed=help_embed)
-            await ctx.send('Sent you a PM!')
+            if ctx.guild:
+                await ctx.send('Sent you a PM!')
         except Exception:
             await ctx.send("I couldn't send you a PM :c")
 
