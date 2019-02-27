@@ -16,7 +16,7 @@ class Simulation(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
-        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)")
+        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(accept)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
 
@@ -24,6 +24,12 @@ class Simulation(Cog):
         '''
         Local error handler for the cog
         '''
+
+        # Throw errors properly for me
+        if ctx.author.id in self.bot.config['owners']:
+            text = f'```py\n{error}```'
+            await ctx.send(text)
+            raise error
 
         # Missing argument
         if isinstance(error, MissingRequiredArgument):

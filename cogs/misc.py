@@ -27,6 +27,12 @@ class Misc(Cog):
         Local error handler for the cog
         '''
 
+        # Throw errors properly for me
+        if ctx.author.id in self.bot.config['owners']:
+            text = f'```py\n{error}```'
+            await ctx.send(text)
+            raise error
+
         # Cooldown
         if isinstance(error, CommandOnCooldown):
             if ctx.author.id in self.bot.config['owners']:

@@ -15,6 +15,12 @@ class Administrator(Cog):
         Local error handler for the cog
         '''
 
+        # Throw errors properly for me
+        if ctx.author.id in self.bot.config['owners']:
+            text = f'```py\n{error}```'
+            await ctx.send(text)
+            raise error
+
         # Missing permissions
         if isinstance(error, MissingPermissions):
             await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")

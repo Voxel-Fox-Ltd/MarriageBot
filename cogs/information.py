@@ -30,6 +30,12 @@ class Information(Cog):
         Local error handler for the cog
         '''
 
+        # Throw errors properly for me
+        if ctx.author.id in self.bot.config['owners']:
+            text = f'```py\n{error}```'
+            await ctx.send(text)
+            raise error
+
         # Missing argument
         if isinstance(error, MissingRequiredArgument):
             await ctx.send("You need to specify a person for this command to work properly.")

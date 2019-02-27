@@ -14,6 +14,18 @@ class Customisation(Cog):
         self.bot = bot
 
 
+    async def cog_command_error(self, ctx:Context, error):
+        '''
+        Local error handler for the cog
+        '''
+
+        # Throw errors properly for me
+        if ctx.author.id in self.bot.config['owners']:
+            text = f'```py\n{error}```'
+            await ctx.send(text)
+            raise error
+
+
     async def coloursetter(self, ctx:Context, colour:str, attribute:str):
         '''
         Actually does all the heavy lifting for the colour setters

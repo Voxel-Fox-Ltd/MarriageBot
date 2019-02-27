@@ -27,14 +27,8 @@ class ErrorEvent(Cog):
         Runs when there's an error thrown somewhere in the bot
         '''
 
-        # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners']:
-            text = f'```py\n{error}```'
-            await ctx.send(text)
-            raise error
-
         # Forbidden error
-        elif isinstance(error, CantSendFiles):
+        if isinstance(error, CantSendFiles):
             try:
                 await ctx.send("I'm not able to send files into this channel.")
             except Exception:
@@ -62,6 +56,7 @@ class ErrorEvent(Cog):
                 
         # Check failed for no particular reason
         elif isinstance(error, CheckFailure):
+            print(ctx.command.name, error)
             return
 
         # Command not found
