@@ -26,7 +26,7 @@ class Simulation(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners']:
+        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
