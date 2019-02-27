@@ -1,6 +1,6 @@
 from random import randint, choice
 
-from discord import Embed 
+from discord import Embed, TextChannel, Permissions
 from discord.ext.commands import Context
 
 
@@ -11,7 +11,21 @@ class CustomContext(Context):
         A custom version of Context that changes .send to embed things for me
         '''
 
-        if embed is None and no_embed is False:
+        original = super().send(
+            content=content, 
+            tts=tts, 
+            embed=embed, 
+            file=file, 
+            files=files, 
+            delete_after=delete_after, 
+            nonce=nonce,
+        )
+        if not isinstance(self.channel, TextChannel) or no_embed:
+            return await original
+        elif self.channel.permissions_for(self.guild.me).value & 18432 != 18432:
+            return await original
+
+        if embed is None:
             # Set content
             embed = Embed(description=content, colour=randint(1, 0xffffff))
 
