@@ -15,6 +15,7 @@ from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.removal_dict import RemovalDict
+from cogs.utils.custom_context import CustomContext
 
 
 def get_prefix(bot, message:Message):
@@ -120,7 +121,12 @@ class CustomBot(AutoShardedBot):
                     ftm.destroy()
 
         # And update DBL
-        await self.post_guild_count()
+        await self.post_guild_count()        
+        
+        
+    async def on_message(self, message):
+        ctx = await self.get_context(message, cls=CustomContext)
+        await self.invoke(ctx)
 
 
     def get_uptime(self):
@@ -150,7 +156,7 @@ class CustomBot(AutoShardedBot):
         for i in self.get_extensions():
             self.unload_extension(i)
         for i in self.get_extensions():
-            print('\t' + i + '... ', end='')
+            print(' * ' + i + '... ', end='')
             try:
                 self.load_extension(i)
                 print('success')

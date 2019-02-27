@@ -57,7 +57,6 @@ class Help(Cog):
         help_embed = Embed()
         help_embed.set_author(name=self.bot.user, icon_url=self.bot.user.avatar_url)
         help_embed.colour = randint(1, 0xffffff)
-        dbl_link = self.bot.config['dbl_vainity'] or self.bot.user.id
         extra = [
             {'text': 'MarriageBot - Made by Caleb#2831'},
             {'text': f'MarriageBot - Add me to your own server! ({ctx.prefix}invite)'}
@@ -68,7 +67,9 @@ class Help(Cog):
             extra.append({'text': f'MarriageBot - Support me on Patreon! ({ctx.prefix}patreon)'})
         if self.bot.config.get('guild'):
             extra.append({'text': f'MarriageBot - Join the official Discord server! ({ctx.prefix}server)'})
-        help_embed.set_footer(**choice(extra))
+        footer = choice(extra)
+        footer['text'] = footer['text'].replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", self.bot.config['default_prefix'])
+        help_embed.set_footer(**footer)
 
         # Add commands to it
         if command_name:

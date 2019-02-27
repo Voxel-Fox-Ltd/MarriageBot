@@ -68,7 +68,7 @@ async def on_ready():
     x = bot.config.get('initial_cogs')
     if x:
         for i in x:
-            print('\t' + i + '... ', end='')
+            print(' * ' + i + '... ', end='')
             try:
                 bot.load_extension(i)
                 print('success')
