@@ -203,6 +203,18 @@ class Simulation(Cog):
         else:
             await ctx.send(self.bot.get_cog('CopulateRandomText').target_is_relation(ctx.author, user, relationship))
             return
+        
+        #Check if Author has a partner
+        a = FamilyTreeMember.get(ctx.author.id)
+        b = FamilyTreeMember.get(user.id)
+        relationship = a.get_relation(y)
+        
+        if a.partner = None:
+            pass
+        else:
+            if relationship != 'partner':
+                partner = self.bot.get_user(a.partner.id)
+                await partner.send(f"Hey {b}, {a} is trying to do some stuff behind your back")
 
         # Make the check
         def check(message):
