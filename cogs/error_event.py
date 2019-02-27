@@ -1,6 +1,7 @@
 from gc import collect
 from traceback import format_exc
 
+from discord.errors import Forbidden
 from discord.ext.commands import Context, Cog
 from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError, CommandOnCooldown, NotOwner, MissingPermissions
 
@@ -35,15 +36,18 @@ class ErrorEvent(Cog):
                 await ctx.author.send("I'm unable to send messages into that channel.")
             return
 
-        # Command doesn't run
-        elif isinstance(error, CommandInvokeError):
-            # Can't message channel
-            if 'FORBIDDEN' in str(error):
+        # Can't send message to channel
+        elif isinstance(error, Forbidden):
+            try:
                 await ctx.author.send("I'm unable to send messages into that channel.")
-                return
+            except Forbidden:
+                pass
+            return
 
+        # OSError
+        elif isinstance(error, CommandInvokeError):
             # Something dumb with the ram
-            elif 'oserror' in str(error).lower():
+            if 'oserror' in str(error).lower():
                 number = collect()
                 data = f"**Error**\nUser: `{ctx.author!s}` (`{ctx.author.id}`) | Guild: `{ctx.guild.name}` (`{ctx.guild.id}`) | Content: `{ctx.message.content}`\n" + "```py\n" + format_exc() + "```"
                 try:
