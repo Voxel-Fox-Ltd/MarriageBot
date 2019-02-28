@@ -54,8 +54,11 @@ class Parentage(Cog):
     
         # Argument conversion error
         elif isinstance(error, BadArgument):
-            argument_text = self.bot.bad_argument.search(str(error)).group(2)
-            await ctx.send(f"User `{argument_text}` could not be found.")
+            try:
+                argument_text = self.bot.bad_argument.search(str(error)).group(2)
+                await ctx.send(f"User `{argument_text}` could not be found.")
+            except AttributeError:
+                await ctx.send(f"You are missing a required argument `User`.")
             return
 
 
