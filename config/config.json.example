@@ -26,5 +26,6 @@
     "event_log_channel": 01011,
     "chat_channel": 01011,
     "stream_channel": 01011,
-    "guild": ""
+    "guild": "",
+    "embed_default_text": null
 }

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}MarriageBot{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//db.onlinewebfonts.com/c/7234adf2685474c81e28858c37d40610?family=Whitney" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="{{ static('/css/main.css') }}">
+    <link rel='stylesheet' href='https://bgrins.github.io/spectrum/spectrum.css' />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src='https://bgrins.github.io/spectrum/spectrum.js'></script>
+</head>
+<body>
+    {% block body %}
+    <div id="header">
+        {% block header %}{% endblock %}
+    </div>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+    {% endblock %}
+</body>
+</html>

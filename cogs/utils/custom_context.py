@@ -52,8 +52,8 @@ class CustomContext(Context):
                 if file.filename.casefold().endswith('.png') or file.filename.casefold().endswith('.jpg') or file.filename.casefold().endswith('.jpeg') or file.filename.casefold().endswith('.gif') or file.filename.casefold().endswith('.webm'):
                     embed.set_image(url=f"attachment://{file.filename}")
 
-            # Reset contnent
-            content = None
+            # Reset content
+            content = self.bot.config.get("embed_default_text") or None
 
         return await super().send(
             content=content, 
