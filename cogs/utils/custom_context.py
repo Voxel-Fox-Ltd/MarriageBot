@@ -6,7 +6,7 @@ from discord.ext.commands import Context
 
 class CustomContext(Context):
 
-    async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, no_embed:bool=False, embed_image:bool=True):
+    async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embedify:bool=True, embed_image:bool=True):
         '''
         A custom version of Context that changes .send to embed things for me
         '''
@@ -20,17 +20,17 @@ class CustomContext(Context):
             delete_after=delete_after, 
             nonce=nonce,
         )
-        if not isinstance(self.channel, TextChannel) or no_embed:
+        if not isinstance(self.channel, TextChannel) or embedify is False:
             return await original
         elif self.channel.permissions_for(self.guild.me).value & 18432 != 18432:
             return await original
 
-        if embed is None:
+        if embed is None and embedify:
             # Set content
             embed = Embed(description=content, colour=randint(1, 0xffffff))
 
             # Set author
-            embed.set_author(name=self.bot.user, icon_url=self.bot.user.avatar_url)
+            # embed.set_author(name=self.bot.user, icon_url=self.bot.user.avatar_url)
 
             # Set footer
             extra = [
@@ -44,7 +44,8 @@ class CustomContext(Context):
             if self.bot.config.get('guild'):
                 extra.append({'text': f'MarriageBot - Join the official Discord server! ({self.prefix}server)'})
             footer = choice(extra)
-            footer['text'] = footer['text'].replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", self.bot.config['default_prefix'])
+            footer.update({'icon_url': self.bot.user.avatar_url})
+            footer['text'] = footer['text'].replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", f"@{self.bot.user!s} ")
             embed.set_footer(**footer)
 
             # Set image
