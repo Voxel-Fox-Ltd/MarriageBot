@@ -60,7 +60,6 @@ class ErrorEvent(Cog):
                 
         # Check failed for no particular reason
         elif isinstance(error, CheckFailure):
-            print(ctx.command.name, error)
             return
 
         # Command not found
