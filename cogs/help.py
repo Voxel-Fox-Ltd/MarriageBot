@@ -12,7 +12,7 @@ class Help(Cog):
         self.bot = bot 
 
 
-    @command(name='help', hidden=True)
+    @command(name='help', aliases=['commands'], hidden=True)
     async def newhelp(self, ctx:Context, *, command_name:str=None):
         '''
         Gives you the new help command uwu
