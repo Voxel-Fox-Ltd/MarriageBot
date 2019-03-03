@@ -41,7 +41,7 @@ class Administrator(Cog):
         raise MissingPermissions(["manage_guild"])
 
 
-    @command(hidden=True)
+    @command()
     @cooldown(1, 5, BucketType.guild)
     async def prefix(self, ctx:Context, prefix:str=None):
         '''
@@ -56,7 +56,7 @@ class Administrator(Cog):
 
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO guid_settings VALUES ($1, $2)', ctx.guild.id, prefix)
+                await db('INSERT INTO guild_settings VALUES ($1, $2)', ctx.guild.id, prefix)
             except Exception as e:
                 await db('UPDATE guild_settings SET prefix=$1 WHERE guild_id=$2', prefix, ctx.guild.id)
         self.bot.guild_prefixes[ctx.guild.id] = prefix
