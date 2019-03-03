@@ -310,7 +310,7 @@ class Information(Cog):
                 f"make sure to `{ctx.prefix}hug` and `{ctx.prefix}kiss` your partner! c:",
                 f"vote for MarriageBot by running `{ctx.prefix}vote` c:",
             ])
-            await ctx.send(text, file=file)
+            await ctx.send(file=file)
         except Exception:
             return 
         return

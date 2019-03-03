@@ -29,11 +29,9 @@ class CustomContext(Context):
             # Set content
             embed = Embed(description=content, colour=randint(1, 0xffffff))
 
-            # Set author
-            # embed.set_author(name=self.bot.user, icon_url=self.bot.user.avatar_url)
-
             # Set footer
-            extra = [
+            extra = [{'text': 'MarriageBot'}] * 20
+            extra += [
                 {'text': 'MarriageBot - Made by Caleb#2831'},
                 {'text': f'MarriageBot - Add me to your own server! ({self.prefix}invite)'}
             ]
