@@ -66,3 +66,10 @@ CREATE TABLE command_log(
     valid BOOLEAN,
     shard_id SMALLINT
 );
+
+
+CREATE TABLE blocked_user(
+    user_id BIGINT,
+    blocked_user_id BIGINT,
+    PRIMARY KEY (user_id, blocked_user_id)
+);

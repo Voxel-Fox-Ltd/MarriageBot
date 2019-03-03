@@ -61,8 +61,9 @@ class CustomBot(AutoShardedBot):
         # Add a cache for proposing users
         self.proposal_cache = RemovalDict()
 
-        # Add a list of blacklisted guilds
+        # Add a list of blacklisted guilds and users
         self.blacklisted_guilds = []
+        self.blocked_users = {}  # user_id: list(user_id)
 
         # Dictionary of custom prefixes
         self.guild_prefixes = {}  # guild_id: prefix
@@ -100,6 +101,14 @@ class CustomBot(AutoShardedBot):
         async with self.database() as db:
             blacklisted = await db('SELECT * FROM blacklisted_guilds')
         self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
+
+        # Pick up the blocked users
+        async with self.database() as db:
+            blocked = await db('SELECT * FROM blocked_user')
+        for user in blocked:
+            x = self.blocked_users.get(user['user_id'], list())
+            x.append(user['blocked_user_id'])
+            self.blocked_users[user['user_id']] = x
 
         # Now wait for the stuff you need to actually be online for
         await self.wait_until_ready()

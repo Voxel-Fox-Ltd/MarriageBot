@@ -12,6 +12,7 @@ from cogs.utils.random_text.makeparent import MakeParentRandomText
 from cogs.utils.random_text.adopt import AdoptRandomText
 from cogs.utils.random_text.disown import DisownRandomText
 from cogs.utils.random_text.emancipate import EmancipateRandomText
+from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
 
 
 class Parentage(Cog):
@@ -51,6 +52,11 @@ class Parentage(Cog):
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return
+
+        # Blocked user
+        elif isinstance(error, BlockedUserError):
+            await ctx.send("That user has blocked you, so you can't run this command.")
+            return
     
         # Argument conversion error
         elif isinstance(error, BadArgument):
@@ -64,7 +70,7 @@ class Parentage(Cog):
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def makeparent(self, ctx:Context, parent:Member):
+    async def makeparent(self, ctx:Context, parent:UnblockedMember):
         '''
         Picks a user that you want to be your parent
         '''
@@ -180,7 +186,7 @@ class Parentage(Cog):
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def adopt(self, ctx:Context, parent:Member):
+    async def adopt(self, ctx:Context, parent:UnblockedMember):
         '''
         Adopt another user into your family
         '''

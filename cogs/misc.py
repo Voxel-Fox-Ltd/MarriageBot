@@ -4,7 +4,7 @@ from random import choice, randint
 from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
-from discord import Embed, __version__ as dpy_version
+from discord import Embed, __version__ as dpy_version, Member
 from discord.ext.commands import command, Context, Cog, cooldown, Group
 from discord.ext.commands import CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
@@ -101,7 +101,7 @@ class Misc(Cog):
         Gives you a server invite link
         '''
 
-        await ctx.send(self.bot.config['guild'])
+        await ctx.send(self.bot.config['guild'], embeddify=False)
 
 
     @command(hidden=True)
@@ -164,6 +164,46 @@ class Misc(Cog):
         else:
             _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
         await ctx.send(f"Cleared `{len(_)}` messages from chat.")
+
+
+    @command()
+    async def block(self, ctx:Context, user:Member):
+        '''
+        Blocks a user from being able to adopt/makeparent/whatever you
+        '''
+
+        current_blocks = self.bot.blocked_users.get(ctx.author.id, list())
+        if user.id in current_blocks:
+            await ctx.send("That user is already blocked.")
+            return 
+        current_blocks.append(user.id)
+        self.bot.blocked_users[ctx.author.id] = current_blocks
+        async with self.bot.database() as db:
+            await db(
+                'INSERT INTO blocked_user (user_id, blocked_user_id) VALUES ($1, $2)',
+                ctx.author.id, user.id
+            )
+        await ctx.send("That user is now blocked.")
+
+
+    @command()
+    async def unblock(self, ctx:Context, user:Member):
+        '''
+        Unblocks a user and allows them to adopt/makeparent/whatever you
+        '''
+
+        current_blocks = self.bot.blocked_users.get(ctx.author.id, list())
+        if user.id not in current_blocks:
+            await ctx.send("You don't have that user blocked.")
+            return 
+        current_blocks.remove(user.id)
+        self.bot.blocked_users[ctx.author.id] = current_blocks
+        async with self.bot.database() as db:
+            await db(
+                'DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2',
+                ctx.author.id, user.id
+            )
+        await ctx.send("That user is now unblocked.")
 
 
 def setup(bot:CustomBot):

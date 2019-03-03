@@ -8,7 +8,7 @@ from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-
+from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
 
 
 class Marriage(Cog):
@@ -48,6 +48,11 @@ class Marriage(Cog):
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return
+
+        # Blocked user
+        elif isinstance(error, BlockedUserError):
+            await ctx.send("That user has blocked you, so you can't run this command.")
+            return
     
         # Argument conversion error
         elif isinstance(error, BadArgument):
@@ -58,7 +63,7 @@ class Marriage(Cog):
 
     @command(aliases=['marry'])
     @cooldown(1, 5, BucketType.user)
-    async def propose(self, ctx:Context, user:Member):
+    async def propose(self, ctx:Context, user:UnblockedMember):
         '''
         Lets you propose to another Discord user
         '''
