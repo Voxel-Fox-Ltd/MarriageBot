@@ -6,7 +6,7 @@ from discord.ext.commands import Context
 
 class CustomContext(Context):
 
-    async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embedify:bool=True, embed_image:bool=True):
+    async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True, embed_image:bool=True):
         '''
         A custom version of Context that changes .send to embed things for me
         '''
@@ -20,12 +20,12 @@ class CustomContext(Context):
             delete_after=delete_after, 
             nonce=nonce,
         )
-        if not isinstance(self.channel, TextChannel) or embedify is False:
+        if not isinstance(self.channel, TextChannel) or embeddify is False:
             return await original
         elif self.channel.permissions_for(self.guild.me).value & 18432 != 18432:
             return await original
 
-        if embed is None and embedify:
+        if embed is None and embeddify:
             # Set content
             embed = Embed(description=content, colour=randint(1, 0xffffff))
 

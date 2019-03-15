@@ -50,9 +50,9 @@ class Misc(Cog):
         '''
 
         if self.bot.config['dbl_vainity']:
-            await ctx.send(f"<https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote>")
+            await ctx.send(f"<https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote>", embeddify=False)
         else:
-            await ctx.send(f"<https://discordbots.org/bot/{self.bot.user.id}/vote>")
+            await ctx.send(f"<https://discordbots.org/bot/{self.bot.user.id}/vote>", embeddify=False)
 
 
     @command(aliases=['git', 'code'])
@@ -62,7 +62,7 @@ class Misc(Cog):
         Gives you a link to the bot's code repository
         '''
 
-        await ctx.send(f"<{self.bot.config['github']}>")
+        await ctx.send(f"<{self.bot.config['github']}>", embeddify=False)
 
 
     @command(aliases=['patreon', 'paypal'])
@@ -79,7 +79,7 @@ class Misc(Cog):
             links.append(f"Patreon: <{self.bot.config['patreon']}>")
         if not links:
             return 
-        await ctx.send('\n'.join(links))        
+        await ctx.send('\n'.join(links), embeddify=False)        
 
 
     @command()
@@ -90,7 +90,8 @@ class Misc(Cog):
         '''
 
         await ctx.send(
-            f"<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=35840>"
+            f"<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=35840>",
+            embeddify=False
         )
 
 
@@ -111,7 +112,7 @@ class Misc(Cog):
         Echos a saying
         '''
 
-        await ctx.send(content)
+        await ctx.send(content, embeddify=False)
 
 
     @command(aliases=['status'])
@@ -163,7 +164,7 @@ class Misc(Cog):
             _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id)
         else:
             _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
-        await ctx.send(f"Cleared `{len(_)}` messages from chat.")
+        await ctx.send(f"Cleared `{len(_)}` messages from chat.", delete_after=3.0)
 
 
     @command()

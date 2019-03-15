@@ -449,11 +449,15 @@ class FamilyTreeMember(object):
         root_user = self.get_root(guild=guild)
         gen_span = root_user.generational_span(guild=guild)
         # gen_span = root_user.generational_span(guild=guild, expand_upwards=True, add_parent=True)
+
+        # Find my own depth
         my_depth = None
         for depth, l in gen_span.items():
             if self in l:
                 my_depth = depth
                 break
+
+        # Add my partner and parent 
         if self.partner and self.partner not in gen_span.get(my_depth, list()):
             x = gen_span.get(my_depth, list())
             x.append(self.partner)
