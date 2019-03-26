@@ -240,6 +240,20 @@ class Information(Cog):
             raise e
 
 
+    @command(hidden=True)
+    @can_send_files()
+    @cooldown(1, 60, BucketType.guild)
+    async def stupidtree(self, ctx:Context, root:Member=None):
+        '''
+        Gets the family tree of a given user
+        '''
+
+        try:
+            return await self.treemaker(ctx, root, stupid_tree=True)
+        except Exception as e:
+            raise e
+
+
     @command(aliases=['fulltree', 'ft', 'gt'])
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
@@ -254,7 +268,7 @@ class Information(Cog):
             raise e
 
 
-    async def treemaker(self, ctx:Context, root:User, all_guilds:bool):
+    async def treemaker(self, ctx:Context, root:User, all_guilds:bool=False, stupid_tree:bool=False):
 
         if root == None:
             root = ctx.author
@@ -270,8 +284,12 @@ class Information(Cog):
             return
 
         # Write their treemaker code to a file
-        # dot_code = tree.to_dot_script(ctx.bot, guild=None if all_guilds else ctx.guild)
-        awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_dot_script, self.bot, None if all_guilds else ctx.guild)
+        if stupid_tree:
+            awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_full_dot_script, self.bot)
+        else:
+            awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_dot_script, self.bot, None if all_guilds else ctx.guild)
+
+        # Await their dot methd
         try:
             dot_code = await wait_for(awaitable_dot_code, timeout=10.0, loop=self.bot.loop)
         except AsyncTimeoutError:

@@ -445,10 +445,30 @@ class FamilyTreeMember(object):
         '''
 
         # Get the generation spanning tree
-        ctu = CustomisedTreeUser.get(self.id)
         root_user = self.get_root(guild=guild)
         gen_span = root_user.generational_span(guild=guild)
         # gen_span = root_user.generational_span(guild=guild, expand_upwards=True, add_parent=True)
+        return self.to_dot_script_from_generational_span(gen_span)
+
+    
+    def to_full_dot_script(self, bot) -> str:
+        '''
+        Gives you the string of the FULL current family
+        '''
+
+        # Get the generation spanning tree
+        root_user = self.get_root()
+        # gen_span = root_user.generational_span(guild=guild)
+        gen_span = root_user.generational_span(expand_upwards=True, add_parent=True)
+        return self.to_dot_script_from_generational_span(gen_span)
+
+
+    def to_dot_script_from_generational_span(self, gen_span:dict) -> str:
+        '''
+        Generates the DOT script from a given generational span
+        '''
+
+        ctu = CustomisedTreeUser.get(self.id)
 
         # Find my own depth
         my_depth = None
