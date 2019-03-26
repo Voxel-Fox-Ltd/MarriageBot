@@ -36,6 +36,8 @@ class Administrator(Cog):
 
 
     async def cog_check(self, ctx:Context):
+        if ctx.author.id in self.bot.config['owners']:
+            return True
         if ctx.author.permissions_in(ctx.channel).manage_guild:
             return True
         raise MissingPermissions(["manage_guild"])
