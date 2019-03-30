@@ -8,6 +8,11 @@ from discord.ext.commands import when_mentioned_or
 from cogs.utils.custom_bot import CustomBot
 from website.api import routes as api_routes
 
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+
 
 # Parse arguments
 parser = ArgumentParser()
@@ -70,20 +75,7 @@ async def on_ready():
     print(f'\t{bot.user.id}')
 
     print('Loading extensions... ')
-    # See if inital ones were specified in config
-    x = bot.config.get('initial_cogs')
-    if x:
-        for i in x:
-            print(' * ' + i + '... ', end='')
-            try:
-                bot.load_extension(i)
-                print('success')
-            except Exception as e:
-                print(e)
-    # They weren't, grab them all
-    else:
-        bot.load_all_extensions()
-
+    bot.load_all_extensions()
     print('Bot loaded.')
 
 
@@ -93,6 +85,7 @@ if __name__ == '__main__':
     '''
 
     loop = bot.loop 
+    # loop.set_debug(True)
 
     print("Starting bot...")
     bot.loop.create_task(bot.start_all())
