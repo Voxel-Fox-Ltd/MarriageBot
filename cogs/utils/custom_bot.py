@@ -161,9 +161,15 @@ class CustomBot(AutoShardedBot):
         Loads all extensions from .get_extensions()
         '''
 
-        print('Loading extensions... ')
+        print('Unloading extensions... ')
         for i in self.get_extensions():
-            self.unload_extension(i)
+            print(' * ' + i + '... ', end='')
+            try:
+                self.unload_extension(i)
+                print('success')
+            except Exception:
+                print(e)
+        print('Loading extensions... ')
         for i in self.get_extensions():
             print(' * ' + i + '... ', end='')
             try:

@@ -3,7 +3,7 @@ from asyncio import iscoroutine, wait_for
 
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed
-from discord.ext.commands import command, Context, group, NotOwner, Cog
+from discord.ext.commands import command, Context, group, NotOwner, Cog, ExtensionAlreadyLoaded
 from pympler import summary, muppy
 
 from cogs.utils.custom_bot import CustomBot
@@ -105,9 +105,16 @@ class CalebOnly(Cog):
         Unloads a cog from the bot
         '''
 
-        self.bot.unload_extension('cogs.' + '_'.join([i for i in cog_name]))
+        cog_name = 'cogs.' + '_'.join([i for i in cog_name])
+
         try:
-            self.bot.load_extension('cogs.' + '_'.join([i for i in cog_name]))
+            self.bot.load_extension(cog_name)
+        except ExtensionAlreadyLoaded:
+            try:
+                self.bot.reload_extension(cog_name)
+            except Exception as e:
+                await ctx.send('```py\n' + format_exc() + '```')
+                return
         except Exception as e:
             await ctx.send('```py\n' + format_exc() + '```')
             return
