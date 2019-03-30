@@ -448,7 +448,7 @@ class FamilyTreeMember(object):
         root_user = self.get_root(guild=guild)
         gen_span = root_user.generational_span(guild=guild)
         # gen_span = root_user.generational_span(guild=guild, expand_upwards=True, add_parent=True)
-        return self.to_dot_script_from_generational_span(gen_span)
+        return self.to_dot_script_from_generational_span(bot, gen_span)
 
     
     def to_full_dot_script(self, bot) -> str:
@@ -460,10 +460,10 @@ class FamilyTreeMember(object):
         root_user = self.get_root()
         # gen_span = root_user.generational_span(guild=guild)
         gen_span = root_user.generational_span(expand_upwards=True, add_parent=True)
-        return self.to_dot_script_from_generational_span(gen_span)
+        return self.to_dot_script_from_generational_span(bot, gen_span)
 
 
-    def to_dot_script_from_generational_span(self, gen_span:dict) -> str:
+    def to_dot_script_from_generational_span(self, bot, gen_span:dict) -> str:
         '''
         Generates the DOT script from a given generational span
         '''
