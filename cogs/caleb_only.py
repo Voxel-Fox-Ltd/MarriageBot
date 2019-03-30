@@ -1,9 +1,10 @@
 from traceback import format_exc
-from asyncio import iscoroutine
+from asyncio import iscoroutine, wait_for
 
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed
 from discord.ext.commands import command, Context, group, NotOwner, Cog
+from pympler import summary, muppy
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -46,6 +47,24 @@ class CalebOnly(Cog):
         '''
 
         await user.send(content)
+
+
+    @command()
+    async def seememory(self, ctx:Context):
+        '''
+        Shows you the number of each created object in the program
+        '''
+
+        # summary.print_(summary.summarize(muppy.get_objects()))
+
+        awaitable_dot_code = self.bot.loop.run_in_executor(None, muppy.get_objects)
+        try:
+            objects = await wait_for(awaitable_dot_code, timeout=10.0, loop=self.bot.loop)
+        except Exception as e:
+            await ctx.send(f"{e!s}")
+            return
+        summary.print_(summary.summarize(objects))
+        await ctx.send("Printed to console.")
 
 
     @command()
