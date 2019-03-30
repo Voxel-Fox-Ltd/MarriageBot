@@ -16,16 +16,12 @@
         "app_name": "",
         "document_host": ""
     },
-    "initial_cogs": [],
     "tree_file_location": "./trees",
     "dbl_vainity": "",
     "github": "",
     "patreon": "",
     "paypal": "",
-    "command_log_channel": 01011,
-    "event_log_channel": 01011,
-    "chat_channel": 01011,
-    "stream_channel": 01011,
+    "event_log_channel": 0,
     "guild": "",
     "embed_default_text": null
 }
