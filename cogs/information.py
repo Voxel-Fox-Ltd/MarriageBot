@@ -6,7 +6,7 @@ from asyncio import sleep, create_subprocess_exec, wait_for, TimeoutError as Asy
 
 from discord import Member, File, User
 from discord.ext.commands import command, Context, Cog, cooldown
-from discord.ext.commands import CommandOnCooldown, MissingRequiredArgument, BadArgument
+from discord.ext.commands import CommandOnCooldown, MissingRequiredArgument, BadArgument, DisabledCommand
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -53,6 +53,14 @@ class Information(Cog):
         elif isinstance(error, BadArgument):
             argument_text = self.bot.bad_argument.search(str(error)).group(2)
             await ctx.send(f"User `{argument_text}` could not be found.")
+            return
+
+        # Disabled command
+        elif isinstance(error, DisabledCommand):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send("This command has been temporarily disabled. Apologies for any inconvenience.")
             return
 
 
@@ -222,7 +230,7 @@ class Information(Cog):
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command(aliases=['familytree'])
+    @command(aliases=['familytree'], enabled=False)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
@@ -240,7 +248,7 @@ class Information(Cog):
             raise e
 
 
-    @command(hidden=True)
+    @command(hidden=True, enabled=False)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:Member=None):
@@ -254,7 +262,7 @@ class Information(Cog):
             raise e
 
 
-    @command(aliases=['fulltree', 'ft', 'gt'])
+    @command(aliases=['fulltree', 'ft', 'gt'], enabled=False)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):

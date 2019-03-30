@@ -41,7 +41,7 @@ class Help(Cog):
             runnable_cog = []
             for command in cog:
                 try:
-                    runnable = await command.can_run(ctx) and command.hidden == False
+                    runnable = await command.can_run(ctx) and command.hidden == False and command.enabled == True
                 except Exception:
                     runnable = False 
                 if runnable:
