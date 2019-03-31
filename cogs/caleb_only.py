@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed
-from discord.ext.commands import command, Context, group, NotOwner, Cog, ExtensionAlreadyLoaded
+from discord.ext.commands import command, Context, group, NotOwner, Cog, CommandOnCooldown, ExtensionAlreadyLoaded
 from pympler import summary, muppy
 
 from cogs.utils.custom_bot import CustomBot
