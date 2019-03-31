@@ -9,9 +9,9 @@ from cogs.utils.custom_bot import CustomBot
 from website.api import routes as api_routes
 
 import logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
+# logger = logging.getLogger('discord')
+# logger.setLevel(logging.DEBUG)
 
 
 # Parse arguments
