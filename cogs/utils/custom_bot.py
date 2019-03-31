@@ -167,7 +167,7 @@ class CustomBot(AutoShardedBot):
             try:
                 self.unload_extension(i)
                 print('success')
-            except Exception:
+            except Exception as e:
                 print(e)
         print('Loading extensions... ')
         for i in self.get_extensions():
