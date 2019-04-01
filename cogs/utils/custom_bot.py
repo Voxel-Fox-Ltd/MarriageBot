@@ -50,6 +50,9 @@ class CustomBot(AutoShardedBot):
         self.webserver = None
         self.ssl_webserver = None
 
+        # Aiohttp session for use in DBL posting
+        self.session = ClientSession(loop=self.loop)
+
         # Allow database connections like this
         self.database = DatabaseConnection
 
@@ -203,25 +206,21 @@ class CustomBot(AutoShardedBot):
         if not self.config.get('dbl_token'):
             return
 
-        async with ClientSession(loop=self.loop) as session:
-            url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
-            json = {
-                'server_count': len(self.guilds),
-                'shard_count': self.shard_count,
-                'shard_id': 0,
-            }
-            headers = {
-                'Authorization': self.config['dbl_token']
-            }
-            async with session.post(url, json=json, headers=headers) as r:
-                pass
+        url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
+        json = {
+            'server_count': len(self.guilds),
+            'shard_count': self.shard_count,
+            'shard_id': 0,
+        }
+        headers = {
+            'Authorization': self.config['dbl_token']
+        }
+        async with self.session.post(url, json=json, headers=headers) as r:
+            pass
 
 
     async def delete_loop(self):
-        '''
-        A loop that runs every hour, deletes all files in the tree storage directory
-        '''
-
+        '''A loop that runs every hour, deletes all files in the tree storage directory'''
         await self.wait_until_ready()
         while not self.is_closed: 
             await create_subprocess_exec('rm', f'{self.config["tree_file_location"]}/*', loop=self.bot.loop)
@@ -229,10 +228,7 @@ class CustomBot(AutoShardedBot):
 
 
     async def destroy(self, user_id:int):
-        '''
-        Removes a user ID from the database and cache
-        '''
-
+        '''Removes a user ID from the database and cache'''
         async with self.database() as db:
             await db.destroy(user_id)
         FamilyTreeMember.get(user_id).destroy()
@@ -243,8 +239,8 @@ class CustomBot(AutoShardedBot):
             self.config = load(a)
 
 
-    def run_all(self):
-        self.run(self.config['token'])
+    def run(self):
+        super().run(self.config['token'])
 
 
     async def start(self):
@@ -255,42 +251,9 @@ class CustomBot(AutoShardedBot):
 
 
     async def logout(self):
-        '''
-        An override of the default logout that also closes the webserver
-        '''
-
+        '''An override of the default logout that also closes the webserver'''
         try:
             await self.webserver.cleanup()
         except Exception as e:
             print("Error with closing previous server: ", e)
-        await self.close()
-
-
-    async def restart_webserver(self, *imports):
-        '''
-        Stops the current running webserver and starts a new one
-
-        Args:
-            *imports: str
-                A list of modules to import that contain a "routes" attribute
-        '''
-
-        try:
-            await self.webserver.cleanup()
-        except Exception as e:
-            print("Error with closing previous server: ", e)
-
-        # Make and link all the relevant options
-        app = Application(loop=self.loop)
-        for i in imports:
-            x = import_module(i)
-            app.add_routes(x.routes)
-        app['bot'] = self
-
-        # Run the site
-        self.webserver = AppRunner(app)
-        await self.webserver.setup()
-        site = TCPSite(self.webserver, self.commandline_args.host, self.commandline_args.port)
-        await site.start()
-
-        print(f"Server started: http://{self.commandline_args.host}:{self.commandline_args.port}/")
+        await super().logout()
