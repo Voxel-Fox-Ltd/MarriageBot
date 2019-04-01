@@ -31,17 +31,17 @@ class DatabasePoolHolder(object):
 class DatabaseConnection(object):
 
     config = None
+    pool = None
 
 
-    def __init__(self, connection:Connection=None, parent:DatabasePoolHolder=None):
+    def __init__(self, connection:Connection=None):
         self.conn = connection
-        self.parent = parent
 
 
     @classmethod
-    async def create_pool(cls):
-        pool = await _create_pool(**cls.config)
-        return DatabasePoolHolder(pool)
+    async def create_pool(cls, config:dict):
+        cls.config = config
+        cls.pool = await _create_pool(**config)
 
 
     async def connect(self):
@@ -53,17 +53,12 @@ class DatabaseConnection(object):
 
 
     async def __aenter__(self):
-        if not self.conn:
-            self.conn = await _connect(**self.config)
+        self.conn = await self.pool.acquire()
         return self
 
 
     async def __aexit__(self, exc_type, exc, tb):
-        if self.parent:
-            await self.parent.release(self.conn)
-        else:
-            await self.conn.close()
-        self.conn = None
+        await self.pool.release(self.pool)
 
 
     async def __call__(self, sql:str, *args):

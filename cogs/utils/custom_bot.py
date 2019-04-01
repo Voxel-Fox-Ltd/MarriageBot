@@ -52,7 +52,6 @@ class CustomBot(AutoShardedBot):
 
         # Allow database connections like this
         self.database = DatabaseConnection
-        self.database.config = self.config['database']
 
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
@@ -248,10 +247,11 @@ class CustomBot(AutoShardedBot):
         self.run(self.config['token'])
 
 
-    async def start_all(self):
+    async def start(self):
         self.startup_method = await self.startup()
         self.deletion_method = await self.delete_loop()
-        await self.start(self.config['token'])
+        await self.database.create_pool()
+        await super().start(self.config['token'])
 
 
     async def logout(self):

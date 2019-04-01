@@ -69,7 +69,7 @@ if __name__ == '__main__':
     # loop.set_debug(True)
 
     logger.info("Starting bot...")
-    bot.loop.create_task(bot.start_all())
+    loop.create_task(bot.start())
 
     # Start the server unless I said otherwise
     if not args.noserver:
