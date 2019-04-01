@@ -230,7 +230,7 @@ class Information(Cog):
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command(aliases=['familytree'], enabled=False)
+    @command(aliases=['familytree'], enabled=True)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
@@ -248,7 +248,7 @@ class Information(Cog):
             raise e
 
 
-    @command(hidden=True, enabled=False)
+    @command(hidden=True, enabled=True)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:Member=None):
@@ -262,7 +262,7 @@ class Information(Cog):
             raise e
 
 
-    @command(aliases=['fulltree', 'ft', 'gt'], enabled=False)
+    @command(aliases=['fulltree', 'ft', 'gt'], enabled=True)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):
