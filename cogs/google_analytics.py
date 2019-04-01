@@ -11,7 +11,7 @@ class GoogleAnalytics(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
-        self.session = ClientSession(loop=bot.loop)
+        self.bot.session = ClientSession(loop=bot.loop)
         self.url = 'https://www.google-analytics.com/collect'
         self.base_params = {
             "v": "1",
@@ -40,10 +40,6 @@ class GoogleAnalytics(Cog):
         '''
 
 
-    def cog_unload(self):
-        self.session.close()
-
-
     @Cog.listener()
     async def on_command(self, ctx:Context):
         '''
@@ -69,7 +65,7 @@ class GoogleAnalytics(Cog):
                 "dt": ctx.command.name,
                 # "cc": ctx.message.content,
             })
-        async with self.session.get(self.url, params=params) as r:
+        async with self.bot.session.get(self.url, params=params) as r:
             pass
             # print(r.url)
 
@@ -87,7 +83,7 @@ class GoogleAnalytics(Cog):
             "cs": f"{guild.id}",
             "dt": "GUILD_ADD",
         })
-        async with self.session.get(self.url, params=params) as r:
+        async with self.bot.session.get(self.url, params=params) as r:
             pass
 
 
@@ -104,7 +100,7 @@ class GoogleAnalytics(Cog):
             "cs": f"{guild.id}",
             "dt": "GUILD_REMOVE",
         })
-        async with self.session.get(self.url, params=params) as r:
+        async with self.bot.session.get(self.url, params=params) as r:
             pass
 
 

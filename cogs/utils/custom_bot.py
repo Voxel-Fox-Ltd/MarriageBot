@@ -50,10 +50,6 @@ class CustomBot(AutoShardedBot):
         self.commandline_args = commandline_args
         self.bad_argument = compile(r'(User|Member) "(.*)" not found')
 
-        # Add webserver stuff so I can come back to it later
-        self.webserver = None
-        self.ssl_webserver = None
-
         # Aiohttp session for use in DBL posting
         self.session = ClientSession(loop=self.loop)
 
@@ -267,8 +263,6 @@ class CustomBot(AutoShardedBot):
     async def start(self):
         '''Starts up the bot and whathaveyou'''
 
-        logger.debug("Creating database pool")
-        await self.database.create_pool(self.config['database'])
         logger.debug("Running startup method") 
         self.startup_method = self.loop.create_task(self.startup())
         logger.debug("Starting delete loop")
@@ -276,11 +270,11 @@ class CustomBot(AutoShardedBot):
         logger.debug("Running original D.py start method")
         await super().start(self.config['token'])
 
-
+    
     async def logout(self):
-        '''An override of the default logout that also closes the webserver'''
-        try:
-            await self.webserver.cleanup()
-        except Exception as e:
-            print("Error with closing previous server: ", e)
+        '''Logs out the bot and all of its started processes'''
+
+        logger.debug("Closing aiohttp ClientSession")
+        await self.session.close()
+        logger.debug("Running original D.py logout method")
         await super().logout()

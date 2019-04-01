@@ -7,14 +7,14 @@ from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.database import DatabaseConnection
 from website.api import routes as api_routes
 
-logging.basicConfig(level=logging.INFO)
-# logging.getLogger('discord').setLevel(logging.INFO)
+logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
+logging.getLogger('discord').setLevel(logging.WARNING)
 logging.getLogger('marriagebot-db').setLevel(logging.INFO)
-
 logger = logging.getLogger('marriagebot')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 # Parse arguments
@@ -70,10 +70,17 @@ if __name__ == '__main__':
     loop = bot.loop 
     # loop.set_debug(True)
 
+
+
+    logger.info("Creating database pool")
+    loop.run_until_complete(DatabaseConnection.create_pool(bot.config['database']))
+
     logger.info("Starting bot...")
     loop.create_task(bot.start())
 
     # Start the server unless I said otherwise
+    webserver = None
+    ssl_webserver = None
     if not args.noserver:
 
         # HTTP server
@@ -83,7 +90,6 @@ if __name__ == '__main__':
         webserver = TCPSite(application, host=args.host, port=args.port)
 
         # SSL server
-        ssl_webserver = None
         try:
             if not args.nossl:
                 ssl_context = SSLContext()
@@ -106,17 +112,20 @@ if __name__ == '__main__':
 
     # This is the forever loop
     try:
+        logger.info("Running asyncio loop forever method")
         loop.run_forever()
     except KeyboardInterrupt: 
-        pass
-
-    loop.run_until_complete(bot.logout())
-
-    # Close webservers
-    if bot.webserver:
-        loop.run_until_complete(bot.webserver.cleanup())
-    if bot.ssl_webserver:
-        loop.run_until_complete(bot.ssl_webserver.cleanup())
-
-    # Close the asyncio loop
-    loop.close()
+        logger.info("Logging out bot")
+        loop.run_until_complete(bot.logout())
+        if webserver:
+            logger.info("Closing HTTP server")
+            loop.run_until_complete(webserver.cleanup())
+        if ssl_webserver:
+            logger.info("Closing HTTPS server")
+            loop.run_until_complete(ssl_webserver.cleanup())
+        logger.info("Closing database pool")
+        loop.run_until_complete(DatabaseConnection.pool.close())
+    finally:
+        # Close the asyncio loop
+        logger.info("Closing asyncio loop")
+        loop.close()
