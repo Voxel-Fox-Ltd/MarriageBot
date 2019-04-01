@@ -9,10 +9,12 @@ from discord.ext.commands import when_mentioned_or
 from cogs.utils.custom_bot import CustomBot
 from website.api import routes as api_routes
 
-logging.basicConfig(level=logging.WARNING)
-# logger = logging.getLogger('discord')
-# logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
+# logging.getLogger('discord').setLevel(logging.INFO)
+logging.getLogger('marriagebot-db').setLevel(logging.INFO)
+
 logger = logging.getLogger('marriagebot')
+logger.setLevel(logging.DEBUG)
 
 
 # Parse arguments
@@ -75,7 +77,7 @@ if __name__ == '__main__':
     if not args.noserver:
 
         # HTTP server
-        logger.info("Starting server...")
+        logger.info("Creating webserver...")
         application = AppRunner(app)
         loop.run_until_complete(application.setup())
         webserver = TCPSite(application, host=args.host, port=args.port)
@@ -98,23 +100,23 @@ if __name__ == '__main__':
             loop.run_until_complete(ssl_webserver.start())
             logger.info(f"Server started - http://{args.host}:443/")
 
-        # Store stuff in the bot for later
-        bot.webserver = webserver
-        bot.ssl_webserver = ssl_webserver
+        # # Store stuff in the bot for later
+        # bot.webserver = webserver
+        # bot.ssl_webserver = ssl_webserver
 
     # This is the forever loop
     try:
         loop.run_forever()
-    except (Exception, KeyboardInterrupt): 
+    except KeyboardInterrupt: 
         pass
-    finally:
-        loop.run_until_complete(bot.logout())
 
-        # Close webservers
-        if bot.webserver:
-            loop.run_until_complete(bot.webserver.cleanup())
-        if bot.ssl_webserver:
-            loop.run_until_complete(bot.ssl_webserver.cleanup())
+    loop.run_until_complete(bot.logout())
+
+    # Close webservers
+    if bot.webserver:
+        loop.run_until_complete(bot.webserver.cleanup())
+    if bot.ssl_webserver:
+        loop.run_until_complete(bot.ssl_webserver.cleanup())
 
     # Close the asyncio loop
     loop.close()

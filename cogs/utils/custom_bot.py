@@ -4,6 +4,7 @@ from importlib import import_module
 from asyncio import sleep, create_subprocess_exec
 from glob import glob
 from re import compile
+from logging import getLogger
 
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
@@ -16,6 +17,9 @@ from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.removal_dict import RemovalDict
 from cogs.utils.custom_context import CustomContext
+
+
+logger = getLogger('marriagebot')
 
 
 def get_prefix(bot, message:Message):
@@ -90,24 +94,29 @@ class CustomBot(AutoShardedBot):
             customisations = await db('SELECT * FROM customisation')
         
         # Cache all into objects
+        logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
             FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'])
+        logger.debug(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
             parent = FamilyTreeMember.get(i['parent_id'])
             parent._children.append(i['child_id'])
             child = FamilyTreeMember.get(i['child_id'])
             child._parent = i['parent_id']
+        logger.debug(f"Caching {len(customisations)} customisations from customisations")
         for i in customisations:
             CustomisedTreeUser(**i)
 
         # Pick up the blacklisted guilds from the db
         async with self.database() as db:
             blacklisted = await db('SELECT * FROM blacklisted_guilds')
+        logger.debug(f"Caching {len(blacklisted)} blacklisted guilds")
         self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
         # Pick up the blocked users
         async with self.database() as db:
             blocked = await db('SELECT * FROM blocked_user')
+        logger.debug(f"Caching {len(blocked)} blocked users")
         for user in blocked:
             x = self.blocked_users.get(user['user_id'], list())
             x.append(user['blocked_user_id'])
@@ -119,17 +128,21 @@ class CustomBot(AutoShardedBot):
         # Grab the command prefixes per guild
         async with self.database() as db:
             settings = await db('SELECT * FROM guild_settings')
+        logger.debug(f"Caching {len(settings)} guild settings")
         for guild_setting in settings:
             self.guild_prefixes[guild_setting['guild_id']] = guild_setting['prefix']
 
         # Remove anyone who's empty or who the bot can't reach
+        count = 0
         async with self.database() as db:
             for user_id, ftm in FamilyTreeMember.all_users.copy().items():
                 if user_id == None or ftm == None:
                     continue
                 if self.get_user(user_id) == None:
+                    count += 1
                     await db.destroy(user_id)
                     ftm.destroy()
+        logger.debug(f"Destroyed {count} unreachable users")
 
         # And update DBL
         await self.post_guild_count()        
@@ -155,7 +168,9 @@ class CustomBot(AutoShardedBot):
 
         ext = glob('cogs/[!_]*.py')
         rand = glob('cogs/utils/random_text/[!_]*.py')
-        return [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
+        extensions = [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
+        logger.debug("Getting all extensions: " + str(extensions))
+        return extensions
 
 
     def load_all_extensions(self):
@@ -163,22 +178,24 @@ class CustomBot(AutoShardedBot):
         Loads all extensions from .get_extensions()
         '''
 
-        print('Unloading extensions... ')
+        logger.debug('Unloading extensions... ')
         for i in self.get_extensions():
-            print(' * ' + i + '... ', end='')
+            log_string = f' * {i}... '
             try:
                 self.unload_extension(i)
-                print('success')
+                log_string += 'sucess'
             except Exception as e:
-                print(e)
-        print('Loading extensions... ')
+                log_string += str(e)
+            logger.debug(log_string)
+        logger.debug('Loading extensions... ')
         for i in self.get_extensions():
-            print(' * ' + i + '... ', end='')
+            log_string = f' * {i}... '
             try:
                 self.load_extension(i)
-                print('success')
+                log_string += 'sucess'
             except Exception as e:
-                print(e)
+                log_string += str(e)
+            logger.debug(log_string)
 
 
     async def set_default_presence(self):
@@ -187,6 +204,7 @@ class CustomBot(AutoShardedBot):
         '''
         
         # Update presence
+        logger.debug("Setting default bot presence")
         presence_text = self.config['presence_text']
         if self.shard_count > 1:
             for i in range(self.shard_count):
@@ -205,6 +223,7 @@ class CustomBot(AutoShardedBot):
         # Only post if there's actually a DBL token set
         if not self.config.get('dbl_token'):
             return
+        logger.debug("Sending POST request to DBL")
 
         url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
         json = {
@@ -223,6 +242,7 @@ class CustomBot(AutoShardedBot):
         '''A loop that runs every hour, deletes all files in the tree storage directory'''
         await self.wait_until_ready()
         while not self.is_closed: 
+            logger.debug("Deleting all residual tree files")
             await create_subprocess_exec('rm', f'{self.config["tree_file_location"]}/*', loop=self.bot.loop)
             await sleep(60*60)
 
@@ -235,6 +255,7 @@ class CustomBot(AutoShardedBot):
 
 
     def reload_config(self):
+        logger.debug("Reloading config")
         with open(self.config_file) as a:
             self.config = load(a)
 
@@ -244,7 +265,15 @@ class CustomBot(AutoShardedBot):
 
 
     async def start(self):
+        '''Starts up the bot and whathaveyou'''
+
+        logger.debug("Creating database pool")
         await self.database.create_pool(self.config['database'])
+        logger.debug("Running startup method") 
+        self.startup_method = self.loop.create_task(self.startup())
+        logger.debug("Starting delete loop")
+        self.deletion_method = self.loop.create_task(self.delete_loop())
+        logger.debug("Running original D.py start method")
         await super().start(self.config['token'])
 
 

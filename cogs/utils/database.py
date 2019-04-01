@@ -1,5 +1,6 @@
 from random import choices
 from asyncio import create_subprocess_exec, get_event_loop
+from logging import getLogger
 
 from discord import Member
 from asyncpg import connect as _connect, Connection, create_pool as _create_pool
@@ -7,6 +8,7 @@ from asyncpg.pool import Pool
 
 
 RANDOM_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_'
+logger = getLogger('marriagebot-db')
 
 
 
@@ -43,6 +45,7 @@ class DatabaseConnection(object):
         '''
 
         # Runs the SQL
+        logger.debug(f"Running SQL: {sql} ({args!s})")
         x = await self.conn.fetch(sql, *args)
 
         # If it got something, return the dict, else None
