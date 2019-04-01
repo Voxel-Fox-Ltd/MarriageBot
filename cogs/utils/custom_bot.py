@@ -47,7 +47,8 @@ class CustomBot(AutoShardedBot):
         self.bad_argument = compile(r'(User|Member) "(.*)" not found')
 
         # Add webserver stuff so I can come back to it later
-        self.web_runner = None
+        self.webserver = None
+        self.ssl_webserver = None
 
         # Allow database connections like this
         self.database = DatabaseConnection
@@ -258,7 +259,7 @@ class CustomBot(AutoShardedBot):
         '''
 
         try:
-            await self.web_runner.cleanup()
+            await self.webserver.cleanup()
         except Exception as e:
             print("Error with closing previous server: ", e)
         await self.close()
@@ -274,7 +275,7 @@ class CustomBot(AutoShardedBot):
         '''
 
         try:
-            await self.web_runner.cleanup()
+            await self.webserver.cleanup()
         except Exception as e:
             print("Error with closing previous server: ", e)
 
@@ -286,9 +287,9 @@ class CustomBot(AutoShardedBot):
         app['bot'] = self
 
         # Run the site
-        self.web_runner = AppRunner(app)
-        await self.web_runner.setup()
-        site = TCPSite(self.web_runner, self.commandline_args.host, self.commandline_args.port)
+        self.webserver = AppRunner(app)
+        await self.webserver.setup()
+        site = TCPSite(self.webserver, self.commandline_args.host, self.commandline_args.port)
         await site.start()
 
         print(f"Server started: http://{self.commandline_args.host}:{self.commandline_args.port}/")

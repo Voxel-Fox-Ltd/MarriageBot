@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from ssl import SSLContext
+import logging
 
 from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Status
@@ -8,42 +9,19 @@ from discord.ext.commands import when_mentioned_or
 from cogs.utils.custom_bot import CustomBot
 from website.api import routes as api_routes
 
-import logging
 logging.basicConfig(level=logging.WARNING)
 # logger = logging.getLogger('discord')
 # logger.setLevel(logging.DEBUG)
+logger = logging.getLogger('marriagebot')
 
 
 # Parse arguments
 parser = ArgumentParser()
-parser.add_argument(
-    "config_file", 
-    help="The configuration for the bot."
-)
-parser.add_argument(
-    "-n", "--noserver", 
-    action="store_true", 
-    default=False, 
-    help="Starts the bot with no web server."
-)
-parser.add_argument(
-    "-ns", "--nossl", 
-    action="store_true", 
-    default=False, 
-    help="Starts the bot with no SSL web server."
-)
-parser.add_argument(
-    "-i", "--host", 
-    type=str,
-    default='0.0.0.0', 
-    help="The host IP to run the webserver on."
-)
-parser.add_argument(
-    "-p", "--port", 
-    type=int,
-    default=80, 
-    help="The port to run the webserver on."
-)
+parser.add_argument("config_file", help="The configuration for the bot.")
+parser.add_argument("--noserver", action="store_true", default=False, help="Starts the bot with no web server.")
+parser.add_argument("--nossl", action="store_true", default=False, help="Starts the bot with no SSL web server.")
+parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to run the webserver on.")
+parser.add_argument("--port", type=int, default=80, help="The port to run the webserver on.")
 args = parser.parse_args()
 
 
@@ -57,7 +35,7 @@ bot = CustomBot(
 )
 
 
-# Create website
+# Create website object - don't start based on argv
 app = Application(loop=bot.loop)
 app.add_routes(api_routes)
 app['bot'] = bot
@@ -70,13 +48,13 @@ async def on_ready():
     Method is used to set the presence and load cogs
     '''
 
-    print('Bot connected:')
-    print(f'\t{bot.user}')
-    print(f'\t{bot.user.id}')
+    logger.info('Bot connected:')
+    logger.info(f'\t{bot.user}')
+    logger.info(f'\t{bot.user.id}')
 
-    print('Loading extensions... ')
+    logger.info('Loading extensions... ')
     bot.load_all_extensions()
-    print('Bot loaded.')
+    logger.info('Bot loaded.')
 
 
 if __name__ == '__main__':
@@ -87,27 +65,39 @@ if __name__ == '__main__':
     loop = bot.loop 
     # loop.set_debug(True)
 
-    print("Starting bot...")
+    logger.info("Starting bot...")
     bot.loop.create_task(bot.start_all())
 
+    # Start the server unless I said otherwise
     if not args.noserver:
-        print("Starting server...")
-        web_runner = AppRunner(app)
-        loop.run_until_complete(web_runner.setup())
-        site = TCPSite(web_runner, host=args.host, port=args.port)
-        loop.run_until_complete(site.start())
-        print(f"Server started: http://{args.host}:{args.port}/")
 
-        # Start SSL server
-        if not args.nossl:
-            ssl_context = SSLContext()
-            ssl_context.load_cert_chain(**bot.config['ssl_context'])
-            ssl_site = TCPSite(web_runner, host=args.host, port=443, ssl_context=ssl_context)
-            loop.run_until_complete(ssl_site.start())
-            print(f"Server started: http://{args.host}:443/")
+        # HTTP server
+        logger.info("Starting server...")
+        application = AppRunner(app)
+        loop.run_until_complete(application.setup())
+        webserver = TCPSite(application, host=args.host, port=args.port)
+
+        # SSL server
+        ssl_webserver = None
+        try:
+            if not args.nossl:
+                ssl_context = SSLContext()
+                ssl_context.load_cert_chain(**bot.config['ssl_context'])
+                ssl_webserver = TCPSite(application, host=args.host, port=443, ssl_context=ssl_context)
+        except Exception as e:
+            ssl_webserver = None 
+            logger.exception("Could not make SSL webserver")
+
+        # Start servers
+        loop.run_until_complete(webserver.start())
+        logger.info(f"Server started - http://{args.host}:{args.port}/")
+        if ssl_webserver:
+            loop.run_until_complete(ssl_webserver.start())
+            logger.info(f"Server started - http://{args.host}:443/")
 
         # Store stuff in the bot for later
-        bot.web_runner = web_runner
+        bot.webserver = webserver
+        bot.ssl_webserver = ssl_webserver
 
     # This is the forever loop
     try:
@@ -115,16 +105,13 @@ if __name__ == '__main__':
     except (Exception, KeyboardInterrupt): 
         pass
     finally:
-        # Logout the bot
         loop.run_until_complete(bot.logout())
 
-        if not args.noserver:
-            # Try and gracefully close the server
-            try:
-                loop.run_until_complete(bot.web_runner.cleanup())
-            except Exception as e:
-                # Maybe I restarted the server via the bot at runtime
-                print(e)
+        # Close webservers
+        if bot.webserver:
+            loop.run_until_complete(bot.webserver.cleanup())
+        if bot.ssl_webserver:
+            loop.run_until_complete(bot.ssl_webserver.cleanup())
 
-    # Close the loop
+    # Close the asyncio loop
     loop.close()
