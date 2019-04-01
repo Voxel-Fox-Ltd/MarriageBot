@@ -9,24 +9,6 @@ from asyncpg.pool import Pool
 RANDOM_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_'
 
 
-class DatabasePoolHolder(object):
-
-    def __init__(self, pool:Pool):
-        self.pool = pool
-
-
-    async def acquire(self):
-        conn = await self.pool.acquire()
-        return DatabaseConnection(conn, self)
-
-
-    async def __aenter__(self):
-        return self 
-
-    
-    async def __aexit__(self, exc_type, exc, tb):
-        await self.pool.close()
-
 
 class DatabaseConnection(object):
 
@@ -44,21 +26,15 @@ class DatabaseConnection(object):
         cls.pool = await _create_pool(**config)
 
 
-    async def connect(self):
-        self.conn = await _connect(**self.config)
-
-
-    async def close(self):
-        await self.conn.close()
-
-
     async def __aenter__(self):
         self.conn = await self.pool.acquire()
         return self
 
 
     async def __aexit__(self, exc_type, exc, tb):
-        await self.pool.release(self.pool)
+        await self.pool.release(self.conn)
+        self.conn = None
+        del self
 
 
     async def __call__(self, sql:str, *args):

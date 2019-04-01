@@ -244,9 +244,7 @@ class CustomBot(AutoShardedBot):
 
 
     async def start(self):
-        self.startup_method = await self.startup()
-        self.deletion_method = await self.delete_loop()
-        await self.database.create_pool()
+        await self.database.create_pool(self.config['database'])
         await super().start(self.config['token'])
 
 
