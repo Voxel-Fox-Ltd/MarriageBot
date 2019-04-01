@@ -113,7 +113,6 @@ class CustomBot(AutoShardedBot):
 
         # Now wait for the stuff you need to actually be online for
         await self.wait_until_ready()
-        await self.set_default_presence()
 
         # Grab the command prefixes per guild
         async with self.database() as db:

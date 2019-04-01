@@ -54,6 +54,9 @@ async def on_ready():
 
     logger.info('Loading extensions... ')
     bot.load_all_extensions()
+    
+    logger.info("Setting activity to default")
+    await bot.set_default_presence()
     logger.info('Bot loaded.')
 
 
