@@ -56,8 +56,8 @@ class CustomBot(AutoShardedBot):
 
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
-        self.startup_method = self.loop.create_task(self.startup())
-        self.deletion_method = self.loop.create_task(self.delete_loop())
+        self.startup_method = None
+        self.deletion_method = None
 
         # Add a cache for proposing users
         self.proposal_cache = RemovalDict()
@@ -249,6 +249,8 @@ class CustomBot(AutoShardedBot):
 
 
     async def start_all(self):
+        self.startup_method = await self.startup()
+        self.deletion_method = await self.delete_loop()
         await self.start(self.config['token'])
 
 
