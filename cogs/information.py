@@ -11,7 +11,7 @@ from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
-from cogs.utils.checks.is_voter import is_voter_predicate
+from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
@@ -21,10 +21,12 @@ class Information(Cog):
     Handles all marriage/divorce/etc commands
     '''
 
+    VOTER_TREE_COOLDOWN_TIME = 30.0  # Seconds
+    DONATOR_TREE_COOLDOWN_TIME = 10.0
+
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
-        self.voter_tree_cooldown_time = 10.0
 
 
     async def cog_command_error(self, ctx:Context, error):
@@ -50,18 +52,27 @@ class Information(Cog):
                 await ctx.reinvoke()
             # Possible bypass for voter
             elif ctx.command.name in ['tree', 'globaltree']:
-                if is_voter_predicate(ctx) and error.retry_after <= (error.cooldown.per - self.voter_tree_cooldown_time):
-                    await ctx.reinvoke()
+                if is_voter_predicate(ctx) and error.retry_after <= (error.cooldown.per - self.VOTER_TREE_COOLDOWN_TIME):
                     ctx.command.reset_cooldown(ctx)
-                elif is_voter_predicate(ctx) and error.retry_after > (error.cooldown.per - self.voter_tree_cooldown_time):
-                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.voter_tree_cooldown_time} seconds`, for you, since you're a voter) per server. You may use this again in `{(error.retry_after - (error.cooldown.per - self.voter_tree_cooldown_time)):.2f} seconds`.")
+                    await ctx.invoke(ctx.command, *ctx.args, **ctx.kwargs)
+                elif is_voter_predicate(ctx) and error.retry_after > (error.cooldown.per - self.VOTER_TREE_COOLDOWN_TIME):
+                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.VOTER_TREE_COOLDOWN_TIME} seconds`, for you, since you're a voter) per server. You may use this again in `{(error.retry_after - (error.cooldown.per - self.VOTER_TREE_COOLDOWN_TIME)):.2f} seconds`.")
                 else:
-                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.voter_tree_cooldown_time} seconds`, if you `m!vote`) per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.VOTER_TREE_COOLDOWN_TIME} seconds`, if you `m!vote`) per server. You may use this again in `{error.retry_after:.2f} seconds`.")
                     # await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             
             # Default output
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return
+
+        # Voter
+        elif isinstance(error, IsNotVoter):
+            # Bypass for owner
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(f"You need to vote on DBL (`{ctx.prefix}vote`) to be able to run this command.")
             return
     
         # Argument conversion error
@@ -265,6 +276,7 @@ class Information(Cog):
 
     @command(hidden=True, enabled=True)
     @can_send_files()
+    @is_voter()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:Member=None):
         '''
