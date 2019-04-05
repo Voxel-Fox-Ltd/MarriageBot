@@ -70,6 +70,9 @@ class CustomBot(AutoShardedBot):
 
         # Dictionary of custom prefixes
         self.guild_prefixes = {}  # guild_id: prefix
+
+        # See who voted for the bot and when
+        self.dbl_votes = {}  # uid: timestamp (of last vote)
         
         # Add a cooldown to help
         cooldown(1, 5, BucketType.user)(self.get_command('help'))
@@ -80,25 +83,35 @@ class CustomBot(AutoShardedBot):
         Resets and fills the FamilyTreeMember cache with objects
         '''
 
-        # Cache all users for easier tree generation
+        # Remove caches
+        logger.debug("Clearing caches")
         FamilyTreeMember.all_users = {None: None}
+        CustomisedTreeUser.all_users.clear()
+        self.blacklisted_guilds.clear() 
+        self.guild_prefixes.clear() 
+        self.dbl_votes.clear() 
+        self.blocked_users.clear() 
 
-        # Get all from database
+        # Get family data from database
         async with self.database() as db:
             partnerships = await db('SELECT * FROM marriages WHERE valid=TRUE')
             parents = await db('SELECT * FROM parents')
             customisations = await db('SELECT * FROM customisation')
         
-        # Cache all into objects
+        # Cache the family data - partners
         logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
             FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'])
+
+        # - children
         logger.debug(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
             parent = FamilyTreeMember.get(i['parent_id'])
             parent._children.append(i['child_id'])
             child = FamilyTreeMember.get(i['child_id'])
             child._parent = i['parent_id']
+
+        # - tree customisations
         logger.debug(f"Caching {len(customisations)} customisations from customisations")
         for i in customisations:
             CustomisedTreeUser(**i)
@@ -118,15 +131,23 @@ class CustomBot(AutoShardedBot):
             x.append(user['blocked_user_id'])
             self.blocked_users[user['user_id']] = x
 
-        # Now wait for the stuff you need to actually be online for
-        await self.wait_until_ready()
-
         # Grab the command prefixes per guild
         async with self.database() as db:
             settings = await db('SELECT * FROM guild_settings')
         logger.debug(f"Caching {len(settings)} guild settings")
         for guild_setting in settings:
             self.guild_prefixes[guild_setting['guild_id']] = guild_setting['prefix']
+
+        # Grab the last vote times of each user 
+        async with self.database() as db:
+            votes = await db('SELECT * FROM dbl_votes')
+        logger.debug(f"Caching {len(votes)} DBL votes")
+        for v in votes:
+            self.dbl_votes[v['user_id']] = v['timestamp']
+
+        # Wait for the bot to cache users before continuing
+        logger.debug("Waiting until ready before completing startup method.")
+        await self.wait_until_ready()
 
         # Remove anyone who's empty or who the bot can't reach
         count = 0
@@ -149,9 +170,9 @@ class CustomBot(AutoShardedBot):
         await self.invoke(ctx)
 
 
-    def get_uptime(self):
+    def get_uptime(self) -> float:
         '''
-        Gets the uptime of the bot
+        Gets the uptime of the bot in seconds
         '''
 
         return (dt.now() - self.startup_time).total_seconds()

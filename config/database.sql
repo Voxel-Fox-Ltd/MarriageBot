@@ -73,3 +73,11 @@ CREATE TABLE blocked_user(
     blocked_user_id BIGINT,
     PRIMARY KEY (user_id, blocked_user_id)
 );
+-- A user and how they're blocked ie user_id is the person who blocks blocked_user_id
+
+
+CREATE TABLE dbl_votes(
+    user_id BIGINT PRIMARY KEY,
+    timestamp TIMESTAMP
+);
+-- A table to track the last time a user voted for the bot

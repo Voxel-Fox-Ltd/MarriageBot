@@ -1,4 +1,5 @@
 from json import dumps
+from datetime import datetime as dt
 
 from aiohttp.web import Response, RouteTableDef, Request
 
@@ -125,37 +126,49 @@ async def webhook_handler(request:Request):
         text=dumps({"success": True}),
         content_type="application/json"
     )
-    failure = Response(
-        text=dumps({"success": False}),
+    failure = lambda x: Response(
+        text=dumps({"success": False, **x}),
         content_type="application/json"
     )
     try:
         x = await request.json()
     except Exception:
-        return failure
+        return failure({'reason': 'No JSON response'})
 
     # See if it's all valid
     if 'bot' in x and 'user' in x and 'type' in x:
         pass 
     else:
-        return failure  # No valid points
+        return failure({'reason': 'Invalid request params'}) # No valid points
     try:
-        if int(x['bot']) != bot.user.id:
-            return failure
+        if int(x['bot']) not in [bot.user.id, 488227732057227265]:
+            return failure({'reason': 'Invalid bot ID'})
     except ValueError:
         # Bot ID wasn't an integer
-        return failure
+        return failure({'reason': 'Invalid bot ID'})
     try:
         user = bot.get_user(int(x['user']))
     except ValueError:
         # User ID wasn't an integer
-        return failure
+        return failure({'reason': 'Invalid user ID'})
     if x['type'] not in ['upvote', 'test']:
-        return failure
+        return failure({'reason': 'Invalid request type'})
 
     # Send proper thanks to the user
-    if x['type'] == 'upvote':
-        await user.send("Thank you for upvoting MarriageBot!")
-    elif x['type'] == 'test':
-        await user.send("Thanks for the text ping boss.")
+    try:
+        if x['type'] == 'upvote':
+            await user.send("Thank you for upvoting MarriageBot!")
+        elif x['type'] == 'test':
+            await user.send("Thanks for the text ping boss.")
+    except Exception:
+        # Couldn't send them a message oops
+        pass 
+
+    # Database it up
+    bot.dbl_votes[user.id] = dt.now()
+    async with bot.database() as db:
+        try:
+            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user.id, bot.dbl_votes[user.id])
+        except Exception as e:
+            await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user.id, bot.dbl_votes[user.id])
     return success

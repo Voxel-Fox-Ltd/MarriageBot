@@ -11,6 +11,7 @@ from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
+from cogs.utils.checks.is_voter import is_voter_predicate
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
@@ -23,6 +24,7 @@ class Information(Cog):
     def __init__(self, bot:CustomBot):
         self.bot = bot
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
+        self.voter_tree_cooldown_time = 10.0
 
 
     async def cog_command_error(self, ctx:Context, error):
@@ -43,8 +45,21 @@ class Information(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
+            # Bypass for owner
             if ctx.author.id in self.bot.config['owners']:
                 await ctx.reinvoke()
+            # Possible bypass for voter
+            elif ctx.command.name in ['tree', 'globaltree']:
+                if is_voter_predicate(ctx) and error.retry_after <= (error.cooldown.per - self.voter_tree_cooldown_time):
+                    await ctx.reinvoke()
+                    ctx.command.reset_cooldown(ctx)
+                elif is_voter_predicate(ctx) and error.retry_after > (error.cooldown.per - self.voter_tree_cooldown_time):
+                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.voter_tree_cooldown_time} seconds`, for you, since you're a voter) per server. You may use this again in `{(error.retry_after - (error.cooldown.per - self.voter_tree_cooldown_time)):.2f} seconds`.")
+                else:
+                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.voter_tree_cooldown_time} seconds`, if you `m!vote`) per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+                    # await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            
+            # Default output
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return

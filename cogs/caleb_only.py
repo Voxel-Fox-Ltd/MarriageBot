@@ -125,7 +125,7 @@ class CalebOnly(Cog):
         except Exception as e:
             # Oh no it caused an error
             value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            await ctx.send(f'```py\n{value}{format_exc()}\n```')
         else:
             # Oh no it didn't cause an error
             value = stdout.getvalue()
