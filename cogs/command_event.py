@@ -37,10 +37,10 @@ class CommandEvent(Cog):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             await sleep(15)
-            await self.empty_cache()
+            await self.log_cache()
 
 
-    async def empty_cache(self):
+    async def log_cache(self):
         '''
         Clears the command cache and stores everything in the database
         '''

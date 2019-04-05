@@ -81,3 +81,35 @@ CREATE TABLE dbl_votes(
     timestamp TIMESTAMP
 );
 -- A table to track the last time a user voted for the bot
+
+
+CREATE TABLE shard_logging(
+        message_create INTEGER,
+        message_edit INTEGER,
+        typing_start INTEGER,
+        message_delete INTEGER,
+        reaction_add INTEGER,
+        reaction_remove INTEGER,
+        reaction_clear INTEGER,
+        channel_create INTEGER,
+        channel_delete INTEGER,
+        channel_update INTEGER,
+        member_join INTEGER,
+        member_remove INTEGER,
+        member_update INTEGER,
+        guild_join INTEGER,
+        guild_remove INTEGER,
+        guild_update INTEGER,
+        role_create INTEGER,
+        role_delete INTEGER,
+        role_update INTEGER,
+        emoji_update INTEGER,
+        voice_state_update INTEGER,
+        member_ban INTEGER,
+        member_unban INTEGER,
+        latency DECIMAL,
+        shard_id INTEGER,
+        timestamp TIMESTAMP,
+        PRIMARY KEY (shard_id, timestamp)
+);
+-- Simple event counter as logging for shards
