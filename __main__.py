@@ -14,7 +14,7 @@ logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
 logging.getLogger('discord').setLevel(logging.WARNING)
 logging.getLogger('marriagebot-db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 # Parse arguments
@@ -50,6 +50,7 @@ async def on_ready():
     Method is used to set the presence and load cogs
     '''
 
+    logging.getLogger('discord').setLevel(logging.INFO)
     logger.info('Bot connected:')
     logger.info(f'\t{bot.user}')
     logger.info(f'\t{bot.user.id}')
@@ -69,7 +70,6 @@ if __name__ == '__main__':
 
     loop = bot.loop 
     # loop.set_debug(True)
-
 
 
     logger.info("Creating database pool")
@@ -118,11 +118,8 @@ if __name__ == '__main__':
         logger.info("Logging out bot")
         loop.run_until_complete(bot.logout())
         if webserver:
-            logger.info("Closing HTTP server")
-            loop.run_until_complete(webserver.cleanup())
-        if ssl_webserver:
-            logger.info("Closing HTTPS server")
-            loop.run_until_complete(ssl_webserver.cleanup())
+            logger.info("Closing webserver")
+            loop.run_until_complete(application.cleanup())
         logger.info("Closing database pool")
         loop.run_until_complete(DatabaseConnection.pool.close())
     finally:
