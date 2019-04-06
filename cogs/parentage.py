@@ -70,7 +70,7 @@ class Parentage(Cog):
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def makeparent(self, ctx:Context, parent:UnblockedMember):
+    async def makeparent(self, ctx:Context, *, parent:UnblockedMember):
         '''
         Picks a user that you want to be your parent
         '''
@@ -186,7 +186,7 @@ class Parentage(Cog):
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def adopt(self, ctx:Context, parent:UnblockedMember):
+    async def adopt(self, ctx:Context, *, parent:UnblockedMember):
         '''
         Adopt another user into your family
         '''
@@ -307,7 +307,7 @@ class Parentage(Cog):
 
     @command(aliases=['abort'])
     @cooldown(1, 5, BucketType.user)
-    async def disown(self, ctx:Context, child:User):
+    async def disown(self, ctx:Context, *, child:User):
         '''
         Lets you remove a user from being your child
         '''

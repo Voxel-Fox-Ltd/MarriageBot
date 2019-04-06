@@ -63,7 +63,7 @@ class Marriage(Cog):
 
     @command(aliases=['marry'])
     @cooldown(1, 5, BucketType.user)
-    async def propose(self, ctx:Context, user:UnblockedMember):
+    async def propose(self, ctx:Context, *, user:UnblockedMember):
         '''
         Lets you propose to another Discord user
         '''
