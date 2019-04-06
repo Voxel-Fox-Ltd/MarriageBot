@@ -160,7 +160,8 @@ class CalebOnly(Cog):
             self.bot.load_extension(cog_name)
         except ExtensionAlreadyLoaded:
             try:
-                self.bot.reload_extension(cog_name)
+                self.bot.unload_extension(cog_name)
+                self.bot.load_extension(cog_name)
             except Exception as e:
                 await ctx.send('```py\n' + format_exc() + '```')
                 return
