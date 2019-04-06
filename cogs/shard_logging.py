@@ -127,7 +127,8 @@ class ShardLogging(Cog):
     async def on_raw_message_edit(self, payload:RawMessageUpdateEvent):
         '''Triggers when a message is edited'''
 
-        guild = self.bot.get_guild(payload.data['guild_id'])
+        try: guild = self.bot.get_guild(payload.data['guild_id'])
+        except KeyError: guild = None
         if not guild: shard_id = 0 
         else: shard_id = guild.shard_id
         self.increment(shard_id, 'message_edit')
@@ -242,7 +243,7 @@ class ShardLogging(Cog):
     async def on_guild_update(self, before:Guild, after:Guild):
         '''Triggers when a guild updates its settings'''
 
-        self.increment(guild.shard_id, 'guild_update')
+        self.increment(after.shard_id, 'guild_update')
 
 
     @Cog.listener()
