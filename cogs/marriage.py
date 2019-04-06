@@ -9,6 +9,7 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
+from cogs.utils.acceptance_check import AcceptanceCheck
 
 
 class Marriage(Cog):
@@ -19,10 +20,6 @@ class Marriage(Cog):
 
     def __init__(self, bot:CustomBot):
         self.bot = bot
-
-        # Proposal text
-        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(accept)")
-        self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
 
 
     async def cog_command_error(self, ctx:Context, error):
@@ -126,28 +123,9 @@ class Marriage(Cog):
         self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'MARRIAGE')
         self.bot.proposal_cache[target.id] = ('TARGET', 'MARRIAGE')
 
-        # Make the check
-        def check(message):
-            '''
-            The check to make sure that the user is giving a valid yes/no
-            when provided with a proposal
-            '''
-            
-            if message.author.id != target.id:
-                return False
-            if message.channel.id != ctx.channel.id:
-                return False
-            c = message.content.casefold()
-            if not c:
-                return False
-            no = self.proposal_no.search(c)
-            yes = self.proposal_yes.search(c)
-            if any([yes, no]):
-                return 'NO' if no else 'YES'
-            return False
-
         # Wait for a response
         try:
+            check = AcceptanceCheck(target.id, ctx.channel.id).check
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except AsyncTimeoutError as e:
             try:
