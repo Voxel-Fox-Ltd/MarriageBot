@@ -29,18 +29,6 @@ class DisownRandomText(Cog):
         ])
 
 
-    @staticmethod
-    def invalid_target(instigator, target):
-        '''
-        '''
-
-        return choice([
-            "You should probably try adopting first...",
-            "That isn't your child, to the best of my knowledge.",
-            "Pretty sure you aren't their parent.",
-        ])
-
-
 def setup(bot:CustomBot):
     x = DisownRandomText(bot)
     bot.add_cog(x)

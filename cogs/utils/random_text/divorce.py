@@ -30,19 +30,6 @@ class DivorceRandomText(Cog):
             f"I hope you figure it out some day, but for now, you and your partner are divorced, {instigator.mention}.",
         ])
 
-
-    @staticmethod
-    def invalid_target(instigator, target):
-        '''
-        The given target isn't married to the instigator
-        '''
-
-        return choice([
-            "I don't think you can really divorce someone who isn't your spouse.",
-            "You aren't married to them. Stop trying to split people up.",
-            "It looks to me as if you're trying to divorce someone you aren't with.",
-        ])
-
     
     @staticmethod
     def invalid_instigator(instigator, target):
