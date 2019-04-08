@@ -50,7 +50,6 @@ async def on_ready():
     Method is used to set the presence and load cogs
     '''
 
-    logging.getLogger('discord').setLevel(logging.INFO)
     logger.info('Bot connected:')
     logger.info(f'\t{bot.user}')
     logger.info(f'\t{bot.user.id}')

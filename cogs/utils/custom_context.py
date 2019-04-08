@@ -6,7 +6,7 @@ from discord.ext.commands import Context
 
 class CustomContext(Context):
 
-    async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True, embed_image:bool=True):
+    async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True, embed_image:bool=True, ignore_error:bool=False):
         '''
         A custom version of Context that changes .send to embed things for me
         '''
@@ -20,10 +20,17 @@ class CustomContext(Context):
             delete_after=delete_after, 
             nonce=nonce,
         )
-        if not isinstance(self.channel, TextChannel) or embeddify is False:
-            return await original
-        elif self.channel.permissions_for(self.guild.me).value & 18432 != 18432:
-            return await original
+        no_embed = any([
+            self.channel.permissions_for(self.guild.me).value & 18432 != 18432,
+            embeddify is False,
+            not isinstance(self.channel, TextChannel),
+        ])
+        if no_embed:
+            try: 
+                await original
+            except Exception as e:
+                if not ignore_error: 
+                    raise e
 
         if embed is None and embeddify:
             # Set content
@@ -54,12 +61,16 @@ class CustomContext(Context):
             # Reset content
             content = self.bot.config.get("embed_default_text") or None
 
-        return await super().send(
-            content=content, 
-            tts=tts, 
-            embed=embed, 
-            file=file, 
-            files=files, 
-            delete_after=delete_after, 
-            nonce=nonce,
-        )
+        try:
+            await super().send(
+                content=content, 
+                tts=tts, 
+                embed=embed, 
+                file=file, 
+                files=files, 
+                delete_after=delete_after, 
+                nonce=nonce,
+            )
+        except Exception as e:
+            if not ignore_error:
+                raise e
