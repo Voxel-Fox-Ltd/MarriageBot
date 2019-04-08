@@ -15,7 +15,7 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
-from cogs.utils.removal_dict import RemovalDict
+from cogs.utils.proposal_cache import ProposalCache
 from cogs.utils.custom_context import CustomContext
 
 
@@ -62,7 +62,7 @@ class CustomBot(AutoShardedBot):
         self.deletion_method = None
 
         # Add a cache for proposing users
-        self.proposal_cache = RemovalDict()
+        self.proposal_cache = ProposalCache()
 
         # Add a list of blacklisted guilds and users
         self.blacklisted_guilds = []
