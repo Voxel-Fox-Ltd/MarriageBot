@@ -29,8 +29,7 @@ class CustomContext(Context):
             try: 
                 await original
             except Exception as e:
-                if not ignore_error: 
-                    raise e
+                if not ignore_error: raise e
 
         if embed is None and embeddify:
             # Set content
@@ -72,5 +71,4 @@ class CustomContext(Context):
                 nonce=nonce,
             )
         except Exception as e:
-            if not ignore_error:
-                raise e
+            if not ignore_error: raise e

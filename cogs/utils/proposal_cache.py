@@ -12,7 +12,7 @@ class ProposalCache(dict):
         '''Adds a user to the proposal cache'''
 
         # Grab IDs
-        if isinstace(instigator, User):
+        if isinstance(instigator, User):
             instigator = instigator.id 
         if isinstance(target, User):
             user = user.id 

@@ -32,7 +32,7 @@ class Parentage(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.author.id in [*self.bot.config['owners'], 155695168685735936] and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -72,94 +72,74 @@ class Parentage(Cog):
         Picks a user that you want to be your parent
         '''
 
+        # Set up some local variables
         instigator = ctx.author
         target = parent  # Just so "target" didn't show up in the help message
 
-        # See if either user is already being proposed to
-        if instigator.id in self.bot.proposal_cache:
-            x = self.bot.proposal_cache.get(instigator.id)
-            if x[0] == 'INSTIGATOR':
-                await ctx.send(self.bot.get_cog('MakeParentRandomText').instigator_is_instigator(instigator, target))
-            elif x[0] == 'TARGET':
-                await ctx.send(self.bot.get_cog('MakeParentRandomText').instigator_is_target(instigator, target))
-            return
-        elif target.id in self.bot.proposal_cache:
-            x = self.bot.proposal_cache.get(target.id)
-            if x[0] == 'INSTIGATOR':
-                await ctx.send(self.bot.get_cog('MakeParentRandomText').target_is_instigator(instigator, target))
-            elif x[0] == 'TARGET':
-                await ctx.send(self.bot.get_cog('MakeParentRandomText').target_is_target(instigator, target))
-            return
+        # Manage output strings
+        text_cog = self.bot.get_cog('MakeParentRandomText')
+        template = self.bot.get_cog('TextTemplate')
 
-        # Manage exclusions
-        if target.id == self.bot.user.id:
-            await ctx.send(self.bot.get_cog('MakeParentRandomText').target_is_me(instigator, target))
+        # Group the common denials
+        text = template.process(text_cog, instigator, target)
+        if text:
+            await ctx.send(text) 
             return
-        elif instigator.bot:
-            # Silently deny robots
-            return
-        elif instigator.id == target.id:
-            await ctx.send(self.bot.get_cog('MakeParentRandomText').target_is_you(instigator, target))
-            return
-
-        # See if they already have a parent
+        
+        # Grab their family tree
         await ctx.trigger_typing()
-        user_tree = FamilyTreeMember.get(instigator.id)
-        root = user_tree.get_root()
-        tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
+        instigator_tree = FamilyTreeMember.get(instigator.id)
+        target_tree = FamilyTreeMember.get(target.id)
+        family_id_list = [i.id for i in instigator_tree.span(add_parent=True, expand_upwards=True)]
 
-        if target.id in tree_id_list:
-            await ctx.send(self.bot.get_cog('MakeParentRandomText').target_is_family(instigator, target))
+        # Manage more special text restrictions
+        if target.id in family_id_list:
+            await ctx.send(text_cog.target_is_family(instigator, target))
             return
-        elif user_tree.parent:
-            await ctx.send(self.bot.get_cog('MakeParentRandomText').instigator_is_unqualified(instigator, target))
+        elif instigator_tree.parent:
+            await ctx.send(text_cog.instigator_is_unqualified(instigator, target))
             return
 
-        # No parent, send request
+        # Manage child amount
+        if len(target_tree._children) >= 30:
+            await ctx.send("You don't need more than 30 children. Please enter the chill zone.")
+            return
+
+        # Valid request
         if not target.bot:
-            await ctx.send(self.bot.get_cog('MakeParentRandomText').valid_target(instigator, target))
-        self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'MAKEPARENT')
-        self.bot.proposal_cache[target.id] = ('TARGET', 'MAKEPARENT')
+            await ctx.send(text_cog.valid_target(instigator, target))
+        self.bot.proposal_cache.add(instigator, target, 'MAKEPARENT')
 
-        # Wait for a response
+        # Wait for a response 
         try:
-            if target.bot:
-                raise KeyError
+            if target.bot: raise KeyError  # Auto-say yes
             check = AcceptanceCheck(target.id, ctx.channel.id).check
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except AsyncTimeoutError as e:
-            try:
-                await ctx.send(self.bot.get_cog('MakeParentRandomText').request_timeout(instigator, target))
-            except Exception as e:
-                # If the bot was kicked, or access revoked, for example.
-                pass
-            self.bot.proposal_cache.remove(instigator.id)
-            self.bot.proposal_cache.remove(target.id)
+            await ctx.send(text_cog.request_timeout(instigator, target), ignore_error=True)
+            self.bot.proposal_cache.remove(instigator, target)
             return
         except KeyError as e:
             response = 'YES'
+        self.bot.proposal_cache.remove(instigator, target)
 
         # Valid response recieved, see what their answer was
         if response == 'NO':
-            await ctx.send(self.bot.get_cog('MakeParentRandomText').request_denied(instigator, target))
-        elif response == 'YES':
-            async with self.bot.database() as db:
-                try:
-                    await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
-                except Exception as e:
-                    return  # Only thrown when multiple people do at once, just return
-            try:
-                await ctx.send(self.bot.get_cog('MakeParentRandomText').request_accepted(instigator, target))
-            except Exception as e:
-                pass
-            me = FamilyTreeMember.get(instigator.id)
-            me._parent = target.id 
-            them = FamilyTreeMember.get(target.id)
-            them._children.append(instigator.id)
+            await ctx.send(text_cog.request_denied(instigator, target))
+            return 
 
-        self.bot.proposal_cache.remove(instigator.id)
-        self.bot.proposal_cache.remove(target.id)
+        # They said yes - add to database
+        async with self.bot.database() as db:
+            try:
+                await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
+            except Exception as e:
+                return  # Only thrown when multiple people do at once, just return
+        await ctx.send(text_cog.request_accepted(instigator, target), ignore_error=True)
+
+        # Cache
+        instigator_tree._parent = target.id 
+        target_tree._children.append(instigator.id)
 
 
     @command()

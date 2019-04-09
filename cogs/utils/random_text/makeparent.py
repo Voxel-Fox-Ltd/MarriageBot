@@ -57,10 +57,13 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def target_is_bot(instigator, target):
+    def target_is_bot(instigator, target, give_text:bool=False):
         '''
         The instigator wants to parentify a bot
         '''
+
+        if not give_text:
+            return False  # Used for the text_template process
 
         return choice([
             f"Bots don't make _terribly_ good parents, but I'll allow it, {instigator.mention}. Have fun with your new family!",
