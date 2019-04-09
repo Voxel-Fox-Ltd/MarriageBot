@@ -5,7 +5,7 @@ from textwrap import indent
 from contextlib import redirect_stdout
 
 from aiohttp import ClientSession
-from discord import Member, Message, Activity, ActivityType, User, Status, Embed
+from discord import Member, Message, Activity, ActivityType, User, Status, Embed, File
 from discord.ext.commands import command, Context, group, NotOwner, Cog, CommandOnCooldown, ExtensionAlreadyLoaded
 from pympler import summary, muppy
 
@@ -145,7 +145,10 @@ class CalebOnly(Cog):
             # If the function did return a value
             else:
                 self._last_result = ret
-                await ctx.send(f'```py\n{value}{ret}\n```')
+                text = f'```py\n{value}{ret}\n```'
+                if len(text) > 2000:
+                    return await ctx.send(file=File(StringIO('\n'.join(text.split('\n')[1:-1])), filename='ev.txt'))
+                await ctx.send(text)
 
 
     @command(aliases=['rld'])
