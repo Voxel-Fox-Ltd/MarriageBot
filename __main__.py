@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from ssl import SSLContext
+from warnings import filterwarnings
 import logging
 
 from aiohttp.web import Application, AppRunner, TCPSite
@@ -10,12 +11,17 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection
 from website.api import routes as api_routes
 
+
+# Set up loggers
 logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
 logging.getLogger('discord').setLevel(logging.WARNING)
 logging.getLogger('marriagebot-db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
 
+# Filter warnings - specifically the one where it says I'm not awaiting a method 
+# even though I do it later
+filterwarnings('ignore', category=RuntimeWarning)
 
 # Parse arguments
 parser = ArgumentParser()
@@ -26,7 +32,6 @@ parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to 
 parser.add_argument("--port", type=int, default=80, help="The port to run the webserver on.")
 args = parser.parse_args()
 
-
 # Create bot object
 bot = CustomBot(
     config_file=args.config_file,
@@ -35,7 +40,6 @@ bot = CustomBot(
     commandline_args=args,
     case_insensitive=True,
 )
-
 
 # Create website object - don't start based on argv
 app = Application(loop=bot.loop)
@@ -104,10 +108,6 @@ if __name__ == '__main__':
         if ssl_webserver:
             loop.run_until_complete(ssl_webserver.start())
             logger.info(f"Server started - http://{args.host}:443/")
-
-        # # Store stuff in the bot for later
-        # bot.webserver = webserver
-        # bot.ssl_webserver = ssl_webserver
 
     # This is the forever loop
     try:
