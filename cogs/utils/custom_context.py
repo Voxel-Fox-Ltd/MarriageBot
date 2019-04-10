@@ -20,8 +20,10 @@ class CustomContext(Context):
             delete_after=delete_after, 
             nonce=nonce,
         )
+        try: x = self.channel.permissions_for(self.guild.me).value & 18432 != 18432
+        except AttributeError: x = False
         no_embed = any([
-            self.channel.permissions_for(self.guild.me).value & 18432 != 18432,
+            x,
             embeddify is False,
             not isinstance(self.channel, TextChannel),
         ])
