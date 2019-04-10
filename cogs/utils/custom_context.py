@@ -27,7 +27,7 @@ class CustomContext(Context):
         ])
         if no_embed:
             try: 
-                await original
+                return await original
             except Exception as e:
                 if not ignore_error: raise e
 
@@ -61,7 +61,7 @@ class CustomContext(Context):
             content = self.bot.config.get("embed_default_text") or None
 
         try:
-            await super().send(
+            return await super().send(
                 content=content, 
                 tts=tts, 
                 embed=embed, 
