@@ -1,3 +1,4 @@
+from os import getcwd
 from json import dumps
 
 from aiohttp import ClientSession
@@ -42,15 +43,8 @@ async def login(request:Request):
         return HTTPFound(location='/')
 
     # Get the bot
-    try:
-        bot = request.app['bot']
-        oauth_data = bot.config['oauth']
-    except KeyError:
-        oauth_data = {
-            "client_id": "468281173072805889",
-            "client_secret": "C_2Z0IDk3fMh2ORHAW08LkV3ZujNIMtr",
-            "redirect_uri": "http://vps.callumb.co.uk:8080/login",
-        }
+    bot = request.app['bot']
+    oauth_data = bot.config['oauth']
 
     # Generate the post data
     data = {
@@ -107,10 +101,10 @@ async def colours(request:Request):
         return HTTPFound(location=f'/colours/{session["user_info"]["id"]}')
 
     # Get their current values and punch em out to the user
-    ctu = CustomisedTreeUser.get(user_id)
+    ctu = CustomisedTreeUser.get(int(user_id))
     return {
         'user': session.get('user_info'), 
-        'hex_strings': ctu.stripped_hex,
+        'hex_strings': ctu.unquoted_hex,
     }
 
 
@@ -152,16 +146,7 @@ async def logout(request:Request):
 #         prefix=prefix,
 #         user_id=user_object.id
 #     )
-#     return redirect("/guilds/"+guild_id)
-
-
-# @app.route("/logout",methods=['get'])
-# def logout():
-#     '''
-#     Page that logs the user out
-#     '''
-#     del session["user_token"] 
-#     return redirect("/")    
+#     return redirect("/guilds/"+guild_id)   
 
 
 # @app.route("/colours",methods=["post","get"])

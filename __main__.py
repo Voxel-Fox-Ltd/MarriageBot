@@ -1,4 +1,6 @@
+from os import getcwd
 from argparse import ArgumentParser
+from secrets import token_bytes
 from ssl import SSLContext
 from warnings import filterwarnings
 import logging
@@ -6,10 +8,15 @@ import logging
 from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
+from aiohttp_jinja2 import template, setup as jinja_setup
+from aiohttp_session import setup as session_setup, SimpleCookieStorage
+from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
+from jinja2 import FileSystemLoader
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection
 from website.api import routes as api_routes
+from website.frontend import routes as frontend_routes
 
 
 # Set up loggers
@@ -19,8 +26,7 @@ logging.getLogger('marriagebot-db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
 
-# Filter warnings - specifically the one where it says I'm not awaiting a method 
-# even though I do it later
+# Filter warnings
 filterwarnings('ignore', category=RuntimeWarning)
 
 # Parse arguments
@@ -42,9 +48,15 @@ bot = CustomBot(
 )
 
 # Create website object - don't start based on argv
-app = Application(loop=bot.loop)
+app = Application(loop=bot.loop, debug=True)
 app.add_routes(api_routes)
+app.add_routes(frontend_routes)
+app.router.add_static('/static', getcwd() + '/website/static')
 app['bot'] = bot
+app['static_root_url'] = '/static'
+jinja_setup(app, loader=FileSystemLoader(getcwd() + '/website/templates'))
+# session_setup(app, ECS(token_bytes(32)))
+session_setup(app, SimpleCookieStorage())
 
 
 @bot.event
@@ -108,6 +120,10 @@ if __name__ == '__main__':
         if ssl_webserver:
             loop.run_until_complete(ssl_webserver.start())
             logger.info(f"Server started - http://{args.host}:443/")
+
+        # # Store stuff in the bot for later
+        # bot.webserver = webserver
+        # bot.ssl_webserver = ssl_webserver
 
     # This is the forever loop
     try:
