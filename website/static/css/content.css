@@ -1,0 +1,33 @@
+#content {
+    max-width: 800px;
+    margin: auto;
+    padding: 10px;
+}
+
+#content h1, #content h2 {
+    text-align: center;
+}
+
+#content .testimonials {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#content .testimonials img {
+    padding: 5px;
+}
+
+#content img {
+    max-width: 80%;
+    margin: auto;
+    display: block;
+}
+
+#content .code {
+    padding: 0 5px 0 5px;
+    background: lightgrey;
+    border-radius: 5px;
+    font-family: monospace;
+    font-weight: bold;
+}

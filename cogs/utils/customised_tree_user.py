@@ -61,3 +61,8 @@ class CustomisedTreeUser(object):
             'highlighted_node': highlighted_node,
             'background': background,
         }
+
+    
+    @property 
+    def unquoted_hex(self):
+        return {i: o.strip('"') for i, o in self.hex.items()}

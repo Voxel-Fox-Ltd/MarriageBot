@@ -1,8 +1,25 @@
-{% extends "head.jinja" %}
+{% extends 'base.jinja' %}
 
-{% block body %}
-<div id="indexcontent">
-    <img class="logo" src="{{ static('images/logo.jpg') }}" alt="The MarriageBot logo" />
-    <a class="login-button" href="https://discordapp.com/api/oauth2/authorize?client_id=468281173072805889&redirect_uri=http%3A%2F%2Fvps.callumb.co.uk%3A8080%2Flogin&response_type=code&scope=identify%20guilds">Login With Discord</a>
-</div>
-{% endblock %}
+{% block title %}MarriageBot - Index{% endblock title %}
+
+{% block content %}
+<h1>MarriageBot - Marry your friends, adopt your enemies!</h1>
+<p>MarriageBot is a Discord bot used for simulations of your family, be it that you want b1nzy as your mom, or Jake as your nephew, MarriageBot can handle it all.</p>
+<p><a href="/login">Login</a> to be able to customise some of the aspects of MarriageBot, or <a>add it to your server</a></p>
+
+<h2>Family Trees</h2>
+<p>The most popular feature of MarriageBot is that while you build your family you're able to see your family tree by simply using the <span class="code">m!tree</span> command!</p>
+<img src="/static/images/tree.png" />
+
+<h2>Testimonials</h2>
+<div class="testimonials">
+    <img src="/static/images/testimonials/1.png" />
+    <img src="/static/images/testimonials/2.png" />
+    <img src="/static/images/testimonials/3.png" />
+    <img src="/static/images/testimonials/4.png" />
+    <img src="/static/images/testimonials/5.png" />
+    <img src="/static/images/testimonials/6.png" />
+    <img src="/static/images/testimonials/7.png" />
+    <img src="/static/images/testimonials/8.png" />
+</div> <!-- testimonials -->
+{% endblock content %}

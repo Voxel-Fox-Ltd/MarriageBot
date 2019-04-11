@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>{% block title %}MarriageBot - Fill Title{% endblock title %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static/css/header.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static/css/content.css" /> 
+</head>
+<body>
+
+<div id="header">
+    <ul id="header-content">
+        <li class="logo-holder left"><img class="mb-logo" src="{{ bot.user.avatar_url }}" /></li>
+        <li class="left"><h1 class="mb-title">MarriageBot</h1></li>
+        {% if user == None -%}
+            <li class="right"><a class="login-button" href="/login">Login</a></li>
+        {% else -%}
+            <li class="right"><img class="user-avatar" src="{{ session.get('user').avatar_url }}" /></li>
+            <li class="right"><a class="logout-button" href="/logout">Logout</a></li>
+        {% endif %}
+    </ul>
+</div> <!-- header -->
+
+<div id="content">
+{% block content -%}{% endblock content %}
+</div> <!-- content -->
+
+</body>
+</html>

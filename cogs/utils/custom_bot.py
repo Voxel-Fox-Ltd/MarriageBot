@@ -5,10 +5,11 @@ from asyncio import sleep, create_subprocess_exec
 from glob import glob
 from re import compile
 from logging import getLogger
+from urllib.parse import urlencode
 
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
-from discord import Game, Message
+from discord import Game, Message, Permissions
 from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
@@ -49,6 +50,7 @@ class CustomBot(AutoShardedBot):
         self.reload_config()
         self.commandline_args = commandline_args
         self.bad_argument = compile(r'(User|Member) "(.*)" not found')
+        self._invite_link = None
 
         # Aiohttp session for use in DBL posting
         self.session = ClientSession(loop=self.loop)
@@ -76,6 +78,26 @@ class CustomBot(AutoShardedBot):
         
         # Add a cooldown to help
         cooldown(1, 5, BucketType.user)(self.get_command('help'))
+
+
+    @property 
+    def invite_link(self):
+        # https://discordapp.com/oauth2/authorize?client_id=468281173072805889&scope=bot&permissions=35840&guild_id=208895639164026880
+        if self._invite_link: return self._invite_link
+        permissions = Permissions()
+        permissions.read_messages = True 
+        permissions.send_messages = True 
+        permissions.embed_links = True 
+        permissions.attach_files = True 
+        self._invite_link = 'https://discordapp.com/oauth2/authorize' + urlencode({
+            'client_id': self.user.id,
+            'scope': 'bot',
+            'permissions': permissions.value
+        })
+
+
+    def invite_link_to_guild(self, guild_id:int):
+        return self.invite_link + f'&guild_id={guild_id}'
 
 
     async def startup(self):

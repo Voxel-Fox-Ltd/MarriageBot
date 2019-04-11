@@ -1,0 +1,73 @@
+#header {
+    background: rgb(var(--notblack));
+    border-bottom: 5px solid white;
+}
+
+#header-content {
+    padding: 10px;
+    list-style: none;
+    margin: auto;
+    width: calc(100vw  - (10px * 2));
+    max-width: 1100px;
+    height: 60px;
+}
+
+#header li { 
+    /*! display: inline-block; */
+    height: 100%;
+    padding: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#header .logo-holder {
+    display: inline-block;
+}
+
+#header li.left {
+    float: left;
+}
+
+#header li.right {
+    float: right;
+}
+
+#header .mb-logo {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    border: 3px solid rgb(var(--greyple));
+}
+
+#header .mb-title {
+    color: white;
+    margin: 0;
+    padding: 0 0 0 10px;
+}
+
+#header .login-button {
+    width: 130px;
+    height: 100%;
+    background-color: rgb(var(--blurple));
+    border: none;
+    font-size: 1.3em;
+    border-radius: 5px;
+    appearance: button;
+    text-decoration: none;
+    color: initial;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#header .login-button:hover, #header .login-button:active{
+    background-color: rgb(var(--greyple));
+}
+
+@media screen and (max-width: 576px) {
+    #header .mb-title {
+        display: none;
+    }
+}
