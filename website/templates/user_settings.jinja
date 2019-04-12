@@ -1,0 +1,53 @@
+{% extends "base.jinja" %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+{% endblock head %}
+
+{% block content %}
+<h2>Colour Selector</h2>
+<p>Here you'll be able to interactively set values for your tree's colour. When you're done, just press submit and it'll all be transferred over to the bot!</p>
+<form id="colour-selector">
+    <div class="colour-choice">
+        <label for="edge_colour">Edge: </label>
+        <input name="edge_colour" id="edge_colour" value="{{ hex_strings.edge }}">
+    </div>
+
+    <div class="colour-choice">
+        <label for="node_colour">Node: </label>
+        <input name="node_colour" value="{{ hex_strings.node }}" id="node_colour">
+    </div>
+
+    <div class="colour-choice">
+        <label for="font_colour">Font: </label>
+        <input name="font_colour" value="{{ hex_strings.font }}" id="font_colour">
+    </div>
+    
+    <div class="colour-choice">
+        <label for="background_colour">Background: </label>
+        <input name="background_colour" value="{{ hex_strings.background }}" id="background_colour">
+    </div>
+
+    <div class="colour-choice">
+        <label for="highlighted_font_colour">Highlighted Font: </label>
+        <input name="highlighted_font_colour" value="{{ hex_strings.highlighted_font }}" id="highlighted_font_colour">
+    </div>
+
+    <div class="colour-choice">
+        <label for="highlighted_node_colour">Highlighted Node: </label>
+        <input name="highlighted_node_colour" value="{{ hex_strings.highlighted_node }}" id="highlighted_node_colour">
+    </div>
+
+    <script>
+        $("#edge_colour").spectrum({ color: "{{ hex_strings.edge }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+        $("#node_colour").spectrum({ color: "{{ hex_strings.node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+        $("#font_colour").spectrum({ color: "{{ hex_strings.font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+        $("#background_colour").spectrum({ color: "{{ hex_strings.background }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+        $("#highlighted_font_colour").spectrum({ color: "{{ hex_strings.highlighted_font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+        $("#highlighted_node_colour").spectrum({ color: "{{ hex_strings.highlighted_node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+    </script>
+    <input type="submit" />
+</form>
+{% endblock content %}

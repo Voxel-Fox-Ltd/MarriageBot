@@ -23,3 +23,7 @@
     margin: auto;
     display: block;
 }
+
+#content h2 a, #content h2 a:visited {
+    color: initial;
+}

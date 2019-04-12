@@ -143,11 +143,31 @@ async def settings(request:Request):
     # Get the user
     try:
         session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
+        if user == None:
+            raise AuthenticationError('User does not exist')
     except (ValueError, AuthenticationError) as e:
-        raise e
         return HTTPFound(location='/')
 
     return {'bot': bot, 'session': session, 'user': user}
+
+
+@routes.get('/user_settings/{user_id}')
+@template('user_settings.jinja')
+async def user_settings(request:Request):
+    '''
+    Handles the users' individual settings pages
+    '''
+
+    # Get the user
+    try:
+        session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
+        if user == None:
+            raise AuthenticationError('User does not exist')
+    except (ValueError, AuthenticationError) as e:
+        return HTTPFound(location='/')
+
+    ctu = CustomisedTreeUser.get(user.id)
+    return {'bot': bot, 'session': session, 'user': user, 'hex_strings': ctu.unquoted_hex}
 
 
 @routes.get('/logout')
