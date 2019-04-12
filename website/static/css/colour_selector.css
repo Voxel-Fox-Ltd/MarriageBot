@@ -1,0 +1,14 @@
+#colour-selector-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#colour-selector-content #colour-selector, #colour-selector-content #preview-iframe {
+    width: 50%;
+    min-width: 400px;
+}
+
+#preview-iframe {
+    border: 0;
+}

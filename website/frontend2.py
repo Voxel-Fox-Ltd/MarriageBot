@@ -166,8 +166,50 @@ async def user_settings(request:Request):
     except (ValueError, AuthenticationError) as e:
         return HTTPFound(location='/')
 
-    ctu = CustomisedTreeUser.get(user.id)
-    return {'bot': bot, 'session': session, 'user': user, 'hex_strings': ctu.unquoted_hex}
+    if len(request.query) > 0:
+        colours_raw = {
+            'edge': request.query.get('edge'),
+            'node': request.query.get('node'),
+            'font': request.query.get('font'),
+            'highlighted_font': request.query.get('highlighted_font'),
+            'highlighted_node': request.query.get('highlighted_node'),
+            'background': request.query.get('background'),
+        } 
+        colours = {}
+        for i, o in colours_raw.items():
+            if o == None:
+                o = 'transparent'
+            colours[i] = o
+    else:
+        colours = CustomisedTreeUser.get(user.id).unquoted_hex
+    tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' for i, o in colours.items()])
+    return {'bot': bot, 'session': session, 'user': user, 'hex_strings': colours, 'tree_preview_url': tree_preview_url}
+
+
+@routes.get('/tree_preview')
+@template('tree_preview.jinja')
+async def tree_preview(request:Request):
+    '''
+    Tree preview for the bot
+    '''
+
+    colours_raw = {
+        'edge': request.query.get('edge'),
+        'node': request.query.get('node'),
+        'font': request.query.get('font'),
+        'highlighted_font': request.query.get('highlighted_font'),
+        'highlighted_node': request.query.get('highlighted_node'),
+        'background': request.query.get('background'),
+    } 
+    colours = {}
+    for i, o in colours_raw.items():
+        if o == None or o == 'transparent':
+            o = 'transparent'
+        else:
+            o = f'#{o.strip("#")}'
+        colours[i] = o
+
+    return {'hex_strings': colours}
 
 
 @routes.get('/logout')

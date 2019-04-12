@@ -1,0 +1,120 @@
+{% extends "base.jinja" %}
+
+{% block body %}
+<style>
+#preview .node polygon {
+    fill: {% if hex_strings.node == 'transparent' or hex_strings.node == None or hex_strings.node|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.node }}{% endif %};
+    stroke: {% if hex_strings.edge == 'transparent' or hex_strings.edge == None or hex_strings.edge|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.edge }}{% endif %};
+}
+
+#preview .node text {
+    fill: {% if hex_strings.font == 'transparent' or hex_strings.font == None or hex_strings.font|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.font }}{% endif %};
+}
+
+#preview .highlighted-node text {
+    fill: {% if hex_strings.highlighted_font == 'transparent' or hex_strings.highlighted_font == None or hex_strings.highlighted_font|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.highlighted_font }}{% endif %};
+}
+
+#preview .highlighted-node polygon {
+    fill: {% if hex_strings.highlighted_node == 'transparent' or hex_strings.highlighted_node == None or hex_strings.highlighted_node|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.highlighted_node }}{% endif %};
+}
+
+#preview .background {
+    fill: {% if hex_strings.background == 'transparent' or hex_strings.background == None or hex_strings.background|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.background }}{% endif %};
+}
+
+#preview {
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+</style>
+
+<svg viewBox="0.00 0.00 255.63 262.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="preview">
+    <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 258)">
+        <title>%0</title>
+        <polygon class="background" fill="#ffffff" stroke="transparent" points="-4,4 -4,-258 251.6294,-258 251.6294,4 -4,4"/>
+        <!-- 529485773397950464 --> 
+        <g id="node1" class="node">
+            <title>529485773397950464</title>
+            <polygon fill="#ffffff" stroke="#000000" points="96.6141,-254 6.8635,-254 6.8635,-218 96.6141,-218 96.6141,-254"/>
+            <text text-anchor="middle" x="51.7388" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">prenkh#3182</text>
+        </g>
+        <!-- h529485773397950464 --> 
+        <g id="node6" class="node">
+            <title>h529485773397950464</title>
+            <ellipse fill="#ffffff" stroke="#000000" cx="51.7388" cy="-181.5" rx=".5" ry=".5"/>
+        </g>
+        <!-- 529485773397950464&#45;&gt;h529485773397950464 --> 
+        <g id="edge1" class="edge">
+            <title>529485773397950464&#45;&gt;h529485773397950464</title>
+            <path fill="none" stroke="#000000" d="M51.7388,-217.8523C51.7388,-203.4845 51.7388,-185.3026 51.7388,-182.0198"/>
+        </g>
+        <!-- 194199903839322112 --> 
+        <g id="node2" class="node highlighted-node">
+            <title>194199903839322112</title>
+            <polygon fill="#0000ff" stroke="#000000" points="103.7175,-145 -.2399,-145 -.2399,-109 103.7175,-109 103.7175,-145"/>
+            <text text-anchor="middle" x="51.7388" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#ffffff">Feathery #3581</text>
+        </g>
+        <!-- pikPIVrONB --> 
+        <g id="node7" class="node">
+            <title>pikPIVrONB</title>
+            <ellipse fill="#ffffff" stroke="#000000" cx="121.7388" cy="-127" rx=".5" ry=".5"/>
+        </g>
+        <!-- 194199903839322112&#45;&gt;pikPIVrONB --> 
+        <g id="edge3" class="edge">
+            <title>194199903839322112&#45;&gt;pikPIVrONB</title>
+            <path fill="none" stroke="#000000" d="M103.6919,-127C109.5196,-127 115.3472,-127 121.1748,-127"/>
+        </g>
+        <!-- 260755630938259456 --> 
+        <g id="node3" class="node">
+            <title>260755630938259456</title>
+            <polygon fill="#ffffff" stroke="#000000" points="247.5202,-145 139.9574,-145 139.9574,-109 247.5202,-109 247.5202,-145"/>
+            <text text-anchor="middle" x="193.7388" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#000000">3121_tm_#3121</text>
+        </g>
+        <!-- 221641358492958720 --> 
+        <g id="node4" class="node">
+            <title>221641358492958720</title>
+            <polygon fill="#ffffff" stroke="#000000" points="115.215,-36 8.2626,-36 8.2626,0 115.215,0 115.215,-36"/>
+            <text text-anchor="middle" x="61.7388" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">NLDaniel#1109</text>
+        </g>
+        <!-- 441864148662616065 --> 
+        <g id="node5" class="node">
+            <title>441864148662616065</title>
+            <polygon fill="#ffffff" stroke="#000000" points="229.8399,-36 133.6377,-36 133.6377,0 229.8399,0 229.8399,-36"/>
+            <text text-anchor="middle" x="181.7388" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">turtsnek#3145</text>
+        </g>
+        <!-- 221641358492958720&#45;&gt;441864148662616065 --> <!-- h529485773397950464&#45;&gt;194199903839322112 --> 
+        <g id="edge2" class="edge">
+            <title>h529485773397950464&#45;&gt;194199903839322112</title>
+            <path fill="none" stroke="#000000" d="M51.7388,-180.8879C51.7388,-177.3796 51.7388,-159.4816 51.7388,-145.2614"/>
+        </g>
+        <!-- pikPIVrONB&#45;&gt;260755630938259456 --> 
+        <g id="edge4" class="edge">
+            <title>pikPIVrONB&#45;&gt;260755630938259456</title>
+            <path fill="none" stroke="#000000" d="M122.3013,-127C128.1614,-127 134.0215,-127 139.8816,-127"/>
+        </g>
+        <!-- hpikPIVrONB --> 
+        <g id="node8" class="node">
+            <title>hpikPIVrONB</title>
+            <ellipse fill="#ffffff" stroke="#000000" cx="121.7388" cy="-72.5" rx=".5" ry=".5"/>
+        </g>
+        <!-- pikPIVrONB&#45;&gt;hpikPIVrONB --> 
+        <g id="edge5" class="edge">
+            <title>pikPIVrONB&#45;&gt;hpikPIVrONB</title>
+            <path fill="none" stroke="#000000" d="M121.7388,-126.3879C121.7388,-120.7746 121.7388,-78.3238 121.7388,-73.0394"/>
+        </g>
+        <!-- hpikPIVrONB&#45;&gt;221641358492958720 --> 
+        <g id="edge6" class="edge">
+            <title>hpikPIVrONB&#45;&gt;221641358492958720</title>
+            <path fill="none" stroke="#000000" d="M121.3557,-72.152C118.3216,-69.396 97.8732,-50.8221 81.7596,-36.1856"/>
+        </g>
+        <!-- hpikPIVrONB&#45;&gt;441864148662616065 --> 
+        <g id="edge7" class="edge">
+            <title>hpikPIVrONB&#45;&gt;441864148662616065</title>
+            <path fill="none" stroke="#000000" d="M122.1219,-72.152C125.156,-69.396 145.6044,-50.8221 161.718,-36.1856"/>
+        </g>
+    </g>
+</svg>
+{% endblock body %}

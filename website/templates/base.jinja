@@ -11,6 +11,7 @@
 </head>
 <body>
 
+{% block body %}
 <div id="header">
     <ul id="header-content">
         <li class="logo-holder left"><img class="mb-logo" src="{{ bot.user.avatar_url }}" /></li>
@@ -27,6 +28,7 @@
 <div id="content">
 {% block content -%}{% endblock content %}
 </div> <!-- content -->
+{% endblock body %}
 
 </body>
 </html>
