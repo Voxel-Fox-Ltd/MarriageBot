@@ -89,11 +89,12 @@ class CustomBot(AutoShardedBot):
         permissions.send_messages = True 
         permissions.embed_links = True 
         permissions.attach_files = True 
-        self._invite_link = 'https://discordapp.com/oauth2/authorize' + urlencode({
+        self._invite_link = 'https://discordapp.com/oauth2/authorize?' + urlencode({
             'client_id': self.user.id,
             'scope': 'bot',
             'permissions': permissions.value
         })
+        return self.invite_link
 
 
     def invite_link_to_guild(self, guild_id:int):

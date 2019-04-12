@@ -23,11 +23,3 @@
     margin: auto;
     display: block;
 }
-
-#content .code {
-    padding: 0 5px 0 5px;
-    background: lightgrey;
-    border-radius: 5px;
-    font-family: monospace;
-    font-weight: bold;
-}

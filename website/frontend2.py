@@ -1,5 +1,6 @@
 from os import getcwd
 from json import dumps
+from urllib.parse import urlencode
 
 from aiohttp import ClientSession
 from aiohttp.web import RouteTableDef, Request, HTTPFound, static, Response
@@ -10,6 +11,54 @@ from cogs.utils.customised_tree_user import CustomisedTreeUser
 
 
 routes = RouteTableDef()
+OAUTH_SCOPE = 'identify guilds'
+
+
+class AuthenticationError(Exception):
+    '''Raised to show that they don't have any authentication'''
+    def __init__(self, message:str):
+        super().__init__(message)
+
+
+async def check_authentication(request:Request, requested_user_id:int=None):
+    '''
+    Checks if the session user is both logged in and is allowed to get the requested user
+    '''
+
+    # Get main vairables
+    bot = request.app['bot']
+    session = await get_session(request)
+    try:
+        requested_user_id = requested_user_id or session['user_id']
+    except KeyError:
+        session.invalidate()
+        raise AuthenticationError('No session user ID')
+
+    # Check they're authed to get another user if necessary
+    if requested_user_id != session['user_id']:
+        # Get the guild from the invite URL in config
+        try:
+            invite = await bot.fetch_invite(bot.config['guild'])
+            support_guild_id = invite.guild.id
+        except AttributeError:
+            session.invalidate()
+            raise AuthenticationError('No support guild URL')
+
+        # Get the members who are allowed the support role
+        support_guild = bot.get_guild(support_guild_id)
+        bot_admin_role = support_guild.get_role(bot.config['bot_admin_role'])
+        if bot_admin_role == None:
+            session.invalidate()
+            raise AuthenticationError('No valid bot admin role')
+
+        # Checks the users with the support role
+        allowed_ids = [i.id for i in bot_admin_role.members]
+        if session['user_id'] not in allowed_ids:
+            session.invalidate()
+            raise AuthenticationError('Not allowed to view page')
+
+    # Returns bot and the user
+    return session, bot, bot.get_user(requested_user_id)
 
 
 @routes.get("/")
@@ -22,8 +71,15 @@ async def index(request:Request):
     '''
 
     session = await get_session(request)
+    bot = request.app['bot']
+    login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
+        'client_id': bot.config['oauth']['client_id'],
+        'redirect_uri': bot.config['oauth']['redirect_uri'],
+        'response_type': 'code',
+        'scope': OAUTH_SCOPE
+    })
     if not session.get('user'):
-        return {'bot': request.app['bot'], 'user': None}
+        return {'bot': bot, 'user': None, 'login_url': login_url}
     user = session.get('user')
     return HTTPFound(location=f'/colours/{user.id}')
 
@@ -47,7 +103,7 @@ async def login(request:Request):
     data = {
         'grant_type': 'authorization_code',
         'code': code, 
-        'scope': 'identify guilds',
+        'scope': OAUTH_SCOPE
     }
     data.update(oauth_data)
     headers = {
@@ -71,7 +127,35 @@ async def login(request:Request):
 
     # Save and redirect
     session = await new_session(request)
-    session['user_info'] = user_info
-    session['user'] = user = bot.get_user(int(user_info['id']))
-    session['guild_info'] = guild_info
-    return HTTPFound(location=f'/colours/{user.id}')
+    session['raw_user_info'] = user_info
+    session['user_id'] = user_id = int(user_info['id'])
+    session['raw_guild_info'] = guild_info
+    return HTTPFound(location=f'/settings/{user_id}')
+
+
+@routes.get('/settings/{user_id}')
+@template('settings.jinja')
+async def settings(request:Request):
+    '''
+    Handles the main settings page for the bot
+    '''
+
+    # Get the user
+    try:
+        session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
+    except (ValueError, AuthenticationError) as e:
+        raise e
+        return HTTPFound(location='/')
+
+    return {'bot': bot, 'session': session, 'user': user}
+
+
+@routes.get('/logout')
+async def logout(request:Request):
+    '''
+    Handles logout
+    '''
+    
+    session = await get_session(request)
+    session.invalidate()
+    return HTTPFound(location='/')

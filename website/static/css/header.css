@@ -47,7 +47,7 @@
     padding: 0 0 0 10px;
 }
 
-#header .login-button {
+#header .header-button {
     width: 130px;
     height: 100%;
     background-color: rgb(var(--blurple));
@@ -62,12 +62,32 @@
     align-items: center;
 }
 
-#header .login-button:hover, #header .login-button:active{
+#header .user-avatar {
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+}
+
+#header .header-button:hover, #header .header-button:active{
     background-color: rgb(var(--greyple));
+}
+
+#header .user-avatar {
+    margin: 0 10px 0 0;
+}
+
+#header .logout-button {
+    font-size: 1.1em;
+    width: 100px;
+    height: 70%;
 }
 
 @media screen and (max-width: 576px) {
     #header .mb-title {
+        display: none;
+    }
+
+    #header .user-avatar {
         display: none;
     }
 }

@@ -15,10 +15,10 @@
         <li class="logo-holder left"><img class="mb-logo" src="{{ bot.user.avatar_url }}" /></li>
         <li class="left"><h1 class="mb-title">MarriageBot</h1></li>
         {% if user == None -%}
-            <li class="right"><a class="login-button" href="/login">Login</a></li>
+            <li class="right"><a class="header-button login-button" href="{{ login_url }}">Login</a></li>
         {% else -%}
-            <li class="right"><img class="user-avatar" src="{{ session.get('user').avatar_url }}" /></li>
-            <li class="right"><a class="logout-button" href="/logout">Logout</a></li>
+            <li class="right"><a class="header-button logout-button" href="/logout">Logout</a></li>
+            <li class="right"><img class="user-avatar" src="{{ user.avatar_url }}" /></li>
         {% endif %}
     </ul>
 </div> <!-- header -->

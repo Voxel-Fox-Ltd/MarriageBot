@@ -14,3 +14,11 @@ body {
     margin: 0;
     font-family: Whitney,Helvetica Neue,Helvetica,Arial,sans-serif;
 }
+
+.code {
+    padding: 0 5px 0 5px;
+    background: lightgrey;
+    border-radius: 5px;
+    font-family: monospace;
+    font-weight: bold;
+}
