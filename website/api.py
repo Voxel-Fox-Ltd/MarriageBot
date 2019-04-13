@@ -148,6 +148,7 @@ async def webhook_handler(request:Request):
         return failure({'reason': 'Invalid bot ID'})
     try:
         user = bot.get_user(int(x['user']))
+        user_id = int(x['user'])
     except ValueError:
         # User ID wasn't an integer
         return failure({'reason': 'Invalid user ID'})
@@ -165,10 +166,10 @@ async def webhook_handler(request:Request):
         pass 
 
     # Database it up
-    bot.dbl_votes[user.id] = dt.now()
+    bot.dbl_votes[user_id] = dt.now()
     async with bot.database() as db:
         try:
-            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user.id, bot.dbl_votes[user.id])
+            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user_id, bot.dbl_votes[user_id])
         except Exception as e:
-            await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user.id, bot.dbl_votes[user.id])
+            await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user_id, bot.dbl_votes[user_id])
     return success
