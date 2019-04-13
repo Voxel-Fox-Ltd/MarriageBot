@@ -5,6 +5,16 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+<script>
+function updatePreview(submitButton) {
+    var form_id = submitButton.parentNode.id;
+    var form = $(`#${form_id}`);
+    var data = form.serialize();
+    var iframe = document.getElementById('preview-iframe');
+    iframe.src = "/tree_preview?" + data;
+    return false;
+}
+</script>
 {% endblock head %}
 
 {% block content %}
@@ -14,32 +24,32 @@
 <form id="colour-selector">
     <div class="colour-choice">
         <label for="edge">Edge: </label>
-        <input name="edge" id="edge" value="{{ hex_strings.edge }}">
+        <input name="edge" id="edge" value="{{ hex_strings.edge }}" onchange="updatePreview(this.parentNode);">
     </div>
 
     <div class="colour-choice">
         <label for="node">Node: </label>
-        <input name="node" value="{{ hex_strings.node }}" id="node">
+        <input name="node" value="{{ hex_strings.node }}" id="node" onchange="updatePreview(this.parentNode);">
     </div>
 
     <div class="colour-choice">
         <label for="font">Font: </label>
-        <input name="font" value="{{ hex_strings.font }}" id="font">
+        <input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this.parentNode);">
     </div>
     
     <div class="colour-choice">
         <label for="background">Background: </label>
-        <input name="background" value="{{ hex_strings.background }}" id="background">
+        <input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this.parentNode);">
     </div>
 
     <div class="colour-choice">
         <label for="highlighted_font">Highlighted Font: </label>
-        <input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font">
+        <input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font" onchange="updatePreview(this.parentNode);">
     </div>
 
     <div class="colour-choice">
         <label for="highlighted_node">Highlighted Node: </label>
-        <input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node">
+        <input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node" onchange="updatePreview(this.parentNode);">
     </div>
 
     <script>
@@ -51,17 +61,6 @@
         $("#highlighted_node").spectrum({ color: "{{ hex_strings.highlighted_node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
     </script>
     <button type="submit" formmethod="POST">Submit Changes</button>
-    <script>
-    function updatePreview(submitButton) {
-        var form_id = submitButton.parentNode.id;
-        var form = $(`#${form_id}`);
-        var data = form.serialize();
-        var iframe = document.getElementById('preview-iframe');
-        iframe.src = "/tree_preview?" + data;
-        return false;
-    }
-    </script>
-    <button type="button" formmethod="GET" onclick="updatePreview(this)">Update Preview</button>
 </form>
 
 <iframe id="preview-iframe" src="{{ tree_preview_url|safe }}" scrolling="no" frameborder="0" onload="javascript:this.style.height = this.contentWindow.document.body.scrollHeight + 'px';"></iframe>
