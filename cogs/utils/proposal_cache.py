@@ -22,10 +22,12 @@ class ProposalCache(dict):
         self[target] = ('TARGET', cog)
     
     def remove(self, *elements):
-        try:
-            for i in elements:
-                if isinstance(i, User):
-                    i = i.id
-                self.pop(i)
-        except KeyError:
-            pass          
+        x = []
+        for i in elements:
+            if isinstance(i, User):
+                i = i.id
+            try:
+                x.append(self.pop(i))
+            except KeyError:
+                pass
+        return x        
