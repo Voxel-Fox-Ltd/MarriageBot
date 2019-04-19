@@ -29,6 +29,18 @@ class DisownRandomText(Cog):
         ])
 
 
+    @staticmethod 
+    def invalid_target(instigator, target):
+        '''
+        '''
+
+        return choice([
+            "They aren't your child...",
+            "Have you considered disowning someone who's *actually* your child?",
+            "Strangely enough you can only disown *your* children.",
+        ])
+
+
 def setup(bot:CustomBot):
     x = DisownRandomText(bot)
     bot.add_cog(x)
