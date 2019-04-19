@@ -101,7 +101,7 @@ class Information(Cog):
             user = ctx.author
 
         # Get the user's info
-        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if user_info.partner == None:
             await ctx.send(f"`{user!s}` is not currently married.")
             return
@@ -124,7 +124,7 @@ class Information(Cog):
         output = ''
 
         # Get the user's info
-        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if len(user_info.children) == 0:
             output += f"`{user!s}` has no children right now."
         else:
@@ -162,7 +162,7 @@ class Information(Cog):
         output = ''
 
         # Get the parent's info
-        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if user_info.parent == None:
             output += f"`{user!s}` has no parent right now."
         elif len(user_info.parent.children) <= 1:
@@ -199,7 +199,7 @@ class Information(Cog):
         if user == None:
             user = ctx.author
 
-        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        user_info = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if user_info.parent == None:
             await ctx.send(f"`{user!s}` has no parent.")
             return
@@ -219,7 +219,7 @@ class Information(Cog):
 
         if other == None:
             user, other = ctx.author, user
-        user, other = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None), FamilyTreeMember.get(other.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        user, other = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0), FamilyTreeMember.get(other.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         relation = user.get_relation(other)
         if relation == None:
             await ctx.send(f"`{user.get_name(self.bot)}` is not related to `{other.get_name(self.bot)}`.")
@@ -236,7 +236,7 @@ class Information(Cog):
 
         if user == None:
             user = ctx.author 
-        user = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        user = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         await ctx.send(f"There are `{len(user.span(expand_upwards=True, add_parent=True))}` people in `{user.get_name(self.bot)}`'s family tree.")
 
 
@@ -251,7 +251,7 @@ class Information(Cog):
         if root == None:
             root = ctx.author
 
-        text = FamilyTreeMember.get(root.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None).generate_gedcom_script(self.bot)
+        text = FamilyTreeMember.get(root.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0).generate_gedcom_script(self.bot)
         file = BytesIO(text.encode())
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
@@ -311,7 +311,7 @@ class Information(Cog):
 
         # Get their family tree
         await ctx.trigger_typing()
-        tree = FamilyTreeMember.get(root_user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        tree = FamilyTreeMember.get(root_user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # Make sure they have one
         if tree.is_empty:

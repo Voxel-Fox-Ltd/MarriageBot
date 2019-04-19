@@ -121,7 +121,7 @@ class CustomBot(AutoShardedBot):
 
         # Get family data from database
         async with self.database() as db:
-            partnerships = await db('SELECT * FROM marriages WHERE valid=TRUE')
+            partnerships = await db('SELECT * FROM marriages')
             parents = await db('SELECT * FROM parents')
             customisations = await db('SELECT * FROM customisation')
         

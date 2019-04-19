@@ -4,10 +4,8 @@ USE marriagebot;
 
 
 CREATE TABLE marriages(
-    marriage_id VARCHAR(11) NOT NULL,
     user_id BIGINT NOT NULL,
     partner_id BIGINT NOT NULL,
-    valid BOOLEAN NOT NULL,
     guild_id BIGINT,
     PRIMARY KEY (marriage_id, user_id)
 );

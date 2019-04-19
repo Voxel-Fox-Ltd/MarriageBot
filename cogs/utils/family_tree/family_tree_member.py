@@ -53,7 +53,7 @@ class FamilyTreeMember(object):
     ]
 
 
-    def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int, guild_id:int=None):
+    def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int, guild_id:int=0):
         self.id = discord_id  # The ID of the user whose tree this is
         self._children = children  # List of the children's IDs
         self._parent = parent_id  # ID of the parent
@@ -138,9 +138,7 @@ class FamilyTreeMember(object):
 
     @property 
     def guild(self):
-        if self._guild_id:
-            return self.bot.get_guild(self._guild_id) 
-        return None
+        return self.bot.get_guild(self._guild_id) 
 
 
     def destroy(self):
@@ -168,31 +166,20 @@ class FamilyTreeMember(object):
 
 
     @classmethod
-    def remove_blank_profiles(cls):
-        '''Removes blank/useless profiles from the cache'''
-
-        for discord_id, tree_member in cls.all_users.items():
-            if tree_member == None:
-                continue
-            if tree_member.is_empty:
-                del cls.all_users[discord_id]
-
-
-    @classmethod
-    def get(cls, user_id:int, guild_id:int=None):
+    def get(cls, user_id:int, guild_id:int=0):
         '''Gets a FamilyTreeMember object for the given user ID'''
 
         if user_id == None:
             return None
         try:
-            return cls.all_users[(user_id, guild_id)]
+            return cls.all_users[(user_id, guild_id or 0)]
         except KeyError:
             return cls(
                 discord_id=user_id, 
                 children=[], 
                 parent_id=None, 
                 partner_id=None, 
-                guild_id=guild_id
+                guild_id=guild_id or 0
             )
 
 

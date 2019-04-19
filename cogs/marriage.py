@@ -97,7 +97,7 @@ class Marriage(Cog):
 
         # See if they're married or in the family already
         await ctx.trigger_typing()
-        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # Make get_root awaitable 
         awaitable_root = self.bot.loop.run_in_executor(None, user_tree.get_root)
@@ -114,7 +114,7 @@ class Marriage(Cog):
         if user_tree.partner:
             await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_when_married(instigator, target))
             return
-        elif FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None).partner:
+        elif FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0).partner:
             await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_married(instigator, target))
             return
 
@@ -144,16 +144,16 @@ class Marriage(Cog):
         elif response == 'YES':
             async with self.bot.database() as db:
                 try:
-                    await db.marry(instigator, target, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+                    await db.marry(instigator, target, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
                 except Exception as e:
                     return  # Only thrown if two people try to marry at once, so just return
             try:
                 await ctx.send(self.bot.get_cog('ProposeRandomText').accepting_valid_proposal(instigator, target))
             except Exception as e:
                 pass
-            me = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+            me = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             me._partner = target.id 
-            them = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+            them = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             them._partner = instigator.id
 
         self.bot.proposal_cache.remove(instigator.id)
@@ -170,7 +170,7 @@ class Marriage(Cog):
         instigator = ctx.author
 
         # Get marriage data for the user
-        instigator_data = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        instigator_data = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # See why it could fail
         if instigator_data.partner == None:
@@ -189,12 +189,12 @@ class Marriage(Cog):
 
         # At this point they can only be married
         async with self.bot.database() as db:
-            await db('DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3', instigator.id, target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+            await db('DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3', instigator.id, target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         await ctx.send(self.bot.get_cog('DivorceRandomText').valid_target(instigator, target))
 
         me = instigator_data
         me._partner = None
-        them = FamilyTreeMember.get(target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        them = FamilyTreeMember.get(target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         them._partner = None
 
 

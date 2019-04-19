@@ -7,7 +7,6 @@ from asyncpg import connect as _connect, Connection, create_pool as _create_pool
 from asyncpg.pool import Pool
 
 
-RANDOM_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_'
 logger = getLogger('marriagebot-db')
 
 
@@ -61,21 +60,8 @@ class DatabaseConnection(object):
         Removes a given user ID form all parts of the database
         '''
 
-        await self('UPDATE marriages SET valid=False WHERE user_id=$1 OR partner_id=$1', user_id)
+        await self('DELETE FROM marriages WHERE user_id=$1 OR partner_id=$1', user_id)
         await self('DELETE FROM parents WHERE child_id=$1 OR parent_id=$1', user_id)
-
-
-    async def make_id(self, table:str, id_field:str) -> str:
-        '''
-        Makes a random ID that hasn't appeared in the database before for a given table
-        '''
-
-        while True:
-            id_number = ''.join(choices(RANDOM_CHARACTERS, k=11))
-            x = await self(f'SELECT * FROM {table} WHERE {id_field}=$1', id_number)
-            if not x:
-                break
-        return id_number
 
 
     async def marry(self, instigator:Member, target:Member, guild_id:int, marriage_id:str=None):
@@ -85,13 +71,12 @@ class DatabaseConnection(object):
         '''
 
         if marriage_id == None:
-            id_number = await self.make_id('marriages', 'marriage_id')
+            id_number = 'a'
         else:
             id_number = marriage_id
         # marriage_id, user_id, user_name, partner_id, partner_name, valid
         await self(
-            'INSERT INTO marriages (marriage_id, user_id, partner_id, valid, guild_id) VALUES ($1, $2, $3, TRUE, $4)',
-            id_number,
+            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
             instigator.id,
             target.id,
             guild_id,
