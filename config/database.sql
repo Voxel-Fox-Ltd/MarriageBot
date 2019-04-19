@@ -8,6 +8,7 @@ CREATE TABLE marriages(
     user_id BIGINT NOT NULL,
     partner_id BIGINT NOT NULL,
     valid BOOLEAN NOT NULL,
+    guild_id BIGINT,
     PRIMARY KEY (marriage_id, user_id)
 );
 -- This table will hold marraiges both in date and divorced pairs
@@ -18,6 +19,7 @@ CREATE TABLE marriages(
 CREATE TABLE parents(
     child_id BIGINT NOT NULL,
     parent_id BIGINT NOT NULL,
+    guild_id BIGINT,
     PRIMARY KEY (child_id)
 );
 -- Since a child will only appear once, you can set child_id to the primary key

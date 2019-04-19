@@ -80,12 +80,7 @@ class GuildEvent(Cog):
         family_guild_members = [FamilyTreeMember.get(i) for i in non_present_ids]
         async with self.bot.database() as db:
             for i in family_guild_members:
-                if i.children:
-                    await db('DELETE FROM parents WHERE parent_id=$1', i.id)
-                if i.parent:
-                    await db('DELETE FROM parents WHERE child_id=$1', i.id)
-                if i.partner:
-                    await db('UPDATE marriages SET valid=False WHERE user_id=$1 OR partner_id=$1', i.id)
+                await db.destroy(i.id)
                 i.destroy()
 
 

@@ -88,8 +88,8 @@ class Parentage(Cog):
         
         # Grab their family tree
         await ctx.trigger_typing()
-        instigator_tree = FamilyTreeMember.get(instigator.id)
-        target_tree = FamilyTreeMember.get(target.id)
+        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
+        target_tree = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         family_id_list = [i.id for i in instigator_tree.span(add_parent=True, expand_upwards=True)]
 
         # Manage more special text restrictions
@@ -132,7 +132,7 @@ class Parentage(Cog):
         # They said yes - add to database
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (child_id, parent_id) VALUES ($1, $2)', instigator.id, target.id)
+                await db('INSERT INTO parents (child_id, parent_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
             except Exception as e:
                 return  # Only thrown when multiple people do at once, just return
         await ctx.send(text_cog.request_accepted(instigator, target), ignore_error=True)
@@ -181,7 +181,7 @@ class Parentage(Cog):
 
         # Check current tree
         await ctx.trigger_typing()
-        user_tree = FamilyTreeMember.get(instigator.id)
+        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         if len(user_tree._children) >= 30:
             await ctx.send("You don't need more than 30 children. Please enter the chill zone.")
             return
@@ -198,7 +198,7 @@ class Parentage(Cog):
         if target.id in tree_id_list:
             await ctx.send(self.bot.get_cog('AdoptRandomText').target_is_family(instigator, target))
             return
-        elif FamilyTreeMember.get(target.id).parent:
+        elif FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None).parent:
             await ctx.send(self.bot.get_cog('AdoptRandomText').target_is_unqualified(instigator, target))
             return
 
@@ -228,16 +228,16 @@ class Parentage(Cog):
         elif response == 'YES':
             async with self.bot.database() as db:
                 try:
-                    await db('INSERT INTO parents (parent_id, child_id) VALUES ($1, $2)', instigator.id, target.id)
+                    await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
                 except Exception as e:
                     return  # Only thrown when multiple people do at once, just return
             try:
                 await ctx.send(self.bot.get_cog('AdoptRandomText').request_accepted(instigator, target))
             except Exception as e:
                 pass
-            me = FamilyTreeMember.get(instigator.id)
+            me = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
             me._children.append(target.id)
-            them = FamilyTreeMember.get(target.id)
+            them = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
             them._parent = instigator.id
 
         self.bot.proposal_cache.remove(instigator.id)
@@ -254,18 +254,18 @@ class Parentage(Cog):
         instigator = ctx.author
         target = child
 
-        user_tree = FamilyTreeMember.get(instigator.id)
+        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         children_ids = user_tree._children
 
         if target.id not in children_ids:
             await ctx.send(self.bot.get_cog('DisownRandomText').invalid_target(instigator, target))
             return
         async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2', target.id, instigator.id)
+            await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3', target.id, instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         await ctx.send(self.bot.get_cog('DisownRandomText').valid_target(instigator, ctx.guild.get_member(child.id)))
 
         user_tree._children.remove(target.id)
-        them = FamilyTreeMember.get(target.id)
+        them = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         them._parent = None
 
 
@@ -278,7 +278,7 @@ class Parentage(Cog):
 
         instigator = ctx.author
 
-        user_tree = FamilyTreeMember.get(instigator.id)
+        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         try:
             parent_id = user_tree.parent.id
         except AttributeError:
@@ -286,11 +286,11 @@ class Parentage(Cog):
             return
 
         async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2', parent_id, instigator.id)
+            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3', parent_id, instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         await ctx.send(self.bot.get_cog('EmancipateRandomText').valid_target(instigator, ctx.guild.get_member(parent_id)))
 
         user_tree._parent = None
-        them = FamilyTreeMember.get(parent_id)
+        them = FamilyTreeMember.get(parent_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else None)
         them._children.remove(instigator.id)
 
 

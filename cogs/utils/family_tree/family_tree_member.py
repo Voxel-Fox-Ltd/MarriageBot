@@ -26,11 +26,13 @@ class FamilyTreeMember(object):
         children: list[int]
         parent_id: int
         partner_id: int
+        guild_id: int=None
     '''
 
     all_users = {None: None}  # id: FamilyTreeMember
     NAME_SUBSTITUTION = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
     INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
+    bot = None
 
     operations = [
         lambda x: x.replace("parent's partner", "parent"),
@@ -51,13 +53,14 @@ class FamilyTreeMember(object):
     ]
 
 
-    def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int):
-        self.id = discord_id
-        self._children = children
-        self._parent = parent_id
-        self._partner = partner_id
-        self.tree_id = get_random_string()
-        self.all_users[self.id] = self
+    def __init__(self, discord_id:int, children:list, parent_id:int, partner_id:int, guild_id:int=None):
+        self.id = discord_id  # The ID of the user whose tree this is
+        self._children = children  # List of the children's IDs
+        self._parent = parent_id  # ID of the parent
+        self._partner = partner_id  # ID of the partner
+        self.tree_id = get_random_string()  # Used purely for the dot joining two spouses in the GZ script
+        self._guild_id = guild_id  # The guild that this FTM is from
+        self.all_users[(self.id, self._guild_id)] = self  # Add this object to cache
 
 
     @staticmethod
@@ -115,17 +118,17 @@ class FamilyTreeMember(object):
 
     @property
     def partner(self):
-        return self.get(self._partner)
+        return self.get(self._partner, self._guild_id)
 
 
     @property
     def parent(self):
-        return self.get(self._parent)
+        return self.get(self._parent, self._guild_id)
 
 
     @property
     def children(self):
-        return [self.get(i) for i in self._children]
+        return [self.get(i, self._guild_id) for i in self._children]
 
 
     @property
@@ -133,28 +136,40 @@ class FamilyTreeMember(object):
         return len(self.children) == 0 and self.parent == None and self.partner == None
 
 
+    @property 
+    def guild(self):
+        if self._guild_id:
+            return self.bot.get_guild(self._guild_id) 
+        return None
+
+
     def destroy(self):
+        '''Removes this user from all cached values'''
+
         if self.partner:
             self.partner._partner = None 
         if self.parent:
-            self.parent._children.remove(self.id)
+            try:
+                self.parent._children.remove(self.id)
+            except ValueError:
+                pass
         for child in self.children:
             child._parent = None 
-        del self.all_users[self.id]
+        del self.all_users[(self.id, self._guild_id)]
 
 
     def get_name(self, bot):
-        x = self.NAME_SUBSTITUTION.sub("_", unidecode(str(bot.get_user(self.id))))
+        '''Gets a GZ-readable name for the user'''
+
+        x = self.NAME_SUBSTITUTION.sub("_", unidecode(str(self.bot.get_user(self.id))))
         if len(x) <= 5:
-            x = self.NAME_SUBSTITUTION.sub("_", str(bot.get_user(self.id)))
+            x = self.NAME_SUBSTITUTION.sub("_", str(self.bot.get_user(self.id)))
         return x
 
 
     @classmethod
     def remove_blank_profiles(cls):
-        '''
-        Removes blank/useless profiles from the cache
-        '''
+        '''Removes blank/useless profiles from the cache'''
 
         for discord_id, tree_member in cls.all_users.items():
             if tree_member == None:
@@ -164,17 +179,21 @@ class FamilyTreeMember(object):
 
 
     @classmethod
-    def get(cls, user_id:User):
-        '''
-        Gets a FamilyTreeMember object for the given user
-        '''
+    def get(cls, user_id:int, guild_id:int=None):
+        '''Gets a FamilyTreeMember object for the given user ID'''
 
+        if user_id == None:
+            return None
         try:
-            return cls.all_users[user_id]
+            return cls.all_users[(user_id, guild_id)]
         except KeyError:
-            x = cls(user_id, [], None, None)
-            cls.all_users[user_id] = x
-            return x
+            return cls(
+                discord_id=user_id, 
+                children=[], 
+                parent_id=None, 
+                partner_id=None, 
+                guild_id=guild_id
+            )
 
 
     def span(self, people_list:list=None, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None) -> list:

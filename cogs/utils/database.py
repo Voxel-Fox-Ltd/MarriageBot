@@ -78,7 +78,7 @@ class DatabaseConnection(object):
         return id_number
 
 
-    async def marry(self, instigator:Member, target:Member, marriage_id:str=None):
+    async def marry(self, instigator:Member, target:Member, guild_id:int, marriage_id:str=None):
         '''
         Marries two users together
         Remains in the Database class solely as you need the "idnumber" field.
@@ -90,10 +90,11 @@ class DatabaseConnection(object):
             id_number = marriage_id
         # marriage_id, user_id, user_name, partner_id, partner_name, valid
         await self(
-            'INSERT INTO marriages VALUES ($1, $2, $3, TRUE)',
+            'INSERT INTO marriages (marriage_id, user_id, partner_id, valid, guild_id) VALUES ($1, $2, $3, TRUE, $4)',
             id_number,
             instigator.id,
             target.id,
+            guild_id,
         )
         if marriage_id == None:
-            await self.marry(target, instigator, id_number)  # Run it again with instigator/target flipped
+            await self.marry(target, instigator, guild_id, id_number)  # Run it again with instigator/target flipped

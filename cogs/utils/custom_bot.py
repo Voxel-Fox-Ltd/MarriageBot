@@ -58,6 +58,10 @@ class CustomBot(AutoShardedBot):
         # Allow database connections like this
         self.database = DatabaseConnection
 
+        # Allow get_guild and setup for server-specific trees
+        self.server_specific_families = []  # list[guild_id]
+        FamilyTreeMember.bot = self
+
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
         self.startup_method = None
@@ -124,14 +128,14 @@ class CustomBot(AutoShardedBot):
         # Cache the family data - partners
         logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
-            FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'])
+            FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'], guild_id=i['guild_id'])
 
         # - children
         logger.debug(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
-            parent = FamilyTreeMember.get(i['parent_id'])
+            parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
             parent._children.append(i['child_id'])
-            child = FamilyTreeMember.get(i['child_id'])
+            child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
             child._parent = i['parent_id']
 
         # - tree customisations
@@ -175,7 +179,10 @@ class CustomBot(AutoShardedBot):
         # Remove anyone who's empty or who the bot can't reach
         count = 0
         async with self.database() as db:
-            for user_id, ftm in FamilyTreeMember.all_users.copy().items():
+            for user_info, ftm in FamilyTreeMember.all_users.copy().items():
+                if user_info == None:
+                    continue
+                user_id, guild_id = user_info
                 if user_id == None or ftm == None:
                     continue
                 if self.get_user(user_id) == None:
