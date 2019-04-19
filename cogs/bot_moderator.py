@@ -7,6 +7,7 @@ from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.checks.is_bot_moderator import is_bot_moderator
 
 
 class ModeratorOnly(Cog):
@@ -44,23 +45,8 @@ class ModeratorOnly(Cog):
             return
 
 
-    async def cog_check(self, ctx:Context):
-        if ctx.author.id in self.bot.config['owners']:
-            return True
-        elif ctx.guild == None:
-            raise MissingPermissions(['MarriageBot moderator'])
-        support_invite = await self.bot.fetch_invite(self.bot.config['guild'])
-        support_guild = support_invite.guild 
-        bot_admin_role = support_guild.get_role(self.bot.config['bot_admin_role'])
-        try:
-            if bot_admin_role in support_guild.get_member(ctx.author.id).roles:
-                return True
-        except Exception:
-            pass
-        raise MissingPermissions(['MarriageBot moderator'])
-
-
     @command()
+    @is_bot_moderator()
     async def uncache(self, ctx:Context, user:User):
         '''
         Removes a user from the propsal cache.
@@ -74,6 +60,7 @@ class ModeratorOnly(Cog):
 
 
     @command()
+    @is_bot_moderator()
     async def forcemarry(self, ctx:Context, user_a:User, user_b:User):
         '''
         Marries the two specified users
@@ -101,6 +88,7 @@ class ModeratorOnly(Cog):
 
 
     @command()
+    @is_bot_moderator()
     async def forcedivorce(self, ctx:Context, user:User):
         '''
         Divorces a user from their spouse
@@ -125,6 +113,7 @@ class ModeratorOnly(Cog):
 
 
     @command()
+    @is_bot_moderator()
     async def forceadopt(self, ctx:Context, parent:User, child:User):
         '''
         Adds the child to the specified parent
@@ -149,6 +138,7 @@ class ModeratorOnly(Cog):
 
 
     @command(aliases=['forceeman'])
+    @is_bot_moderator()
     async def forceemancipate(self, ctx:Context, user:User):
         '''
         Force emancipates a child
@@ -172,6 +162,7 @@ class ModeratorOnly(Cog):
 
 
     @command()
+    @is_bot_moderator()
     async def addvoter(self, ctx:Context, user:User):
         '''
         Adds a voter to the database

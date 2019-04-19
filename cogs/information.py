@@ -12,6 +12,7 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
+from cogs.utils.checks.is_donator import is_patreon, IsNotDonator
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
@@ -73,6 +74,15 @@ class Information(Cog):
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You need to vote on DBL (`{ctx.prefix}vote`) to be able to run this command.")
+            return
+
+        # Donator
+        elif isinstance(error, IsNotDonator):
+            # Bypass for owner
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(f"You need to be a Patreon subscriber (`{ctx.prefix}donate`) to be able to run this command.")
             return
     
         # Argument conversion error
@@ -276,7 +286,7 @@ class Information(Cog):
 
     @command(hidden=True, enabled=True)
     @can_send_files()
-    @is_voter()
+    @is_patreon()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:Member=None):
         '''
@@ -330,19 +340,20 @@ class Information(Cog):
         except AsyncTimeoutError:
             await ctx.send("Your tree generation has timed out. This is usually due to a loop somewhere in your family tree.")
             return
-        with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.dot', 'w', encoding='utf-8') as a:
+        with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:
             a.write(dot_code)
 
         # Convert to an image
         dot = await create_subprocess_exec(*[
             'dot', 
             '-Tpng', 
-            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.dot', 
+            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 
             '-o', 
             f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png', 
             '-Gcharset=UTF-8', 
-            '-Gsize=200\\!', 
-            '-Gdpi=100'
+            # '-Gsize=200', 
+            # '-Gsize=200\\!', 
+            # '-Gdpi=500'
             ], loop=self.bot.loop
         )
         await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
