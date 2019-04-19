@@ -1,6 +1,8 @@
+from datetime import datetime as dt
+
 from discord import User
 from discord.ext.commands import command, Context, Cog, cooldown
-from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument
+from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
@@ -47,8 +49,14 @@ class ModeratorOnly(Cog):
             return True
         elif ctx.guild == None:
             raise MissingPermissions(['MarriageBot moderator'])
-        if self.bot.config['bot_admin_role'] in [i.id for i in ctx.author.roles]:
-            return True
+        support_invite = await self.bot.fetch_invite(self.bot.config['guild'])
+        support_guild = support_invite.guild 
+        bot_admin_role = support_guild.get_role(self.bot.config['bot_admin_role'])
+        try:
+            if bot_admin_role in support_guild.get_member(ctx.author.id).roles:
+                return True
+        except Exception:
+            pass
         raise MissingPermissions(['MarriageBot moderator'])
 
 
@@ -160,6 +168,21 @@ class ModeratorOnly(Cog):
                 return  # Should only be thrown when the database can't connect 
         me.parent._children.remove(user.id)
         me._parent = None
+        await ctx.send("Consider it done.")
+
+
+    @command()
+    async def addvoter(self, ctx:Context, user:User):
+        '''
+        Adds a voter to the database
+        '''
+
+        self.bot.dbl_votes[user.id] = dt.now()
+        async with self.bot.database() as db:
+            try:
+                await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user.id, self.bot.dbl_votes[user.id])
+            except Exception as e:
+                await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user.id, self.bot.dbl_votes[user.id])
         await ctx.send("Consider it done.")
 
 
