@@ -23,18 +23,3 @@ def is_bot_moderator():
             return True 
         raise MissingPermissions(['MarriageBot moderator'])
     return check(predicate)
-
-
-
-
-
-
-support_invite = await self.bot.fetch_invite(self.bot.config['guild'])
-support_guild = support_invite.guild 
-bot_admin_role = support_guild.get_role(self.bot.config['bot_admin_role'])
-try:
-    if bot_admin_role in support_guild.get_member(ctx.author.id).roles:
-        return True
-except Exception:
-    pass
-raise MissingPermissions(['MarriageBot moderator'])
