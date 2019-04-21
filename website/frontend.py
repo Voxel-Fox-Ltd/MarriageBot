@@ -1,5 +1,6 @@
 from os import getcwd
 from json import dumps
+from urllib.parse import urlencode
 
 from aiohttp import ClientSession
 from aiohttp.web import RouteTableDef, Request, HTTPFound, static, Response
@@ -10,11 +11,57 @@ from cogs.utils.customised_tree_user import CustomisedTreeUser
 
 
 routes = RouteTableDef()
+OAUTH_SCOPE = 'identify guilds'
+
+
+class AuthenticationError(Exception):
+    '''Raised to show that they don't have any authentication'''
+    def __init__(self, message:str):
+        super().__init__(message)
+
+
+async def check_authentication(request:Request, requested_user_id:int=None):
+    '''
+    Checks if the session user is both logged in and is allowed to get the requested user
+    '''
+
+    # Get main vairables
+    bot = request.app['bot']
+    session = await get_session(request)
+    try:
+        requested_user_id = requested_user_id or session['user_id']
+    except KeyError:
+        session.invalidate()
+        raise AuthenticationError('No session user ID')
+
+    # Check they're authed to get another user if necessary
+    if requested_user_id != session['user_id']:
+        # Get the guild from the invite URL in config
+        try:
+            invite = await bot.fetch_invite(bot.config['guild'])
+            support_guild_id = invite.guild.id
+        except AttributeError:
+            session.invalidate()
+            raise AuthenticationError('No support guild URL')
+
+        # Get the members who are allowed the support role
+        support_guild = bot.get_guild(support_guild_id)
+        bot_admin_role = support_guild.get_role(bot.config['bot_admin_role'])
+        if bot_admin_role == None:
+            session.invalidate()
+            raise AuthenticationError('No valid bot admin role')
+
+        # Checks the users with the support role
+        allowed_ids = [i.id for i in bot_admin_role.members]
+        if session['user_id'] not in allowed_ids:
+            session.invalidate()
+            raise AuthenticationError('Not allowed to view page')
+
+    # Returns bot and the user
+    return session, bot, bot.get_user(requested_user_id)
 
 
 @routes.get("/")
-@routes.get("/home")
-@routes.get("/index")
 @template('index.jinja')
 async def index(request:Request):
     '''
@@ -24,14 +71,20 @@ async def index(request:Request):
     '''
 
     session = await get_session(request)
-    if not session.get('user_info'):
-        return {}
-    user_info = session.get('user_info')
-    return HTTPFound(location=f'/colours/{user_info["id"]}')
+    bot = request.app['bot']
+    login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
+        'client_id': bot.config['oauth']['client_id'],
+        'redirect_uri': bot.config['oauth']['redirect_uri'],
+        'response_type': 'code',
+        'scope': OAUTH_SCOPE
+    })
+    if not session.get('user'):
+        return {'bot': bot, 'user': None, 'login_url': login_url}
+    user = session.get('user')
+    return HTTPFound(location=f'/settings/{user.id}')
 
 
 @routes.get('/login')
-@routes.post('/login')
 async def login(request:Request):
     '''
     Page the discord login redirects the user to when successfully logged in with Discord
@@ -50,7 +103,7 @@ async def login(request:Request):
     data = {
         'grant_type': 'authorization_code',
         'code': code, 
-        'scope': 'identify guilds',
+        'scope': OAUTH_SCOPE
     }
     data.update(oauth_data)
     headers = {
@@ -72,144 +125,99 @@ async def login(request:Request):
         async with session.get(guilds_url, headers=headers) as r:
             guild_info = await r.json()
 
-    # Process it all up
+    # Save and redirect
     session = await new_session(request)
-    session['user_info'] = user_info
-    session['guild_info'] = guild_info
-    # return Response(
-    #     text=dumps(dict(session)),
-    #     content_type='application/json'
-    # )
-    return HTTPFound(location=f'/colours/{user_info["id"]}')
+    session['raw_user_info'] = user_info
+    session['user_id'] = user_id = int(user_info['id'])
+    session['raw_guild_info'] = guild_info
+    return HTTPFound(location=f'/settings/{user_id}')
 
 
-@routes.get('/colours/{user_id}')
-@template('colours.jinja')
-async def colours(request:Request):
+@routes.get('/settings/{user_id}')
+@template('settings.jinja')
+async def settings(request:Request):
     '''
-    Handles the colours page for the user
+    Handles the main settings page for the bot
     '''
 
-    # Check they're logged in
-    session = await get_session(request)
-    if not session.get('user_info'):
+    # Get the user
+    try:
+        session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
+        if user == None:
+            raise AuthenticationError('User does not exist')
+    except (ValueError, AuthenticationError) as e:
         return HTTPFound(location='/')
 
-    # Check they're giving a user ID in the URL
-    user_id = request.match_info.get('user_id')
-    if not user_id:
-        return HTTPFound(location=f'/colours/{session["user_info"]["id"]}')
+    return {'bot': bot, 'session': session, 'user': user}
 
-    # Get their current values and punch em out to the user
-    ctu = CustomisedTreeUser.get(int(user_id))
-    return {
-        'user': session.get('user_info'), 
-        'hex_strings': ctu.unquoted_hex,
-    }
+
+@routes.get('/user_settings/{user_id}')
+@template('user_settings.jinja')
+async def user_settings(request:Request):
+    '''
+    Handles the users' individual settings pages
+    '''
+
+    # Get the user
+    try:
+        session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
+        if user == None:
+            raise AuthenticationError('User does not exist')
+    except (ValueError, AuthenticationError) as e:
+        return HTTPFound(location='/')
+
+    if len(request.query) > 0:
+        colours_raw = {
+            'edge': request.query.get('edge'),
+            'node': request.query.get('node'),
+            'font': request.query.get('font'),
+            'highlighted_font': request.query.get('highlighted_font'),
+            'highlighted_node': request.query.get('highlighted_node'),
+            'background': request.query.get('background'),
+        } 
+        colours = {}
+        for i, o in colours_raw.items():
+            if o == None:
+                o = 'transparent'
+            colours[i] = o
+    else:
+        colours = CustomisedTreeUser.get(user.id).unquoted_hex
+    tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' for i, o in colours.items()])
+    return {'bot': bot, 'session': session, 'user': user, 'hex_strings': colours, 'tree_preview_url': tree_preview_url}
+
+
+@routes.get('/tree_preview')
+@template('tree_preview.jinja')
+async def tree_preview(request:Request):
+    '''
+    Tree preview for the bot
+    '''
+
+    colours_raw = {
+        'edge': request.query.get('edge'),
+        'node': request.query.get('node'),
+        'font': request.query.get('font'),
+        'highlighted_font': request.query.get('highlighted_font'),
+        'highlighted_node': request.query.get('highlighted_node'),
+        'background': request.query.get('background'),
+    } 
+    colours = {}
+    for i, o in colours_raw.items():
+        if o == None or o == 'transparent':
+            o = 'transparent'
+        else:
+            o = f'#{o.strip("#")}'
+        colours[i] = o
+
+    return {'bot': request.app['bot'],'hex_strings': colours}
 
 
 @routes.get('/logout')
 async def logout(request:Request):
     '''
-    Logs out the user and destroys their session
+    Handles logout
     '''
-
+    
     session = await get_session(request)
     session.invalidate()
     return HTTPFound(location='/')
-
-
-# @app.route("/submit_colours", methods=['post','get'])
-# def submit_colours():
-#     colours = request.form
-#     user_object = users.get(session.get("user_token"))
-
-#     Marriagebot.set_colours(
-#         user_id=user_object.id,
-#         edge=colours["edge_colour"].strip('#'),
-#         node=colours["node_colour"].strip('#'),
-#         font=colours["font_colour"].strip('#'),
-#         highlighted_font=colours["highlighted_font_colour"].strip('#'),
-#         highlighted_node=colours["highlighted_node_colour"].strip('#'),
-#         background=colours["background_colour"].strip('#')
-#     )
-#     return redirect("/colours")
-
-# @app.route("/submit_prefix/<guild_id>",methods=['post'])
-# def submit_prefix(guild_id):
-#     prefix=request.form.get("prefix")
-#     user_object=users.get(session.get("user_token"))
-#     guild_object=user_object.get_guild(guild_id)
-#     guild_object.prefix=prefix
-#     Marriagebot.set_prefix(
-#         guild_id=guild_object.id,
-#         prefix=prefix,
-#         user_id=user_object.id
-#     )
-#     return redirect("/guilds/"+guild_id)   
-
-
-# @app.route("/colours",methods=["post","get"])
-# def colours():
-#     '''
-#     Page that allows user to select colours and submit them
-#     '''
-
-#     if session.get("user_token") is None:
-#         return redirect("/")
-        
-#     user_object = users.get(session.get("user_token"))
-#     colours = Marriagebot.get_colours(user_object.id)
-#     guild_list = user_object.guild_list
-#     return render_template(
-#         "colours.html",
-#         colours_url="/colours",
-#         guilds_url="/guilds",
-#         logout_url="/logout",
-#         user_avatar=user_object.get_avatar_url(),
-#         username=user_object.get_name(),
-#         marriagebot_logo="http://hatton-garden.net/blog/wp-content/uploads/2012/03/wedding-rings.jpg",
-#         edge_colour=colours["edge"],
-#         node_colour=colours["node"],
-#         font_colour=colours["font"],
-#         highlighted_font_colour=colours["highlighted_font"],
-#         highlighted_node_colour=colours["highlighted_node"],
-#         background_colour=colours["background"],
-#         guild_list=guild_list
-#     )
-
-
-# @app.route("/guilds", methods=["post","get"])
-# def guilds():
-#     '''
-#     Page that allows user to select guild out of guilds they own
-#     '''
-
-#     if session.get("user_token") is None:
-#         return redirect("/")
-
-#     user_object = users.get(session.get("user_token"))
-#     guilds = user_object.guild_list
-#     return redirect(f"/guilds/{guilds[0].id}")
-
-
-# @app.route("/guilds/<guild_id>", methods=["get"])
-# def selected_guild(guild_id):
-#     if session.get("user_token") is None:
-#         return redirect("/")
-
-#     user_object=users.get(session.get("user_token"))
-#     guild_list=user_object.guild_list
-#     selected_guild=user_object.get_guild(guild_id)
-
-#     return render_template(
-#         "guilds.html",
-#         colours_url="/colours",
-#         guilds_url="/guilds",
-#         logout_url="/logout",
-#         user_avatar=user_object.get_avatar_url(),
-#         username=user_object.get_name(),
-#         marriagebot_logo="http://hatton-garden.net/blog/wp-content/uploads/2012/03/wedding-rings.jpg",
-#         guild_list=guild_list,
-#         selected_guild=selected_guild
-#     )
