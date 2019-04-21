@@ -133,6 +133,7 @@ async def login(request:Request):
     return HTTPFound(location=f'/settings/{user_id}')
 
 
+@routes.get('/settings')
 @routes.get('/settings/{user_id}')
 @template('settings.jinja')
 async def settings(request:Request):
@@ -141,16 +142,23 @@ async def settings(request:Request):
     '''
 
     # Get the user
+    error = None
     try:
         session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
         if user == None:
-            raise AuthenticationError('User does not exist')
-    except (ValueError, AuthenticationError) as e:
+            error = AuthenticationError('User does not exist')
+    except ValueError:
+        session, bot, user = await check_authentication(request)
+        if user == None:
+            error = AuthenticationError('User does not exist')
+        return HTTPFound(location=f'/settings/{user.id}')
+    if isinstance(error, AuthenticationError):
         return HTTPFound(location='/')
 
     return {'bot': bot, 'session': session, 'user': user}
 
 
+@routes.get('/user_settings')
 @routes.get('/user_settings/{user_id}')
 @template('user_settings.jinja')
 async def user_settings(request:Request):
@@ -159,11 +167,17 @@ async def user_settings(request:Request):
     '''
 
     # Get the user
+    error = None
     try:
         session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
         if user == None:
-            raise AuthenticationError('User does not exist')
-    except (ValueError, AuthenticationError) as e:
+            error = AuthenticationError('User does not exist')
+    except ValueError:
+        session, bot, user = await check_authentication(request)
+        if user == None:
+            error = AuthenticationError('User does not exist')
+        return HTTPFound(location=f'/user_settings/{user.id}')
+    if isinstance(error, AuthenticationError):
         return HTTPFound(location='/')
 
     if len(request.query) > 0:
