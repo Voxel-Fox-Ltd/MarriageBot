@@ -81,7 +81,7 @@ async def index(request:Request):
     if not session.get('user'):
         return {'bot': bot, 'user': None, 'login_url': login_url}
     user = session.get('user')
-    return HTTPFound(location=f'/colours/{user.id}')
+    return HTTPFound(location=f'/settings/{user.id}')
 
 
 @routes.get('/login')

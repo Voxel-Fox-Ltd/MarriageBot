@@ -38,20 +38,20 @@ class CustomContext(Context):
             embed = Embed(description=content, colour=randint(1, 0xffffff))
 
             # Set footer
-            extra = [{'text': 'MarriageBot'}] * 20
-            extra += [
-                {'text': 'MarriageBot - Made by Caleb#2831'},
-                {'text': f'MarriageBot - Add me to your own server! ({self.prefix}invite)'}
-            ]
-            if self.bot.config.get('dbl_token'):
-                extra.append({'text': f'MarriageBot - Add a vote on Discord Bot List! ({self.prefix}vote)'})
-            if self.bot.config.get('patreon'):
-                extra.append({'text': f'MarriageBot - Support me on Patreon! ({self.prefix}patreon)'})
-            if self.bot.config.get('guild'):
-                extra.append({'text': f'MarriageBot - Join the official Discord server! ({self.prefix}server)'})
-            footer = choice(extra)
+            try:
+                possible_footer_objects = [[i] * i.get('amount', 1) for i in self.bot.config['footer']]  # Get from config
+                footer_text_amount = []  # Make list for text 
+                [footer_text_amount.extend(i) for i in possible_footer_objects]  # Flatten list
+                footer_text = [{'text': i['text']} for i in footer_text_amount]  # Remove 'amount'
+
+                # Make sure it's not empty
+                if len(footer_text) == 0:
+                    raise Exception('Make default text')
+            except Exception:
+                footer_text = [{'text': 'MarriageBot'}]
+            footer = choice(footer_text)
             footer.update({'icon_url': self.bot.user.avatar_url})
-            footer['text'] = footer['text'].replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", f"@{self.bot.user!s} ")
+            footer['text'] = footer['text'].replace('{prefix}', self.prefix).replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", f"@{self.bot.user!s} ")
             embed.set_footer(**footer)
 
             # Set image

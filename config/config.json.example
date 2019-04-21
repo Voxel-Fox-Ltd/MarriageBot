@@ -17,6 +17,23 @@
         "app_name": "",
         "document_host": ""
     },
+    "oauth": {
+        "client_id": "",
+        "client_secret": "",
+        "redirect_uri": "https://marriagebot.xyz/login"
+    },
+    "ssl_context": {
+        "certfile": "/etc/letsencrypt/live/www.marriagebot.xyz/cert.pem",
+        "keyfile": "/etc/letsencrypt/live/www.marriagebot.xyz/privkey.pem"
+    },
+    "footer": [
+        {"text": "MarriageBot", "amount": 1},
+        {"text": "MarriageBot - Made by Caleb#2831", "amount": 3},
+        {"text": "MarriageBot - Add a vote on Discord Bot List! ({prefix}vote)", "amount": 3},
+        {"text": "MarriageBot - Support me on Patreon! ({prefix}donate)", "amount": 3},
+        {"text": "MarriageBot - Please help keep me alive ({prefix}donate)", "amount": 10},
+        {"text": "MarriageBot - Join the official Discord server! ({prefix}server)", "amount": 3}
+    ],
     "tree_file_location": "./trees",
     "dbl_vainity": "",
     "github": "",
