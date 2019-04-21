@@ -40,10 +40,11 @@ class Help(Cog):
         for cog in cog_commands:
             runnable_cog = []
             for command in cog:
-                try:
-                    runnable = await command.can_run(ctx) and command.hidden == False and command.enabled == True
-                except Exception:
-                    runnable = False 
+                # try:
+                #     runnable = await command.can_run(ctx) and command.hidden == False and command.enabled == True
+                # except Exception:
+                #     runnable = False 
+                runnable = command.hidden == False and command.enabled == True
                 if runnable:
                     runnable_cog.append(command) 
             runnable_cog.sort(key=lambda x: x.name.lower())

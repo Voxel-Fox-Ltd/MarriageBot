@@ -45,7 +45,7 @@ class ModeratorOnly(Cog):
             return
 
 
-    @command()
+    @command(hidden=True)
     @is_bot_moderator()
     async def uncache(self, ctx:Context, user:User):
         '''
@@ -59,7 +59,7 @@ class ModeratorOnly(Cog):
             await ctx.send("The user wasn't even in the cache but go off I guess.")
 
 
-    @command()
+    @command(hidden=True)
     @is_bot_moderator()
     async def forcemarry(self, ctx:Context, user_a:User, user_b:User):
         '''
@@ -87,7 +87,7 @@ class ModeratorOnly(Cog):
         await ctx.send("Consider it done.")
 
 
-    @command()
+    @command(hidden=True)
     @is_bot_moderator()
     async def forcedivorce(self, ctx:Context, user:User):
         '''
@@ -112,7 +112,7 @@ class ModeratorOnly(Cog):
         await ctx.send("Consider it done.")
 
 
-    @command()
+    @command(hidden=True)
     @is_bot_moderator()
     async def forceadopt(self, ctx:Context, parent:User, child:User):
         '''
@@ -137,7 +137,7 @@ class ModeratorOnly(Cog):
         await ctx.send("Consider it done.")
 
 
-    @command(aliases=['forceeman'])
+    @command(aliases=['forceeman'], hidden=True)
     @is_bot_moderator()
     async def forceemancipate(self, ctx:Context, user:User):
         '''
@@ -161,7 +161,7 @@ class ModeratorOnly(Cog):
         await ctx.send("Consider it done.")
 
 
-    @command()
+    @command(hidden=True)
     @is_bot_moderator()
     async def addvoter(self, ctx:Context, user:User):
         '''
