@@ -438,7 +438,7 @@ class FamilyTreeMember(object):
         return people_dict
 
 
-    def to_dot_script(self, bot, guild:Guild=None) -> str:
+    def to_dot_script(self, bot, guild:Guild=None, customised_tree_user:CustomisedTreeUser=None) -> str:
         '''
         Gives you a string of the current family tree that will go through Family
 
@@ -452,29 +452,33 @@ class FamilyTreeMember(object):
 
         # Get the generation spanning tree
         root_user = self.get_root(guild=guild)
+        if customised_tree_user == None:
+            customised_tree_user = CustomisedTreeUser.get(self.id)
         gen_span = root_user.generational_span(guild=guild)
         # gen_span = root_user.generational_span(guild=guild, expand_upwards=True, add_parent=True)
-        return self.to_dot_script_from_generational_span(bot, gen_span)
+        return self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
     
-    def to_full_dot_script(self, bot) -> str:
+    def to_full_dot_script(self, bot, customised_tree_user:CustomisedTreeUser=None) -> str:
         '''
         Gives you the string of the FULL current family
         '''
 
         # Get the generation spanning tree
         root_user = self.get_root()
+        if customised_tree_user == None:
+            customised_tree_user = CustomisedTreeUser.get(self.id)
         # gen_span = root_user.generational_span(guild=guild)
         gen_span = root_user.generational_span(expand_upwards=True, add_parent=True)
-        return self.to_dot_script_from_generational_span(bot, gen_span)
+        return self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
 
-    def to_dot_script_from_generational_span(self, bot, gen_span:dict) -> str:
+    def to_dot_script_from_generational_span(self, bot, gen_span:dict, customised_tree_user:CustomisedTreeUser) -> str:
         '''
         Generates the DOT script from a given generational span
         '''
 
-        ctu = CustomisedTreeUser.get(self.id)
+        ctu = customised_tree_user
 
         # Find my own depth
         my_depth = None

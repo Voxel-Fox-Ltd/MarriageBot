@@ -14,6 +14,7 @@ from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
 from cogs.utils.checks.is_donator import is_patreon, IsNotDonator
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.customised_tree_user import CustomisedTreeUser
 
 
 class Information(Cog):
@@ -36,7 +37,7 @@ class Information(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter)):
+        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -288,7 +289,7 @@ class Information(Cog):
     @can_send_files()
     @is_patreon()
     @cooldown(1, 60, BucketType.guild)
-    async def stupidtree(self, ctx:Context, root:Member=None):
+    async def stupidtree(self, ctx:Context, root:User=None):
         '''
         Gets the family tree of a given user
         '''
@@ -330,9 +331,9 @@ class Information(Cog):
 
         # Write their treemaker code to a file
         if stupid_tree:
-            awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_full_dot_script, self.bot)
+            awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_full_dot_script, self.bot, CustomisedTreeUser.get(ctx.author.id))
         else:
-            awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_dot_script, self.bot, None if all_guilds else ctx.guild)
+            awaitable_dot_code = self.bot.loop.run_in_executor(None, tree.to_dot_script, self.bot, None if all_guilds else ctx.guild, CustomisedTreeUser.get(ctx.author.id))
 
         # Await their dot methd
         try:
