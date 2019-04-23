@@ -285,7 +285,7 @@ class Information(Cog):
             raise e
 
 
-    @command(hidden=True, enabled=True)
+    @command(aliases=['st'], hidden=True, enabled=True)
     @can_send_files()
     @is_patreon()
     @cooldown(1, 60, BucketType.guild)
