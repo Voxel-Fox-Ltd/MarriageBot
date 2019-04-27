@@ -101,7 +101,7 @@ class Information(Cog):
             return
 
 
-    @command(aliases=['spouse', 'husband', 'wife'])
+    @command(aliases=['spouse', 'husband', 'wife', 'marriage'])
     @cooldown(1, 5, BucketType.user)
     async def partner(self, ctx:Context, user:User=None):
         '''
@@ -121,7 +121,7 @@ class Information(Cog):
         await ctx.send(f"`{user!s}` is currently married to `{partner!s}` (`{partner.id}`).")
 
 
-    @command(aliases=['child'])
+    @command(aliases=['child', 'kids'])
     @cooldown(1, 5, BucketType.user)
     async def children(self, ctx:Context, user:User=None):
         '''
@@ -200,7 +200,7 @@ class Information(Cog):
         # Return all output
         await ctx.send(output)
 
-    @command()
+    @command(aliases=['parents'])
     @cooldown(1, 5, BucketType.user)
     async def parent(self, ctx:Context, user:User=None):
         '''
@@ -267,7 +267,7 @@ class Information(Cog):
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command(aliases=['familytree'], enabled=True)
+    @command(aliases=['familytree'], enabled=True, hidden=True)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
@@ -285,7 +285,7 @@ class Information(Cog):
             raise e
 
 
-    @command(hidden=True, enabled=True)
+    @command(enabled=True, hidden=True)
     @can_send_files()
     @is_patreon()
     @cooldown(1, 60, BucketType.guild)
@@ -300,7 +300,7 @@ class Information(Cog):
             raise e
 
 
-    @command(aliases=['fulltree', 'ft', 'gt'], enabled=True)
+    @command(aliases=['fulltree', 'ft', 'gt'], enabled=True, hidden=True)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):
