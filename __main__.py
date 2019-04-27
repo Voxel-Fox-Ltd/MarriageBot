@@ -91,7 +91,7 @@ if __name__ == '__main__':
     loop.run_until_complete(DatabaseConnection.create_pool(bot.config['database']))
 
     logger.info("Starting bot...")
-    loop.create_task(bot.start())
+    # loop.create_task(bot.start())
 
     # Start the server unless I said otherwise
     webserver = None
@@ -128,16 +128,16 @@ if __name__ == '__main__':
     # This is the forever loop
     try:
         logger.info("Running asyncio loop forever method")
-        loop.run_forever()
+        # loop.run_forever()
+        bot.run()
     except KeyboardInterrupt: 
-        logger.info("Logging out bot")
-        loop.run_until_complete(bot.logout())
-        if webserver:
-            logger.info("Closing webserver")
-            loop.run_until_complete(application.cleanup())
-        logger.info("Closing database pool")
-        loop.run_until_complete(DatabaseConnection.pool.close())
-    finally:
-        # Close the asyncio loop
-        logger.info("Closing asyncio loop")
-        loop.close()
+        pass
+    logger.info("Logging out bot")
+    # loop.run_until_complete(bot.logout())
+    if webserver:
+        logger.info("Closing webserver")
+        loop.run_until_complete(application.cleanup())
+    logger.info("Closing database pool")
+    loop.run_until_complete(DatabaseConnection.pool.close())
+    logger.info("Closing asyncio loop")
+    loop.close()
