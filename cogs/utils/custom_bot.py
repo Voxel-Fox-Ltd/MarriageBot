@@ -311,7 +311,7 @@ class CustomBot(AutoShardedBot):
         super().run(self.config['token'])
 
 
-    async def start(self):
+    async def start(self, token:str=None):
         '''Starts up the bot and whathaveyou'''
 
         logger.debug("Running startup method") 
@@ -319,7 +319,7 @@ class CustomBot(AutoShardedBot):
         logger.debug("Starting delete loop")
         self.deletion_method = self.loop.create_task(self.delete_loop())
         logger.debug("Running original D.py start method")
-        await super().start(self.config['token'])
+        await super().start(token or self.config['token'])
 
     
     async def logout(self):
