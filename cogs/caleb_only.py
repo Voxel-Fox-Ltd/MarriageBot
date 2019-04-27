@@ -43,7 +43,7 @@ class CalebOnly(Cog):
         raise NotOwner
 
 
-    @command(aliases=['pm', 'dm'])
+    @command(aliases=['pm', 'dm'], hidden=True)
     async def message(self, ctx:Context, user:User, *, content:str):
         '''
         Messages a user the given content
@@ -52,7 +52,7 @@ class CalebOnly(Cog):
         await user.send(content)
 
 
-    @command()
+    @command(hidden=True)
     async def seememory(self, ctx:Context):
         '''
         Shows you the number of each created object in the program
@@ -83,7 +83,7 @@ class CalebOnly(Cog):
         return content.strip('` \n')
 
 
-    @command()
+    @command(hidden=True)
     async def ev(self, ctx:Context, *, content:str):
         '''
         Evaluates some Python code
@@ -151,7 +151,7 @@ class CalebOnly(Cog):
                 await ctx.send(text)
 
 
-    @command(aliases=['rld'])
+    @command(aliases=['rld'], hidden=True)
     async def reload(self, ctx:Context, *cog_name:str):
         '''
         Unloads a cog from the bot
@@ -174,7 +174,7 @@ class CalebOnly(Cog):
         await ctx.send('Cog reloaded.')
 
 
-    @command()
+    @command(hidden=True)
     async def runsql(self, ctx:Context, *, content:str):
         '''
         Runs a line of SQL into the sparcli database
@@ -227,7 +227,7 @@ class CalebOnly(Cog):
         await ctx.send('```\n{}```'.format(string_output))
 
 
-    @group()
+    @group(hidden=True)
     async def profile(self, ctx:Context):
         '''
         A parent group for the different profile commands
@@ -236,7 +236,7 @@ class CalebOnly(Cog):
         pass
 
 
-    @profile.command(aliases=['username'])
+    @profile.command(aliases=['username'], hidden=True)
     async def name(self, ctx:Context, *, username:str):
         '''
         Lets you change the username of the bot
@@ -250,7 +250,7 @@ class CalebOnly(Cog):
         await ctx.send('Done.')
 
 
-    @profile.command(aliases=['photo', 'image', 'avatar'])
+    @profile.command(aliases=['photo', 'image', 'avatar'], hidden=True)
     async def picture(self, ctx:Context, *, image_url:str=None):
         '''
         Lets you change the username of the bot
@@ -270,7 +270,7 @@ class CalebOnly(Cog):
         await ctx.send('Done.')
 
 
-    @profile.command(aliases=['game'])
+    @profile.command(aliases=['game'], hidden=True)
     async def activity(self, ctx:Context, activity_type:str, *, name:str=None):
         '''
         Changes the activity of the bot
@@ -284,7 +284,7 @@ class CalebOnly(Cog):
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
 
-    @profile.command()
+    @profile.command(hidden=True)
     async def status(self, ctx:Context, status:str):
         '''
         Changes the bot's status
