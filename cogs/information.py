@@ -204,7 +204,7 @@ class Information(Cog):
     @cooldown(1, 5, BucketType.user)
     async def parent(self, ctx:Context, user:User=None):
         '''
-        Tells you who your parent is
+        Tells you who someone's parent is
         '''
 
         if user == None:

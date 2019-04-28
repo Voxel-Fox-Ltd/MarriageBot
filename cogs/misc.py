@@ -73,10 +73,10 @@ class Misc(Cog):
         '''
 
         links = []
-        if self.bot.config['paypal']:
-            links.append(f"PayPal: <{self.bot.config['paypal']}>")
         if self.bot.config['patreon']:
             links.append(f"Patreon: <{self.bot.config['patreon']}>")
+        if self.bot.config['paypal']:
+            links.append(f"PayPal: <{self.bot.config['paypal']}> (doesn't get you the perks, but is very appreciated)")
         if not links:
             return 
         await ctx.send('\n'.join(links), embeddify=False)        

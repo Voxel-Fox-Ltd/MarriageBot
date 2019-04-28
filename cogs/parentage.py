@@ -13,6 +13,7 @@ from cogs.utils.random_text.adopt import AdoptRandomText
 from cogs.utils.random_text.disown import DisownRandomText
 from cogs.utils.random_text.emancipate import EmancipateRandomText
 from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
+from cogs.utils.checks.is_donator import is_patreon_predicate
 from cogs.utils.acceptance_check import AcceptanceCheck
 
 
@@ -100,9 +101,14 @@ class Parentage(Cog):
             await ctx.send(text_cog.instigator_is_unqualified(instigator, target))
             return
 
-        # Manage child amount
-        if len(target_tree._children) >= 30:
-            await ctx.send("You don't need more than 30 children. Please enter the chill zone.")
+        # Manage children
+        is_patreon = is_patreon_predicate(ctx.bot, instigator)
+        children_amount = 15 if is_patreon else 30
+        if len(user_tree._children) >= children_amount:
+            await ctx.send({
+                True: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
+                False: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
+            }.get(is_patreon))
             return
 
         # Valid request
@@ -182,8 +188,15 @@ class Parentage(Cog):
         # Check current tree
         await ctx.trigger_typing()
         user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        if len(user_tree._children) >= 30:
-            await ctx.send("You don't need more than 30 children. Please enter the chill zone.")
+
+        # Manage children
+        is_patreon = is_patreon_predicate(ctx.bot, instigator)
+        children_amount = 15 if is_patreon else 30
+        if len(user_tree._children) >= children_amount:
+            await ctx.send({
+                True: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
+                False: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
+            }.get(is_patreon))
             return
 
         # Make get_root awaitable
@@ -195,6 +208,7 @@ class Parentage(Cog):
             return
         tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
 
+        # Manage more parent checks
         if target.id in tree_id_list:
             await ctx.send(self.bot.get_cog('AdoptRandomText').target_is_family(instigator, target))
             return
