@@ -307,11 +307,11 @@ class CustomBot(AutoShardedBot):
             self.config = load(a)
 
 
-    def run(self):
-        super().run(self.config['token'])
+    def run(self, *args, **kwargs):
+        super().run(self.config['token'], *args, **kwargs)
 
 
-    async def start(self, token:str=None):
+    async def start(self, token:str=None, *args, **kwargs):
         '''Starts up the bot and whathaveyou'''
 
         logger.debug("Running startup method") 
@@ -319,13 +319,13 @@ class CustomBot(AutoShardedBot):
         logger.debug("Starting delete loop")
         self.deletion_method = self.loop.create_task(self.delete_loop())
         logger.debug("Running original D.py start method")
-        await super().start(token or self.config['token'])
+        await super().start(token or self.config['token'], *args, **kwargs)
 
     
-    async def logout(self):
+    async def logout(self, *args, **kwargs):
         '''Logs out the bot and all of its started processes'''
 
         logger.debug("Closing aiohttp ClientSession")
         await self.session.close()
         logger.debug("Running original D.py logout method")
-        await super().logout()
+        await super().logout(*args, **kwargs)
