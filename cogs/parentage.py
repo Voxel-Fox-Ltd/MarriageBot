@@ -103,11 +103,11 @@ class Parentage(Cog):
 
         # Manage children
         is_patreon = is_patreon_predicate(ctx.bot, instigator)
-        children_amount = 15 if is_patreon else 30
+        children_amount = 30 if is_patreon else 15
         if len(user_tree._children) >= children_amount:
             await ctx.send({
-                True: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
-                False: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
+                False: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
+                True: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
             }.get(is_patreon))
             return
 
@@ -191,11 +191,11 @@ class Parentage(Cog):
 
         # Manage children
         is_patreon = is_patreon_predicate(ctx.bot, instigator)
-        children_amount = 15 if is_patreon else 30
+        children_amount = 30 if is_patreon else 15
         if len(user_tree._children) >= children_amount:
             await ctx.send({
-                True: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
-                False: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
+                False: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
+                True: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
             }.get(is_patreon))
             return
 
