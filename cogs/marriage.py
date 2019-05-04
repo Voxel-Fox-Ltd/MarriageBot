@@ -2,7 +2,7 @@ from re import compile
 from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 
 from discord import Member
-from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands import MissingRequiredArgument, CommandOnCooldown, BadArgument
 from discord.ext.commands.cooldowns import BucketType
 
@@ -10,6 +10,7 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
 from cogs.utils.acceptance_check import AcceptanceCheck
+from cogs.utils.custom_cog import Cog
 
 
 class Marriage(Cog):
@@ -19,6 +20,7 @@ class Marriage(Cog):
     '''
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
 
 

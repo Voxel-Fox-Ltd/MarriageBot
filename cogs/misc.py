@@ -5,17 +5,19 @@ from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version, Member
-from discord.ext.commands import command, Context, Cog, cooldown, Group
+from discord.ext.commands import command, Context, cooldown, Group
 from discord.ext.commands import CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot 
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.custom_cog import Cog
 
 
 class Misc(Cog):
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot 
         pid = getpid()
         self.process = Process(pid)

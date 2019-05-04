@@ -22,7 +22,7 @@ from website.frontend import routes as frontend_routes
 # Set up loggers
 logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s')
 root = logging.getLogger()
-root.setLevel(logging.DEBUG)
+root.setLevel(logging.INFO)
 # logging.getLogger('discord').setLevel(logging.WARNING)
 # logging.getLogger('marriagebot.db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')

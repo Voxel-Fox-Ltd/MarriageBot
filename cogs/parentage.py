@@ -2,7 +2,7 @@ from re import compile
 from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 
 from discord import Member, User
-from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands import BadArgument, MissingRequiredArgument, CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
@@ -15,6 +15,7 @@ from cogs.utils.random_text.emancipate import EmancipateRandomText
 from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
 from cogs.utils.checks.is_donator import is_patreon_predicate
 from cogs.utils.acceptance_check import AcceptanceCheck
+from cogs.utils.custom_cog import Cog
 
 
 class Parentage(Cog):
@@ -24,6 +25,7 @@ class Parentage(Cog):
     '''
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
 
 

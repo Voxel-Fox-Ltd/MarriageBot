@@ -1,8 +1,9 @@
-from discord.ext.commands import command, group, Context, Cog
+from discord.ext.commands import command, group, Context
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.colour_dict import COLOURS
+from cogs.utils.custom_cog import Cog
 
 
 class Customisation(Cog):
@@ -11,6 +12,7 @@ class Customisation(Cog):
     '''
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
 
 

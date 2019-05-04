@@ -1,13 +1,13 @@
 from discord import Game
 
-from discord.ext.commands import Cog
-
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_cog import Cog
 
 
 class ConnectionEvent(Cog):
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot 
 
 

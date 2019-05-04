@@ -1,14 +1,16 @@
 from asyncio import sleep
 
 from discord import Message, Embed
-from discord.ext.commands import Context, Cog
+from discord.ext.commands import Context
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_cog import Cog
 
 
 class CommandEvent(Cog):
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
         self.logger = self.bot.loop.create_task(self.run_logger())
         self.command_cache = []
@@ -27,6 +29,18 @@ class CommandEvent(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx:Context, error):
         self.command_cache.append(ctx)
+
+
+    @Cog.listener()
+    async def on_command(self, ctx:Context):
+        '''Outputs command to debug log'''
+
+        cog = self.bot.get_cog(ctx.command.cog_name)
+        if cog:
+            logger = self.log_handler
+        else:
+            logger = cog.log_handler 
+        logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on {ctx.guild.id}/{ctx.channel.id}")
 
 
     async def run_logger(self):

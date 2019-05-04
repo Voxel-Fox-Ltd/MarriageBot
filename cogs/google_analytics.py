@@ -2,16 +2,17 @@ from random import randint
 
 from aiohttp import ClientSession
 from discord import Guild
-from discord.ext.commands import Context, CommandNotFound, Cog
+from discord.ext.commands import Context, CommandNotFound
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_cog import Cog
 
 
 class GoogleAnalytics(Cog): 
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
-        self.bot.session = ClientSession(loop=bot.loop)
         self.url = 'https://www.google-analytics.com/collect'
         self.base_params = {
             "v": "1",

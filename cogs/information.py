@@ -5,7 +5,7 @@ from io import BytesIO
 from asyncio import sleep, create_subprocess_exec, wait_for, TimeoutError as AsyncTimeoutError
 
 from discord import Member, File, User
-from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands import CommandOnCooldown, MissingRequiredArgument, BadArgument, DisabledCommand
 from discord.ext.commands.cooldowns import BucketType
 
@@ -15,6 +15,7 @@ from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
 from cogs.utils.checks.is_donator import is_patreon, IsNotDonator
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
+from cogs.utils.custom_cog import Cog
 
 
 class Information(Cog):
@@ -27,6 +28,7 @@ class Information(Cog):
     DONATOR_TREE_COOLDOWN_TIME = 10.0
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
         self.substitution = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]')
 

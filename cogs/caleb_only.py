@@ -6,12 +6,13 @@ from contextlib import redirect_stdout
 
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed, File
-from discord.ext.commands import command, Context, group, NotOwner, Cog, CommandOnCooldown, ExtensionAlreadyLoaded
+from discord.ext.commands import command, Context, group, NotOwner, CommandOnCooldown, ExtensionAlreadyLoaded
 from pympler import summary, muppy
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
+from cogs.utils.custom_cog import Cog
 
 
 class CalebOnly(Cog):
@@ -21,6 +22,7 @@ class CalebOnly(Cog):
     '''
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
         self._last_result = None
 
