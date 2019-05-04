@@ -22,8 +22,8 @@ from website.frontend import routes as frontend_routes
 # Set up loggers
 logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s')
 root = logging.getLogger()
-root.setLevel(logging.INFO)
-# logging.getLogger('discord').setLevel(logging.WARNING)
+root.setLevel(logging.ERROR)
+logging.getLogger('discord').setLevel(logging.WARNING)
 # logging.getLogger('marriagebot.db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     # This is the forever loop
     try:
         logger.info("Running bot")
-        bot.run()
+        bot.run(reconnect=False)
     except KeyboardInterrupt: 
         pass
     if webserver:

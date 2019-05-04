@@ -11,15 +11,6 @@ class CustomContext(Context):
         A custom version of Context that changes .send to embed things for me
         '''
 
-        original = super().send(
-            content=content, 
-            tts=tts, 
-            embed=embed, 
-            file=file, 
-            files=files, 
-            delete_after=delete_after, 
-            nonce=nonce,
-        )
         try: x = self.channel.permissions_for(self.guild.me).value & 18432 != 18432
         except AttributeError: x = False
         no_embed = any([
@@ -29,7 +20,15 @@ class CustomContext(Context):
         ])
         if no_embed:
             try: 
-                return await original
+                return await super().send(
+                    content=content, 
+                    tts=tts, 
+                    embed=embed, 
+                    file=file, 
+                    files=files, 
+                    delete_after=delete_after, 
+                    nonce=nonce,
+                )
             except Exception as e:
                 if not ignore_error: raise e
 

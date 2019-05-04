@@ -104,7 +104,7 @@ class Parentage(Cog):
             return
 
         # Manage children
-        is_patreon = is_patreon_predicate(ctx.bot, instigator)
+        is_patreon = await is_patreon_predicate(ctx.bot, instigator)
         children_amount = 30 if is_patreon else 15
         if len(user_tree._children) >= children_amount:
             await ctx.send({
@@ -192,7 +192,7 @@ class Parentage(Cog):
         user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # Manage children
-        is_patreon = is_patreon_predicate(ctx.bot, instigator)
+        is_patreon = await is_patreon_predicate(ctx.bot, instigator)
         children_amount = 30 if is_patreon else 15
         if len(user_tree._children) >= children_amount:
             await ctx.send({

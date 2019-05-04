@@ -44,7 +44,7 @@ class DatabaseConnection(object):
         '''
 
         # Runs the SQL
-        logger.debug(f"Running SQL: {sql} ({args!s})")
+        logger.debug(f"Running SQL: {sql} {args!s}")
         x = await self.conn.fetch(sql, *args)
 
         # If it got something, return the dict, else None
@@ -64,22 +64,15 @@ class DatabaseConnection(object):
         await self('DELETE FROM parents WHERE child_id=$1 OR parent_id=$1', user_id)
 
 
-    async def marry(self, instigator:Member, target:Member, guild_id:int, marriage_id:str=None):
+    async def marry(self, instigator:Member, target:Member, guild_id:int):
         '''
         Marries two users together
         Remains in the Database class solely as you need the "idnumber" field.
         '''
 
-        if marriage_id == None:
-            id_number = 'a'
-        else:
-            id_number = marriage_id
-        # marriage_id, user_id, user_name, partner_id, partner_name, valid
         await self(
-            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
+            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3), ($2, $1, $3)',
             instigator.id,
             target.id,
             guild_id,
         )
-        if marriage_id == None:
-            await self.marry(target, instigator, guild_id, id_number)  # Run it again with instigator/target flipped
