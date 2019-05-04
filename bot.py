@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from secrets import token_bytes
 from ssl import SSLContext
 from warnings import filterwarnings
+from sys import stdout
 import logging
 
 from aiohttp.web import Application, AppRunner, TCPSite
@@ -18,11 +19,12 @@ from cogs.utils.database import DatabaseConnection
 from website.api import routes as api_routes
 from website.frontend import routes as frontend_routes
 
-
 # Set up loggers
-logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
-logging.getLogger('discord').setLevel(logging.WARNING)
-logging.getLogger('marriagebot-db').setLevel(logging.INFO)
+logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s')
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+# logging.getLogger('discord').setLevel(logging.WARNING)
+# logging.getLogger('marriagebot.db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
 
@@ -35,7 +37,8 @@ parser.add_argument("config_file", help="The configuration for the bot.")
 parser.add_argument("--noserver", action="store_true", default=False, help="Starts the bot with no web server.")
 parser.add_argument("--nossl", action="store_true", default=False, help="Starts the bot with no SSL web server.")
 parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to run the webserver on.")
-parser.add_argument("--port", type=int, default=80, help="The port to run the webserver on.")
+parser.add_argument("--port", type=int, default=8080, help="The port to run the webserver on.")
+parser.add_argument("--sslport", type=int, default=8443, help="The port to run the SSL webserver on.")
 args = parser.parse_args()
 
 # Create bot object
@@ -50,13 +53,11 @@ bot = CustomBot(
 # Create website object - don't start based on argv
 app = Application(loop=bot.loop, debug=True)
 app.add_routes(api_routes)
-app.add_routes(frontend_routes)
 app.router.add_static('/static', getcwd() + '/website/static')
 app['bot'] = bot
 app['static_root_url'] = '/static'
 jinja_setup(app, loader=FileSystemLoader(getcwd() + '/website/templates'))
-# session_setup(app, ECS(token_bytes(32)))
-session_setup(app, SimpleCookieStorage())
+session_setup(app, ECS(token_bytes(32)))
 
 
 @bot.event
@@ -69,9 +70,6 @@ async def on_ready():
     logger.info('Bot connected:')
     logger.info(f'\t{bot.user}')
     logger.info(f'\t{bot.user.id}')
-
-    logger.info('Loading extensions... ')
-    bot.load_all_extensions()
     
     logger.info("Setting activity to default")
     await bot.set_default_presence()
@@ -84,14 +82,14 @@ if __name__ == '__main__':
     '''
 
     loop = bot.loop 
-    # loop.set_debug(True)
+    loop.set_debug(True)
 
 
     logger.info("Creating database pool")
     loop.run_until_complete(DatabaseConnection.create_pool(bot.config['database']))
 
-    logger.info("Starting bot...")
-    # loop.create_task(bot.start())
+    logger.info('Loading extensions... ')
+    bot.load_all_extensions()
 
     # Start the server unless I said otherwise
     webserver = None
@@ -109,7 +107,7 @@ if __name__ == '__main__':
             if not args.nossl:
                 ssl_context = SSLContext()
                 ssl_context.load_cert_chain(**bot.config['ssl_context'])
-                ssl_webserver = TCPSite(application, host=args.host, port=443, ssl_context=ssl_context)
+                ssl_webserver = TCPSite(application, host=args.host, port=args.sslport, ssl_context=ssl_context)
         except Exception as e:
             ssl_webserver = None 
             logger.exception("Could not make SSL webserver")
@@ -119,21 +117,14 @@ if __name__ == '__main__':
         logger.info(f"Server started - http://{args.host}:{args.port}/")
         if ssl_webserver:
             loop.run_until_complete(ssl_webserver.start())
-            logger.info(f"Server started - http://{args.host}:443/")
-
-        # # Store stuff in the bot for later
-        # bot.webserver = webserver
-        # bot.ssl_webserver = ssl_webserver
+            logger.info(f"Server started - http://{args.host}:{args.sslport}/")
 
     # This is the forever loop
     try:
-        logger.info("Running asyncio loop forever method")
-        # loop.run_forever()
+        logger.info("Running bot")
         bot.run()
     except KeyboardInterrupt: 
         pass
-    logger.info("Logging out bot")
-    # loop.run_until_complete(bot.logout())
     if webserver:
         logger.info("Closing webserver")
         loop.run_until_complete(application.cleanup())

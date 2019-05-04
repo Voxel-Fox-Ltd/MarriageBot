@@ -7,7 +7,7 @@ from asyncpg import connect as _connect, Connection, create_pool as _create_pool
 from asyncpg.pool import Pool
 
 
-logger = getLogger('marriagebot-db')
+logger = getLogger('marriagebot.db')
 
 
 

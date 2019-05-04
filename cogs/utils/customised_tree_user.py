@@ -66,3 +66,20 @@ class CustomisedTreeUser(object):
     @property 
     def unquoted_hex(self):
         return {i: o.strip('"') for i, o in self.hex.items()}
+
+    
+    @classmethod 
+    def get_default_hex(self):
+        return {
+            'edge': '"#000000"',
+            'node': '"#000000"',
+            'font': '"#FFFFFF"',
+            'highlighted_font': '"#FFFFFF"',
+            'highlighted_node': '"#0000FF"',
+            'background': '"#FFFFFF"',
+        }
+
+
+    @classmethod 
+    def get_default_unquoted_hex(self):
+        return {i: o.strip('"') for i, o in self.hex.items()}
