@@ -22,9 +22,9 @@ class ConnectionEvent(Cog):
     async def on_shard_ready(self, shard_id:int):
         self.log_handler.info(f"`on_shard_ready` called for shard ID `{shard_id}`.")
 
-        async with self.bot.redis() as re:
-            for user in self.bot.users:
-                await re.set(f'NAME {user.id}', str(user))
+        # async with self.bot.redis() as re:
+        #     for user in self.bot.users:
+        #         await re.set(f'NAME {user.id}', str(user))
 
         presence_text = self.bot.config['presence_text']
         game = Game(f"{presence_text} (shard {shard_id})")

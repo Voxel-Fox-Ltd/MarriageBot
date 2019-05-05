@@ -105,9 +105,9 @@ class Simulation(Cog):
             return
 
         #Check if they are related
-        x = FamilyTreeMember.get(ctx.author.id)
-        y = FamilyTreeMember.get(user.id)
-        relationship = x.get_relation(y)
+        x = await FamilyTreeMember.get(ctx.author.id)
+        y = await FamilyTreeMember.get(user.id)
+        relationship = await x.get_relation(y)
         if relationship == None or relationship.casefold() == 'partner':
             await ctx.send(f"*Kisses {user.mention}*")
             return
@@ -203,9 +203,9 @@ class Simulation(Cog):
             return 
 
         #Check if they are related
-        x = FamilyTreeMember.get(ctx.author.id)
-        y = FamilyTreeMember.get(user.id)
-        relationship = x.get_relation(y)
+        x = await FamilyTreeMember.get(ctx.author.id)
+        y = await FamilyTreeMember.get(user.id)
+        relationship = await x.get_relation(y)
         if relationship == None or relationship.casefold() == 'partner':
             pass 
         else:

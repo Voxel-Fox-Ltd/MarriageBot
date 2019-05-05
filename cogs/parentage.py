@@ -35,7 +35,7 @@ class Parentage(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in [*self.bot.config['owners'], 155695168685735936] and not isinstance(error, CommandOnCooldown):
+        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -91,15 +91,16 @@ class Parentage(Cog):
         
         # Grab their family tree
         await ctx.trigger_typing()
-        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        target_tree = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        family_id_list = [i.id for i in instigator_tree.span(add_parent=True, expand_upwards=True)]
+        instigator_tree = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        target_tree = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        span = await instigator_tree.span(add_parent=True, expand_upwards=True)
+        family_id_list = [i.id for i in span]
 
         # Manage more special text restrictions
         if target.id in family_id_list:
             await ctx.send(text_cog.target_is_family(instigator, target))
             return
-        elif instigator_tree.parent:
+        elif instigator_tree._parent:
             await ctx.send(text_cog.instigator_is_unqualified(instigator, target))
             return
 
@@ -189,7 +190,7 @@ class Parentage(Cog):
 
         # Check current tree
         await ctx.trigger_typing()
-        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_tree = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # Manage children
         is_patreon = await is_patreon_predicate(ctx.bot, instigator)
@@ -202,19 +203,16 @@ class Parentage(Cog):
             return
 
         # Make get_root awaitable
-        awaitable_root = self.bot.loop.run_in_executor(None, user_tree.get_root)
-        try:
-            root = await wait_for(awaitable_root, timeout=10.0, loop=self.bot.loop)
-        except AsyncTimeoutError:
-            await ctx.send("The `get_root` method for your family tree has failed. This is usually due to a loop somewhere in your tree.")
-            return
-        tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
+        root = await user_tree.get_root()
+        span = await root.span(add_parent=True, expand_upwards=True)
+        tree_id_list = [i.id for i in span]
+        target_tree = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # Manage more parent checks
         if target.id in tree_id_list:
             await ctx.send(self.bot.get_cog('AdoptRandomText').target_is_family(instigator, target))
             return
-        elif FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0).parent:
+        elif target_tree._parent:
             await ctx.send(self.bot.get_cog('AdoptRandomText').target_is_unqualified(instigator, target))
             return
 
@@ -251,9 +249,9 @@ class Parentage(Cog):
                 await ctx.send(self.bot.get_cog('AdoptRandomText').request_accepted(instigator, target))
             except Exception as e:
                 pass
-            me = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+            me = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             me._children.append(target.id)
-            them = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+            them = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             them._parent = instigator.id
 
         self.bot.proposal_cache.remove(instigator.id)
@@ -270,7 +268,7 @@ class Parentage(Cog):
         instigator = ctx.author
         target = child
 
-        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_tree = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         children_ids = user_tree._children
 
         if target.id not in children_ids:
@@ -281,7 +279,7 @@ class Parentage(Cog):
         await ctx.send(self.bot.get_cog('DisownRandomText').valid_target(instigator, ctx.guild.get_member(child.id)))
 
         user_tree._children.remove(target.id)
-        them = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         them._parent = None
 
 
@@ -294,9 +292,9 @@ class Parentage(Cog):
 
         instigator = ctx.author
 
-        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_tree = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         try:
-            parent_id = user_tree.parent.id
+            parent_id = user_tree._parent
         except AttributeError:
             await ctx.send(self.bot.get_cog('EmancipateRandomText').invalid_target(instigator, None))
             return
@@ -306,7 +304,7 @@ class Parentage(Cog):
         await ctx.send(self.bot.get_cog('EmancipateRandomText').valid_target(instigator, ctx.guild.get_member(parent_id)))
 
         user_tree._parent = None
-        them = FamilyTreeMember.get(parent_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = await FamilyTreeMember.get(parent_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         them._children.remove(instigator.id)
 
 

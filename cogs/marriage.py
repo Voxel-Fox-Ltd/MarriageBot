@@ -99,24 +99,21 @@ class Marriage(Cog):
 
         # See if they're married or in the family already
         await ctx.trigger_typing()
-        user_tree = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_tree = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # Make get_root awaitable 
-        awaitable_root = self.bot.loop.run_in_executor(None, user_tree.get_root)
-        try:
-            root = await wait_for(awaitable_root, timeout=10.0, loop=self.bot.loop)
-        except AsyncTimeoutError:
-            await ctx.send("The `get_root` method for your family tree has failed. This is usually due to a loop somewhere in your tree.")
-            return
-        tree_id_list = [i.id for i in root.span(add_parent=True, expand_upwards=True)]
+        root = await user_tree.get_root()
+        span = await root.span(add_parent=True, expand_upwards=True)
+        tree_id_list = [i.id for i in span]
+        target_tree = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0) 
 
         if target.id in tree_id_list:
             await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_family(instigator, target))
             return
-        if user_tree.partner:
+        if user_tree._partner:
             await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_when_married(instigator, target))
             return
-        elif FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0).partner:
+        elif target_tree._partner:
             await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_married(instigator, target))
             return
 
@@ -153,9 +150,9 @@ class Marriage(Cog):
                 await ctx.send(self.bot.get_cog('ProposeRandomText').accepting_valid_proposal(instigator, target))
             except Exception as e:
                 pass
-            me = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+            me = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             me._partner = target.id 
-            them = FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+            them = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             them._partner = instigator.id
 
         self.bot.proposal_cache.remove(instigator.id)
@@ -172,20 +169,20 @@ class Marriage(Cog):
         instigator = ctx.author
 
         # Get marriage data for the user
-        instigator_data = FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        instigator_data = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # See why it could fail
-        if instigator_data.partner == None:
+        if instigator_data._partner == None:
             await ctx.send(self.bot.get_cog('DivorceRandomText').invalid_instigator(None, None))
             return
-        target = ctx.guild.get_member(instigator_data.partner.id)
+        target = ctx.guild.get_member(instigator_data._partner.id)
         if target == None:
-            target_id = instigator_data.partner.id
+            target_id = instigator_data._partner
         else:
             target_id = target.id
 
 
-        if instigator_data.partner.id != target_id:
+        if instigator_data._partner != target_id:
             await ctx.send(self.bot.get_cog('DivorceRandomText').invalid_target(None, None))
             return
 
@@ -196,7 +193,7 @@ class Marriage(Cog):
 
         me = instigator_data
         me._partner = None
-        them = FamilyTreeMember.get(target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = await FamilyTreeMember.get(target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         them._partner = None
 
 

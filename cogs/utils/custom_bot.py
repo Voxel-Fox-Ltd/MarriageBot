@@ -207,8 +207,7 @@ class CustomBot(AutoShardedBot):
         user = self.get_user(user_id)
         if user:
             return str(user)
-        async with self.redis() as re:
-            return await re.get(f'NAME {user_id}')
+        return await str(self.fetch_user(user_id))
 
 
     def get_uptime(self) -> float:
