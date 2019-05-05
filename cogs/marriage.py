@@ -14,6 +14,7 @@ from cogs.utils.custom_cog import Cog
 
 from cogs.utils.random_text.text_template import TextTemplate
 from cogs.utils.random_text.propose import ProposeRandomText
+from cogs.utils.random_text.divorce import DivorceRandomText
 
 
 class Marriage(Cog):
@@ -153,35 +154,40 @@ class Marriage(Cog):
         Divorces you from your current spouse
         '''
 
+        # Variables we're gonna need for later
         instigator = ctx.author
+        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
-        # Get marriage data for the user
-        instigator_data = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        # Manage output strings
+        text_processor = DivorceRandomText(self.bot)
 
-        # See why it could fail
-        if instigator_data._partner == None:
-            await ctx.send(self.bot.get_cog('DivorceRandomText').invalid_instigator(None, None))
-            return
-        target = ctx.guild.get_member(instigator_data._partner.id)
-        if target == None:
-            target_id = instigator_data._partner
-        else:
-            target_id = target.id
-
-
-        if instigator_data._partner != target_id:
-            await ctx.send(self.bot.get_cog('DivorceRandomText').invalid_target(None, None))
+        # See if they have a partner to divorce
+        if instigator_tree._partner == None:
+            await ctx.send(text_processor.instigator_is_unqualified())
             return
 
-        # At this point they can only be married
+        # They have a partner - fetch their data
+        target = await self.bot.fetch_user(instigator_tree._partner)
+        target_tree = instigator_tree.partner
+
+        # Remove them from the database
         async with self.bot.database() as db:
-            await db('DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3', instigator.id, target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        await ctx.send(self.bot.get_cog('DivorceRandomText').valid_target(instigator, target))
+            await db(
+                'DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3', 
+                instigator.id, 
+                target_id, 
+                self.bot.get_tree_guild_id(ctx.guild.id)
+            )
+        await ctx.send(text_processor.valid_target(instigator, target))
 
-        me = instigator_data
-        me._partner = None
-        them = await FamilyTreeMember.get(target_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        them._partner = None
+        # Remove from cache
+        instigator_tree._partner = None
+        target_tree._partner = None
+
+        # Ping over redis
+        async with self.bot.redis() as re:
+            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
 
 def setup(bot:CustomBot):
