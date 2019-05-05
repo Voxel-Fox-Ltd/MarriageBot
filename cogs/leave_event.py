@@ -20,7 +20,7 @@ class LeaveEvent(Cog):
         '''
 
         if self.bot.get_user(member.id) == None:
-            ftm = FamilyTreeMember.get(member.id)
+            ftm = await FamilyTreeMember.get(member.id)
             if not ftm.is_empty():
                 async with self.bot.database() as db:
                     await db.destroy(member.id)

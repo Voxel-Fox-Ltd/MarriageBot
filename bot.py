@@ -22,8 +22,8 @@ from website.frontend import routes as frontend_routes
 # Set up loggers
 logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s')
 root = logging.getLogger()
-root.setLevel(logging.ERROR)
-logging.getLogger('discord').setLevel(logging.WARNING)
+root.setLevel(logging.INFO)
+logging.getLogger('discord').setLevel(logging.INFO)
 # logging.getLogger('marriagebot.db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
@@ -34,6 +34,9 @@ filterwarnings('ignore', category=RuntimeWarning)
 # Parse arguments
 parser = ArgumentParser()
 parser.add_argument("config_file", help="The configuration for the bot.")
+parser.add_argument("--min", type=int, default=None, help="The minimum shard ID that this instance will run with (inclusive)")
+parser.add_argument("--max", type=int, default=None, help="The maximum shard ID that this instance will run with (inclusive)")
+parser.add_argument("--shardcount", type=int, default=None, help="The amount of shards that the bot should be using.")
 parser.add_argument("--noserver", action="store_true", default=False, help="Starts the bot with no web server.")
 parser.add_argument("--nossl", action="store_true", default=False, help="Starts the bot with no SSL web server.")
 parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to run the webserver on.")
@@ -42,12 +45,18 @@ parser.add_argument("--sslport", type=int, default=8443, help="The port to run t
 args = parser.parse_args()
 
 # Create bot object
+shard_ids = None if args.shardcount == None else list(range(args.min, args.max+1))
+if args.shardcount == None and (args.min or args.max):
+    raise Exception("You set a min/max shard handler but no shard count")
 bot = CustomBot(
     config_file=args.config_file,
     activity=Game(name="Restarting..."),
     status=Status.dnd,
     commandline_args=args,
     case_insensitive=True,
+    shard_count=args.shardcount,
+    shard_ids=shard_ids,
+    shard_id=args.min,
 )
 
 # Create website object - don't start based on argv
@@ -58,22 +67,6 @@ app['bot'] = bot
 app['static_root_url'] = '/static'
 jinja_setup(app, loader=FileSystemLoader(getcwd() + '/website/templates'))
 session_setup(app, ECS(token_bytes(32)))
-
-
-@bot.event
-async def on_ready():
-    '''
-    Runs when the bot is connected to the Discord servers
-    Method is used to set the presence and load cogs
-    '''
-
-    logger.info('Bot connected:')
-    logger.info(f'\t{bot.user}')
-    logger.info(f'\t{bot.user.id}')
-    
-    logger.info("Setting activity to default")
-    await bot.set_default_presence()
-    logger.info('Bot loaded.')
 
 
 if __name__ == '__main__':

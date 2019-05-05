@@ -69,8 +69,8 @@ class ModeratorOnly(Cog):
         '''
 
         # Get users
-        me = FamilyTreeMember.get(user_a.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        them = FamilyTreeMember.get(user_b.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = await FamilyTreeMember.get(user_a.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = await FamilyTreeMember.get(user_b.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # See if they have partners
         if me.partner != None or them.partner != None:
@@ -97,7 +97,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Run check
-        me = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if not me.partner:
             await ctx.send("That person isn't even married .-.")
             return
@@ -122,7 +122,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Run check
-        them = FamilyTreeMember.get(child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = await FamilyTreeMember.get(child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if them.parent:
             await ctx.send("`{child!s}` already has a parent.")
             return
@@ -133,7 +133,7 @@ class ModeratorOnly(Cog):
                 await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parent.id, child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             except Exception as e:
                 return  # Only thrown when multiple people do at once, just return
-        me = FamilyTreeMember.get(parent.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = await FamilyTreeMember.get(parent.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         me._children.append(child.id)
         them._parent = parent.id
         await ctx.send("Consider it done.")
@@ -147,7 +147,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Run check
-        me = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if not me.parent:
             await ctx.send("That user doesn't even have a parent .-.")
             return

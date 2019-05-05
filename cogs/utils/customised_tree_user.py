@@ -1,6 +1,7 @@
 class CustomisedTreeUser(object):
 
     all_users = {}  # discord_id: CTU
+    bot = None
 
     def __init__(self, user_id:int, *, edge:int=None, node:int=None, font:int=None, highlighted_font:int=None, highlighted_node:int=None, background:int=None):
         self.id = user_id
@@ -14,11 +15,12 @@ class CustomisedTreeUser(object):
 
     
     @classmethod
-    def get(cls, key):
-        try:
-            return cls.all_users[key]
-        except Exception:
-            return cls(key)
+    async def get(cls, key):
+        async with cls.bot.database() as db:
+            data = await db('SELECT * FROM customisation WHERE user_id=$1', key)
+        if data:
+            return cls(**data[0])
+        return cls(key)
 
 
     @property 

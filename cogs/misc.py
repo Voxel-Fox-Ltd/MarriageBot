@@ -10,7 +10,7 @@ from discord.ext.commands import CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot 
-from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+# from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.custom_cog import Cog
 
 
@@ -149,7 +149,7 @@ class Misc(Cog):
             ((ut % (60*60*24)) % (60*60)) % 60,
         ]
         embed.add_field(name="Uptime", value=f"{uptime[0]} days, {uptime[1]} hours, {uptime[2]} minutes, and {uptime[3]:.2f} seconds.")
-        embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
+        # embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
         try:
             await ctx.send(embed=embed)
         except Exception:

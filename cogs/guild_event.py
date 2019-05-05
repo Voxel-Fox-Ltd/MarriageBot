@@ -65,14 +65,14 @@ class GuildEvent(Cog):
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
 
-        # Remove users from database if they were in a guild
-        non_present_members = [i for i in guild.members if self.bot.get_user(i.id) == None]
-        non_present_ids = [i.id for i in non_present_members]
-        family_guild_members = [FamilyTreeMember.get(i) for i in non_present_ids]
-        async with self.bot.database() as db:
-            for i in family_guild_members:
-                await db.destroy(i.id)
-                i.destroy()
+        # # Remove users from database if they were in a guild
+        # non_present_members = [i for i in guild.members if self.bot.get_user(i.id) == None]
+        # non_present_ids = [i.id for i in non_present_members]
+        # family_guild_members = [await FamilyTreeMember.get(i) for i in non_present_ids]
+        # async with self.bot.database() as db:
+        #     for i in family_guild_members:
+        #         await db.destroy(i.id)
+        #         i.destroy()
 
 
 def setup(bot:CustomBot):

@@ -61,6 +61,7 @@ class CustomBot(AutoShardedBot):
         # Allow get_guild and setup for server-specific trees
         self.server_specific_families = []  # list[guild_id]
         FamilyTreeMember.bot = self
+        CustomisedTreeUser.bot = self
 
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
@@ -133,9 +134,9 @@ class CustomBot(AutoShardedBot):
         # - children
         logger.debug(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
-            parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
+            parent = await FamilyTreeMember.get(i['parent_id'], i['guild_id'])
             parent._children.append(i['child_id'])
-            child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
+            child = await FamilyTreeMember.get(i['child_id'], i['guild_id'])
             child._parent = i['parent_id']
 
         # - tree customisations
@@ -245,21 +246,26 @@ class CustomBot(AutoShardedBot):
             logger.debug(log_string)
 
 
-    async def set_default_presence(self):
+    async def set_default_presence(self, shard_id:int=None):
         '''
         Sets the default presence of the bot as appears in the config file
         '''
         
         # Update presence
-        logger.debug("Setting default bot presence")
         presence_text = self.config['presence_text']
-        if self.shard_count > 1:
-            for i in range(self.shard_count):
-                game = Game(f"{presence_text} (shard {i})")
-                await self.change_presence(activity=game, shard_id=i)
+        if not shard_id:
+            logger.debug("Setting default bot presence globally")
+            if self.shard_count > 1:
+                for i in range(self.shard_count):
+                    game = Game(f"{presence_text} (shard {i})")
+                    await self.change_presence(activity=game, shard_id=i)
+            else:
+                game = Game(presence_text)
+                await self.change_presence(activity=game)
         else:
-            game = Game(presence_text)
-            await self.change_presence(activity=game)
+            logger.debug(f"Setting default bot presence for shard {shard_id}")   
+            game = Game(f"{presence_text} (shard {i})")
+            await self.change_presence(activity=game, shard_id=i)     
 
 
     async def post_guild_count(self):
@@ -269,6 +275,8 @@ class CustomBot(AutoShardedBot):
 
         # Only post if there's actually a DBL token set
         if not self.config.get('dbl_token'):
+            return
+        if not self.shard_id in [0, None]:
             return
         logger.debug("Sending POST request to DBL")
 
@@ -298,7 +306,7 @@ class CustomBot(AutoShardedBot):
         '''Removes a user ID from the database and cache'''
         async with self.database() as db:
             await db.destroy(user_id)
-        FamilyTreeMember.get(user_id).destroy()
+        await FamilyTreeMember.get(user_id).destroy()
 
 
     def reload_config(self):
@@ -314,10 +322,10 @@ class CustomBot(AutoShardedBot):
     async def start(self, token:str=None, *args, **kwargs):
         '''Starts up the bot and whathaveyou'''
 
-        logger.debug("Running startup method") 
-        self.startup_method = self.loop.create_task(self.startup())
-        logger.debug("Starting delete loop")
-        self.deletion_method = self.loop.create_task(self.delete_loop())
+        # logger.debug("Running startup method") 
+        # self.startup_method = self.loop.create_task(self.startup())
+        # logger.debug("Starting delete loop")
+        # self.deletion_method = self.loop.create_task(self.delete_loop())
         logger.debug("Running original D.py start method")
         await super().start(token or self.config['token'], *args, **kwargs)
 
