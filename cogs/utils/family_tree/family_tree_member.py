@@ -166,12 +166,13 @@ class FamilyTreeMember(object):
         del self.all_users[(self.id, self._guild_id)]
 
 
-    def get_name(self, bot):
+    async def get_name(self, bot):
         '''Gets a GZ-readable name for the user'''
 
-        x = self.NAME_SUBSTITUTION.sub("_", unidecode(str(self.bot.get_user(self.id))))
+        username = await self.bot.get_name(self.id)
+        x = self.NAME_SUBSTITUTION.sub("_", unidecode(username))
         if len(x) <= 5:
-            x = self.NAME_SUBSTITUTION.sub("_", str(self.bot.get_user(self.id)))
+            x = self.NAME_SUBSTITUTION.sub("_", username)
         return x
 
 
@@ -368,9 +369,10 @@ class FamilyTreeMember(object):
         full_family = await self.span(add_parent=True, expand_upwards=True)
 
         for i in full_family:
+            name = await self.bot.get_name(i.id)
             working_text = [
                 f'0 @I{i.tree_id}@ INDI',
-                f'\t1 NAME {i.get_name(bot)}'
+                f'\t1 NAME {name}'
             ]
 
             # If you have a parent, get added to their family
@@ -551,10 +553,11 @@ class FamilyTreeMember(object):
         for generation in gen_span.values():
             for i in generation:
                 all_users.append(i)
+                name = await self.bot.get_name(i.id)
                 if i == self:
-                    all_text.append(f'\t{i.id}[label="{i.get_name(bot)}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];')
+                    all_text.append(f'\t{i.id}[label="{name}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];')
                 else:
-                    all_text.append(f'\t{i.id}[label="{i.get_name(bot)}"];')
+                    all_text.append(f'\t{i.id}[label="{name}"];')
         
         # Order the generations
         generation_numbers = sorted(list(gen_span.keys()))

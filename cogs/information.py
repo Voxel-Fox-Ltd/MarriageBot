@@ -242,10 +242,14 @@ class Information(Cog):
             user, other = ctx.author, user
         user, other = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0), await FamilyTreeMember.get(other.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         relation = await user.get_relation(other)
+
+        username = await self.bot.get_name(user.id)
+        othername = await self.bot.get_name(other.id)
+
         if relation == None:
-            await ctx.send(f"`{user.get_name(self.bot)}` is not related to `{other.get_name(self.bot)}`.")
+            await ctx.send(f"`{username}` is not related to `{othername}`.")
             return
-        await ctx.send(f"`{other.get_name(self.bot)}` is `{user.get_name(self.bot)}`'s {relation}.")
+        await ctx.send(f"`{othername}` is `{username}`'s {relation}.")
 
 
     @command(aliases=['treesize','fs','ts'])
@@ -259,7 +263,8 @@ class Information(Cog):
             user = ctx.author 
         user = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         span = await user.span(expand_upwards=True, add_parent=True)
-        await ctx.send(f"There are `{len(span)}` people in `{user.get_name(self.bot)}`'s family tree.")
+        username = await self.bot.get_name(user.id)
+        await ctx.send(f"There are `{len(span)}` people in `{username}`'s family tree.")
 
 
     @command()
@@ -379,7 +384,8 @@ class Information(Cog):
                 f"make sure to `{ctx.prefix}hug` and `{ctx.prefix}kiss` your partner! c:",
                 f"vote for MarriageBot by running `{ctx.prefix}vote` c:",
             ])
-            m.edit(content=text, file=file)
+            await ctx.send(text, file=file)
+            await m.delete()
         except Exception:
             return 
         return

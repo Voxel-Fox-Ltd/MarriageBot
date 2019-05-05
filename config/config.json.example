@@ -10,6 +10,11 @@
         "database": "marriagebot",
         "host": "127.0.0.1"
     },
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "db": 0
+    },
     "presence_text": "m!help",
     "default_prefix": "m!",
     "google_analytics": {

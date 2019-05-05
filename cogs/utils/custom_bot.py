@@ -14,6 +14,7 @@ from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.database import DatabaseConnection
+from cogs.utils.redis import RedisConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.proposal_cache import ProposalCache
@@ -57,6 +58,7 @@ class CustomBot(AutoShardedBot):
 
         # Allow database connections like this
         self.database = DatabaseConnection
+        self.redis = RedisConnection
 
         # Allow get_guild and setup for server-specific trees
         self.server_specific_families = []  # list[guild_id]
@@ -199,6 +201,14 @@ class CustomBot(AutoShardedBot):
     async def on_message(self, message):
         ctx = await self.get_context(message, cls=CustomContext)
         await self.invoke(ctx)
+
+    
+    async def get_name(self, user_id):
+        user = self.get_user(user_id)
+        if user:
+            return str(user)
+        async with self.redis() as re:
+            return await re.get(f'NAME {user_id}')
 
 
     def get_uptime(self) -> float:

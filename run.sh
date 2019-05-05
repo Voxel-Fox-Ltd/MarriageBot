@@ -1,0 +1,1 @@
+python3.6 bot.py config/config.json --min $1 --max $2 --shardcount $3 --noserver
