@@ -202,6 +202,12 @@ class CustomBot(AutoShardedBot):
         ctx = await self.get_context(message, cls=CustomContext)
         await self.invoke(ctx)
 
+
+    def get_tree_guild_id(self, guild_id:int):
+        '''Gives you the ID of the guild the family should be processed on''' 
+        
+        return guild_id if guild_id in self.server_specific_families else 0
+
     
     async def get_name(self, user_id):
         user = self.get_user(user_id)

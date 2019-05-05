@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import Union
 
-from aioredis import create_pool as _create_pool, RedisConnection
+from aioredis import create_redis_pool as _create_redis_pool, RedisConnection
 
 
 logger = getLogger('marriagebot.redis')
@@ -19,28 +20,35 @@ class RedisConnection(object):
 
 
     @classmethod
+    def set_config(cls, config:dict):
+        address = config.pop('host'), config.pop('port')
+        cls.config = dict(address=address, **config)
+
+
+    @classmethod
     async def create_pool(cls, config:dict):
         cls.config = config
         address = config.pop('host'), config.pop('port')
-        cls.pool = await _create_pool(address, **config)
+        cls.pool = await _create_redis_pool(address, **config)
 
 
     async def __aenter__(self):
         if not self.conn:
-            self.conn = await self.pool.acquire()
+            self.conn = self.pool
         return self
 
 
     async def __aexit__(self, exc_type, exc, tb):
-        if not self.sustain:
-            self.pool.release(self.conn)
-            self.conn = None
-            del self
+        pass
 
 
-    async def set(self, key, value):
-        return await self.conn.execute('set', key, value)
+    async def publish(self, channel:str, value:Union[dict, list]) -> None:
+        '''Pushes a JSON value to a channel'''
+
+        return self.conn.publish_json(channel, value)
 
 
-    async def get(self, key):
-        return await self.conn.execute('get', key)
+    async def subscribe(self, channel:str):
+        '''Subscribes you to a channel'''
+        
+        return await self.conn.subscribe(channel)

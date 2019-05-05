@@ -16,6 +16,7 @@ from jinja2 import FileSystemLoader
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection
+from cogs.utils.redis import RedisConnection
 from website.api import routes as api_routes
 from website.frontend import routes as frontend_routes
 
@@ -23,8 +24,8 @@ from website.frontend import routes as frontend_routes
 logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s')
 root = logging.getLogger()
 root.setLevel(logging.INFO)
-logging.getLogger('discord').setLevel(logging.INFO)
-# logging.getLogger('marriagebot.db').setLevel(logging.INFO)
+# logging.getLogger('discord').setLevel(logging.INFO)
+logging.getLogger('marriagebot.db').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
 
@@ -59,7 +60,7 @@ bot = CustomBot(
     shard_id=args.min,
 )
 
-# Create website object - don't start based on argv
+# Create website object - this is used for the webhook handler
 app = Application(loop=bot.loop, debug=True)
 app.add_routes(api_routes)
 app.router.add_static('/static', getcwd() + '/website/static')
@@ -74,17 +75,23 @@ if __name__ == '__main__':
     Starts the bot (and webserver if specified) and runs forever
     '''
 
+    # Grab the event loop
     loop = bot.loop 
     loop.set_debug(True)
 
-
+    # Connect the database
     logger.info("Creating database pool")
     loop.run_until_complete(DatabaseConnection.create_pool(bot.config['database']))
 
+    # Connect the redis
+    logger.info("Creating redis pool")
+    RedisConnection.set_config(bot.config['redis'])
+
+    # Load the bot's extensions
     logger.info('Loading extensions... ')
     bot.load_all_extensions()
 
-    # Start the server unless I said otherwise
+    # Start the webserver(s)
     webserver = None
     ssl_webserver = None
     if not args.noserver:
@@ -112,16 +119,20 @@ if __name__ == '__main__':
             loop.run_until_complete(ssl_webserver.start())
             logger.info(f"Server started - http://{args.host}:{args.sslport}/")
 
-    # This is the forever loop
+    # Run the bot
     try:
         logger.info("Running bot")
-        bot.run(reconnect=False)
+        bot.run()
     except KeyboardInterrupt: 
         pass
+
+    # We're now done running the bot, time to clean up and close
     if webserver:
         logger.info("Closing webserver")
         loop.run_until_complete(application.cleanup())
     logger.info("Closing database pool")
     loop.run_until_complete(DatabaseConnection.pool.close())
+    logger.info("Closing redis pool")
+    loop.run_until_complete(RedisConnection.pool.close())
     logger.info("Closing asyncio loop")
     loop.close()

@@ -12,6 +12,9 @@ from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
 from cogs.utils.acceptance_check import AcceptanceCheck
 from cogs.utils.custom_cog import Cog
 
+from cogs.utils.random_text.text_template import TextTemplate
+from cogs.utils.random_text.propose import ProposeRandomText
+
 
 class Marriage(Cog):
     '''
@@ -62,65 +65,41 @@ class Marriage(Cog):
 
     @command(aliases=['marry'])
     @cooldown(1, 5, BucketType.user)
-    async def propose(self, ctx:Context, *, user:UnblockedMember):
+    async def propose(self, ctx:Context, *, target:UnblockedMember):
         '''
         Lets you propose to another Discord user
         '''
 
+        # Variables we're gonna need for later
         instigator = ctx.author
-        target = user  # Just so "target" didn't show up in the help message
+        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
-        # See if either user is already being proposed to
-        if instigator.id in self.bot.proposal_cache:
-            x = self.bot.proposal_cache.get(instigator.id)
-            if x[0] == 'INSTIGATOR':
-                await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_while_instigator(instigator, target))
-            elif x[0] == 'TARGET':
-                await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_while_target(instigator, target))
-            return
-        elif target.id in self.bot.proposal_cache:
-            x = self.bot.proposal_cache.get(target.id)
-            if x[0] == 'INSTIGATOR':
-                await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_instigator(instigator, target))
-            elif x[0] == 'TARGET':
-                await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_target(instigator, target))
+        # Manage output strings
+        text_processor = ProposeRandomText(self.bot)
+        text = text_processor.process(instigator, target)
+        if text:
+            await ctx.send(text) 
             return
 
-        # Manage exclusions
-        if target.id == self.bot.user.id:
-            await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_me(instigator, target))
-            return
-        elif target.bot or instigator.bot:
-            await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_bot(instigator, target))
-            return
-        elif instigator.id == target.id:
-            await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_themselves(instigator, target))
+        # See if our user is already married
+        if instigator_tree._partner:
+            await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
             return
 
-        # See if they're married or in the family already
-        await ctx.trigger_typing()
-        user_tree = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-
-        # Make get_root awaitable 
-        root = await user_tree.get_root()
-        span = await root.span(add_parent=True, expand_upwards=True)
-        tree_id_list = [i.id for i in span]
-        target_tree = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0) 
-
-        if target.id in tree_id_list:
-            await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_family(instigator, target))
+        # See if the *target* is already married 
+        if target_tree._partner:
+            await ctx.send(text_processor.target_is_unqualified(instigator, target))
             return
-        if user_tree._partner:
-            await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_when_married(instigator, target))
-            return
-        elif target_tree._partner:
-            await ctx.send(self.bot.get_cog('ProposeRandomText').proposing_to_married(instigator, target))
+
+        # See if they're already related
+        if instigator_tree.get_relation(targer_tree):
+            await ctx.send(text_processor.target_is_family(instigator, target))
             return
 
         # Neither are married, set up the proposal
-        await ctx.send(self.bot.get_cog('ProposeRandomText').valid_proposal(instigator, target))
-        self.bot.proposal_cache[instigator.id] = ('INSTIGATOR', 'MARRIAGE')
-        self.bot.proposal_cache[target.id] = ('TARGET', 'MARRIAGE')
+        await ctx.send(text_processor.valid_target(instigator, target))
+        self.bot.proposal_cache.add(instigator, target, 'MARRIAGE')
 
         # Wait for a response
         try:
@@ -128,35 +107,43 @@ class Marriage(Cog):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except AsyncTimeoutError as e:
             try:
-                await ctx.send(self.bot.get_cog('ProposeRandomText').proposal_timed_out(instigator, target))
+                await ctx.send(text_processor.request_timeout(instigator, target))
             except Exception as e:
-                # If the bot was kicked, or access revoked, for example.
                 pass
-            self.bot.proposal_cache.remove(instigator.id)
-            self.bot.proposal_cache.remove(target.id)
+            self.bot.proposal_cache.remove(instigator, target)
             return
 
         # Valid response recieved, see what their answer was
         response = check(m)
-        if response == 'NO':
-            await ctx.send(self.bot.get_cog('ProposeRandomText').declining_valid_proposal(instigator, target))
-        elif response == 'YES':
-            async with self.bot.database() as db:
-                try:
-                    await db.marry(instigator, target, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-                except Exception as e:
-                    return  # Only thrown if two people try to marry at once, so just return
-            try:
-                await ctx.send(self.bot.get_cog('ProposeRandomText').accepting_valid_proposal(instigator, target))
-            except Exception as e:
-                pass
-            me = await FamilyTreeMember.get(instigator.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-            me._partner = target.id 
-            them = await FamilyTreeMember.get(target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-            them._partner = instigator.id
 
-        self.bot.proposal_cache.remove(instigator.id)
-        self.bot.proposal_cache.remove(target.id)
+        # They said no
+        if response == 'NO':
+            await ctx.send(text_processor.declining_valid_proposal(instigator, target))
+            self.bot.proposal_cache.remove(instigator, target)
+            return
+
+        # They said yes!
+        async with self.bot.database() as db:
+            try:
+                await db.marry(instigator, target, self.bot.get_tree_guild_id(ctx.guild.id))
+            except Exception as e:
+                return 
+        try:
+            await ctx.send(text_processor.request_accepted(instigator, target))
+        except Exception as e:
+            pass
+
+        # Cache values locally
+        instigator_tree._partner = target.id 
+        target_tree._partner = instigator.id
+
+        # Ping em off over redis
+        async with self.bot.redis() as re:
+            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+
+        # Remove users from proposal cache
+        self.bot.proposal_cache.remove(instigator, target)
 
 
     @command()
