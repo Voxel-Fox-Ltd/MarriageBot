@@ -36,7 +36,7 @@ class CommandEvent(Cog):
         '''Outputs command to debug log'''
 
         cog = self.bot.get_cog(ctx.command.cog_name)
-        if cog:
+        if not cog:
             logger = self.log_handler
         else:
             logger = cog.log_handler 
