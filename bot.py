@@ -25,7 +25,7 @@ logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s')
 root = logging.getLogger()
 root.setLevel(logging.INFO)
 # logging.getLogger('discord').setLevel(logging.INFO)
-logging.getLogger('marriagebot.db').setLevel(logging.INFO)
+logging.getLogger('marriagebot.db').setLevel(logging.DEBUG)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     # Connect the redis
     logger.info("Creating redis pool")
-    RedisConnection.set_config(bot.config['redis'])
+    loop.run_until_complete(RedisConnection.create_pool(bot.config['redis']))
 
     # Load the bot's extensions
     logger.info('Loading extensions... ')

@@ -33,22 +33,9 @@ class RedisConnection(object):
 
 
     async def __aenter__(self):
-        if not self.conn:
-            self.conn = self.pool
+        self.conn = self.pool
         return self
 
 
     async def __aexit__(self, exc_type, exc, tb):
         pass
-
-
-    async def publish(self, channel:str, value:Union[dict, list]) -> None:
-        '''Pushes a JSON value to a channel'''
-
-        return self.conn.publish_json(channel, value)
-
-
-    async def subscribe(self, channel:str):
-        '''Subscribes you to a channel'''
-        
-        return await self.conn.subscribe(channel)

@@ -94,7 +94,7 @@ class Marriage(Cog):
             return
 
         # See if they're already related
-        if instigator_tree.get_relation(targer_tree):
+        if instigator_tree.get_relation(target_tree):
             await ctx.send(text_processor.target_is_family(instigator, target))
             return
 
@@ -140,8 +140,8 @@ class Marriage(Cog):
 
         # Ping em off over redis
         async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.pool.publish_json('TreeMemberUpdate', instigator_tree.to_json())
+            await re.pool.publish_json('TreeMemberUpdate', target_tree.to_json())
 
         # Remove users from proposal cache
         self.bot.proposal_cache.remove(instigator, target)
@@ -175,7 +175,7 @@ class Marriage(Cog):
             await db(
                 'DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3', 
                 instigator.id, 
-                target_id, 
+                target_tree.id, 
                 self.bot.get_tree_guild_id(ctx.guild.id)
             )
         await ctx.send(text_processor.valid_target(instigator, target))
@@ -186,8 +186,8 @@ class Marriage(Cog):
 
         # Ping over redis
         async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.pool.publish_json('TreeMemberUpdate', instigator_tree.to_json())
+            await re.pool.publish_json('TreeMemberUpdate', target_tree.to_json())
 
 
 def setup(bot:CustomBot):

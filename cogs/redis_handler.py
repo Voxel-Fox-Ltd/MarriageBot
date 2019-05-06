@@ -25,6 +25,7 @@ class RedisHandler(Cog):
         self.channel = channel = channel_list[0]
         while (await channel.wait_message() and not self.bot.is_closed()):
             data = await channel.get_json()
+            self.log_handler.debug(f"Recieved info over redis: {data!s}")
             FamilyTreeMember(**data)
 
 

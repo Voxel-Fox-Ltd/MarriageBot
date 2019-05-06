@@ -45,10 +45,10 @@ class FamilyTreeMember(object):
     def get(cls, discord_id:int, guild_id:int=0):
         '''Gives you the object for a given user'''
 
-        return self.all_users.get(
-            (discord_id, guild_id),
-            cls(discord_id=discord_id, guild_id=guild_id)
-        )
+        v = cls.all_users.get((discord_id, guild_id))
+        if v:
+            return v 
+        return cls(discord_id=discord_id, guild_id=guild_id)
 
 
     def to_json(self) -> dict:
@@ -80,6 +80,8 @@ class FamilyTreeMember(object):
     def __eq__(self, other) -> bool:
         '''Says if this instance shares the same ID as another instance''' 
 
+        if not isinstance(other, self.__class__):
+            return False
         return all([
             __class__ == other.__class__, 
             self.id == other.id,
@@ -131,7 +133,7 @@ class FamilyTreeMember(object):
         return await self.bot.fetch_guild(self._guild_id)
 
 
-    def get_relation(self, targer_user):
+    def get_relation(self, target_user):
         '''Gets your relation to another given FamilyTreeMember object'''
 
         text = self.get_unshortened_relation(target_user)

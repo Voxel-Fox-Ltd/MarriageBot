@@ -67,11 +67,16 @@ class DatabaseConnection(object):
     async def marry(self, instigator:Member, target:Member, guild_id:int):
         '''
         Marries two users together
-        Remains in the Database class solely as you need the "idnumber" field.
         '''
 
         await self(
-            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3), ($2, $1, $3)',
+            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
+            instigator.id,
+            target.id,
+            guild_id,
+        )
+        await self(
+            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($2, $1, $3)',
             instigator.id,
             target.id,
             guild_id,

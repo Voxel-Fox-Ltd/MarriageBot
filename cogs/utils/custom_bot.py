@@ -115,7 +115,7 @@ class CustomBot(AutoShardedBot):
 
         # Remove caches
         logger.debug("Clearing caches")
-        FamilyTreeMember.all_users = {None: None}
+        FamilyTreeMember.all_users = {}
         CustomisedTreeUser.all_users.clear()
         self.blacklisted_guilds.clear() 
         self.guild_prefixes.clear() 
@@ -136,9 +136,9 @@ class CustomBot(AutoShardedBot):
         # - children
         logger.debug(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
-            parent = await FamilyTreeMember.get(i['parent_id'], i['guild_id'])
+            parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
             parent._children.append(i['child_id'])
-            child = await FamilyTreeMember.get(i['child_id'], i['guild_id'])
+            child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
             child._parent = i['parent_id']
 
         # - tree customisations
@@ -179,20 +179,20 @@ class CustomBot(AutoShardedBot):
         logger.debug("Waiting until ready before completing startup method.")
         await self.wait_until_ready()
 
-        # Remove anyone who's empty or who the bot can't reach
-        count = 0
-        async with self.database() as db:
-            for user_info, ftm in FamilyTreeMember.all_users.copy().items():
-                if user_info == None:
-                    continue
-                user_id, guild_id = user_info
-                if user_id == None or ftm == None:
-                    continue
-                if self.get_user(user_id) == None:
-                    count += 1
-                    await db.destroy(user_id)
-                    ftm.destroy()
-        logger.debug(f"Destroyed {count} unreachable users")
+        # # Remove anyone who's empty or who the bot can't reach
+        # count = 0
+        # async with self.database() as db:
+        #     for user_info, ftm in FamilyTreeMember.all_users.copy().items():
+        #         if user_info == None:
+        #             continue
+        #         user_id, guild_id = user_info
+        #         if user_id == None or ftm == None:
+        #             continue
+        #         if self.get_user(user_id) == None:
+        #             count += 1
+        #             await db.destroy(user_id)
+        #             ftm.destroy()
+        # logger.debug(f"Destroyed {count} unreachable users")
 
         # And update DBL
         await self.post_guild_count()        
@@ -337,8 +337,8 @@ class CustomBot(AutoShardedBot):
     async def start(self, token:str=None, *args, **kwargs):
         '''Starts up the bot and whathaveyou'''
 
-        # logger.debug("Running startup method") 
-        # self.startup_method = self.loop.create_task(self.startup())
+        logger.debug("Running startup method") 
+        self.startup_method = self.loop.create_task(self.startup())
         # logger.debug("Starting delete loop")
         # self.deletion_method = self.loop.create_task(self.delete_loop())
         logger.debug("Running original D.py start method")
