@@ -296,6 +296,31 @@ class CalebOnly(Cog):
         await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_o)
 
 
+    @command(hidden=True)
+    async def sudo(self, ctx, who: User, *, command: str):
+        """Run a command as another user optionally in another channel."""
+
+        msg = copy.copy(ctx.message)
+        msg.author = channel.guild.get_member(who.id) or who
+        msg.content = ctx.prefix + command
+        new_ctx = await self.bot.get_context(msg, cls=type(ctx))
+        new_ctx._db = ctx._db
+        await self.bot.invoke(new_ctx)
+
+
+    @command(hidden=True)
+    async def allrun(self, ctx, *, command:str):
+        '''Globally runs a command, across all shards'''
+
+        async with self.bot.redis() as re:
+            await re.publish_json('RunGlobalCommand', {
+                'command': ctx.prefix + command,
+                'channel_id': ctx.channel.id,
+                'guild_id': ctx.guild.id,
+                'message_id': ctx.message.id,
+            })
+
+
 def setup(bot:CustomBot):
     x = CalebOnly(bot)
     bot.add_cog(x)

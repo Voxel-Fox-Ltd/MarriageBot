@@ -4,6 +4,12 @@ from discord import Embed, TextChannel, Permissions
 from discord.ext.commands import Context
 
 
+class NoOutputContext(Context):
+
+    async def send(self, *args, **kwargs):
+        pass
+
+
 class CustomContext(Context):
 
     async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True, embed_image:bool=True, ignore_error:bool=False):
