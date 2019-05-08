@@ -13,6 +13,7 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
 from cogs.utils.checks.is_donator import is_patreon, IsNotDonator
+from cogs.utils.checks.no_tree_cache import no_tree_cache, IsTreeCached
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.custom_cog import Cog
@@ -39,7 +40,7 @@ class Information(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator)):
+        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -47,6 +48,14 @@ class Information(Cog):
         # Missing argument
         if isinstance(error, MissingRequiredArgument):
             await ctx.send("You need to specify a person for this command to work properly.")
+            return
+
+        # Tree cache
+        elif isinstance(error, IsTreeCached):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send("Please wait for your other tree to be generated first.")
             return
 
         # Cooldown
@@ -269,6 +278,7 @@ class Information(Cog):
 
     @command(enabled=False)
     @can_send_files()
+    @no_tree_cache()
     @cooldown(1, 5, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):
         '''
@@ -285,6 +295,7 @@ class Information(Cog):
 
     @command(aliases=['familytree'], )
     @can_send_files()
+    @no_tree_cache()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
         '''
@@ -303,6 +314,7 @@ class Information(Cog):
 
     @command()
     @can_send_files()
+    @no_tree_cache()
     @is_patreon()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:User=None):
@@ -318,6 +330,7 @@ class Information(Cog):
 
     @command(aliases=['fulltree', 'ft', 'gt'], )
     @can_send_files()
+    @no_tree_cache()
     @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):
         '''

@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
-from discord import Game, Message, Permissions
+from discord import Game, Message, Permissions, User
 from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
@@ -18,6 +18,7 @@ from cogs.utils.redis import RedisConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.proposal_cache import ProposalCache
+from cogs.utils.tree_cache import TreeCache
 from cogs.utils.custom_context import CustomContext
 
 
@@ -53,6 +54,9 @@ class CustomBot(AutoShardedBot):
         self.bad_argument = compile(r'(User|Member) "(.*)" not found')
         self._invite_link = None
 
+        self.shallow_users = {}  # id: (User, age) - age is how long until it needs re-fetching from Discord
+        self.support_guild = None
+
         # Aiohttp session for use in DBL posting
         self.session = ClientSession(loop=self.loop)
 
@@ -65,6 +69,7 @@ class CustomBot(AutoShardedBot):
         FamilyTreeMember.bot = self
         CustomisedTreeUser.bot = self
         ProposalCache.bot = self
+        TreeCache.bot = self
 
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
@@ -213,10 +218,15 @@ class CustomBot(AutoShardedBot):
 
     
     async def get_name(self, user_id):
-        user = self.get_user(user_id)
-        if user:
+        user = self.get_user(user_id) or self.shallow_users.get(user_id)
+        if user and isinstance(user, User):
             return str(user)
+        elif user:
+            if user[1] > 0:
+                self.shallow_users[user_id] = [user[0], user[1] - 1] 
+                return str(user[0])
         name = await self.fetch_user(user_id)
+        self.shallow_users[user_id] = [name, 20]
         return str(name)
 
 
@@ -234,7 +244,8 @@ class CustomBot(AutoShardedBot):
         '''
 
         ext = glob('cogs/[!_]*.py')
-        rand = glob('cogs/utils/random_text/[!_]*.py')
+        # rand = glob('cogs/utils/random_text/[!_]*.py')
+        rand = []
         extensions = [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
         logger.debug("Getting all extensions: " + str(extensions))
         return extensions

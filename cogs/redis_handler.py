@@ -16,10 +16,10 @@ class RedisHandler(Cog):
         self.handlers = [
             task(self.channel_handler('TreeMemberUpdate', lambda data: FamilyTreeMember(**data))),
             task(self.channel_handler('RunGlobalCommand', self.run_global_command)),
-            task(self.channel_handler('ProposalCacheAdd'), lambda data: bot.proposal_cache.raw_add(**data)),
-            task(self.channel_handler('ProposalCacheRemove'), lambda data: bot.proposal_cache.raw_remove(*data)),
-            task(self.channel_handler('TreeCacheAdd'), lambda data: bot.tree_cache.raw_add(**data)),
-            task(self.channel_handler('TreeCacheRemove'), lambda data: bot.tree_cache.raw_remove(*data)),
+            task(self.channel_handler('ProposalCacheAdd', lambda data: bot.proposal_cache.raw_add(**data))),
+            task(self.channel_handler('ProposalCacheRemove', lambda data: bot.proposal_cache.raw_remove(*data))),
+            task(self.channel_handler('TreeCacheAdd', lambda data: bot.tree_cache.raw_add(*data))),
+            task(self.channel_handler('TreeCacheRemove', lambda data: bot.tree_cache.raw_remove(*data))),
         ]
 
 

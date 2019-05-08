@@ -13,11 +13,14 @@ class IsNotPaypal(IsNotDonator): pass
 async def is_patreon_predicate(bot, user):
     '''Returns True if the user is a Patreon sub'''
 
-    support_invite = await bot.fetch_invite(bot.config['guild'])
-    support_guild = support_invite.guild 
-    patreon_sub_role = support_guild.get_role(bot.config['patreon_sub_role'])
+    if not bot.support_guild:
+        support_invite = await bot.fetch_invite(bot.config['guild'])
+        guild_id = support_invite.guild.id
+        guild = await bot.fetch_guild(guild_id)
+        bot.support_guild = guild
     try:
-        if patreon_sub_role in support_guild.get_member(user.id).roles:
+        member = await bot.support_guild.fetch_member(user.id)
+        if bot.config['patreon_sub_role'] in [i.id for i in member.roles]:
             return True
     except Exception:
         pass
