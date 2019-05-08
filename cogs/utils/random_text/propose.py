@@ -1,19 +1,13 @@
 from random import choice
 
-from discord.ext.commands import Cog
-
-from cogs.utils.custom_bot import CustomBot
+from cogs.utils.random_text.text_template import TextTemplate
 
 
-class ProposeRandomText(Cog):
-
-
-    def __init__(self, bot:CustomBot):
-        self.bot = bot
+class ProposeRandomText(TextTemplate):
 
 
     @staticmethod
-    def valid_proposal(instigator, target):
+    def valid_target(instigator=None, target=None):
         '''
         When you make a valid proposal
         '''
@@ -29,7 +23,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_to_married(instigator, target):
+    def target_is_unqualified(instigator=None, target=None):
         '''
         When you're proposing to a married person
         '''
@@ -44,7 +38,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_when_married(instigator, target):
+    def instigator_is_unqualified(instigator=None, target=None):
         '''
         When you make a proposal while married
         '''
@@ -60,7 +54,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_to_family(instigator, target):
+    def target_is_family(instigator=None, target=None):
         '''
         When you propose to a family member
         '''
@@ -75,7 +69,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_while_instigator(instigator, target):
+    def instigator_is_instigator(instigator=None, target=None):
         '''
         When you propose while you're already waiting on a response from another proposal
         '''
@@ -89,7 +83,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_while_target(instigator, target):
+    def instigator_is_target(instigator=None, target=None):
         '''
         When you propose while they're yet to respond to another proposal
         '''
@@ -104,7 +98,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_to_instigator(instigator, target):
+    def target_is_instigator(instigator=None, target=None):
         '''
         When they propose to someone who's already proposed to someone
         '''
@@ -119,7 +113,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_to_target(instigator, target):
+    def target_is_target(instigator=None, target=None):
         '''
         When they propose to someone who's yet to respond to another
         '''
@@ -132,7 +126,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_to_me(instigator, target):
+    def target_is_me(instigator=None, target=None):
         '''
         When they propose to the bot
         '''
@@ -154,7 +148,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_to_bot(instigator, target):
+    def target_is_bot(instigator=None, target=None):
         '''
         When they propose to another bot
         '''
@@ -168,7 +162,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposing_to_themselves(instigator, target):
+    def target_is_you(instigator=None, target=None):
         '''
         When they propose to themselves
         '''
@@ -182,7 +176,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def accepting_valid_proposal(instigator, target):
+    def request_accepted(instigator=None, target=None):
         '''
         When the target accepts a proposal from the instigator
         '''
@@ -196,7 +190,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def declining_valid_proposal(instigator, target):
+    def request_denied(instigator=None, target=None):
         '''
         When the target declins a valid proposal from the instigator
         '''
@@ -212,7 +206,7 @@ class ProposeRandomText(Cog):
 
 
     @staticmethod
-    def proposal_timed_out(instigator, target):
+    def request_timeout(instigator=None, target=None):
         '''
         When the instigator's propsal times out
         '''
@@ -222,8 +216,3 @@ class ProposeRandomText(Cog):
             f"Huh. Seems like they didn't respond. Maybe try again later, {instigator.mention}?",
             f"Apparently you aren't even deemed worthy a response. That's rude. Try later, {instigator.mention}.",
         ])
-
-
-def setup(bot:CustomBot):
-    x = ProposeRandomText(bot)
-    bot.add_cog(x)

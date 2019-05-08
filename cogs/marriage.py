@@ -107,10 +107,7 @@ class Marriage(Cog):
             check = AcceptanceCheck(target.id, ctx.channel.id).check
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except AsyncTimeoutError as e:
-            try:
-                await ctx.send(text_processor.request_timeout(instigator, target))
-            except Exception as e:
-                pass
+            await ctx.send(text_processor.request_timeout(instigator, target), ignore_error=True)
             self.bot.proposal_cache.remove(instigator, target)
             return
 
@@ -119,7 +116,7 @@ class Marriage(Cog):
 
         # They said no
         if response == 'NO':
-            await ctx.send(text_processor.declining_valid_proposal(instigator, target))
+            await ctx.send(text_processor.declining_valid_proposal(instigator, target), ignore_error=True)
             self.bot.proposal_cache.remove(instigator, target)
             return
 
@@ -129,10 +126,7 @@ class Marriage(Cog):
                 await db.marry(instigator, target, self.bot.get_tree_guild_id(ctx.guild.id))
             except Exception as e:
                 return 
-        try:
-            await ctx.send(text_processor.request_accepted(instigator, target))
-        except Exception as e:
-            pass
+        await ctx.send(text_processor.request_accepted(instigator, target), ignore_error=True)
 
         # Cache values locally
         instigator_tree._partner = target.id 
@@ -140,8 +134,8 @@ class Marriage(Cog):
 
         # Ping em off over redis
         async with self.bot.redis() as re:
-            await re.pool.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.pool.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
         # Remove users from proposal cache
         self.bot.proposal_cache.remove(instigator, target)
@@ -186,8 +180,8 @@ class Marriage(Cog):
 
         # Ping over redis
         async with self.bot.redis() as re:
-            await re.pool.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.pool.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
 
 def setup(bot:CustomBot):

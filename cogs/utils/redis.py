@@ -39,3 +39,8 @@ class RedisConnection(object):
 
     async def __aexit__(self, exc_type, exc, tb):
         pass
+
+    
+    async def publish_json(self, channel:str, json:dict):
+        logger.debug(f"Publishing JSON to channel {channel}: {json!s}")
+        return await self.conn.publish_json(channel, json)

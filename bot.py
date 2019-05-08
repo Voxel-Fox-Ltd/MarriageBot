@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     # Grab the event loop
     loop = bot.loop 
-    loop.set_debug(True)
+    # loop.set_debug(True)
 
     # Connect the database
     logger.info("Creating database pool")

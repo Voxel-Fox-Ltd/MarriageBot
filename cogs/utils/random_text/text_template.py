@@ -46,56 +46,56 @@ class TextTemplate():
 
     @staticmethod
     def valid_target(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def target_is_family(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def target_is_me(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def target_is_bot(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def target_is_you(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def instigator_is_instigator(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def instigator_is_target(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def target_is_instigator(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def target_is_target(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def request_timeout(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def request_accepted(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def request_denied(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def target_is_unqualified(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()
 
     @staticmethod
     def instigator_is_unqualified(instigator:Member, target:Member):
-        ...
+        raise NotImplementedError()

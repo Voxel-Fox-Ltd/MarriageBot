@@ -14,16 +14,19 @@ class RedisHandler(Cog):
 
     def cog_unload(self):
         self.tree_member_update_hander.cancel()
-        self.bot.create_task(self.bot.redis.pool.unsubscribe(self.channel))
+        self.bot.run_until_complete(self.bot.redis.pool.unsubscribe(self.channel))
 
 
     async def tree_member_updater(self):
         '''Handles the tree member updating segment of the redis'''
 
         async with self.bot.redis() as re:
-            channel_list = await re.subscribe('TreeMemberUpdate')
+            self.log_handler.debug("Subscribing to Redis channel 'TreeMemberUpdate'")
+            channel_list = await re.conn.subscribe('TreeMemberUpdate')
         self.channel = channel = channel_list[0]
-        while (await channel.wait_message() and not self.bot.is_closed()):
+        self.log_handler.debug("Looping to wait for messages to channel 'TreeMemberUpdate'")
+        while (await channel.wait_message()):
+            self.log_handler.debug("Received message to 'TreeMemberUpdate'")
             data = await channel.get_json()
             self.log_handler.debug(f"Recieved info over redis: {data!s}")
             FamilyTreeMember(**data)
