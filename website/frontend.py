@@ -108,7 +108,6 @@ async def login(request:Request):
     # Get the code
     code = request.query.get('code')
     if not code:
-        print('aaaaa')
         return HTTPFound(location='/')
 
     # Get the bot
@@ -159,6 +158,7 @@ async def login(request:Request):
 
     # Redirect to settings
     session['user_id'] = int(user_info['id'])
+    print(session)
     return HTTPFound(location=f'/settings')
 
 
@@ -171,6 +171,7 @@ async def settings(request:Request):
 
     # See if they're logged in
     session = await get_session(request)
+    print(session)
     if not session.get('user_id'):
         return HTTPFound(location='/')
 

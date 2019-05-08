@@ -13,19 +13,20 @@ from discord.ext.commands import when_mentioned_or
 from aiohttp_jinja2 import template, setup as jinja_setup
 from aiohttp_session import setup as session_setup, SimpleCookieStorage
 from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
+from aiohttp_session.redis_storage import RedisStorage
 from jinja2 import FileSystemLoader
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection
+from cogs.utils.redis import RedisConnection
 from website.api import routes as api_routes
 from website.frontend import routes as frontend_routes
 
 
 # Set up loggers
+logging.getLogger().setLevel(logging.DEBUG)
 logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
-logging.getLogger('discord').setLevel(logging.WARNING)
-logging.getLogger('marriagebot-db').setLevel(logging.INFO)
-logger = logging.getLogger('marriagebot-web')
+logger = logging.getLogger('marriagebot.web')
 logger.setLevel(logging.DEBUG)
 
 # Filter warnings
@@ -50,11 +51,9 @@ app.add_routes(frontend_routes)
 app.router.add_static('/static', getcwd() + '/website/static')
 app['static_root_url'] = '/static'
 app['database'] = DatabaseConnection
+app['redis'] = RedisConnection
 app['config'] = config
 jinja_setup(app, loader=FileSystemLoader(getcwd() + '/website/templates'))
-# session_setup(app, ECS(token_bytes(32)))
-# session_setup(app, ECS(b'Thirty  two  length  bytes  key.'))
-session_setup(app, SimpleCookieStorage())
 
 
 if __name__ == '__main__':
@@ -66,6 +65,15 @@ if __name__ == '__main__':
 
     logger.info("Creating database pool")
     loop.run_until_complete(DatabaseConnection.create_pool(app['config']['database']))
+
+    # Connect the redis
+    logger.info("Creating redis pool")
+    loop.run_until_complete(RedisConnection.create_pool(app['config']['redis']))
+
+    # Connect redis to middleware
+    logger.info("Connecting Redis to app")
+    storage = RedisStorage(RedisConnection.pool)
+    session_setup(app, storage)
 
     # Start the server unless I said otherwise
     webserver = None
