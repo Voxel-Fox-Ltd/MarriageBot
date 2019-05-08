@@ -51,7 +51,7 @@ if args.shardcount == None and (args.min or args.max):
     raise Exception("You set a min/max shard handler but no shard count")
 bot = CustomBot(
     config_file=args.config_file,
-    activity=Game(name="Restarting..."),
+    activity=Game(name="Reconnecting..."),
     status=Status.dnd,
     commandline_args=args,
     case_insensitive=True,

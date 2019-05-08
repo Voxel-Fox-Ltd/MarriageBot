@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 from asyncio import iscoroutinefunction, iscoroutine
 
 from cogs.utils.custom_cog import Cog
@@ -20,6 +21,7 @@ class RedisHandler(Cog):
             task(self.channel_handler('ProposalCacheRemove', lambda data: bot.proposal_cache.raw_remove(*data))),
             task(self.channel_handler('TreeCacheAdd', lambda data: bot.tree_cache.raw_add(*data))),
             task(self.channel_handler('TreeCacheRemove', lambda data: bot.tree_cache.raw_remove(*data))),
+            task(self.channel_handler('DBLVote', lambda data: bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f")))),
         ]
 
 

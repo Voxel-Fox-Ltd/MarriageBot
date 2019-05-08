@@ -10,6 +10,7 @@ def no_tree_cache():
     '''The check to make sure that a given author is a Patreon sub'''
 
     async def predicate(ctx:Context):
+        return True
         if ctx.author.id not in ctx.bot.tree_cache:
             return True 
         raise IsTreeCached()
