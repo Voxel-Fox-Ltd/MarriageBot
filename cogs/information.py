@@ -114,7 +114,7 @@ class Information(Cog):
             user = ctx.author
 
         # Get the user's info
-        user_info = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
         if user_info._partner == None:
             await ctx.send(f"`{user!s}` is not currently married.")
             return
@@ -137,7 +137,7 @@ class Information(Cog):
         output = ''
 
         # Get the user's info
-        user_info = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
         if len(user_info._children) == 0:
             output += f"`{user!s}` has no children right now."
         else:
@@ -149,7 +149,7 @@ class Information(Cog):
         if user_info._partner == None:
             await ctx.send(output)
             return
-        user_info = await user_info.partner
+        user_info = user_info.partner
         user = self.bot.get_user(user_info.id)
         if len(user_info._children) == 0:
             output += f"\nTheir partner, `{user!s}`, has no children right now."
@@ -175,13 +175,13 @@ class Information(Cog):
         output = ''
 
         # Get the parent's info
-        user_info = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
         if user_info._parent == None:
             output += f"`{user!s}` has no parent right now."
             await ctx.send(output)
             return
         else:
-            parent = await user_info.parent
+            parent = user_info.parent
             if len(parent._children) <= 1:
                 output += f"`{user!s}` has no siblings on their side of the family."
             else:
@@ -190,12 +190,12 @@ class Information(Cog):
                 " from their parent's side: " + \
                 ", ".join([f"`{self.bot.get_user(i)!s}` (`{i}`)" for i in parent._children if i != user.id]) + '. '
 
-        parent = await user_info.parent
+        parent = user_info.parent
         if parent._partner == None:
             await ctx.send(output)
             return
 
-        other_parent = await parent.partner
+        other_parent = parent.partner
         if len(other_parent._children) == 0:
             output += f"\nThey also have no siblings from their parent's partner's side of the family."
             await ctx.send(output)
@@ -220,7 +220,7 @@ class Information(Cog):
         if user == None:
             user = ctx.author
 
-        user_info = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
         if user_info._parent == None:
             await ctx.send(f"`{user!s}` has no parent.")
             return
@@ -240,8 +240,8 @@ class Information(Cog):
 
         if other == None:
             user, other = ctx.author, user
-        user, other = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0), await FamilyTreeMember.get(other.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        relation = await user.get_relation(other)
+        user, other = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id)), FamilyTreeMember.get(other.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        relation = user.get_relation(other)
 
         username = await self.bot.get_name(user.id)
         othername = await self.bot.get_name(other.id)
@@ -261,13 +261,13 @@ class Information(Cog):
 
         if user == None:
             user = ctx.author 
-        user = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        span = await user.span(expand_upwards=True, add_parent=True)
+        user = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        span = user.span(expand_upwards=True, add_parent=True)
         username = await self.bot.get_name(user.id)
         await ctx.send(f"There are `{len(span)}` people in `{username}`'s family tree.")
 
 
-    @command()
+    @command(enabled=False)
     @can_send_files()
     @cooldown(1, 5, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):
@@ -278,12 +278,12 @@ class Information(Cog):
         if root == None:
             root = ctx.author
 
-        text = await FamilyTreeMember.get(root.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0).generate_gedcom_script(self.bot)
+        text = FamilyTreeMember.get(root.id, self.bot.get_tree_guild_id(ctx.guild.id)).generate_gedcom_script(self.bot)
         file = BytesIO(text.encode())
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command(aliases=['familytree'], enabled=True, hidden=True)
+    @command(aliases=['familytree'], enabled=False, hidden=True)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
@@ -301,7 +301,7 @@ class Information(Cog):
             raise e
 
 
-    @command(enabled=True, hidden=True)
+    @command(enabled=False, hidden=True)
     @can_send_files()
     @is_patreon()
     @cooldown(1, 60, BucketType.guild)
@@ -316,7 +316,7 @@ class Information(Cog):
             raise e
 
 
-    @command(aliases=['fulltree', 'ft', 'gt'], enabled=True, hidden=True)
+    @command(aliases=['fulltree', 'ft', 'gt'], enabled=False, hidden=True)
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):
@@ -337,7 +337,7 @@ class Information(Cog):
         root_user = root
 
         # Get their family tree
-        tree = await FamilyTreeMember.get(root_user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        tree = FamilyTreeMember.get(root_user.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
         # Make sure they have one
         if tree.is_empty:

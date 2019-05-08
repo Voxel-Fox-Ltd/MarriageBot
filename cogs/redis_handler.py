@@ -12,13 +12,13 @@ class RedisHandler(Cog):
         self.bot = bot 
         super().__init__(__class__.__name__)
         task = bot.loop.create_task
+        self.channels = []  # Populated automatically
         self.handlers = [
             task(self.channel_handler('TreeMemberUpdate', lambda data: FamilyTreeMember(**data))),
             task(self.channel_handler('RunGlobalCommand', self.run_global_command)),
             task(self.channel_handler('ProposalCacheAdd'), lambda data: bot.proposal_cache.raw_add(**data)),
             task(self.channel_handler('ProposalCacheRemove'), lambda data: bot.proposal_cache.raw_remove(*data)),
         ]
-        self.channels = []  # Populated automatically
 
 
     def cog_unload(self):
@@ -42,14 +42,13 @@ class RedisHandler(Cog):
             channel_list = await re.conn.subscribe(channel_name)
 
         # Get the channel from the list, loop it forever
-        self.channel = channel = channel_list[0]
+        channel = channel_list[0]
         self.log_handler.debug(f"Looping to wait for messages to channel {channel_name}")
         while (await channel.wait_message()):
 
             # Get and log the data
-            self.log_handler.debug(f"Received Redis message to {channel_name}")
             data = await channel.get_json()
-            self.log_handler.debug(f"Redis {channel_name}: {data!s}")
+            self.log_handler.debug(f"Redis message on {channel_name}: {data!s}")
             
             # Run the callable
             if iscoroutine(function) or iscoroutinefunction(function):

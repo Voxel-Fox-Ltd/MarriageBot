@@ -40,7 +40,10 @@ class CommandEvent(Cog):
             logger = self.log_handler
         else:
             logger = cog.log_handler 
-        logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on {ctx.guild.id}/{ctx.channel.id}")
+        if ctx.guild:
+            logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on {ctx.guild.id}/{ctx.channel.id}")
+        else:
+            logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on PMs/{ctx.channel.id}")
 
 
     async def run_logger(self):

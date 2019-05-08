@@ -20,29 +20,29 @@ class TextTemplate():
         if instigator.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR': 
-                return cog.instigator_is_instigator(instigator=None, target=None)
+                return cog.instigator_is_instigator(instigator, target)
             elif x[0] == 'TARGET': 
-                return cog.instigator_is_target(instigator=None, target=None)
+                return cog.instigator_is_target(instigator, target)
 
         # Now check for the target
         elif target.id in self.bot.proposal_cache:
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR': 
-                return cog.target_is_instigator(instigator=None, target=None)
+                return cog.target_is_instigator(instigator, target)
             elif x[0] == 'TARGET': 
-                return cog.target_is_target(instigator=None, target=None)
+                return cog.target_is_target(instigator, target)
 
         # Check if they're proposing to the bot
         if target.id == self.bot.user.id:
-            return cog.target_is_me(instigator=None, target=None)
+            return cog.target_is_me(instigator, target)
 
         # Check if they're proposing to themselves
         elif instigator.id == target.id:
-            return cog.target_is_you(instigator=None, target=None)
+            return cog.target_is_you(instigator, target)
 
         # Now check for any other bot
         elif target.bot:
-            return cog.target_is_bot(instigator=None, target=None)
+            return cog.target_is_bot(instigator, target)
 
     @staticmethod
     def valid_target(instigator:Member, target:Member):

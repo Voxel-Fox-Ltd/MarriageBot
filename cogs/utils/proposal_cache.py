@@ -4,9 +4,10 @@ from discord import User
 
 
 def get_id(user:Union[User, int]):
-    if isinstance(user, User):
+    try:
         return user.id 
-    return user
+    except AttributeError:
+        return user
 
 
 class ProposalCache(dict):
