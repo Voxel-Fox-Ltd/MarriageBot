@@ -3,6 +3,7 @@ from asyncio import iscoroutine, wait_for
 from io import StringIO 
 from textwrap import indent
 from contextlib import redirect_stdout
+from copy import copy
 
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed, File
@@ -297,14 +298,13 @@ class CalebOnly(Cog):
 
 
     @command(hidden=True)
-    async def sudo(self, ctx, who: User, *, command: str):
+    async def sudo(self, ctx, who:User, *, command: str):
         """Run a command as another user optionally in another channel."""
 
-        msg = copy.copy(ctx.message)
-        msg.author = channel.guild.get_member(who.id) or who
+        msg = copy(ctx.message)
+        msg.author = who
         msg.content = ctx.prefix + command
         new_ctx = await self.bot.get_context(msg, cls=type(ctx))
-        new_ctx._db = ctx._db
         await self.bot.invoke(new_ctx)
 
 

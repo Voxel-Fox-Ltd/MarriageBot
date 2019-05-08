@@ -119,8 +119,8 @@ class Information(Cog):
             await ctx.send(f"`{user!s}` is not currently married.")
             return
 
-        partner = self.bot.get_user(user_info._partner)
-        await ctx.send(f"`{user!s}` is currently married to `{partner!s}` (`{partner.id}`).")
+        partner_name = await self.bot.get_name(user_info._partner)
+        await ctx.send(f"`{user!s}` is currently married to `{partner_name}` (`{user_info._partner}`).")
 
 
     @command(aliases=['child', 'kids'])
@@ -283,7 +283,7 @@ class Information(Cog):
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command(aliases=['familytree'], enabled=False, hidden=True)
+    @command(aliases=['familytree'], )
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
@@ -301,7 +301,7 @@ class Information(Cog):
             raise e
 
 
-    @command(enabled=False, hidden=True)
+    @command()
     @can_send_files()
     @is_patreon()
     @cooldown(1, 60, BucketType.guild)
@@ -316,7 +316,7 @@ class Information(Cog):
             raise e
 
 
-    @command(aliases=['fulltree', 'ft', 'gt'], enabled=False, hidden=True)
+    @command(aliases=['fulltree', 'ft', 'gt'], )
     @can_send_files()
     @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):
@@ -343,7 +343,8 @@ class Information(Cog):
         if tree.is_empty:
             await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
-        m = await ctx.send("Generating tree...")
+        await self.bot.tree_cache.add(ctx.author.id)
+        m = await ctx.send("Generating tree - this may take a few minutes...")
         await ctx.channel.trigger_typing()
 
         # Write their treemaker code to a file
@@ -387,8 +388,8 @@ class Information(Cog):
             await ctx.send(text, file=file)
             await m.delete()
         except Exception:
-            return 
-        return
+            pass
+        await self.bot.tree_cache.remove(ctx.author.id) 
 
 
 def setup(bot:CustomBot):

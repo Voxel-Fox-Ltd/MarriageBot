@@ -83,6 +83,8 @@ class CustomBot(AutoShardedBot):
 
         # See who voted for the bot and when
         self.dbl_votes = {}  # uid: timestamp (of last vote)
+
+        self.tree_cache = TreeCache()
         
         # Add a cooldown to help
         cooldown(1, 5, BucketType.user)(self.get_command('help'))
@@ -214,7 +216,8 @@ class CustomBot(AutoShardedBot):
         user = self.get_user(user_id)
         if user:
             return str(user)
-        return await str(self.fetch_user(user_id))
+        name = await self.fetch_user(user_id)
+        return str(name)
 
 
     def get_uptime(self) -> float:
