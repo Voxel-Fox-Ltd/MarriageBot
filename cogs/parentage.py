@@ -111,7 +111,7 @@ class Parentage(Cog):
         # Valid request
         if not target.bot:
             await ctx.send(text_processor.valid_target(instigator, target))
-        self.bot.proposal_cache.add(instigator, target, 'MAKEPARENT')
+        await self.bot.proposal_cache.add(instigator, target, 'MAKEPARENT')
 
         # Wait for a response 
         try:
@@ -127,7 +127,7 @@ class Parentage(Cog):
         # Valid response recieved, see what their answer was
         if response == 'NO':
             await ctx.send(text_processor.request_denied(instigator, target), ignore_error=True)
-            self.bot.proposal_cache.remove(instigator, target)
+            await self.bot.proposal_cache.remove(instigator, target)
             return 
 
         # They said yes - add to database
@@ -149,7 +149,7 @@ class Parentage(Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
         # Uncache
-        self.bot.proposal_cache.remove(instigator, target)
+        await self.bot.proposal_cache.remove(instigator, target)
 
 
     @command()
@@ -193,7 +193,7 @@ class Parentage(Cog):
 
         # No parent, send request
         await ctx.send(text_processor.valid_target(instigator, target))
-        self.bot.proposal_cache.add(instigator, target, 'ADOPT')
+        await self.bot.proposal_cache.add(instigator, target, 'ADOPT')
 
         # Wait for a response
         try:
@@ -201,14 +201,14 @@ class Parentage(Cog):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except AsyncTimeoutError as e:
             await ctx.send(text_processor.request_timeout(instigator, target), ignore_error=True)
-            self.bot.proposal_cache.remove(instigator, target)
+            await self.bot.proposal_cache.remove(instigator, target)
             return
 
         # Valid response recieved, see what their answer was
         response = check(m)
         if response == 'NO':
             await ctx.send(text_processor.request_denied(instigator, target), ignore_error=True)
-            self.bot.proposal_cache.remove(instigator, target)
+            await self.bot.proposal_cache.remove(instigator, target)
             return
             
         # Database it up
@@ -228,7 +228,7 @@ class Parentage(Cog):
         target_tree._parent = instigator_tree.id
 
         # Uncache
-        self.bot.proposal_cache.remove(instigator, target)
+        await self.bot.proposal_cache.remove(instigator, target)
 
         # Output to user
         await ctx.send(text_processor.request_accepted(instigator, target), ignore_error=True)

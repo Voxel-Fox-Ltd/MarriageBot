@@ -3,29 +3,46 @@ from typing import Union
 from discord import User
 
 
+def get_id(user:Union[User, int]):
+    if isinstance(user, User):
+        return user.id 
+    return user
+
+
 class ProposalCache(dict):
+
+    bot = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def add(self, instigator:Union[User, int], target:Union[User, int], cog:str):
+    async def add(self, instigator:Union[User, int], target:Union[User, int], cog:str):
+        async with self.bot.redis() as re:
+            await re.publish_json('ProposalCacheAdd', {
+                'instigator': get_id(instigator),
+                'target': get_id(target),
+                'cog': cog
+            })
+        self.raw_add(instigator, target, cog)
+
+
+    def raw_add(self, instigator:Union[User, int], target:Union[User, int], cog:str):
         '''Adds a user to the proposal cache'''
 
-        # Grab IDs
-        if isinstance(instigator, User):
-            instigator = instigator.id 
-        if isinstance(target, User):
-            user = user.id 
-
         # Add to cache
-        self[instigator] = ('INSTIGATOR', cog)
-        self[target] = ('TARGET', cog)
+        self[get_id(instigator)] = ('INSTIGATOR', cog)
+        self[get_id(target)] = ('TARGET', cog)
     
-    def remove(self, *elements):
+    async def remove(self, *elements):
+        async with self.bot.redis() as re:
+            await re.publish_json('ProposalCacheRemove', [get_id(i) for i in elements])
+        self.raw_remove(*elements)
+
+
+    def raw_remove(self, *elements):
         x = []
         for i in elements:
-            if isinstance(i, User):
-                i = i.id
+            i = get_id(i)
             try:
                 x.append(self.pop(i))
             except KeyError:

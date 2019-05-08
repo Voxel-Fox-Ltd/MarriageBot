@@ -1,4 +1,4 @@
-from asyncio import iscoroutine
+from asyncio import iscoroutinefunction, iscoroutine
 
 from cogs.utils.custom_cog import Cog
 from cogs.utils.custom_context import NoOutputContext, CustomContext
@@ -14,7 +14,9 @@ class RedisHandler(Cog):
         task = bot.loop.create_task
         self.handlers = [
             task(self.channel_handler('TreeMemberUpdate', lambda data: FamilyTreeMember(**data))),
-            task(self.channel_handler('RunGlobalCommand', self.run_global_command))
+            task(self.channel_handler('RunGlobalCommand', self.run_global_command)),
+            task(self.channel_handler('ProposalCacheAdd'), lambda data: bot.proposal_cache.raw_add(**data)),
+            task(self.channel_handler('ProposalCacheRemove'), lambda data: bot.proposal_cache.raw_remove(*data)),
         ]
         self.channels = []  # Populated automatically
 
@@ -23,7 +25,7 @@ class RedisHandler(Cog):
         for handler in self.handlers:
             handler.cancel()
         for channel in self.channels.copy():
-            self.bot.run_until_complete(self.bot.redis.pool.unsubscribe(channel))
+            self.bot.loop.run_until_complete(self.bot.redis.pool.unsubscribe(channel))
             self.channels.remove(channel)
 
 
@@ -50,15 +52,17 @@ class RedisHandler(Cog):
             self.log_handler.debug(f"Redis {channel_name}: {data!s}")
             
             # Run the callable
-            if iscoroutine(function):
-                return await function(data)
-            return function(data)
+            if iscoroutine(function) or iscoroutinefunction(function):
+                await function(data)
+            else:
+                function(data)
 
         
     async def run_global_command(self, data:dict):
         '''Runs a given command globally, across all shards'''
 
         # Get guild
+        self.log_handler.debug(f"Running global command with content '{data['command']}'")
         guild_id = data['guild_id']
         guild = self.bot.get_guild(guild_id)
         if not guild:
@@ -68,7 +72,7 @@ class RedisHandler(Cog):
         channel = guild.get_channel(data['channel_id'])
 
         # Get message
-        message = await message.fetch_message(data['message_id'])
+        message = await channel.fetch_message(data['message_id'])
 
         # Change message content
         message.content = data['command']
@@ -78,6 +82,7 @@ class RedisHandler(Cog):
             ctx = self.bot.get_context(message, cls=CustomContext)
         else:
             ctx = self.bot.get_context(message, cls=NoOutputContext)
+        self.log_handler.debug('Invoking context')
         await self.bot.invoke(ctx)
 
 

@@ -54,7 +54,7 @@ class ModeratorOnly(Cog):
         Removes a user from the propsal cache.
         '''
 
-        x = self.bot.proposal_cache.remove(user.id)
+        x = await self.bot.proposal_cache.remove(user.id)
         if x:
             await ctx.send("Removed from proposal cache.")
         else:

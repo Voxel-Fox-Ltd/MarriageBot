@@ -64,6 +64,7 @@ class CustomBot(AutoShardedBot):
         self.server_specific_families = []  # list[guild_id]
         FamilyTreeMember.bot = self
         CustomisedTreeUser.bot = self
+        ProposalCache.bot = self
 
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()

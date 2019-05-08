@@ -100,7 +100,7 @@ class Marriage(Cog):
 
         # Neither are married, set up the proposal
         await ctx.send(text_processor.valid_target(instigator, target))
-        self.bot.proposal_cache.add(instigator, target, 'MARRIAGE')
+        await self.bot.proposal_cache.add(instigator, target, 'MARRIAGE')
 
         # Wait for a response
         try:
@@ -108,7 +108,7 @@ class Marriage(Cog):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
         except AsyncTimeoutError as e:
             await ctx.send(text_processor.request_timeout(instigator, target), ignore_error=True)
-            self.bot.proposal_cache.remove(instigator, target)
+            await self.bot.proposal_cache.remove(instigator, target)
             return
 
         # Valid response recieved, see what their answer was
@@ -117,7 +117,7 @@ class Marriage(Cog):
         # They said no
         if response == 'NO':
             await ctx.send(text_processor.declining_valid_proposal(instigator, target), ignore_error=True)
-            self.bot.proposal_cache.remove(instigator, target)
+            await self.bot.proposal_cache.remove(instigator, target)
             return
 
         # They said yes!
@@ -138,7 +138,7 @@ class Marriage(Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
         # Remove users from proposal cache
-        self.bot.proposal_cache.remove(instigator, target)
+        await self.bot.proposal_cache.remove(instigator, target)
 
 
     @command()

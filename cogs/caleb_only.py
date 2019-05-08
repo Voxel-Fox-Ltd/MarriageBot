@@ -309,7 +309,7 @@ class CalebOnly(Cog):
 
 
     @command(hidden=True)
-    async def allrun(self, ctx, *, command:str):
+    async def runall(self, ctx, *, command:str):
         '''Globally runs a command, across all shards'''
 
         async with self.bot.redis() as re:
