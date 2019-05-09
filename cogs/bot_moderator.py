@@ -54,11 +54,20 @@ class ModeratorOnly(Cog):
         Removes a user from the propsal cache.
         '''
 
-        x = await self.bot.proposal_cache.remove(user.id)
-        if x:
-            await ctx.send("Removed from proposal cache.")
-        else:
-            await ctx.send("The user wasn't even in the cache but go off I guess.")
+        await self.bot.proposal_cache.remove(user.id)
+        await ctx.send("Sent Redis request to remove user from cache.")
+
+
+    @command(hidden=True)
+    @is_bot_moderator()
+    async def loadusers(self, ctx:Context):
+        '''
+        Loads all families up from the database again
+        '''
+
+        async with self.bot.redis() as re:
+            await re.publish_json('TriggerStartup', {})
+        await ctx.send("Sent trigger to all shards.")
 
 
     @command(hidden=True)

@@ -22,6 +22,7 @@ class RedisHandler(Cog):
             task(self.channel_handler('TreeCacheAdd', lambda data: bot.tree_cache.raw_add(*data))),
             task(self.channel_handler('TreeCacheRemove', lambda data: bot.tree_cache.raw_remove(*data))),
             task(self.channel_handler('DBLVote', lambda data: bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f")))),
+            task(self.channel_handler('TriggerStartup', bot.startup)),
         ]
 
 
@@ -33,7 +34,7 @@ class RedisHandler(Cog):
             self.channels.remove(channel)
 
 
-    async def channel_handler(self, channel_name:str, function:callable):
+    async def channel_handler(self, channel_name:str, function:callable, *args, **kwargs):
         '''
         General handler for creating a channel, waiting for an input, and then 
         plugging the data into a function
@@ -56,9 +57,9 @@ class RedisHandler(Cog):
             
             # Run the callable
             if iscoroutine(function) or iscoroutinefunction(function):
-                await function(data)
+                await function(data, *args, **kwargs)
             else:
-                function(data)
+                function(data, *args, **kwargs)
 
         
     async def run_global_command(self, data:dict):

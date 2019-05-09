@@ -130,30 +130,6 @@ class CustomBot(AutoShardedBot):
         self.dbl_votes.clear() 
         self.blocked_users.clear() 
 
-        # Get family data from database
-        async with self.database() as db:
-            partnerships = await db('SELECT * FROM marriages')
-            parents = await db('SELECT * FROM parents')
-            customisations = await db('SELECT * FROM customisation')
-        
-        # Cache the family data - partners
-        logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
-        for i in partnerships:
-            FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'], guild_id=i['guild_id'])
-
-        # - children
-        logger.debug(f"Caching {len(parents)} parents/children from parents")
-        for i in parents:
-            parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
-            parent._children.append(i['child_id'])
-            child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
-            child._parent = i['parent_id']
-
-        # - tree customisations
-        logger.debug(f"Caching {len(customisations)} customisations from customisations")
-        for i in customisations:
-            CustomisedTreeUser(**i)
-
         # Pick up the blacklisted guilds from the db
         async with self.database() as db:
             blacklisted = await db('SELECT * FROM blacklisted_guilds')
@@ -187,20 +163,24 @@ class CustomBot(AutoShardedBot):
         logger.debug("Waiting until ready before completing startup method.")
         await self.wait_until_ready()
 
-        # # Remove anyone who's empty or who the bot can't reach
-        # count = 0
-        # async with self.database() as db:
-        #     for user_info, ftm in FamilyTreeMember.all_users.copy().items():
-        #         if user_info == None:
-        #             continue
-        #         user_id, guild_id = user_info
-        #         if user_id == None or ftm == None:
-        #             continue
-        #         if self.get_user(user_id) == None:
-        #             count += 1
-        #             await db.destroy(user_id)
-        #             ftm.destroy()
-        # logger.debug(f"Destroyed {count} unreachable users")
+        # Get family data from database
+        async with self.database() as db:
+            partnerships = await db('SELECT * FROM marriages')
+            parents = await db('SELECT * FROM parents')
+            customisations = await db('SELECT * FROM customisation')
+        
+        # Cache the family data - partners
+        logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
+        for i in partnerships:
+            FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'], guild_id=i['guild_id'])
+
+        # - children
+        logger.debug(f"Caching {len(parents)} parents/children from parents")
+        for i in parents:
+            parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
+            parent._children.append(i['child_id'])
+            child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
+            child._parent = i['parent_id']
 
         # And update DBL
         await self.post_guild_count()        

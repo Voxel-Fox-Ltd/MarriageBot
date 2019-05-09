@@ -36,8 +36,6 @@ class Parentage(Cog):
         Local error handler for the cog
         '''
 
-        raise error
-
         # Throw errors properly for me
         if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
