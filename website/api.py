@@ -63,11 +63,12 @@ async def webhook_handler(request:Request):
 
     # Database it up
     # bot.dbl_votes[user_id] = dt.now()
+    time = dt.now()
     async with bot.redis() as re:
-        await re.publish_json('DBLVote', {'user_id': user.id, 'datetime': dt.now().isoformat()})
+        await re.publish_json('DBLVote', {'user_id': user.id, 'datetime': time.isoformat()})
     async with bot.database() as db:
         try:
-            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user_id, bot.dbl_votes[user_id])
+            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user_id, time)
         except Exception as e:
-            await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user_id, bot.dbl_votes[user_id])
+            await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user_id, time)
     return success
