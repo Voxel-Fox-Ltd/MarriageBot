@@ -133,7 +133,7 @@ class Misc(Cog):
         creator = self.bot.get_user(self.bot.config["owners"][0])
         embed.add_field(name="Creator", value=f"{creator!s}\n{creator.id}")
         embed.add_field(name="Library", value=f"Discord.py {dpy_version}")
-        embed.add_field(name="Guild Count", value=len(self.bot.guilds))
+        embed.add_field(name="Guild Count", value=int((len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count))
         embed.add_field(name="Shard Count", value=self.bot.shard_count)
         embed.add_field(name="Average Latency", value=f"{(self.bot.latency * 1000):.2f}ms")
         embed.add_field(name="Member Count", value=sum((len(i.members) for i in self.bot.guilds)))
