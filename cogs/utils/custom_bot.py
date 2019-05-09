@@ -286,13 +286,13 @@ class CustomBot(AutoShardedBot):
         # Only post if there's actually a DBL token set
         if not self.config.get('dbl_token'):
             return
-        if not self.shard_id in [0, None]:
+        if self.shard_id is not None or 0 not in self.shard_ids:
             return
         logger.debug("Sending POST request to DBL")
 
         url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
         json = {
-            'server_count': len(self.guilds),
+            'server_count': int((len(self.guilds) / len(self.shard_ids)) * self.shard_count),
             'shard_count': self.shard_count,
             'shard_id': 0,
         }
