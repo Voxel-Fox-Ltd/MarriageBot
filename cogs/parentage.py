@@ -12,6 +12,7 @@ from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
 from cogs.utils.checks.is_donator import is_patreon_predicate
 from cogs.utils.acceptance_check import AcceptanceCheck
 from cogs.utils.custom_cog import Cog
+from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
 
 from cogs.utils.random_text.makeparent import MakeParentRandomText
 from cogs.utils.random_text.adopt import AdoptRandomText
@@ -70,8 +71,14 @@ class Parentage(Cog):
                 await ctx.send(f"You are missing a required argument `User`.")
             return
 
+        # Bot ready
+        elif isinstance(error, BotNotReady):
+            await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+            return
+
 
     @command()
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def makeparent(self, ctx:Context, *, target:UnblockedMember):
         '''
@@ -155,6 +162,7 @@ class Parentage(Cog):
 
 
     @command()
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def adopt(self, ctx:Context, *, target:UnblockedMember):
         '''
@@ -243,6 +251,7 @@ class Parentage(Cog):
 
 
     @command(aliases=['abort'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def disown(self, ctx:Context, *, target:User):
         '''
@@ -278,6 +287,7 @@ class Parentage(Cog):
 
 
     @command(aliases=['eman'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def emancipate(self, ctx:Context):
         '''

@@ -11,6 +11,7 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.custom_cog import Cog
 from cogs.utils.random_text.copulate import CopulateRandomText
+from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
 
 
 class Simulation(Cog):
@@ -51,6 +52,11 @@ class Simulation(Cog):
         elif isinstance(error, BadArgument):
             argument_text = self.bot.bad_argument.search(str(error)).group(2)
             await ctx.send(f"User `{argument_text}` could not be found.")
+            return
+
+        # Bot ready
+        elif isinstance(error, BotNotReady):
+            await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
             return
 
 
@@ -95,6 +101,7 @@ class Simulation(Cog):
 
 
     @command()
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def kiss(self, ctx:Context, user:Member):
         '''
@@ -181,6 +188,7 @@ class Simulation(Cog):
 
         
     @command(aliases=['intercourse', 'fuck', 'smash'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def copulate(self, ctx:Context, user:Member):
         '''

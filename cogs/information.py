@@ -17,6 +17,7 @@ from cogs.utils.checks.no_tree_cache import no_tree_cache, IsTreeCached
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.custom_cog import Cog
+from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
 
 
 class Information(Cog):
@@ -111,8 +112,14 @@ class Information(Cog):
                 await ctx.send("This command has been temporarily disabled. Apologies for any inconvenience.")
             return
 
+        # Bot ready
+        elif isinstance(error, BotNotReady):
+            await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+            return
+
 
     @command(aliases=['spouse', 'husband', 'wife', 'marriage'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def partner(self, ctx:Context, user:User=None):
         '''
@@ -133,6 +140,7 @@ class Information(Cog):
 
 
     @command(aliases=['child', 'kids'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def children(self, ctx:Context, user:User=None):
         '''
@@ -171,6 +179,7 @@ class Information(Cog):
         await ctx.send(output)
 
     @command(aliases=['siblings'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def sibling(self, ctx:Context, user:User=None):
         '''
@@ -220,6 +229,7 @@ class Information(Cog):
 
 
     @command(aliases=['parents'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def parent(self, ctx:Context, user:User=None):
         '''
@@ -237,6 +247,7 @@ class Information(Cog):
 
 
     @command(aliases=['relation'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def relationship(self, ctx:Context, user:User, other:User=None):
         '''
@@ -262,6 +273,7 @@ class Information(Cog):
 
 
     @command(aliases=['treesize','fs','ts'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def familysize(self, ctx:Context, user:User=None):
         '''
@@ -279,6 +291,7 @@ class Information(Cog):
     @command(enabled=False)
     @can_send_files()
     @no_tree_cache()
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):
         '''
@@ -296,6 +309,7 @@ class Information(Cog):
     @command(aliases=['familytree'], )
     @can_send_files()
     @no_tree_cache()
+    @bot_is_ready()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
         '''
@@ -316,6 +330,7 @@ class Information(Cog):
     @can_send_files()
     @no_tree_cache()
     @is_patreon()
+    @bot_is_ready()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:User=None):
         '''
@@ -331,6 +346,7 @@ class Information(Cog):
     @command(aliases=['fulltree', 'ft', 'gt'], )
     @can_send_files()
     @no_tree_cache()
+    @bot_is_ready()
     @cooldown(1, 60, BucketType.guild)
     async def globaltree(self, ctx:Context, root:User=None):
         '''

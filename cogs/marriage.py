@@ -11,6 +11,7 @@ from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
 from cogs.utils.acceptance_check import AcceptanceCheck
 from cogs.utils.custom_cog import Cog
+from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
 
 from cogs.utils.random_text.text_template import TextTemplate
 from cogs.utils.random_text.propose import ProposeRandomText
@@ -63,8 +64,14 @@ class Marriage(Cog):
             await ctx.send(f"User `{argument_text}` could not be found.")
             return
 
+        # Bot ready
+        elif isinstance(error, BotNotReady):
+            await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+            return
+
 
     @command(aliases=['marry'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def propose(self, ctx:Context, *, target:UnblockedMember):
         '''
@@ -142,6 +149,7 @@ class Marriage(Cog):
 
 
     @command()
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def divorce(self, ctx:Context):
         '''
