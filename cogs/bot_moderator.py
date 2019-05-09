@@ -60,14 +60,14 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def loadusers(self, ctx:Context):
+    async def loadusers(self, ctx:Context, shard_id:int=None):
         '''
         Loads all families up from the database again
         '''
 
         async with self.bot.redis() as re:
-            await re.publish_json('TriggerStartup', {})
-        await ctx.send("Sent trigger to all shards.")
+            await re.publish_json('TriggerStartup', {'shard_id': shard_id})
+        await ctx.send(f"Sent trigger to shard {shard_id}.")
 
 
     @command(hidden=True)

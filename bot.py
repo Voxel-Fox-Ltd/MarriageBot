@@ -24,8 +24,8 @@ from website.frontend import routes as frontend_routes
 logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s')
 root = logging.getLogger()
 root.setLevel(logging.INFO)
-# logging.getLogger('discord').setLevel(logging.INFO)
-logging.getLogger('marriagebot.db').setLevel(logging.DEBUG)
+logging.getLogger('marriagebot.db').setLevel(logging.INFO)
+logging.getLogger('marriagebot.redis').setLevel(logging.INFO)
 logger = logging.getLogger('marriagebot')
 logger.setLevel(logging.DEBUG)
 

@@ -22,7 +22,7 @@ class RedisHandler(Cog):
             task(self.channel_handler('TreeCacheAdd', lambda data: bot.tree_cache.raw_add(*data))),
             task(self.channel_handler('TreeCacheRemove', lambda data: bot.tree_cache.raw_remove(*data))),
             task(self.channel_handler('DBLVote', lambda data: bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f")))),
-            task(self.channel_handler('TriggerStartup', bot.startup)),
+            task(self.channel_handler('TriggerStartup', self.trigger_startup)),
         ]
 
 
@@ -88,6 +88,16 @@ class RedisHandler(Cog):
             ctx = self.bot.get_context(message, cls=NoOutputContext)
         self.log_handler.debug('Invoking context')
         await self.bot.invoke(ctx)
+
+
+    async def trigger_startup(self, data):
+        '''Triggers startup for a given shard id'''
+
+        if data['shard_id'] and data['shard_id'] in self.shard_ids:
+            pass 
+        else:
+            return 
+        await self.bot.startup()
 
 
 def setup(bot:CustomBot):

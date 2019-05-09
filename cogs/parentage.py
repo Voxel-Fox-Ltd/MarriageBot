@@ -232,14 +232,14 @@ class Parentage(Cog):
                 # raise e 
                 pass
 
+        # Add family caching
+        instigator_tree._children.append(target.id)
+        target_tree._parent = instigator_tree.id
+
         # Ping em off over redis
         async with self.bot.redis() as re:
             await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
-
-        # Add family caching
-        instigator_tree._children.append(target.id)
-        target_tree._parent = instigator_tree.id
 
         # Uncache
         await self.bot.proposal_cache.remove(instigator, target)
