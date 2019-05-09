@@ -33,7 +33,7 @@ class Customisation(Cog):
         Actually does all the heavy lifting for the colour setters
         '''
 
-        tree = CustomisedTreeUser.get(ctx.author.id)
+        tree = await CustomisedTreeUser.get(ctx.author.id)
         if colour == None:
             if getattr(tree, attribute) == None:
                 await ctx.send("You already have that set to the default colour.")
@@ -69,9 +69,7 @@ class Customisation(Cog):
             except Exception:
                 await db(f'UPDATE customisation SET {attribute}=$1 WHERE user_id=$2', hex_colour, ctx.author.id)
 
-        setattr(tree, attribute, hex_colour)
         await ctx.send("Customisation saved.") 
-        CustomisedTreeUser.all_users[ctx.author.id] = tree
 
 
     @group(aliases=['customize'])
