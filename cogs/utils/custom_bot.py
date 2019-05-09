@@ -286,7 +286,7 @@ class CustomBot(AutoShardedBot):
         # Only post if there's actually a DBL token set
         if not self.config.get('dbl_token'):
             return
-        if self.shard_id is not None or 0 not in self.shard_ids:
+        if self.shard_count > 1 and 0 not in self.shard_ids:
             return
         logger.debug("Sending POST request to DBL")
 

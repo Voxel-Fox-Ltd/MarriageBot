@@ -75,7 +75,6 @@ For when `m!` isn't good enough (you must have the `manage_guild` permission to 
 ![Testimonial 6](https://marriagebot.xyz/static/images/testimonials/6.png)
 ![Testimonial 7](https://marriagebot.xyz/static/images/testimonials/7.png)
 ![Testimonial 8](https://marriagebot.xyz/static/images/testimonials/8.png)
-![Testimonial 9](https://marriagebot.xyz/static/images/testimonials/9.png)
 
 # Self-Hosting
 
