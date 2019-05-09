@@ -158,22 +158,28 @@ class Information(Cog):
         if len(user_info._children) == 0:
             output += f"`{user!s}` has no children right now."
         else:
-            output += f"`{user!s}` has `{len(user_info._children)}` child" + \
-            {False:"ren", True:""}.get(len(user_info._children)==1) + ": " + \
-            ", ".join([f"`{self.bot.get_user(i)!s}` (`{i}`)" for i in user_info._children]) + '. '
+            output += f"`{user!s}` has `{len(user_info._children)}` child" + {False:"ren", True:""}.get(len(user_info._children)==1) + ": "
+            out_names = []
+            for i in user_info._children:
+                name = await self.bot.get_name(i)
+                out_names.append(f"`{name}` (`{i}`)")
+            output += ', '.join(out_names) + '. '
 
         # Get their partner's info, if any
         if user_info._partner == None:
             await ctx.send(output)
             return
         user_info = user_info.partner
-        user = self.bot.get_user(user_info.id)
+        user = await self.bot.get_name(user_info.id)
         if len(user_info._children) == 0:
-            output += f"\nTheir partner, `{user!s}`, has no children right now."
+            output += f"\nTheir partner, `{user}`, has no children right now."
         else:
-            output += f"\nTheir partner, `{user!s}`, has `{len(user_info._children)}` child" + \
-            {False:"ren", True:""}.get(len(user_info._children)==1) + ": " + \
-            ", ".join([f"`{self.bot.get_user(i)!s}` (`{i}`)" for i in user_info._children]) + '. '
+            output += f"`\nTheir partner, `{user}`, has `{len(user_info._children)}` child" + {False:"ren", True:""}.get(len(user_info._children)==1) + ": "
+            out_names = []
+            for i in user_info._children:
+                name = await self.bot.get_name(i)
+                out_names.append(f"`{name}` (`{i}`)")
+            output += ', '.join(out_names) + '. '
 
         # Return all output
         await ctx.send(output)
