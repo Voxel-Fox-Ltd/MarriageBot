@@ -1,3 +1,6 @@
+from cogs.utils.database import DatabaseConnection as DBC
+
+
 class CustomisedTreeUser(object):
 
     all_users = {}  # discord_id: CTU
@@ -15,9 +18,12 @@ class CustomisedTreeUser(object):
 
     
     @classmethod
-    async def get(cls, key):
-        async with cls.bot.database() as db:
+    async def get(cls, key, db:DBC=None):
+        if db:
             data = await db('SELECT * FROM customisation WHERE user_id=$1', key)
+        else:
+            async with cls.bot.database() as db:
+                data = await db('SELECT * FROM customisation WHERE user_id=$1', key)
         if data:
             return cls(**data[0])
         return cls(key)
@@ -85,3 +91,19 @@ class CustomisedTreeUser(object):
     @classmethod 
     def get_default_unquoted_hex(self):
         return {i: o.strip('"') for i, o in self.hex.items()}
+
+
+    async def save(self, db:DBC):
+        '''Saves this data to database'''
+
+        try:
+            await db(
+                '''INSERT INTO customisation (user_id, edge, node, font, highlighted_font, highlighted_node, background)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background
+            )
+        except Exception:
+            await db(
+                '''UPDATE customisation SET edge=$2, node=$3, font=$4, highlighted_font=$5, highlighted_node=$6, background=$7 WHERE user_id=$1''',
+                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background
+            )

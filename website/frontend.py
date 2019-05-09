@@ -96,7 +96,8 @@ async def index(request:Request):
             'user_info': None, 
             'login_url': login_url
         }
-    return HTTPFound(location=f"/settings")
+    # return HTTPFound(location=f"/settings")
+    return HTTPFound(location=f"/user_settings")
 
 
 @routes.get('/login')
@@ -158,8 +159,8 @@ async def login(request:Request):
 
     # Redirect to settings
     session['user_id'] = int(user_info['id'])
-    print(session)
-    return HTTPFound(location=f'/settings')
+    # return HTTPFound(location=f'/settings')
+    return HTTPFound(location=f'/user_settings')
 
 
 @routes.get('/settings')
@@ -171,7 +172,6 @@ async def settings(request:Request):
 
     # See if they're logged in
     session = await get_session(request)
-    print(session)
     if not session.get('user_id'):
         return HTTPFound(location='/')
 
@@ -225,6 +225,27 @@ async def user_settings(request:Request):
         'hex_strings': colours, 
         'tree_preview_url': tree_preview_url,
     }
+
+
+@routes.post('/user_settings')
+async def user_settings_post_handler(request:Request):
+    '''Handles when people submit their new colours'''
+
+    try:
+        colours_raw = await request.post()
+    except Exception as e: 
+        raise e 
+        pass
+    colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in dict(colours_raw).items()}
+    session = await get_session(request)
+    user_id = session['user_id']
+    async with request.app['database']() as db:
+        ctu = await CustomisedTreeUser.get(user_id, db=db)
+    for i, o in colours.items():
+        setattr(ctu, i, o)
+    async with request.app['database']() as db:
+        await ctu.save(db)
+    return HTTPFound(location='/user_settings')
 
 
 @routes.get('/tree_preview')

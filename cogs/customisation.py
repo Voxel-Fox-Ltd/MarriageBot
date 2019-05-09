@@ -77,13 +77,14 @@ class Customisation(Cog):
     @group(aliases=['customize'])
     async def customise(self, ctx:Context):
         '''
-        Allows you to change your tree colours. See "help customise".
+        Allows you to change your tree colours.
 
         This is a command group - run the following with "customise [attribute] [colour]", eg "customise background red", or "customise node #ff0000".
         '''
 
         if not ctx.invoked_subcommand:
-            await ctx.send(f"See `{ctx.prefix}help {ctx.command.name}` to see how to use this command properly.")
+            await ctx.send(f"You can now update your tree colours at <https://marriagebot.xyz>!")
+            # See `{ctx.prefix}help {ctx.command.name}` to see how to use this command properly.")
         else:
             return
 
