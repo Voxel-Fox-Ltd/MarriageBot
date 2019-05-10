@@ -53,4 +53,7 @@ class RedisConnection(object):
     
     async def get(self, key:str):
         logger.debug(f"Getting Redis key with {key}")
-        return await self.conn.get(key)
+        v = await self.conn.get(key)
+        if v:
+            return v.decode()
+        return v
