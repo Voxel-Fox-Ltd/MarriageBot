@@ -182,6 +182,11 @@ class CustomBot(AutoShardedBot):
             child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
             child._parent = i['parent_id']
 
+        # Save all available names to redis
+        async with self.redis() as re:
+            for user in self.users:
+                await re.set(f'UserName-{user.id}', str(user))
+
         # And update DBL
         await self.post_guild_count()        
         
@@ -198,16 +203,35 @@ class CustomBot(AutoShardedBot):
 
     
     async def get_name(self, user_id):
+        '''Gets the name for a user'''
+
+        
         user = self.get_user(user_id) or self.shallow_users.get(user_id)
+
+        # See if it's a user in a guild this instance handles
         if user and isinstance(user, User):
             return str(user)
+        
+        # See if it's something I already cached
         elif user:
             if user[1] > 0:
                 self.shallow_users[user_id] = [user[0], user[1] - 1] 
                 return str(user[0])
-        name = await self.fetch_user(user_id)
-        self.shallow_users[user_id] = [name, 20]
-        return str(name)
+
+        # See if it's in the Redis
+        async with self.redis() as re:
+            data = await re.get(f'UserName-{user_id}')
+
+        # It isn't - fetch user
+        if data == None:
+            name = await self.fetch_user(user_id)
+            self.shallow_users[user_id] = [name, 20]
+            return str(name)
+
+        # It is - cache and return
+        else:
+            self.shallow_users[user_id] = [data, 20]
+            return data
 
 
     def get_uptime(self) -> float:
