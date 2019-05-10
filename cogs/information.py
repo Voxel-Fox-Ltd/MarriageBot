@@ -172,9 +172,9 @@ class Information(Cog):
         user_info = user_info.partner
         user = await self.bot.get_name(user_info.id)
         if len(user_info._children) == 0:
-            output += f"\nTheir partner, `{user}`, has no children right now."
+            output += f"\n\nTheir partner, `{user}`, has no children right now."
         else:
-            output += f"`\nTheir partner, `{user}`, has `{len(user_info._children)}` child" + {False:"ren", True:""}.get(len(user_info._children)==1) + ": "
+            output += f"\n\nTheir partner, `{user}`, has `{len(user_info._children)}` child" + {False:"ren", True:""}.get(len(user_info._children)==1) + ": "
             out_names = []
             for i in user_info._children:
                 name = await self.bot.get_name(i)
