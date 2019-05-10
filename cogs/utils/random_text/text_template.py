@@ -17,7 +17,7 @@ class TextTemplate():
         cog = self 
         
         # See if the instigator is in the proposal cache
-        if instigator.id in self.bot.proposal_cache:
+        if self.bot.proposal_cache.get(instigator.id):
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR': 
                 return cog.instigator_is_instigator(instigator, target)
@@ -25,7 +25,7 @@ class TextTemplate():
                 return cog.instigator_is_target(instigator, target)
 
         # Now check for the target
-        elif target.id in self.bot.proposal_cache:
+        elif self.bot.proposal_cache.get(target.id):
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR': 
                 return cog.target_is_instigator(instigator, target)
