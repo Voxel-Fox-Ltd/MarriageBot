@@ -34,7 +34,7 @@ class RedisHandler(Cog):
             self.channels.remove(channel)
 
 
-    async def channel_handler(self, channel_name:str, function:callable, *args, **kwargs):
+    async def channel_handler(self, channel_name:str, function:callable, log:bool=True, *args, **kwargs):
         '''
         General handler for creating a channel, waiting for an input, and then 
         plugging the data into a function
@@ -53,7 +53,7 @@ class RedisHandler(Cog):
 
             # Get and log the data
             data = await channel.get_json()
-            self.log_handler.debug(f"Redis message on {channel_name}: {data!s}")
+            if log: self.log_handler.debug(f"Redis message on {channel_name}: {data!s}")
             
             # Run the callable
             if iscoroutine(function) or iscoroutinefunction(function):

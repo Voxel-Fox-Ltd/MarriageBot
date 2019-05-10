@@ -15,7 +15,6 @@ class ErrorEvent(Cog):
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
         self.bot = bot
-        self._event_log_channel
 
 
     @property
