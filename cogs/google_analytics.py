@@ -107,4 +107,7 @@ class GoogleAnalytics(Cog):
 
 def setup(bot:CustomBot):
     x = GoogleAnalytics(bot)
-    bot.add_cog(x)
+    if '' in list(bot.config['google_analytics'].values()):
+        x.log_handler.error("Google Analytics authorization not set in config - not loading cog.") 
+    else:
+        bot.add_cog(x)

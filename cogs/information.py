@@ -389,8 +389,12 @@ class Information(Cog):
         else:
             dot_code = await tree.to_dot_script(self.bot, None if all_guilds else ctx.guild, ctu)
 
-        with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:
-            a.write(dot_code)
+        try:
+            with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:
+                a.write(dot_code)
+        except Exception as e: 
+            self.log_handler.error(f"Could not write to {self.bot.config['tree_file_location']}/{ctx.author.id}.gz")
+            raise e
 
         # Convert to an image
         dot = await create_subprocess_exec(*[

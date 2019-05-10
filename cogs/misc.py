@@ -5,12 +5,10 @@ from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version, Member
-from discord.ext.commands import command, Context, cooldown, Group
-from discord.ext.commands import CommandOnCooldown
+from discord.ext.commands import command, Context, cooldown, Group, CommandOnCooldown, DisabledCommand
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot 
-# from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.custom_cog import Cog
 
 
@@ -41,6 +39,14 @@ class Misc(Cog):
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return
+
+        # Disabled command 
+        elif isinstance(error, DisabledCommand):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send("This command has been disabled.")
             return
 
 
@@ -80,7 +86,8 @@ class Misc(Cog):
         if self.bot.config['paypal']:
             links.append(f"PayPal: <{self.bot.config['paypal']}> (doesn't get you the perks, but is very appreciated)")
         if not links:
-            return 
+            ctx.command.enabled = False 
+            ctx.command.hidden = True
         await ctx.send('\n'.join(links), embeddify=False)        
 
 

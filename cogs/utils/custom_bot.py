@@ -291,14 +291,14 @@ class CustomBot(AutoShardedBot):
             logger.debug("Setting default bot presence globally")
             if self.shard_count > 1:
                 for i in range(self.shard_count):
-                    game = Game(f"{presence_text} (shard {i})")
+                    game = Game(f"{presence_text} (shard {i})".strip())
                     await self.change_presence(activity=game, shard_id=i)
             else:
                 game = Game(presence_text)
                 await self.change_presence(activity=game)
         else:
             logger.debug(f"Setting default bot presence for shard {shard_id}")   
-            game = Game(f"{presence_text} (shard {i})")
+            game = Game(f"{presence_text} (shard {i})".strip())
             await self.change_presence(activity=game, shard_id=i)     
 
 

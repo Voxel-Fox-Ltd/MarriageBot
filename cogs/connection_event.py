@@ -27,7 +27,7 @@ class ConnectionEvent(Cog):
         #         await re.set(f'NAME {user.id}', str(user))
 
         presence_text = self.bot.config['presence_text']
-        game = Game(f"{presence_text} (shard {shard_id})")
+        game = Game(f"{presence_text} (shard {shard_id})".strip())
         await self.bot.change_presence(activity=game, shard_id=shard_id)
 
 

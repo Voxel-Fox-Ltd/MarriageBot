@@ -77,15 +77,21 @@ if __name__ == '__main__':
 
     # Grab the event loop
     loop = bot.loop 
-    # loop.set_debug(True)
 
     # Connect the database
     logger.info("Creating database pool")
-    loop.run_until_complete(DatabaseConnection.create_pool(bot.config['database']))
+    try:
+        loop.run_until_complete(DatabaseConnection.create_pool(bot.config['database']))
+    except Exception as e:
+        logger.error("Error creating database pool")
+        raise e
 
     # Connect the redis
     logger.info("Creating redis pool")
-    loop.run_until_complete(RedisConnection.create_pool(bot.config['redis']))
+    try:
+        loop.run_until_complete(RedisConnection.create_pool(bot.config['redis']))
+    except Exception as e:
+        logger.error("Error creating Redis pool")
 
     # Load the bot's extensions
     logger.info('Loading extensions... ')
