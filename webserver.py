@@ -1,5 +1,4 @@
 from asyncio import get_event_loop
-from ujson import load
 from os import getcwd
 from argparse import ArgumentParser
 from secrets import token_bytes
@@ -15,6 +14,7 @@ from aiohttp_session import setup as session_setup, SimpleCookieStorage
 from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
 from aiohttp_session.redis_storage import RedisStorage
 from jinja2 import FileSystemLoader
+from ujson import load
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection

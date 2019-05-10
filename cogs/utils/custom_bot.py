@@ -1,5 +1,4 @@
 from datetime import datetime as dt
-from ujson import load
 from importlib import import_module
 from asyncio import sleep, create_subprocess_exec
 from glob import glob
@@ -12,6 +11,7 @@ from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Message, Permissions, User
 from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
+from ujson import load
 
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.redis import RedisConnection
