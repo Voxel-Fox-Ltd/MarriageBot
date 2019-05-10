@@ -1,5 +1,5 @@
 from asyncio import get_event_loop
-from json import load
+from ujson import load
 from os import getcwd
 from argparse import ArgumentParser
 from secrets import token_bytes

@@ -1,4 +1,4 @@
-from json import dumps
+from ujson import dumps
 from datetime import datetime as dt
 
 from aiohttp.web import Response, RouteTableDef, Request

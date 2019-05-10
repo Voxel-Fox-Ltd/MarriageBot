@@ -1,5 +1,5 @@
 from os import getcwd
-from json import dumps
+from ujson import dumps
 from urllib.parse import urlencode
 
 from aiohttp import ClientSession

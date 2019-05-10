@@ -1,5 +1,5 @@
 from datetime import datetime as dt
-from json import load
+from ujson import load
 from importlib import import_module
 from asyncio import sleep, create_subprocess_exec
 from glob import glob
