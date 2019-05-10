@@ -53,7 +53,6 @@ bot = CustomBot(
     config_file=args.config_file,
     activity=Game(name="Reconnecting..."),
     status=Status.dnd,
-    commandline_args=args,
     case_insensitive=True,
     shard_count=args.shardcount,
     shard_ids=shard_ids,

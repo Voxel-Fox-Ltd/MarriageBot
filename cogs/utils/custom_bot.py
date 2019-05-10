@@ -39,65 +39,47 @@ def get_prefix(bot, message:Message):
 
 class CustomBot(AutoShardedBot):
 
-    def __init__(self, config_file:str='config/config.json', commandline_args=None, *args, **kwargs):
-        # Things I would need anyway
+    def __init__(self, config_file:str='config/config.json', *args, **kwargs):
+        '''Make the bot WEW'''
+
+        # Get the command prefix from the kwargs
         if kwargs.get('command_prefix'):
             super().__init__(*args, **kwargs)
         else:
             super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
-        # Store the config file for later
-        self.config = None
-        self.config_file = config_file
-        self.reload_config()
-        self.commandline_args = commandline_args
-        self.bad_argument = compile(r'(User|Member) "(.*)" not found')
-        self._invite_link = None
-
+        # Hang out and make all the stuff I'll need
+        self.config = None  # the config dict - None until reload_config() is sucessfully called
+        self.config_file = config_file  # the config filename - used in reload_config()
+        self.reload_config()  # populate bot.config 
+        self.bad_argument = compile(r'(User|Member) "(.*)" not found')  # bad argument regex converter
+        self._invite_link = None  # the invite for the bot - dynamically generated
         self.shallow_users = {}  # id: (User, age) - age is how long until it needs re-fetching from Discord
-        self.support_guild = None
-
-        # Aiohttp session for use in DBL posting
-        self.session = ClientSession(loop=self.loop)
-
-        # Allow database connections like this
-        self.database = DatabaseConnection
-        self.redis = RedisConnection
-
-        # Allow get_guild and setup for server-specific trees
-        self.server_specific_families = []  # list[guild_id]
+        self.support_guild = None  # the support guild - populated by patreon check and event log
+        self.session = ClientSession(loop=self.loop)  # aiohttp session for get/post requests
+        self.database = DatabaseConnection  # database connection class 
+        self.redis = RedisConnection  # redis connection class 
+        self.server_specific_families = []  # list[guild_id] - guilds that have server-specific families attached
         FamilyTreeMember.bot = self
         CustomisedTreeUser.bot = self
         ProposalCache.bot = self
         TreeCache.bot = self
-
-        # Store the startup method so I can see if it completed successfully
-        self.startup_time = dt.now()
-        self.startup_method = None
-        self.deletion_method = None
-
-        # Add a cache for proposing users
-        self.proposal_cache = ProposalCache()
-
-        # Add a list of blacklisted guilds and users
-        self.blacklisted_guilds = []
-        self.blocked_users = {}  # user_id: list(user_id)
-
-        # Dictionary of custom prefixes
-        self.guild_prefixes = {}  # guild_id: prefix
-
-        # See who voted for the bot and when
-        self.dbl_votes = {}  # uid: timestamp (of last vote)
-
-        self.tree_cache = TreeCache()
-        
-        # Add a cooldown to help
-        cooldown(1, 5, BucketType.user)(self.get_command('help'))
+        self.startup_time = dt.now()  # store bot startup time
+        self.startup_method = None  # store startup method so I can see errors in it 
+        self.deletion_method = None  # store deletion method so I can cancel it on shutdown
+        self.proposal_cache = ProposalCache()  # cache for users who've been proposed to/are proposing
+        self.blacklisted_guilds = []  # a list of guilds that are blacklisted by the bot
+        self.blocked_users = {}  # user_id: list(user_id) - users who've blocked other users
+        self.guild_prefixes = {}  # guild_id: prefix - custom prefixes per guild
+        self.dbl_votes = {}  # uid: timestamp (of last vote) - cast dbl votes
+        self.tree_cache = TreeCache()  # cache of users generating trees
+        cooldown(1, 5, BucketType.user)(self.get_command('help'))  # add cooldown to help command
 
 
     @property 
     def invite_link(self):
-        # https://discordapp.com/oauth2/authorize?client_id=468281173072805889&scope=bot&permissions=35840&guild_id=208895639164026880
+        '''The invite link for the bot'''
+
         if self._invite_link: return self._invite_link
         permissions = Permissions()
         permissions.read_messages = True 
@@ -109,21 +91,21 @@ class CustomBot(AutoShardedBot):
             'scope': 'bot',
             'permissions': permissions.value
         })
-        return self.invite_link
+        return self._invite_link
 
 
     def invite_link_to_guild(self, guild_id:int):
+        '''Returns an invite link with additional guild ID param'''
+
         return self.invite_link + f'&guild_id={guild_id}'
 
 
     async def startup(self):
-        '''
-        Resets and fills the FamilyTreeMember cache with objects
-        '''
+        '''Resets and fills the FamilyTreeMember cache with objects'''
 
         # Remove caches
         logger.debug("Clearing caches")
-        FamilyTreeMember.all_users = {}
+        FamilyTreeMember.all_users.clear()
         CustomisedTreeUser.all_users.clear()
         self.blacklisted_guilds.clear() 
         self.guild_prefixes.clear() 
@@ -192,6 +174,8 @@ class CustomBot(AutoShardedBot):
         
         
     async def on_message(self, message):
+        '''Use custom context for commands'''
+
         ctx = await self.get_context(message, cls=CustomContext)
         await self.invoke(ctx)
 
@@ -203,9 +187,8 @@ class CustomBot(AutoShardedBot):
 
     
     async def get_name(self, user_id):
-        '''Gets the name for a user'''
+        '''Gets the name for a user - first from cache, then from redis, then from HTTP'''
 
-        
         user = self.get_user(user_id) or self.shallow_users.get(user_id)
 
         # See if it's a user in a guild this instance handles
@@ -235,17 +218,13 @@ class CustomBot(AutoShardedBot):
 
 
     def get_uptime(self) -> float:
-        '''
-        Gets the uptime of the bot in seconds
-        '''
+        '''Gets the uptime of the bot in seconds'''
 
         return (dt.now() - self.startup_time).total_seconds()
 
 
     def get_extensions(self) -> list:
-        '''
-        Gets the filenames of all the loadable cogs
-        '''
+        '''Gets the filenames of all the loadable cogs'''
 
         ext = glob('cogs/[!_]*.py')
         # rand = glob('cogs/utils/random_text/[!_]*.py')
@@ -256,9 +235,7 @@ class CustomBot(AutoShardedBot):
 
 
     def load_all_extensions(self):
-        '''
-        Loads all extensions from .get_extensions()
-        '''
+        '''Loads all extensions from .get_extensions()'''
 
         logger.debug('Unloading extensions... ')
         for i in self.get_extensions():
@@ -281,9 +258,7 @@ class CustomBot(AutoShardedBot):
 
 
     async def set_default_presence(self, shard_id:int=None):
-        '''
-        Sets the default presence of the bot as appears in the config file
-        '''
+        '''Sets the default presence of the bot as appears in the config file'''
         
         # Update presence
         presence_text = self.config['presence_text']
@@ -303,9 +278,7 @@ class CustomBot(AutoShardedBot):
 
 
     async def post_guild_count(self):
-        '''
-        The loop of uploading the guild count to the DBL server
-        '''
+        '''The loop of uploading the guild count to the DBL server'''
 
         # Only post if there's actually a DBL token set
         if not self.config.get('dbl_token'):
@@ -329,6 +302,7 @@ class CustomBot(AutoShardedBot):
 
     async def delete_loop(self):
         '''A loop that runs every hour, deletes all files in the tree storage directory'''
+
         await self.wait_until_ready()
         while not self.is_closed: 
             logger.debug("Deleting all residual tree files")
@@ -338,18 +312,23 @@ class CustomBot(AutoShardedBot):
 
     async def destroy(self, user_id:int):
         '''Removes a user ID from the database and cache'''
+
         async with self.database() as db:
             await db.destroy(user_id)
         await FamilyTreeMember.get(user_id).destroy()
 
 
     def reload_config(self):
+        '''Opens, loads, and stores the config from the given config file'''
+
         logger.debug("Reloading config")
         with open(self.config_file) as a:
             self.config = load(a)
 
 
     def run(self, *args, **kwargs):
+        '''Runs the original bot run method with the config's token'''
+
         super().run(self.config['token'], *args, **kwargs)
 
 

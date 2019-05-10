@@ -1,1 +1,0 @@
-python3.6 bot.py config/config.json --min 0 --max 9 --shardcount 40 --port 80 & python3.6 bot.py config/config.json --min 10 --max 19 --shardcount 40 --noserver & python3.6 bot.py config/config.json --min 20 --max 29 --shardcount 40 --noserver & python3.6 bot.py config/config.json --min 30 --max 39 --shardcount 40 --noserver &
