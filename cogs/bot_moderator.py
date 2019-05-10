@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+from typing import Union
 
 from discord import User
 from discord.ext.commands import command, Context, cooldown
@@ -49,12 +50,16 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def uncache(self, ctx:Context, user:User):
+    async def uncache(self, ctx:Context, user:Union[User, int]):
         '''
         Removes a user from the propsal cache.
         '''
 
-        await self.bot.proposal_cache.remove(user.id)
+        if isinstance(user, User):
+            user_id = user.id
+        else:
+            user_id = user 
+        await self.bot.proposal_cache.remove(user_id)
         await ctx.send("Sent Redis request to remove user from cache.")
 
 
@@ -78,8 +83,8 @@ class ModeratorOnly(Cog):
         '''
 
         # Get users
-        me = await FamilyTreeMember.get(user_a.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        them = await FamilyTreeMember.get(user_b.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(user_a.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = FamilyTreeMember.get(user_b.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # See if they have partners
         if me.partner != None or them.partner != None:
@@ -106,7 +111,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Run check
-        me = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if not me.partner:
             await ctx.send("That person isn't even married .-.")
             return
@@ -131,7 +136,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Run check
-        them = await FamilyTreeMember.get(child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = FamilyTreeMember.get(child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if them.parent:
             await ctx.send("`{child!s}` already has a parent.")
             return
@@ -142,7 +147,7 @@ class ModeratorOnly(Cog):
                 await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parent.id, child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             except Exception as e:
                 return  # Only thrown when multiple people do at once, just return
-        me = await FamilyTreeMember.get(parent.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(parent.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         me._children.append(child.id)
         them._parent = parent.id
         await ctx.send("Consider it done.")
@@ -150,13 +155,17 @@ class ModeratorOnly(Cog):
 
     @command(aliases=['forceeman'], hidden=True)
     @is_bot_moderator()
-    async def forceemancipate(self, ctx:Context, user:User):
+    async def forceemancipate(self, ctx:Context, user:Union[User, int]):
         '''
         Force emancipates a child
         '''
 
         # Run check
-        me = await FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        if isinstance(user, User):
+            user_id = user.id
+        else:
+            user_id = user 
+        me = FamilyTreeMember.get(user_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if not me.parent:
             await ctx.send("That user doesn't even have a parent .-.")
             return
@@ -164,11 +173,14 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', user_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             except Exception as e:
                 return  # Should only be thrown when the database can't connect 
-        me.parent._children.remove(user.id)
+        me.parent._children.remove(user_id)
         me._parent = None
+        async with self.bot.redis() as re:
+            await re.publish_json('TreeMemberUpdate', me.to_json())
+            await re.publish_json('TreeMemberUpdate', me.parent.to_json())
         await ctx.send("Consider it done.")
 
 
