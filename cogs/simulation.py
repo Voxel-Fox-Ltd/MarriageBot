@@ -185,6 +185,29 @@ class Simulation(Cog):
 
 
         await ctx.send(f"*Gives {user.mention} a cookie*")
+        
+        
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def stab(self, ctx:Context, user:Member):
+        '''
+        Stabs a mentioned user
+        '''
+
+        if user == ctx.author:
+            responses = [
+                f"You stab yourself.",
+                f"Looks like you don't have a knife, oops!",
+                f"No",
+            ]
+        else:
+            responses = [
+                f"You stab {user.mention}.",
+                f"{user.mention} has been stabbed.",
+                f"*stabs {user.mention}.*",
+                f"Looks like you don't have a knife, oops!
+            ]
+        await ctx.send(choice(responses))        
 
         
     @command(aliases=['intercourse', 'fuck', 'smash'])
