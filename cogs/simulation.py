@@ -154,6 +154,21 @@ class Simulation(object):
         await ctx.send(f"*Punches {user.mention} right in the nose*")
 
 
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def cookie(self, ctx:Context, user:Member):
+        '''
+        Gives a cookie to a mentioned user
+        '''
+
+        if user == ctx.author:
+            await ctx.send(f"*You gave yourself a cookie.*")
+            return
+
+
+        await ctx.send(f"*Gives {user.mention} a cookie*")
+
+
     @command(aliases=['intercourse', 'fuck', 'smash'])
     @cooldown(1, 5, BucketType.user)
     async def copulate(self, ctx:Context, user:Member):
