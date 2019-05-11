@@ -1,12 +1,14 @@
-from discord.ext.commands import command, Context, BucketType, Cog, cooldown
+from discord.ext.commands import command, Context, BucketType, cooldown
 from discord.ext.commands import MissingPermissions, CommandOnCooldown
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_cog import Cog
 
 
 class Administrator(Cog): 
 
     def __init__(self,bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot 
 
 

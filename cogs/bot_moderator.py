@@ -1,18 +1,21 @@
 from datetime import datetime as dt
+from typing import Union
 
 from discord import User
-from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.checks.is_bot_moderator import is_bot_moderator
+from cogs.utils.custom_cog import Cog
 
 
 class ModeratorOnly(Cog):
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot 
 
 
@@ -47,16 +50,29 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def uncache(self, ctx:Context, user:User):
+    async def uncache(self, ctx:Context, user:Union[User, int]):
         '''
         Removes a user from the propsal cache.
         '''
 
-        x = self.bot.proposal_cache.remove(user.id)
-        if x:
-            await ctx.send("Removed from proposal cache.")
+        if isinstance(user, User):
+            user_id = user.id
         else:
-            await ctx.send("The user wasn't even in the cache but go off I guess.")
+            user_id = user 
+        await self.bot.proposal_cache.remove(user_id)
+        await ctx.send("Sent Redis request to remove user from cache.")
+
+
+    @command(hidden=True)
+    @is_bot_moderator()
+    async def loadusers(self, ctx:Context, shard_id:int=None):
+        '''
+        Loads all families up from the database again
+        '''
+
+        async with self.bot.redis() as re:
+            await re.publish_json('TriggerStartup', {'shard_id': shard_id})
+        await ctx.send(f"Sent trigger to shard {shard_id}.")
 
 
     @command(hidden=True)
@@ -139,13 +155,17 @@ class ModeratorOnly(Cog):
 
     @command(aliases=['forceeman'], hidden=True)
     @is_bot_moderator()
-    async def forceemancipate(self, ctx:Context, user:User):
+    async def forceemancipate(self, ctx:Context, user:Union[User, int]):
         '''
         Force emancipates a child
         '''
 
         # Run check
-        me = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        if isinstance(user, User):
+            user_id = user.id
+        else:
+            user_id = user 
+        me = FamilyTreeMember.get(user_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if not me.parent:
             await ctx.send("That user doesn't even have a parent .-.")
             return
@@ -153,11 +173,14 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', user_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             except Exception as e:
                 return  # Should only be thrown when the database can't connect 
-        me.parent._children.remove(user.id)
+        me.parent._children.remove(user_id)
         me._parent = None
+        async with self.bot.redis() as re:
+            await re.publish_json('TreeMemberUpdate', me.to_json())
+            await re.publish_json('TreeMemberUpdate', me.parent.to_json())
         await ctx.send("Consider it done.")
 
 

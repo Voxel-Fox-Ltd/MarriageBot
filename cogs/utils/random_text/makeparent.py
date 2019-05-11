@@ -1,17 +1,13 @@
 from random import choice
 
-from discord.ext.commands import Cog
-
-from cogs.utils.custom_bot import CustomBot
+from cogs.utils.random_text.text_template import TextTemplate
 
 
-class MakeParentRandomText(Cog):
+class MakeParentRandomText(TextTemplate):
 
-    def __init__(self, bot:CustomBot):
-        self.bot = bot
 
     @staticmethod
-    def valid_target(instigator, target):
+    def valid_target(instigator=None, target=None):
         '''
         When the instigator asks the target to be their parent
         '''
@@ -27,7 +23,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def target_is_family(instigator, target):
+    def target_is_family(instigator=None, target=None):
         '''
         When the instigator picks the target as a parent but they're already family members
         '''
@@ -41,7 +37,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def target_is_me(instigator, target):
+    def target_is_me(instigator=None, target=None):
         '''
         The instigator picked the bot as a parent
         '''
@@ -57,7 +53,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def target_is_bot(instigator, target, give_text:bool=False):
+    def target_is_bot(instigator=None, target=None, give_text:bool=False):
         '''
         The instigator wants to parentify a bot
         '''
@@ -74,7 +70,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def instigator_is_instigator(instigator, target):
+    def instigator_is_instigator(instigator=None, target=None):
         '''
         When the instigator asks the target to be their parent while they've already asked another
         '''
@@ -89,7 +85,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def target_is_instigator(instigator, target):
+    def target_is_instigator(instigator=None, target=None):
         '''
         When the person you're responding to asked someone out
         '''
@@ -103,7 +99,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def instigator_is_target(instigator, target):
+    def instigator_is_target(instigator=None, target=None):
         '''
         When the instigator has another proposal to respond to
         '''
@@ -117,7 +113,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def target_is_target(instigator, target):
+    def target_is_target(instigator=None, target=None):
         '''
         When the target is also someone elses' target
         '''
@@ -131,7 +127,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def target_is_you(instigator, target):
+    def target_is_you(instigator=None, target=None):
         '''
         Picking yourself as your parent
         '''
@@ -146,7 +142,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def instigator_is_unqualified(instigator, target):
+    def instigator_is_unqualified(instigator=None, target=None):
         '''
         Picking a parent while you already have one
         '''
@@ -160,7 +156,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def request_timeout(instigator, target):
+    def request_timeout(instigator=None, target=None):
         '''
         Parent request timed out
         '''
@@ -177,7 +173,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def request_accepted(instigator, target):
+    def request_accepted(instigator=None, target=None):
         '''
         Accepted parent request
         '''
@@ -192,7 +188,7 @@ class MakeParentRandomText(Cog):
 
 
     @staticmethod
-    def request_denied(instigator, target):
+    def request_denied(instigator=None, target=None):
         '''
         When the parent request is denied
         '''
@@ -202,8 +198,3 @@ class MakeParentRandomText(Cog):
             f"Unfortunately they said no, {instigator.mention}. Better luck next time!",
             f"It seems they aren't ready to be your parent, {instigator.mention}.",
         ])
-
-
-def setup(bot:CustomBot):
-    x = MakeParentRandomText(bot)
-    bot.add_cog(x)

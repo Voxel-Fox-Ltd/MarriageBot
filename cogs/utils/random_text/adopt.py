@@ -1,18 +1,13 @@
 from random import choice
 
-from discord.ext.commands import Cog
-
-from cogs.utils.custom_bot import CustomBot
+from cogs.utils.random_text.text_template import TextTemplate
 
 
-class AdoptRandomText(Cog):
-
-    def __init__(self, bot:CustomBot):
-        self.bot = bot
+class AdoptRandomText(TextTemplate):
 
 
     @staticmethod
-    def valid_target(instigator, target):
+    def valid_target(instigator=None, target=None):
         '''
         Valid adoption target
         '''
@@ -30,7 +25,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def target_is_family(instigator, target):
+    def target_is_family(instigator=None, target=None):
         '''
         The given target is already in the instigator's family
         '''
@@ -44,7 +39,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def target_is_me(instigator, target):
+    def target_is_me(instigator=None, target=None):
         '''
         They want to adopt the bot
         '''
@@ -59,7 +54,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def target_is_bot(instigator, target):
+    def target_is_bot(instigator=None, target=None):
         '''
         They want to adopt ToddBot
         '''
@@ -73,7 +68,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def target_is_you(instigator, target):
+    def target_is_you(instigator=None, target=None):
         '''
         They want to adopt themself
         '''
@@ -87,7 +82,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def instigator_is_instigator(instigator, target):
+    def instigator_is_instigator(instigator=None, target=None):
         '''
         They already asked someone out
         '''
@@ -101,7 +96,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def instigator_is_target(instigator, target):
+    def instigator_is_target(instigator=None, target=None):
         '''
         They need to respond to a proposal first
         '''
@@ -115,7 +110,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def target_is_instigator(instigator, target):
+    def target_is_instigator(instigator=None, target=None):
         '''
         The person they asked out just asked someone out
         '''
@@ -128,7 +123,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def target_is_target(instigator, target):
+    def target_is_target(instigator=None, target=None):
         '''
         The person they asked out is already a target
         '''
@@ -142,7 +137,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def request_timeout(instigator, target):
+    def request_timeout(instigator=None, target=None):
         '''
         '''
 
@@ -155,7 +150,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def request_accepted(instigator, target):
+    def request_accepted(instigator=None, target=None):
         '''
         '''
 
@@ -167,7 +162,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def request_denied(instigator, target):
+    def request_denied(instigator=None, target=None):
         '''
         '''
 
@@ -180,7 +175,7 @@ class AdoptRandomText(Cog):
 
 
     @staticmethod
-    def target_is_unqualified(instigator, target):
+    def target_is_unqualified(instigator=None, target=None):
         '''
         The target specified already has a parent
         '''
@@ -190,8 +185,3 @@ class AdoptRandomText(Cog):
             "Sorry but they have a parent already!",
             "Looks like they already have a loving(?) parent. Sorry!"
         ])
-
-
-def setup(bot:CustomBot):
-    x = AdoptRandomText(bot)
-    bot.add_cog(x)

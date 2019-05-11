@@ -1,8 +1,9 @@
-from discord.ext.commands import command, group, Context, Cog
+from discord.ext.commands import command, group, Context
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.colour_dict import COLOURS
+from cogs.utils.custom_cog import Cog
 
 
 class Customisation(Cog):
@@ -11,6 +12,7 @@ class Customisation(Cog):
     '''
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
 
 
@@ -31,7 +33,7 @@ class Customisation(Cog):
         Actually does all the heavy lifting for the colour setters
         '''
 
-        tree = CustomisedTreeUser.get(ctx.author.id)
+        tree = await CustomisedTreeUser.get(ctx.author.id)
         if colour == None:
             if getattr(tree, attribute) == None:
                 await ctx.send("You already have that set to the default colour.")
@@ -67,21 +69,20 @@ class Customisation(Cog):
             except Exception:
                 await db(f'UPDATE customisation SET {attribute}=$1 WHERE user_id=$2', hex_colour, ctx.author.id)
 
-        setattr(tree, attribute, hex_colour)
         await ctx.send("Customisation saved.") 
-        CustomisedTreeUser.all_users[ctx.author.id] = tree
 
 
     @group(aliases=['customize'])
     async def customise(self, ctx:Context):
         '''
-        Allows you to change your tree colours. See "help customise".
+        Allows you to change your tree colours.
 
         This is a command group - run the following with "customise [attribute] [colour]", eg "customise background red", or "customise node #ff0000".
         '''
 
         if not ctx.invoked_subcommand:
-            await ctx.send(f"See `{ctx.prefix}help {ctx.command.name}` to see how to use this command properly.")
+            await ctx.send(f"You can now update your tree colours at <https://marriagebot.xyz>!")
+            # See `{ctx.prefix}help {ctx.command.name}` to see how to use this command properly.")
         else:
             return
 

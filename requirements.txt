@@ -5,3 +5,5 @@ psutil
 pympler
 aiohttp_jinja2
 aiohttp_session[secure]
+aioredis
+ujson

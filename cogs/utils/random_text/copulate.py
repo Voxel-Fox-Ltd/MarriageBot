@@ -1,18 +1,13 @@
 from random import choice
 
-from discord.ext.commands import Cog
-
-from cogs.utils.custom_bot import CustomBot
+from cogs.utils.random_text.text_template import TextTemplate
 
 
-class CopulateRandomText(Cog):
-
-    def __init__(self, bot:CustomBot):
-        self.bot = bot
+class CopulateRandomText(TextTemplate):
 
 
     @staticmethod
-    def valid_target(instigator, target):
+    def valid_target(instigator=None, target=None):
         '''
         Valid copulation target
         '''
@@ -43,7 +38,7 @@ class CopulateRandomText(Cog):
 
     
     @staticmethod 
-    def declining_valid_proposal(instigator, target=None):
+    def declining_valid_proposal(instigator=None, target=None):
         '''
         They said no to the banging
         '''
@@ -60,7 +55,7 @@ class CopulateRandomText(Cog):
 
 
     @staticmethod
-    def proposal_timed_out(instigator, target=None):
+    def proposal_timed_out(instigator=None, target=None):
         '''
         When the instigator's propsal times out
         '''
@@ -76,7 +71,7 @@ class CopulateRandomText(Cog):
 
 
     @staticmethod
-    def valid_proposal(instigator, target=None):
+    def valid_proposal(instigator=None, target=None):
         '''
         When the proposal is valid
         '''
@@ -93,7 +88,7 @@ class CopulateRandomText(Cog):
 
 
     @staticmethod 
-    def proposing_to_themselves(instigator, target=None):
+    def proposing_to_themselves(instigator=None, target=None):
         '''
         When they propose to themself
         '''
@@ -109,7 +104,7 @@ class CopulateRandomText(Cog):
 
 
     @staticmethod 
-    def target_is_bot(instigator, target=None):
+    def target_is_bot(instigator=None, target=None):
         '''
         When they propose to a bot
         '''
@@ -123,7 +118,7 @@ class CopulateRandomText(Cog):
 
 
     @staticmethod 
-    def target_is_me(instigator, target=None):
+    def target_is_me(instigator=None, target=None):
         '''
         When they propose to MB
         '''
@@ -140,7 +135,7 @@ class CopulateRandomText(Cog):
 
     
     @staticmethod 
-    def target_is_relation(instigator, target, relationship):
+    def target_is_relation(instigator, target, relationship:str):
         '''
         When the target is related to the instigator
         '''
@@ -150,8 +145,3 @@ class CopulateRandomText(Cog):
             f"No, {instigator.mention}, I am your {relationship}.",
             f"They’re actually your {relationship} so I’m not sure that’s a great idea.",
         ])
-
-
-def setup(bot:CustomBot):
-    x = CopulateRandomText(bot)
-    bot.add_cog(x)

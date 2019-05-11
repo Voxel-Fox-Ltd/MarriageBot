@@ -3,18 +3,22 @@ from random import choice
 from asyncio import TimeoutError as AsyncTimeoutError
 
 from discord import Member
-from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands import MissingRequiredArgument, CommandOnCooldown, BadArgument
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.custom_cog import Cog
+from cogs.utils.random_text.copulate import CopulateRandomText
+from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
 
 
 class Simulation(Cog):
 
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
         self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(accept)")
         self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
@@ -48,6 +52,11 @@ class Simulation(Cog):
         elif isinstance(error, BadArgument):
             argument_text = self.bot.bad_argument.search(str(error)).group(2)
             await ctx.send(f"User `{argument_text}` could not be found.")
+            return
+
+        # Bot ready
+        elif isinstance(error, BotNotReady):
+            await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
             return
 
 
@@ -92,6 +101,7 @@ class Simulation(Cog):
 
 
     @command()
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def kiss(self, ctx:Context, user:Member):
         '''
@@ -178,6 +188,7 @@ class Simulation(Cog):
 
         
     @command(aliases=['intercourse', 'fuck', 'smash'])
+    @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def copulate(self, ctx:Context, user:Member):
         '''
@@ -187,17 +198,19 @@ class Simulation(Cog):
         if not ctx.channel.is_nsfw():
             await ctx.send("This command can't be run in a non-NSFW channel.")
             return
+
+        text_processor = CopulateRandomText(self.bot)
         
         if user == ctx.author:
-            await ctx.send(self.bot.get_cog('CopulateRandomText').proposing_to_themselves(ctx.author, user))
+            await ctx.send(text_processor.proposing_to_themselves(ctx.author, user))
             return
 
         # Check for a bot
         if user.id == self.bot.user.id:
-            await ctx.send(self.bot.get_cog('CopulateRandomText').target_is_me(ctx.author, user))
+            await ctx.send(text_processor.target_is_me(ctx.author, user))
             return
         elif user.bot:
-            await ctx.send(self.bot.get_cog('CopulateRandomText').target_is_bot(ctx.author, user))
+            await ctx.send(text_processor.target_is_bot(ctx.author, user))
             return 
 
         #Check if they are related
@@ -207,7 +220,7 @@ class Simulation(Cog):
         if relationship == None or relationship.casefold() == 'partner':
             pass 
         else:
-            await ctx.send(self.bot.get_cog('CopulateRandomText').target_is_relation(ctx.author, user, relationship))
+            await ctx.send(text_processor.target_is_relation(ctx.author, user, relationship))
             return
 
         # Make the check
@@ -232,22 +245,18 @@ class Simulation(Cog):
 
         # Wait for a response
         try:
-            await ctx.send(self.bot.get_cog('CopulateRandomText').valid_proposal(ctx.author, user))
+            await ctx.send(text_processor.valid_proposal(ctx.author, user))
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except AsyncTimeoutError as e:
-            try:
-                await ctx.send(self.bot.get_cog('CopulateRandomText').proposal_timed_out(ctx.author, user))
-            except Exception as e:
-                # If the bot was kicked, or access revoked, for example.
-                pass
+            await ctx.send(text_processor.proposal_timed_out(ctx.author, user), ignore_error=True)
             return
 
         if response == "NO":
-            await ctx.send(self.bot.get_cog('CopulateRandomText').declining_valid_proposal(ctx.author, user))
+            await ctx.send(text_processor.declining_valid_proposal(ctx.author, user))
             return
 
-        await ctx.send(self.bot.get_cog('CopulateRandomText').valid_target(ctx.author, user))
+        await ctx.send(text_processor.valid_target(ctx.author, user))
 
 
 def setup(bot:CustomBot):

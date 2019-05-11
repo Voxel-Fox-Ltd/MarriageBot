@@ -1,15 +1,17 @@
 from random import choice
 
 from discord import Member
-from discord.ext.commands import command, Context, Cog, cooldown
+from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_cog import Cog
 
 
 class Hidden(Cog, command_attrs=dict(hidden=True)):
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot 
 
 

@@ -1,6 +1,10 @@
+from cogs.utils.database import DatabaseConnection as DBC
+
+
 class CustomisedTreeUser(object):
 
     all_users = {}  # discord_id: CTU
+    bot = None
 
     def __init__(self, user_id:int, *, edge:int=None, node:int=None, font:int=None, highlighted_font:int=None, highlighted_node:int=None, background:int=None):
         self.id = user_id
@@ -14,11 +18,15 @@ class CustomisedTreeUser(object):
 
     
     @classmethod
-    def get(cls, key):
-        try:
-            return cls.all_users[key]
-        except Exception:
-            return cls(key)
+    async def get(cls, key, db:DBC=None):
+        if db:
+            data = await db('SELECT * FROM customisation WHERE user_id=$1', key)
+        else:
+            async with cls.bot.database() as db:
+                data = await db('SELECT * FROM customisation WHERE user_id=$1', key)
+        if data:
+            return cls(**data[0])
+        return cls(key)
 
 
     @property 
@@ -66,3 +74,36 @@ class CustomisedTreeUser(object):
     @property 
     def unquoted_hex(self):
         return {i: o.strip('"') for i, o in self.hex.items()}
+
+    
+    @classmethod 
+    def get_default_hex(self):
+        return {
+            'edge': '"#000000"',
+            'node': '"#000000"',
+            'font': '"#FFFFFF"',
+            'highlighted_font': '"#FFFFFF"',
+            'highlighted_node': '"#0000FF"',
+            'background': '"#FFFFFF"',
+        }
+
+
+    @classmethod 
+    def get_default_unquoted_hex(self):
+        return {i: o.strip('"') for i, o in self.hex.items()}
+
+
+    async def save(self, db:DBC):
+        '''Saves this data to database'''
+
+        try:
+            await db(
+                '''INSERT INTO customisation (user_id, edge, node, font, highlighted_font, highlighted_node, background)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background
+            )
+        except Exception:
+            await db(
+                '''UPDATE customisation SET edge=$2, node=$3, font=$4, highlighted_font=$5, highlighted_node=$6, background=$7 WHERE user_id=$1''',
+                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background
+            )

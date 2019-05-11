@@ -4,6 +4,12 @@ from discord import Embed, TextChannel, Permissions
 from discord.ext.commands import Context
 
 
+class NoOutputContext(Context):
+
+    async def send(self, *args, **kwargs):
+        pass
+
+
 class CustomContext(Context):
 
     async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True, embed_image:bool=True, ignore_error:bool=False):
@@ -11,15 +17,6 @@ class CustomContext(Context):
         A custom version of Context that changes .send to embed things for me
         '''
 
-        original = super().send(
-            content=content, 
-            tts=tts, 
-            embed=embed, 
-            file=file, 
-            files=files, 
-            delete_after=delete_after, 
-            nonce=nonce,
-        )
         try: x = self.channel.permissions_for(self.guild.me).value & 18432 != 18432
         except AttributeError: x = False
         no_embed = any([
@@ -29,7 +26,15 @@ class CustomContext(Context):
         ])
         if no_embed:
             try: 
-                return await original
+                return await super().send(
+                    content=content, 
+                    tts=tts, 
+                    embed=embed, 
+                    file=file, 
+                    files=files, 
+                    delete_after=delete_after, 
+                    nonce=nonce,
+                )
             except Exception as e:
                 if not ignore_error: raise e
 

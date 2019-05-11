@@ -2,9 +2,9 @@ from datetime import datetime as dt
 from asyncio import sleep
 
 from discord import Message, Guild, Member, Role, Emoji, RawMessageUpdateEvent, RawMessageDeleteEvent, RawReactionActionEvent, RawReactionClearEvent
-from discord.ext.commands import Cog
 
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_cog import Cog
 
 
 class ShardLogging(Cog):
@@ -36,6 +36,7 @@ class ShardLogging(Cog):
     }
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
         self.data = {}
         self.logger = self.bot.loop.create_task(self.run_logger())

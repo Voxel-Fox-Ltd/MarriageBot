@@ -1,18 +1,13 @@
 from random import choice
 
-from discord.ext.commands import Cog
-
-from cogs.utils.custom_bot import CustomBot
+from cogs.utils.random_text.text_template import TextTemplate
 
 
-class EmancipateRandomText(Cog):
-
-    def __init__(self, bot:CustomBot):
-        self.bot = bot
+class EmancipateRandomText(TextTemplate):
 
 
     @staticmethod
-    def valid_target(instigator, target):
+    def valid_target(instigator=None, target=None):
         '''
         '''
 
@@ -30,7 +25,7 @@ class EmancipateRandomText(Cog):
 
 
     @staticmethod
-    def invalid_target(instigator, target):
+    def instigator_is_unqualified(instigator=None, target=None):
         '''
         '''
 
@@ -38,8 +33,3 @@ class EmancipateRandomText(Cog):
             "You don't actually have a parent. This is awkward.",
             "You're already an orphan though!",
         ])
-
-
-def setup(bot:CustomBot):
-    x = EmancipateRandomText(bot)
-    bot.add_cog(x)

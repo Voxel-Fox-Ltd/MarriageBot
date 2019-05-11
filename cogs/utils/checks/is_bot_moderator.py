@@ -4,11 +4,21 @@ from discord.ext.commands import MissingPermissions, Context, check
 async def is_bot_moderator_predicate(ctx:Context):
     '''Returns True if the user is a bot moderator'''
 
-    support_invite = await ctx.bot.fetch_invite(ctx.bot.config['guild'])
-    support_guild = support_invite.guild 
-    bot_admin_role = support_guild.get_role(ctx.bot.config['bot_admin_role'])
+    # Make sure both settings are set
+    if ctx.bot.config.get('guild') in [None, ''] or ctx.bot.config.get('bot_admin_role') in [None, '']:
+        return None
+
+    # Set the support guild
+    if not ctx.bot.support_guild:
+        support_invite = await ctx.bot.fetch_invite(ctx.bot.config['guild'])
+        guild_id = support_invite.guild.id
+        guild = await bot.fetch_guild(guild_id)
+        ctx.bot.support_guild = guild
+
+    # Get member and look for role
     try:
-        if bot_admin_role in support_guild.get_member(ctx.author.id).roles:
+        member = await bot.support_guild.fetch_member(user.id)
+        if bot.config['bot_admin_role'] in [i.id for i in member.roles]:
             return True
     except Exception:
         pass

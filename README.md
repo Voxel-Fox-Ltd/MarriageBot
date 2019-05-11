@@ -4,7 +4,7 @@
 
 This is a small Discord bot intended to bring love to your Discord servers. What it does is allows two users to get married. There are no benefits or drawbacks to being married. It simply is a thing that you can do. Here's a family tree you can make through marrying and adopting various users:
 
-![A large family tree composed entirely of Discord users](https://files.callumb.co.uk/marriagebot/tree.png)
+![A large family tree composed entirely of Discord users](https://marriagebot.xyz/static/images/tree.png)
 
 ## Me
 
@@ -68,17 +68,16 @@ For when `m!` isn't good enough (you must have the `manage_guild` permission to 
 
 # Testimonials
 
-![Testimonial 1](https://files.callumb.co.uk/marriagebot/1.png)
-![Testimonial 2](https://files.callumb.co.uk/marriagebot/2.png)
-![Testimonial 3](https://files.callumb.co.uk/marriagebot/3.png)
-![Testimonial 5](https://files.callumb.co.uk/marriagebot/5.png)
-![Testimonial 6](https://files.callumb.co.uk/marriagebot/6.png)
-![Testimonial 7](https://files.callumb.co.uk/marriagebot/7.png)
-![Testimonial 8](https://files.callumb.co.uk/marriagebot/8.png)
-![Testimonial 9](https://files.callumb.co.uk/marriagebot/9.png)
+![Testimonial 1](https://marriagebot.xyz/static/images/testimonials/1.png)
+![Testimonial 2](https://marriagebot.xyz/static/images/testimonials/2.png)
+![Testimonial 3](https://marriagebot.xyz/static/images/testimonials/3.png)
+![Testimonial 5](https://marriagebot.xyz/static/images/testimonials/5.png)
+![Testimonial 6](https://marriagebot.xyz/static/images/testimonials/6.png)
+![Testimonial 7](https://marriagebot.xyz/static/images/testimonials/7.png)
+![Testimonial 8](https://marriagebot.xyz/static/images/testimonials/8.png)
 
 # Self-Hosting
 
 To host this bot yourself, you will need to install Python 3.6 or above, as well as the Discord.py rewrite (listed in `requirements.txt`). The database that *I* use is Postgres, and the SQL to generate the database and all relevant tables is included in the `config` folder, though you will have to edit and rename the `config/config.json` file to work properly for your database setup.
 
-After you set up the database, install the requirements (which are just Discord.py rewrite, asyncpg, and Graphwiz) and you're good to go.
+After you set up *the database*,  *redis*, and *Graphviz*, install the requirements (which are listed in `requirements.txt`) and you're good to go.

@@ -1,18 +1,13 @@
 from random import choice
 
-from discord.ext.commands import Cog
-
-from cogs.utils.custom_bot import CustomBot
+from cogs.utils.random_text.text_template import TextTemplate
 
 
-class DisownRandomText(Cog):
-
-    def __init__(self, bot:CustomBot):
-        self.bot = bot
+class DisownRandomText(TextTemplate):
 
 
     @staticmethod
-    def valid_target(instigator, target):
+    def valid_target(instigator=None, target=None):
         '''
         '''
 
@@ -30,7 +25,7 @@ class DisownRandomText(Cog):
 
 
     @staticmethod 
-    def invalid_target(instigator, target):
+    def instigator_is_unqualified(instigator=None, target=None):
         '''
         '''
 
@@ -39,8 +34,3 @@ class DisownRandomText(Cog):
             "Have you considered disowning someone who's *actually* your child?",
             "Strangely enough you can only disown *your* children.",
         ])
-
-
-def setup(bot:CustomBot):
-    x = DisownRandomText(bot)
-    bot.add_cog(x)

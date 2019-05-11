@@ -5,17 +5,17 @@ from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
 from discord import Embed, __version__ as dpy_version, Member
-from discord.ext.commands import command, Context, Cog, cooldown, Group
-from discord.ext.commands import CommandOnCooldown
+from discord.ext.commands import command, Context, cooldown, Group, CommandOnCooldown, DisabledCommand
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot 
-from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.custom_cog import Cog
 
 
 class Misc(Cog):
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot 
         pid = getpid()
         self.process = Process(pid)
@@ -39,6 +39,14 @@ class Misc(Cog):
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return
+
+        # Disabled command 
+        elif isinstance(error, DisabledCommand):
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send("This command has been disabled.")
             return
 
 
@@ -73,12 +81,13 @@ class Misc(Cog):
         '''
 
         links = []
-        if self.bot.config['paypal']:
-            links.append(f"PayPal: <{self.bot.config['paypal']}>")
         if self.bot.config['patreon']:
             links.append(f"Patreon: <{self.bot.config['patreon']}>")
+        if self.bot.config['paypal']:
+            links.append(f"PayPal: <{self.bot.config['paypal']}> (doesn't get you the perks, but is very appreciated)")
         if not links:
-            return 
+            ctx.command.enabled = False 
+            ctx.command.hidden = True
         await ctx.send('\n'.join(links), embeddify=False)        
 
 
@@ -131,7 +140,7 @@ class Misc(Cog):
         creator = self.bot.get_user(self.bot.config["owners"][0])
         embed.add_field(name="Creator", value=f"{creator!s}\n{creator.id}")
         embed.add_field(name="Library", value=f"Discord.py {dpy_version}")
-        embed.add_field(name="Guild Count", value=len(self.bot.guilds))
+        embed.add_field(name="Guild Count", value=int((len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count))
         embed.add_field(name="Shard Count", value=self.bot.shard_count)
         embed.add_field(name="Average Latency", value=f"{(self.bot.latency * 1000):.2f}ms")
         embed.add_field(name="Member Count", value=sum((len(i.members) for i in self.bot.guilds)))
@@ -147,7 +156,7 @@ class Misc(Cog):
             ((ut % (60*60*24)) % (60*60)) % 60,
         ]
         embed.add_field(name="Uptime", value=f"{uptime[0]} days, {uptime[1]} hours, {uptime[2]} minutes, and {uptime[3]:.2f} seconds.")
-        embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
+        # embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
         try:
             await ctx.send(embed=embed)
         except Exception:

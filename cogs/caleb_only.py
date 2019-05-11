@@ -3,15 +3,17 @@ from asyncio import iscoroutine, wait_for
 from io import StringIO 
 from textwrap import indent
 from contextlib import redirect_stdout
+from copy import copy
 
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed, File
-from discord.ext.commands import command, Context, group, NotOwner, Cog, CommandOnCooldown, ExtensionAlreadyLoaded
+from discord.ext.commands import command, Context, group, NotOwner, CommandOnCooldown, ExtensionAlreadyLoaded
 from pympler import summary, muppy
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
+from cogs.utils.custom_cog import Cog
 
 
 class CalebOnly(Cog):
@@ -21,6 +23,7 @@ class CalebOnly(Cog):
     '''
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
         self._last_result = None
 
@@ -43,7 +46,7 @@ class CalebOnly(Cog):
         raise NotOwner
 
 
-    @command(aliases=['pm', 'dm'])
+    @command(aliases=['pm', 'dm'], hidden=True)
     async def message(self, ctx:Context, user:User, *, content:str):
         '''
         Messages a user the given content
@@ -52,7 +55,7 @@ class CalebOnly(Cog):
         await user.send(content)
 
 
-    @command()
+    @command(hidden=True)
     async def seememory(self, ctx:Context):
         '''
         Shows you the number of each created object in the program
@@ -83,7 +86,7 @@ class CalebOnly(Cog):
         return content.strip('` \n')
 
 
-    @command()
+    @command(hidden=True)
     async def ev(self, ctx:Context, *, content:str):
         '''
         Evaluates some Python code
@@ -151,7 +154,7 @@ class CalebOnly(Cog):
                 await ctx.send(text)
 
 
-    @command(aliases=['rld'])
+    @command(aliases=['rld'], hidden=True)
     async def reload(self, ctx:Context, *cog_name:str):
         '''
         Unloads a cog from the bot
@@ -174,7 +177,7 @@ class CalebOnly(Cog):
         await ctx.send('Cog reloaded.')
 
 
-    @command()
+    @command(hidden=True)
     async def runsql(self, ctx:Context, *, content:str):
         '''
         Runs a line of SQL into the sparcli database
@@ -227,7 +230,7 @@ class CalebOnly(Cog):
         await ctx.send('```\n{}```'.format(string_output))
 
 
-    @group()
+    @group(hidden=True)
     async def profile(self, ctx:Context):
         '''
         A parent group for the different profile commands
@@ -236,7 +239,7 @@ class CalebOnly(Cog):
         pass
 
 
-    @profile.command(aliases=['username'])
+    @profile.command(aliases=['username'], hidden=True)
     async def name(self, ctx:Context, *, username:str):
         '''
         Lets you change the username of the bot
@@ -250,7 +253,7 @@ class CalebOnly(Cog):
         await ctx.send('Done.')
 
 
-    @profile.command(aliases=['photo', 'image', 'avatar'])
+    @profile.command(aliases=['photo', 'image', 'avatar'], hidden=True)
     async def picture(self, ctx:Context, *, image_url:str=None):
         '''
         Lets you change the username of the bot
@@ -270,7 +273,7 @@ class CalebOnly(Cog):
         await ctx.send('Done.')
 
 
-    @profile.command(aliases=['game'])
+    @profile.command(aliases=['game'], hidden=True)
     async def activity(self, ctx:Context, activity_type:str, *, name:str=None):
         '''
         Changes the activity of the bot
@@ -284,7 +287,7 @@ class CalebOnly(Cog):
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
 
-    @profile.command()
+    @profile.command(hidden=True)
     async def status(self, ctx:Context, status:str):
         '''
         Changes the bot's status
@@ -292,6 +295,30 @@ class CalebOnly(Cog):
 
         status_o = getattr(Status, status.lower())
         await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_o)
+
+
+    @command(hidden=True)
+    async def sudo(self, ctx, who:User, *, command: str):
+        """Run a command as another user optionally in another channel."""
+
+        msg = copy(ctx.message)
+        msg.author = who
+        msg.content = ctx.prefix + command
+        new_ctx = await self.bot.get_context(msg, cls=type(ctx))
+        await self.bot.invoke(new_ctx)
+
+
+    @command(hidden=True)
+    async def runall(self, ctx, *, command:str):
+        '''Globally runs a command, across all shards'''
+
+        async with self.bot.redis() as re:
+            await re.publish_json('RunGlobalCommand', {
+                'command': ctx.prefix + command,
+                'channel_id': ctx.channel.id,
+                'guild_id': ctx.guild.id,
+                'message_id': ctx.message.id,
+            })
 
 
 def setup(bot:CustomBot):

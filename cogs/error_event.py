@@ -2,16 +2,18 @@ from gc import collect
 from traceback import format_exc
 
 from discord.errors import Forbidden
-from discord.ext.commands import Context, Cog
+from discord.ext.commands import Context
 from discord.ext.commands import MissingRequiredArgument, BadArgument, CommandNotFound, CheckFailure, CommandInvokeError, CommandOnCooldown, NotOwner, MissingPermissions
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import CantSendFiles
+from cogs.utils.custom_cog import Cog
 
 
 class ErrorEvent(Cog):
 
     def __init__(self, bot:CustomBot):
+        super().__init__(self.__class__.__name__)
         self.bot = bot
 
 

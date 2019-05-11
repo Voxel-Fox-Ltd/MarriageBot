@@ -1,11 +1,11 @@
 from os import getcwd
-from json import dumps
 from urllib.parse import urlencode
 
 from aiohttp import ClientSession
 from aiohttp.web import RouteTableDef, Request, HTTPFound, static, Response
 from aiohttp_session import new_session, get_session
 from aiohttp_jinja2 import template
+from ujson import dumps
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 
@@ -26,10 +26,11 @@ async def check_authentication(request:Request, requested_user_id:int=None):
     '''
 
     # Get main vairables
-    bot = request.app['bot']
     session = await get_session(request)
     try:
         requested_user_id = requested_user_id or session['user_id']
+        if requested_user_id == None:
+            raise KeyError
     except KeyError:
         session.invalidate()
         raise AuthenticationError('No session user ID')
@@ -37,28 +38,40 @@ async def check_authentication(request:Request, requested_user_id:int=None):
     # Check they're authed to get another user if necessary
     if requested_user_id != session['user_id']:
         # Get the guild from the invite URL in config
-        try:
-            invite = await bot.fetch_invite(bot.config['guild'])
-            support_guild_id = invite.guild.id
-        except AttributeError:
-            session.invalidate()
-            raise AuthenticationError('No support guild URL')
+        # try:
+        #     # TODO get support guild ID
+        # except AttributeError:
+        #     session.invalidate()
+        #     raise AuthenticationError('No support guild URL')
 
-        # Get the members who are allowed the support role
-        support_guild = bot.get_guild(support_guild_id)
-        bot_admin_role = support_guild.get_role(bot.config['bot_admin_role'])
-        if bot_admin_role == None:
-            session.invalidate()
-            raise AuthenticationError('No valid bot admin role')
+        # # Get the members who are allowed the support role
+        # # TODO get support guild role - check permissions in guild?
+        # if bot_admin_role == None:
+        #     session.invalidate()
+        #     raise AuthenticationError('No valid bot admin role')
 
-        # Checks the users with the support role
-        allowed_ids = [i.id for i in bot_admin_role.members]
-        if session['user_id'] not in allowed_ids:
-            session.invalidate()
-            raise AuthenticationError('Not allowed to view page')
+        # # Checks the users with the support role
+        # # TODO check for bot admin role on user
+        # if session['user_id'] not in allowed_ids:
+        #     session.invalidate()
+        #     raise AuthenticationError('Not allowed to view page')
+        raise AuthenticationError("I'll deal with this later")
 
     # Returns bot and the user
-    return session, bot, bot.get_user(requested_user_id)
+    return session, bot
+
+
+def get_avatar(user_info:dict=dict()):
+    '''Gets the avatar URL for a given user'''
+
+    try:
+        return f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}.png"
+    except KeyError:
+        try:
+            return f"https://cdn.discordapp.com/embed/avatars/{int(user_info['discriminator']) % 5}.png"
+        except KeyError:
+            pass
+    return "https://cdn.discordapp.com/embed/avatars/0.png"
 
 
 @routes.get("/")
@@ -71,17 +84,20 @@ async def index(request:Request):
     '''
 
     session = await get_session(request)
-    bot = request.app['bot']
+    config = request.app['config']
     login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
-        'client_id': bot.config['oauth']['client_id'],
-        'redirect_uri': bot.config['oauth']['redirect_uri'],
+        'client_id': config['oauth']['client_id'],
+        'redirect_uri': config['oauth']['redirect_uri'],
         'response_type': 'code',
         'scope': OAUTH_SCOPE
     })
-    if not session.get('user'):
-        return {'bot': bot, 'user': None, 'login_url': login_url}
-    user = session.get('user')
-    return HTTPFound(location=f'/settings/{user.id}')
+    if not session.get('user_id'):
+        return {
+            'user_info': None, 
+            'login_url': login_url
+        }
+    # return HTTPFound(location=f"/settings")
+    return HTTPFound(location=f"/user_settings")
 
 
 @routes.get('/login')
@@ -96,8 +112,8 @@ async def login(request:Request):
         return HTTPFound(location='/')
 
     # Get the bot
-    bot = request.app['bot']
-    oauth_data = bot.config['oauth']
+    config = request.app['config']
+    oauth_data = config['oauth']
 
     # Generate the post data
     data = {
@@ -112,74 +128,72 @@ async def login(request:Request):
 
     # Make the request
     async with ClientSession(loop=request.loop) as session:
+
+        # Get auth
         token_url = f"https://discordapp.com/api/v6/oauth2/token"
         async with session.post(token_url, data=data, headers=headers) as r:
             token_info = await r.json()
+
+        # Get user
         headers.update({
             "Authorization": f"{token_info['token_type']} {token_info['access_token']}"
         })
         user_url = f"https://discordapp.com/api/v6/users/@me"
         async with session.get(user_url, headers=headers) as r:
             user_info = await r.json()
+
+        # Get guilds
         guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
         async with session.get(guilds_url, headers=headers) as r:
             guild_info = await r.json()
 
-    # Save and redirect
+    # Save to session
     session = await new_session(request)
-    session['raw_user_info'] = user_info
-    session['user_id'] = user_id = int(user_info['id'])
-    session['raw_guild_info'] = guild_info
-    return HTTPFound(location=f'/settings/{user_id}')
+
+    # Update avatar data
+    user_info['avatar_link'] = get_avatar(user_info)
+    session['user_info'] = user_info
+
+    # Update guild data
+    session['guild_info'] = guild_info
+
+    # Redirect to settings
+    session['user_id'] = int(user_info['id'])
+    # return HTTPFound(location=f'/settings')
+    return HTTPFound(location=f'/user_settings')
 
 
 @routes.get('/settings')
-@routes.get('/settings/{user_id}')
 @template('settings.jinja')
 async def settings(request:Request):
     '''
     Handles the main settings page for the bot
     '''
 
-    # Get the user
-    error = None
-    try:
-        session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
-        if user == None:
-            error = AuthenticationError('User does not exist')
-    except ValueError:
-        session, bot, user = await check_authentication(request)
-        if user == None:
-            error = AuthenticationError('User does not exist')
-        return HTTPFound(location=f'/settings/{user.id}')
-    if isinstance(error, AuthenticationError):
+    # See if they're logged in
+    session = await get_session(request)
+    if not session.get('user_id'):
         return HTTPFound(location='/')
 
-    return {'bot': bot, 'session': session, 'user': user}
+    # Give them the page
+    return {
+        'user_info': session['user_info'], 
+    }
 
 
 @routes.get('/user_settings')
-@routes.get('/user_settings/{user_id}')
 @template('user_settings.jinja')
 async def user_settings(request:Request):
     '''
     Handles the users' individual settings pages
     '''
 
-    # Get the user
-    error = None
-    try:
-        session, bot, user = await check_authentication(request, int(request.match_info.get('user_id')))
-        if user == None:
-            error = AuthenticationError('User does not exist')
-    except ValueError:
-        session, bot, user = await check_authentication(request)
-        if user == None:
-            error = AuthenticationError('User does not exist')
-        return HTTPFound(location=f'/user_settings/{user.id}')
-    if isinstance(error, AuthenticationError):
+    # See if they're logged in
+    session = await get_session(request)
+    if not session.get('user_id'):
         return HTTPFound(location='/')
 
+    # Get the colours they're using
     if len(request.query) > 0:
         colours_raw = {
             'edge': request.query.get('edge'),
@@ -195,9 +209,43 @@ async def user_settings(request:Request):
                 o = 'transparent'
             colours[i] = o
     else:
-        colours = CustomisedTreeUser.get(user.id).unquoted_hex
+        async with request.app['database']() as db:
+            data = await db('SELECT * FROM customisation WHERE user_id=$1', session['user_id'])
+        try:
+            colours = CustomisedTreeUser(**data[0]).unquoted_hex
+        except (IndexError, TypeError):
+            colours = CustomisedTreeUser.get_default_unquoted_hex()
+
+    # Make a URL for the preview
     tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' for i, o in colours.items()])
-    return {'bot': bot, 'session': session, 'user': user, 'hex_strings': colours, 'tree_preview_url': tree_preview_url}
+
+    # Give all the data to the page
+    return {
+        'user_info': session['user_info'],
+        'hex_strings': colours, 
+        'tree_preview_url': tree_preview_url,
+    }
+
+
+@routes.post('/user_settings')
+async def user_settings_post_handler(request:Request):
+    '''Handles when people submit their new colours'''
+
+    try:
+        colours_raw = await request.post()
+    except Exception as e: 
+        raise e 
+        pass
+    colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in dict(colours_raw).items()}
+    session = await get_session(request)
+    user_id = session['user_id']
+    async with request.app['database']() as db:
+        ctu = await CustomisedTreeUser.get(user_id, db=db)
+    for i, o in colours.items():
+        setattr(ctu, i, o)
+    async with request.app['database']() as db:
+        await ctu.save(db)
+    return HTTPFound(location='/user_settings')
 
 
 @routes.get('/tree_preview')
@@ -223,7 +271,9 @@ async def tree_preview(request:Request):
             o = f'#{o.strip("#")}'
         colours[i] = o
 
-    return {'bot': request.app['bot'],'hex_strings': colours}
+    return {
+        'hex_strings': colours,
+    }
 
 
 @routes.get('/logout')
