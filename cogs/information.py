@@ -332,7 +332,7 @@ class Information(Cog):
             raise e
 
 
-    @command()
+    @command(aliases=['st'])
     @can_send_files()
     @no_tree_cache()
     @is_patreon()
