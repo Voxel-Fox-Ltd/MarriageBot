@@ -76,29 +76,26 @@ class Simulation(Cog):
                 f"*Feeds {user.mention} some {food}.*",
                 f"You feed {user.mention} too much {food}.",
             ]
-        await ctx.send(choice(responses))
-        
-        
-       #If food doesn't exist:    
-        else:
-            
-            if user == ctx.author:
-                responses = [
-                    f"You feed yourself candy",
-                    f"You have been fed",
-                    f"You feed yourself",
-                    f"You feed yourself some chicken",
-                    f"You fed yourself too much.",
-                ]
-            else:
-                responses = [
-                    f"*Feeds {user.mention} some candy.*",
-                    f"{user.mention} has been fed.",
-                    f"You feed {user.mention}.",
-                    f"*Feeds {user.mention} some chicken.",
-                    f"You feed {user.mention} too much.",
-                ]
             await ctx.send(choice(responses))
+            return
+            
+        if user == ctx.author:
+            responses = [
+                f"You feed yourself candy",
+                f"You have been fed",
+                f"You feed yourself",
+                f"You feed yourself some chicken",
+                f"You fed yourself too much.",
+            ]
+        else:
+            responses = [
+                f"*Feeds {user.mention} some candy.*",
+                f"{user.mention} has been fed.",
+                f"You feed {user.mention}.",
+                f"*Feeds {user.mention} some chicken.",
+                f"You feed {user.mention} too much.",
+            ]
+        await ctx.send(choice(responses))
 
 
     @command()
@@ -154,7 +151,6 @@ class Simulation(Cog):
         if user == ctx.author:
             await ctx.send(f"*You snuggle yourself... and start crying.*")
             return
-
         await ctx.send(f"*Snuggles {user.mention}*")
 
 
@@ -168,7 +164,6 @@ class Simulation(Cog):
         if user == ctx.author:
             await ctx.send(f"*You slapped yourself... for some reason.*")
             return
-
         await ctx.send(f"*Slaps {user.mention}*")
 
 
@@ -182,8 +177,6 @@ class Simulation(Cog):
         if user == ctx.author:
             await ctx.send(f"*You punched yourself... for some reason.*")
             return
-
-
         await ctx.send(f"*Punches {user.mention} right in the nose*")
 
 
@@ -220,7 +213,7 @@ class Simulation(Cog):
                 f"You stab {user.mention}.",
                 f"{user.mention} has been stabbed.",
                 f"*stabs {user.mention}.*",
-                f"Looks like you don't have a knife, oops!
+                f"Looks like you don't have a knife, oops!"
             ]
         await ctx.send(choice(responses))        
 
