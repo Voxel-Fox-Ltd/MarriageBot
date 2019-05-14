@@ -312,7 +312,7 @@ class Information(Cog):
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command(aliases=['familytree'])
+    @command(aliases=['familytree', 't'])
     @can_send_files()
     @no_tree_cache()
     @bot_is_ready()
