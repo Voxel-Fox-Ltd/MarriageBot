@@ -409,7 +409,8 @@ class Information(Cog):
         await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
         try:
             dot.kill()
-        except Exception: 
+        except Exception as e: 
+            return await ctx.send(f"{e!s}")
             pass
 
         # Send file and delete cached

@@ -506,7 +506,8 @@ class FamilyTreeMember(object):
         for generation in gen_span.values():
             for i in generation:
                 all_users.append(i)
-                name = await self.bot.get_name(i.id)
+                raw_name = await self.bot.get_name(i.id)
+                name = self.NAME_SUBSTITUTION.sub('_', raw_name)
                 if i == self:
                     all_text.append(f'\t{i.id}[label="{name}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];')
                 else:
