@@ -89,8 +89,8 @@ class CustomisedTreeUser(object):
 
 
     @classmethod 
-    def get_default_unquoted_hex(self):
-        return {i: o.strip('"') for i, o in self.hex.items()}
+    def get_default_unquoted_hex(cls):
+        return {i: o.strip('"') for i, o in cls.get_default_hex.items()}
 
 
     async def save(self, db:DBC):
