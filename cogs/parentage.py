@@ -1,5 +1,6 @@
 from re import compile
 from asyncio import TimeoutError as AsyncTimeoutError, wait_for
+from typing import Union
 
 from discord import Member, User
 from discord.ext.commands import command, Context, cooldown
@@ -251,18 +252,44 @@ class Parentage(Cog):
     @command(aliases=['abort'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
-    async def disown(self, ctx:Context, *, target:User):
+    async def disown(self, ctx:Context, *, target:Union[User, int, str]):
         '''
         Lets you remove a user from being your child
         '''
 
+        # Manage output strings
+        text_processor = DisownRandomText(self.bot)
+
         # Variables we're gonna need for later
         instigator = ctx.author
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
-        target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        target_tree = None
 
-        # Manage output strings
-        text_processor = DisownRandomText(self.bot)
+        # Run target converter to get target's tree
+        if isinstance(target, User):
+            target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
+
+        # If they're an ID
+        elif isinstance(target, int):
+            try:
+                child = instigator_tree.children[instigator_tree._children.index(target)]
+            except ValueError:
+                await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
+                return 
+
+        # If they're a name
+        elif isinstance(target, str):
+            child_ids = instigator_tree._children
+            child_names = []
+            async with self.bot.redis() as re:
+                for c, i in enumerate(child_ids):
+                    name = await re.get(f'UserName-{i}')
+                    if target == name:
+                        target_tree = instigator_tree.children[c]
+                        break 
+            if target_tree == None:
+                await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
+                return 
 
         # Make sure they're the child of the instigator
         if not target.id in instigator_tree._children:
