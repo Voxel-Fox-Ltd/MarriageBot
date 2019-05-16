@@ -49,6 +49,7 @@ with open(args.config_file) as a:
 app = Application(loop=get_event_loop(), debug=True)
 app.add_routes(frontend_routes)
 app.router.add_static('/static', getcwd() + '/website/static')
+app.router.add_static('/trees', config['tree_file_location'])
 app['static_root_url'] = '/static'
 app['database'] = DatabaseConnection
 app['redis'] = RedisConnection
