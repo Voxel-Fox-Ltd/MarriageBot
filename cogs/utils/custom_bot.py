@@ -223,6 +223,11 @@ class CustomBot(AutoShardedBot):
         return (dt.now() - self.startup_time).total_seconds()
 
 
+    @property 
+    def owners(self) -> list:
+        return self.config['owners']
+
+
     def get_extensions(self) -> list:
         '''Gets the filenames of all the loadable cogs'''
 

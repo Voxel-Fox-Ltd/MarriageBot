@@ -23,9 +23,7 @@ class Misc(Cog):
 
 
     async def cog_command_error(self, ctx:Context, error):
-        '''
-        Local error handler for the cog
-        '''
+        '''Local error handler for the cog'''
 
         # Throw errors properly for me
         if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
@@ -53,22 +51,18 @@ class Misc(Cog):
     @command(aliases=['upvote'])
     @cooldown(1, 5, BucketType.user)
     async def vote(self, ctx:Context):
-        '''
-        Gives you a link to upvote the bot
-        '''
+        '''Gives you a link to upvote the bot'''
 
         if self.bot.config['dbl_vainity']:
-            await ctx.send(f"<https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote>", embeddify=False)
+            await ctx.send(f"<https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote>\nSee {ctx.prefix}perks for more information.", embeddify=False)
         else:
-            await ctx.send(f"<https://discordbots.org/bot/{self.bot.user.id}/vote>", embeddify=False)
+            await ctx.send(f"<https://discordbots.org/bot/{self.bot.user.id}/vote>\nSee {ctx.prefix}perks for more information.", embeddify=False)
 
 
     @command(aliases=['git', 'code'])
     @cooldown(1, 5, BucketType.user)
     async def github(self, ctx:Context):
-        '''
-        Gives you a link to the bot's code repository
-        '''
+        '''Gives you a link to the bot's code repository'''
 
         await ctx.send(f"<{self.bot.config['github']}>", embeddify=False)
 
@@ -76,13 +70,11 @@ class Misc(Cog):
     @command(aliases=['patreon', 'paypal'])
     @cooldown(1, 5, BucketType.user)
     async def donate(self, ctx:Context):
-        '''
-        Gives you the creator's donation links
-        '''
+        '''Gives you the creator's donation links'''
 
         links = []
         if self.bot.config['patreon']:
-            links.append(f"Patreon: <{self.bot.config['patreon']}>")
+            links.append(f"Patreon: <{self.bot.config['patreon']}> (see {ctx.prefix}perks to see what you get)")
         if self.bot.config['paypal']:
             links.append(f"PayPal: <{self.bot.config['paypal']}> (doesn't get you the perks, but is very appreciated)")
         if not links:
@@ -94,9 +86,7 @@ class Misc(Cog):
     @command()
     @cooldown(1, 5, BucketType.user)
     async def invite(self, ctx:Context):
-        '''
-        Gives you an invite link for the bot
-        '''
+        '''Gives you an invite link for the bot'''
 
         await ctx.send(
             f"<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=35840>",
@@ -107,9 +97,7 @@ class Misc(Cog):
     @command(aliases=['guild', 'support'])
     @cooldown(1, 5, BucketType.user)
     async def server(self, ctx:Context):
-        '''
-        Gives you a server invite link
-        '''
+        '''Gives you a server invite link'''
 
         await ctx.send(self.bot.config['guild'], embeddify=False)
 
@@ -117,19 +105,26 @@ class Misc(Cog):
     @command(hidden=True)
     @cooldown(1, 5, BucketType.user)
     async def echo(self, ctx:Context, *, content:str):
-        '''
-        Echos a saying
-        '''
+        '''Echos a saying'''
 
         await ctx.send(content, embeddify=False)
+
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def perks(self, ctx:Context):
+        '''Shows you the perks associated with different support tiers'''
+
+        e = Embed()
+        e.add_field(name=f'Voting ({ctx.clean_prefix}vote)', value=f"Gives you access to:\n* 30s tree cooldown")
+        e.add_field(name=f'Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* 15s tree cooldown\n* `stupidtree` command (shows all relations, not just blood relatives)\n* Up to 30 children")
+        await ctx.send(embed=e)
 
 
     @command(aliases=['status'])
     @cooldown(1, 5, BucketType.user)
     async def stats(self, ctx:Context):
-        '''
-        Gives you the stats for the bot
-        '''       
+        '''Gives you the stats for the bot'''       
 
         # await ctx.channel.trigger_typing()
         embed = Embed(
@@ -137,13 +132,13 @@ class Misc(Cog):
         )
         embed.set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar_url)
         embed.add_field(name="MarriageBot", value="A robot for marrying your friends and adopting your enemies.")
-        creator = self.bot.get_user(self.bot.config["owners"][0])
-        embed.add_field(name="Creator", value=f"{creator!s}\n{creator.id}")
+        creator_id = self.bot.config["owners"][0]
+        creator = await self.bot.get_name(creator_id)
+        embed.add_field(name="Creator", value=f"{creator}\n{creator_id}")
         embed.add_field(name="Library", value=f"Discord.py {dpy_version}")
-        embed.add_field(name="Guild Count", value=int((len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count))
+        embed.add_field(name="Average Guild Count", value=int((len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count))
         embed.add_field(name="Shard Count", value=self.bot.shard_count)
-        embed.add_field(name="Average Latency", value=f"{(self.bot.latency * 1000):.2f}ms")
-        embed.add_field(name="Member Count", value=sum((len(i.members) for i in self.bot.guilds)))
+        embed.add_field(name="Average WS Latency", value=f"{(self.bot.latency * 1000):.2f}ms")
         embed.add_field(name="Coroutines", value=f"{len([i for i in Task.all_tasks() if not i.done()])} running, {len(Task.all_tasks())} total.")
         embed.add_field(name="Process ID", value=self.process.pid)
         embed.add_field(name="CPU Usage", value=f"{self.process.cpu_percent():.2f}")
@@ -165,9 +160,7 @@ class Misc(Cog):
 
     @command(aliases=['clean'])
     async def clear(self, ctx:Context):
-        '''
-        Clears the bot's commands from chat
-        '''
+        '''Clears the bot's commands from chat'''
 
         if ctx.channel.permissions_for(ctx.guild.me).manage_messages:
             _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id)
@@ -178,9 +171,7 @@ class Misc(Cog):
 
     @command()
     async def block(self, ctx:Context, user:Member):
-        '''
-        Blocks a user from being able to adopt/makeparent/whatever you
-        '''
+        '''Blocks a user from being able to adopt/makeparent/whatever you'''
 
         current_blocks = self.bot.blocked_users.get(ctx.author.id, list())
         if user.id in current_blocks:
@@ -198,9 +189,7 @@ class Misc(Cog):
 
     @command()
     async def unblock(self, ctx:Context, user:Member):
-        '''
-        Unblocks a user and allows them to adopt/makeparent/whatever you
-        '''
+        '''Unblocks a user and allows them to adopt/makeparent/whatever you'''
 
         current_blocks = self.bot.blocked_users.get(ctx.author.id, list())
         if user.id not in current_blocks:
