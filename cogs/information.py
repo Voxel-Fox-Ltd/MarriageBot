@@ -3,6 +3,7 @@ from os import remove
 from re import compile
 from io import BytesIO
 from asyncio import sleep, create_subprocess_exec, wait_for, TimeoutError as AsyncTimeoutError
+from datetime import datetime as dt
 
 from discord import Member, File, User
 from discord.ext.commands import command, Context, cooldown
@@ -12,7 +13,7 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files
 from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
-from cogs.utils.checks.is_donator import is_patreon, IsNotDonator
+from cogs.utils.checks.is_donator import is_patreon, IsNotDonator, is_patreon_predicate
 from cogs.utils.checks.no_tree_cache import no_tree_cache, IsTreeCached
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
@@ -61,21 +62,12 @@ class Information(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            # Bypass for owner
-            if ctx.author.id in self.bot.config['owners']:
-                await ctx.reinvoke()
             # Possible bypass for voter
-            elif ctx.command.name in ['tree', 'globaltree']:
-                if is_voter_predicate(ctx) and error.retry_after <= (error.cooldown.per - self.VOTER_TREE_COOLDOWN_TIME):
-                    ctx.command.reset_cooldown(ctx)
-                    await ctx.invoke(ctx.command, *ctx.args, **ctx.kwargs)
-                elif is_voter_predicate(ctx) and error.retry_after > (error.cooldown.per - self.VOTER_TREE_COOLDOWN_TIME):
-                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.VOTER_TREE_COOLDOWN_TIME} seconds`, for you, since you're a voter) per server. You may use this again in `{(error.retry_after - (error.cooldown.per - self.VOTER_TREE_COOLDOWN_TIME)):.2f} seconds`.")
-                else:
-                    await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (or once every `{self.VOTER_TREE_COOLDOWN_TIME} seconds`, if you `m!vote`) per server. You may use this again in `{error.retry_after:.2f} seconds`.")
-                    # await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
-            
-            # Default output
+            if ctx.command.name in ['tree', 'globaltree']:
+                return
+            # Bypass for owner
+            elif ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return
@@ -365,6 +357,41 @@ class Information(Cog):
             raise e
 
 
+    @tree.error
+    async def tree_error(self, ctx:Context, error):
+        await self.tree_error_handler(ctx, error)
+
+
+    @globaltree.error
+    async def globaltree_error(self, ctx:Context, error):
+        await self.tree_error_handler(ctx, error)
+
+
+    async def tree_error_handler(self, ctx:Context, error):
+        '''Handles errors for the tree commands'''
+
+        if isinstance(error, CommandOnCooldown):
+            pass
+        elif isinstance(error, (MissingRequiredArgument, IsTreeCached, IsNotVoter, IsNotDonator, BadArgument, DisabledCommand, BotNotReady)):
+            return
+        else:
+            raise error
+
+        is_patreon = await is_patreon_predicate(ctx.bot, ctx.author)
+        cooldown_time = min([
+            0 if ctx.author.id in self.bot.owners else error.retry_after,
+            30 if is_voter_predicate(ctx) else error.retry_after,
+            15 if is_patreon else error.retry_after,
+        ])
+
+        if cooldown_time <= error.retry_after:
+            await ctx.reinvoke()
+            return
+        else:
+            await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in `{cooldown_time:.1f} seconds`.")
+            return
+
+
     async def treemaker(self, ctx:Context, root:User, all_guilds:bool=False, stupid_tree:bool=False):
 
         if root == None:
@@ -379,7 +406,7 @@ class Information(Cog):
             await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
         await self.bot.tree_cache.add(ctx.author.id)
-        m = await ctx.send("Generating tree - this may take a few minutes...")
+        m = await ctx.send("Generating tree - this may take a few minutes...", embeddify=False)
         await ctx.channel.trigger_typing()
 
         # Write their treemaker code to a file
@@ -409,9 +436,10 @@ class Information(Cog):
         await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
         try:
             dot.kill()
-        except Exception as e: 
-            return await ctx.send(f"{e!s}")
+        except ProcessLookupError:
             pass
+        except Exception as e: 
+            raise e
 
         # Send file and delete cached
         try:
@@ -427,7 +455,7 @@ class Information(Cog):
             ])
             await ctx.send(text, file=file)
             await m.delete()
-        except Exception:
+        except Exception as e:
             pass
         await self.bot.tree_cache.remove(ctx.author.id) 
 
