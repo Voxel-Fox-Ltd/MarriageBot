@@ -408,6 +408,7 @@ class Information(Cog):
         await self.bot.tree_cache.add(ctx.author.id)
         m = await ctx.send("Generating tree - this may take a few minutes...", embeddify=False)
         await ctx.channel.trigger_typing()
+        start_time = dt.now()
 
         # Write their treemaker code to a file
         ctu = await CustomisedTreeUser.get(ctx.author.id)
@@ -440,20 +441,22 @@ class Information(Cog):
             pass
         except Exception as e: 
             raise e
+        end_time = dt.now()
+        time_taken = (end_time - start_time).total_seconds()
 
         # Send file and delete cached
         try:
             file = File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-            text = f"{ctx.author.mention}, " + choice([
-                f"you can update how your tree looks with `{ctx.prefix}help customise` c:",
-                f"feel free to help out the bot's development by `{ctx.prefix}donate`-ing c:",
-                f"pitch in ideas, suggestions, and code help at `{ctx.prefix}git` c:",
-                f"join the MarriageBot server at any time by running `{ctx.prefix}server` c:",
-                f"know that whatever happens I love you very much c:",
-                f"make sure to `{ctx.prefix}hug` and `{ctx.prefix}kiss` your partner! c:",
-                f"vote for MarriageBot by running `{ctx.prefix}vote` c:",
-            ])
-            await ctx.send(text, file=file)
+            # text = f"{ctx.author.mention}, " + choice([
+            #     f"you can update how your tree looks with `{ctx.prefix}help customise` c:",
+            #     f"feel free to help out the bot's development by `{ctx.prefix}donate`-ing c:",
+            #     f"pitch in ideas, suggestions, and code help at `{ctx.prefix}git` c:",
+            #     f"join the MarriageBot server at any time by running `{ctx.prefix}server` c:",
+            #     f"know that whatever happens I love you very much c:",
+            #     f"make sure to `{ctx.prefix}hug` and `{ctx.prefix}kiss` your partner! c:",
+            #     f"vote for MarriageBot by running `{ctx.prefix}vote` c:",
+            # ])
+            await ctx.send(f"Tree generated in `{time_taken:.2f}` seconds.", file=file)
             await m.delete()
         except Exception as e:
             pass
