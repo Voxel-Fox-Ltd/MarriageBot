@@ -241,7 +241,8 @@ class Information(Cog):
         if user_info._parent == None:
             await ctx.send(f"`{user!s}` has no parent.")
             return
-        await ctx.send(f"`{user!s}`'s parent is `{self.bot.get_user(user_info._parent)!s}` (`{user_info._parent}`).")
+        name = await self.bot.get_name(user_info._parent)
+        await ctx.send(f"`{user!s}`'s parent is `{name}` (`{user_info._parent}`).")
 
 
     @command(aliases=['relation'])
@@ -319,7 +320,11 @@ class Information(Cog):
             return
 
         try:
-            return await self.treemaker(ctx, root, False)
+            return await self.treemaker(
+                ctx=ctx, 
+                root=root, 
+                all_guilds=False
+            )
         except Exception as e:
             raise e
 
@@ -336,7 +341,11 @@ class Information(Cog):
         '''
 
         try:
-            return await self.treemaker(ctx, root, stupid_tree=True)
+            return await self.treemaker(
+                ctx=ctx, 
+                root=root, 
+                stupid_tree=True
+            )
         except Exception as e:
             raise e
 
@@ -352,7 +361,11 @@ class Information(Cog):
         '''
 
         try:
-            return await self.treemaker(ctx, root, True)
+            return await self.treemaker(
+                ctx=ctx, 
+                root=root, 
+                all_guilds=True
+            )
         except Exception as e:
             raise e
 
