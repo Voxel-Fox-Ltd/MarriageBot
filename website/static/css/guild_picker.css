@@ -1,0 +1,33 @@
+#guild-holder {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around
+}
+
+#guild-holder img {
+    margin: 0
+}
+
+.guild-block {
+    width: 250px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    margin: 0 0 10px 0;
+}
+
+.guild-block img {
+    border-radius: 50%;
+    height: 70px;
+}
+
+.guild-block a, .guild-block a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+.guild-block a:hover {
+    text-decoration: underline;
+    color: darkblue;
+}

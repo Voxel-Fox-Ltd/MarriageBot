@@ -1,0 +1,15 @@
+#guild-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#guild-data h2 {
+    margin-left: 15px;
+}
+
+#guild-data img {
+    margin: 0;
+    border-radius: 50%;
+    height: 70px;
+}

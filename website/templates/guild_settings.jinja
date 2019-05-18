@@ -1,0 +1,21 @@
+{% extends "base.jinja" %}
+
+{% block title %}
+MarriageBot - Guild Picker
+{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/static/css/guild_settings.css" /> 
+{% endblock head %}
+
+{% block content %}
+<div id="guild-data">
+    {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% endif %}
+    <h2>{{ guild.name }}</h2>
+</div>
+<form id="prefix">
+    <p>Bot prefix - the prefix used to activate the bot on your server.</p>
+    <p><input name="prefix" value="{{ prefix }}" placeholder="m!" /></p>
+    <p><button type="submit" formmethod="post">Submit</button></p>
+</form> <!-- prefix -->
+{% endblock content %}

@@ -23,6 +23,7 @@ class RedisHandler(Cog):
             task(self.channel_handler('TreeCacheRemove', lambda data: bot.tree_cache.raw_remove(*data))),
             task(self.channel_handler('DBLVote', lambda data: bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f")))),
             task(self.channel_handler('TriggerStartup', self.trigger_startup)),
+            task(self.channel_handler('UpdateGuildPrefix', lambda data: bot.guild_prefixes.__setitem__(data['guild_id'], data['prefix']))),
         ]
 
 

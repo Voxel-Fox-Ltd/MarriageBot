@@ -24,6 +24,16 @@
     display: block;
 }
 
-#content h2 a, #content h2 a:visited {
+/* #content h2 a, #content h2 a:visited {
     color: initial;
+} */
+
+#content a, #content a:visited {
+    color: initial;
+    text-decoration: none;
+}
+
+#content a:hover {
+    text-decoration: underline;
+    color: darkblue;
 }

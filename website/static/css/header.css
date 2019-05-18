@@ -82,6 +82,10 @@
     height: 70%;
 }
 
+#header a, #header a:visited {
+    text-decoration: none;
+}
+
 @media screen and (max-width: 576px) {
     #header .mb-title {
         display: none;

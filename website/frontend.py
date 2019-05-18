@@ -96,8 +96,8 @@ async def index(request:Request):
             'user_info': None, 
             'login_url': login_url
         }
-    # return HTTPFound(location=f"/settings")
-    return HTTPFound(location=f"/user_settings")
+    return HTTPFound(location=f"/settings")
+    # return HTTPFound(location=f"/user_settings")
 
 
 @routes.get('/login')
@@ -159,8 +159,8 @@ async def login(request:Request):
 
     # Redirect to settings
     session['user_id'] = int(user_info['id'])
-    # return HTTPFound(location=f'/settings')
-    return HTTPFound(location=f'/user_settings')
+    return HTTPFound(location=f'/settings')
+    # return HTTPFound(location=f'/user_settings')
 
 
 @routes.get('/settings')
@@ -274,6 +274,94 @@ async def tree_preview(request:Request):
     return {
         'hex_strings': colours,
     }
+
+
+@routes.get('/guild_picker')
+@template('guild_picker.jinja')
+async def guild_picker(request:Request):
+    '''
+    Shows the guilds that the user has permission to change
+    '''
+
+    # See if they're logged in
+    session = await get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
+    return {
+        'user_info': session['user_info'],
+        'guilds': guilds,
+    }
+
+
+@routes.get('/guild_settings/{guild_id}')
+@template('guild_settings.jinja')
+async def guild_settings(request:Request):
+    '''
+    Shows the settings for a particular guild
+    '''
+
+    # See if they're logged in
+    session = await get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = request.match_info['guild_id']
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not guild:
+        return HTTPFound(location='/')
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        prefix = await db('SELECT prefix FROM guild_settings WHERE guild_id=$1', int(guild_id))
+    try:
+        prefix = prefix[0]['prefix']
+    except IndexError:
+        prefix = 'm!'
+
+    # Return info to the page
+    return {
+        'user_info': session['user_info'],
+        'guild': guild[0],
+        'prefix': prefix,
+    }
+
+
+@routes.post('/guild_settings/{guild_id}')
+@template('guild_settings.jinja')
+async def guild_settings(request:Request):
+    '''
+    Shows the settings for a particular guild
+    '''
+
+    # See if they're logged in
+    session = await get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = request.match_info['guild_id']
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not guild:
+        return HTTPFound(location='/')
+    data = await request.post()
+    prefix = data['prefix'][0:30]
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db('UPDATE guild_settings SET prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
+    async with request.app['redis']() as re:
+        await re.publish_json('UpdateGuildPrefix', {
+            'guild_id': int(guild_id),
+            'prefix': prefix,
+        })
+    return HTTPFound(location=f'/guild_settings/{guild_id}')
 
 
 @routes.get('/logout')
