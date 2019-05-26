@@ -77,7 +77,7 @@ class AdoptRandomText(TextTemplate):
             "You can't adopt yourself, as far as I know.",
             "That's you. You can't adopt the you.",
             "Did you expect me to say yes?",
-            "Why did you think that would work?"
+            "Why did you think that would work?",
         ])
 
 
@@ -91,7 +91,7 @@ class AdoptRandomText(TextTemplate):
             f"Be patient, {instigator.mention}, wait for a response on your other proposal first!",
             "Woah, slow down, wait for a response on the other proposal first.",
             "You can only make one proposal at a time. Please wait.",
-            "I know it's all very exciting but you can only make one proposal at a time."
+            "I know it's all very exciting but you can only make one proposal at a time.",
         ])
 
 
@@ -170,7 +170,7 @@ class AdoptRandomText(TextTemplate):
             f"Looks like they don't want to be your child, {instigator.mention}.",
             f"They don't want to, {instigator.mention}. Sorry!",
             f"They said no, {instigator.mention}, looks like they won't be your child for now.",
-            f"Apparently they don't deem you a worthy parent, {instigator.mention}."
+            f"Apparently they don't deem you a worthy parent, {instigator.mention}.",
         ])
 
 
@@ -183,5 +183,5 @@ class AdoptRandomText(TextTemplate):
         return choice([
             "It looks like they have a parent already.",
             "Sorry but they have a parent already!",
-            "Looks like they already have a loving(?) parent. Sorry!"
+            "Looks like they already have a loving(?) parent. Sorry!",
         ])

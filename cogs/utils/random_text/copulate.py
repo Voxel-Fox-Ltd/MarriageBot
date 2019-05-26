@@ -33,7 +33,6 @@ class CopulateRandomText(TextTemplate):
             f"Bing bong {instigator.mention}, turns out {target.mention} wants your ding dong!",
             f"{target.mention} and {instigator.mention} did the nasty while spanking each others bum cheeks!",
             f"{target.mention} and {instigator.mention} went to town, if you know what I mean.",
-
         ])
 
     

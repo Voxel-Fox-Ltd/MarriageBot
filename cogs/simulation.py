@@ -66,11 +66,11 @@ class Simulation(Cog):
         '''
         Feeds a mentioned user
         '''
-        
+
         #Checks to see if food exists and then gives responses
         if food != None:
           
-            responses = [
+        responses = [
                 f"{user.mention} has been fed {food}.",
                 f"You feed {user.mention} some {food}.",
                 f"*Feeds {user.mention} some {food}.*",
@@ -94,11 +94,11 @@ class Simulation(Cog):
                 f"You feed {user.mention}.",
                 f"*Feeds {user.mention} some chicken.",
                 f"You feed {user.mention} too much.",
-            ]
+        ]            
         await ctx.send(choice(responses))
 
 
-    @command()
+    @command(aliases=['snuggle'])
     @cooldown(1, 5, BucketType.user)
     async def hug(self, ctx:Context, user:Member):
         '''
@@ -139,19 +139,6 @@ class Simulation(Cog):
                 f"You two are related but go off I guess.",
             ]
         await ctx.send(choice(responses))
-
-        
-    @command()
-    @cooldown(1, 5, BucketType.user)
-    async def snuggle(self, ctx:Context, user:Member):
-        '''
-        Snuggles a mentioned user
-        '''
-
-        if user == ctx.author:
-            await ctx.send(f"*You snuggle yourself... and start crying.*")
-            return
-        await ctx.send(f"*Snuggles {user.mention}*")
 
 
     @command()

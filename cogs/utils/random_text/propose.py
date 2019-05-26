@@ -15,10 +15,32 @@ class ProposeRandomText(TextTemplate):
         return choice([
             f"{target.mention}, do you accept {instigator.mention}'s proposal?",
             f"{target.mention}, {instigator.mention} has proposed to you. What do you say?",
-            f"{instigator.mention} may be young, but they're full of heart. Do you want to marry them, {target.mention}?",
+            f"{instigator.mention} may be young, but they're full of heart. Do you want to marry them, {target.mention}",
             f"{instigator.mention} finally wants to settle down with you, {target.mention}. Do you accept?",
             f"{target.mention}, will you marry {instigator.mention}?",
             f"{instigator.mention} wants you to be the love of their life, {target.mention}. Do you accept?",
+            f"{instigator.mention} has got a nice big ring for you, {target.mention}. What do you say?",
+            f"{instigator.mention} liked it so they want to put a ring on it...do you accept, {target.mention}?",
+            f"{instigator.mention} longs for a married life together with {target.mention}. Do you share this fantasy, {target.mention}?",
+            f"{target.mention}, you be the jelly in my peanut butter and jelly sandwich?",
+            f"{target.mention}, {author.mention} wants to marry you. Will you accept?",
+            f"I hear wedding bells chiming, {target.mention}! Do you?",
+            f"Oh boy, {target.mention}, I can sense big things in your future. Will you say yes to marrying {instigator.mention}?",
+            f"Would you like to marry {instigator.mention}, {target.mention}?",
+            f"Whether it’ll last forever starts with one question: {target.mention}, would you like to marry {instigator.mention}?",
+            f"You know the drill: {target.mention}, marry {instigator.mention}?",
+            f"Commitment starts with a question. {target.mention}, will you marry {instigator.mention}?",
+            f"Yo {target.mention}, you down to marry {instigator.mention}?",
+            f"Hey {target.mention} it’s time to get _intimate_~ Do you wanna marry {instigator.mention}?",
+            f"Hey {target.mention} I dare you to marry {instigator.mention} ;3",
+            f"{target.mention}, you ready to uwu over {instigator.mention}? ",
+            f"Hey {target.mention}, are you free tomorrow night? If so, you should get dinner with {instigator.mention} or maybe marry them or something idk.",
+            f"Could {target.mention} and {instigator.mention} make a cuter married couple than Ollie and Caleb? They sure can try! c;",
+            f"Wouldn’t {target.mention} and {instigator.mention} look cute as wedding cake toppers? Let’s make it happen!",
+            f"Hey {target.mention}, wanna marry {instigator.mention} and achieve tumblr crackship fame?",
+            f"Does anyone ever daydream about {target.mention} snuggling {instigator.mention} in the moonlight?",
+            f"{instigator.mention} and {target.mention} together? I don’t see it myself, but what does {target.mention} have to say?",
+            f"{instigator.mention} and {target.mention}? Oh boy I can already see their adopted children! {target.mention}, what do you say?",
         ])
 
 
@@ -34,6 +56,11 @@ class ProposeRandomText(TextTemplate):
             f"Oh, uh, sorry {instigator.mention}, but they're already seeing someone.",
             f"Ah... this is awkward... they already have someone, {instigator.mention}...",
             f"Polygamy is much harder to store in a database, {instigator.mention}. My apologies.",
+            f"They're already married, m8. Suck it up and move on.",
+            f"They’re already with someone - don’t know if you knew.",
+            f"Unfortunately they found someone they liked more than you. Sorry!",
+            f"As crazy a concept as this may sound, monogamy is the way I roll.",
+            f"Poor unfortunate soul… they found someone before you got to them. ",
         ])
 
 
