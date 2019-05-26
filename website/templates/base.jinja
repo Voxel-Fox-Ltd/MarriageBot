@@ -8,12 +8,13 @@
     <link rel="stylesheet" type="text/css" href="/static/css/main.css" /> 
     <link rel="stylesheet" type="text/css" href="/static/css/header.css" /> 
     <link rel="stylesheet" type="text/css" href="/static/css/content.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static/css/footer.css" /> 
     {% block head -%}{% endblock head %}
 </head>
 <body>
 
 {% block body %}
-<div id="header">
+<header>
     <ul id="header-content">
         <li class="logo-holder left"><a href="/"><img class="mb-logo" alt="The MarriageBot logo" src="/static/images/MarriageBot.150.png" /></a></li>
         <li class="left"><a href="/"><h1 class="mb-title">MarriageBot</h1></a></li>
@@ -24,11 +25,16 @@
             <li class="right"><img class="user-avatar" alt="Your Discord user avatar" src="{{ user_info.avatar_link }}" /></li>
         {% endif %}
     </ul>
-</div> <!-- header -->
+</header> <!-- header -->
 
 <div id="content">
 {% block content -%}{% endblock content %}
 </div> <!-- content -->
+
+<footer>
+{% block footer -%}<h4>&copy; Callum Bartlett</h4>{% endblock footer %}
+</footer> <!-- footer -->
+
 {% endblock body %}
 
 </body>

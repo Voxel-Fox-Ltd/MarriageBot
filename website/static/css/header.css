@@ -1,4 +1,4 @@
-#header {
+header {
     background: rgb(var(--notblack));
     border-bottom: 5px solid white;
 }
@@ -12,7 +12,7 @@
     height: 60px;
 }
 
-#header li { 
+header li { 
     /*! display: inline-block; */
     height: 100%;
     padding: 0;
@@ -22,32 +22,32 @@
     justify-content: center;
 }
 
-#header .logo-holder {
+header .logo-holder {
     display: inline-block;
 }
 
-#header li.left {
+header li.left {
     float: left;
 }
 
-#header li.right {
+header li.right {
     float: right;
 }
 
-#header .mb-logo {
+header .mb-logo {
     border-radius: 50%;
     width: 120px;
     height: 120px;
     border: 3px solid rgb(var(--greyple));
 }
 
-#header .mb-title {
+header .mb-title {
     color: white;
     margin: 0;
     padding: 0 0 0 10px;
 }
 
-#header .header-button {
+header .header-button {
     width: 130px;
     height: 100%;
     background-color: rgb(var(--blurple));
@@ -62,36 +62,36 @@
     align-items: center;
 }
 
-#header .user-avatar {
+header .user-avatar {
     height: 60px;
     width: 60px;
     border-radius: 50%;
 }
 
-#header .header-button:hover, #header .header-button:active{
+header .header-button:hover, header .header-button:active{
     background-color: rgb(var(--greyple));
 }
 
-#header .user-avatar {
+header .user-avatar {
     margin: 0 10px 0 0;
 }
 
-#header .logout-button {
+header .logout-button {
     font-size: 1.1em;
     width: 100px;
     height: 70%;
 }
 
-#header a, #header a:visited {
+header a, header a:visited {
     text-decoration: none;
 }
 
 @media screen and (max-width: 576px) {
-    #header .mb-title {
+    header .mb-title {
         display: none;
     }
 
-    #header .user-avatar {
+    header .user-avatar {
         display: none;
     }
 }

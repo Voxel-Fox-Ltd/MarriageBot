@@ -2,6 +2,7 @@
     max-width: 800px;
     margin: auto;
     padding: 10px;
+    padding-bottom: 41px;  /* Height of the footer */
 }
 
 #content h1, #content h2 {
