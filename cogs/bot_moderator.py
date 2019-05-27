@@ -173,14 +173,16 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', user_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', me.id, me._guild_id)
             except Exception as e:
+                # await ctx.send(e)
                 return  # Should only be thrown when the database can't connect 
         me.parent._children.remove(user_id)
+        parent = me.parent
         me._parent = None
         async with self.bot.redis() as re:
             await re.publish_json('TreeMemberUpdate', me.to_json())
-            await re.publish_json('TreeMemberUpdate', me.parent.to_json())
+            await re.publish_json('TreeMemberUpdate', parent.to_json())
         await ctx.send("Consider it done.")
 
 
