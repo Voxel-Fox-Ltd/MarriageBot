@@ -297,7 +297,7 @@ async def guild_picker(request:Request):
     }
 
 
-@routes.get('/guild_settings/{guild_id}')
+@routes.get('/guild_settings')
 @template('guild_settings.jinja')
 async def guild_settings(request:Request):
     '''
@@ -308,7 +308,9 @@ async def guild_settings(request:Request):
     session = await get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
-    guild_id = request.match_info['guild_id']
+    guild_id = request.query.get('guild_id')
+    if not guild_id:
+        return HTTPFound(location='/')
 
     # Get the guilds they're valid to alter
     all_guilds = session['guild_info']
@@ -332,7 +334,7 @@ async def guild_settings(request:Request):
     }
 
 
-@routes.post('/guild_settings/{guild_id}')
+@routes.post('/guild_settings')
 @template('guild_settings.jinja')
 async def guild_settings(request:Request):
     '''
@@ -343,7 +345,9 @@ async def guild_settings(request:Request):
     session = await get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
-    guild_id = request.match_info['guild_id']
+    guild_id = request.query.get('guild_id')
+    if not guild_id:
+        return HTTPFound(location='/')
 
     # Get the guilds they're valid to alter
     all_guilds = session['guild_info']
@@ -361,7 +365,7 @@ async def guild_settings(request:Request):
             'guild_id': int(guild_id),
             'prefix': prefix,
         })
-    return HTTPFound(location=f'/guild_settings/{guild_id}')
+    return HTTPFound(location=f'/guild_settings?guild_id={guild_id}')
 
 
 @routes.get('/logout')

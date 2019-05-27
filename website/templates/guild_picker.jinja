@@ -16,7 +16,7 @@ MarriageBot - Guild Picker
     {% for guild in guilds %}
     <div class="guild-block">
         {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% endif %}
-        <h3><a href="/guild_settings/{{ guild.id }}" alt="The settings page for {{ guild.name}}">{{ guild.name }}</a></h3>
+        <h3><a href="/guild_settings?guild_id={{ guild.id }}" alt="The settings page for {{ guild.name}}">{{ guild.name }}</a></h3>
     </div> <!-- guild-block -->
     {% endfor %}
 </div>
