@@ -137,6 +137,8 @@ class FamilyTreeMember(object):
         '''Gets your relation to another given FamilyTreeMember object'''
 
         text = self.get_unshortened_relation(target_user)
+        if text is None:
+            return None
         return Simplifier().simplify(text)
 
 
