@@ -272,7 +272,7 @@ class Parentage(Cog):
         # If they're an ID
         elif isinstance(target, int):
             try:
-                child = instigator_tree.children[instigator_tree._children.index(target)]
+                target_tree = instigator_tree.children[instigator_tree._children.index(target)]
             except ValueError:
                 await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
                 return 
