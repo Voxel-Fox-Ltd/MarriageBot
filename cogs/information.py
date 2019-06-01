@@ -254,14 +254,13 @@ class Information(Cog):
         '''
 
         if user == ctx.author:
-            await ctx.send(f"You are you...")
+            await ctx.send(f"Unsurprisingly, you're pretty closely related to yourself.")
             return
 
         if other == None:
             user, other = ctx.author, user
         user, other = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id)), FamilyTreeMember.get(other.id, self.bot.get_tree_guild_id(ctx.guild.id))
         relation = user.get_relation(other)
-        # relation = user.get_unshortened_relation(other)
 
         username = await self.bot.get_name(user.id)
         othername = await self.bot.get_name(other.id)

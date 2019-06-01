@@ -193,28 +193,50 @@ class Simplifier(object):
 
     @classmethod 
     def simplify(cls, string:str):
-        # print(string)
+        '''Runs the given input through the shortening operations
+        a number of times so as to shorten the input to a nice
+        family relationship string'''
+
+        before = string
         for i in range(10):
             for o in cls.pre_operations:
                 string = o(string) 
-        # print(string)
+                if string == before:
+                    continue 
+                else:
+                    before = string
         for i in range(5):
             string = cls.get_cousin_string(string)
-        # print(string)
+            if string == before:
+                continue 
+            else:
+                before = string
         for i in range(10):
             for o in cls.operations:
                 string = o(string) 
-        # print(string)
+                if string == before:
+                    continue 
+                else:
+                    before = string
         for i in range(10):
             for o in cls.short_operations:
                 string = o(string)
-        # print(string)
+                if string == before:
+                    continue 
+                else:
+                    before = string
         for i in range(10):
             for o in cls.post_operations:
                 string = o(string) 
-        # print(string)
+                if string == before:
+                    continue 
+                else:
+                    before = string
         for i in range(10):
             for o in cls.short_operations:
                 string = o(string)
-        # print(string)
+                if string == before:
+                    continue 
+                else:
+                    before = string
         return string
