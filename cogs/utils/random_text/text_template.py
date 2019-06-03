@@ -1,7 +1,7 @@
 from discord import Member
 
 
-class TextTemplate():
+class TextTemplate(object):
 
 
     def __init__(self, bot):
@@ -12,37 +12,34 @@ class TextTemplate():
         '''
         Processes a target/instigator pair to get the appropriate validation response
         '''
-
-        # Get the right cog
-        cog = self 
         
         # See if the instigator is in the proposal cache
         if self.bot.proposal_cache.get(instigator.id):
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR': 
-                return cog.instigator_is_instigator(instigator, target)
+                return self.instigator_is_instigator(instigator, target)
             elif x[0] == 'TARGET': 
-                return cog.instigator_is_target(instigator, target)
+                return self.instigator_is_target(instigator, target)
 
         # Now check for the target
-        elif self.bot.proposal_cache.get(target.id):
+        if self.bot.proposal_cache.get(target.id):
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR': 
-                return cog.target_is_instigator(instigator, target)
+                return self.target_is_instigator(instigator, target)
             elif x[0] == 'TARGET': 
-                return cog.target_is_target(instigator, target)
+                return self.target_is_target(instigator, target)
 
         # Check if they're proposing to the bot
         if target.id == self.bot.user.id:
-            return cog.target_is_me(instigator, target)
+            return self.target_is_me(instigator, target)
 
         # Check if they're proposing to themselves
-        elif instigator.id == target.id:
-            return cog.target_is_you(instigator, target)
+        if instigator.id == target.id:
+            return self.target_is_you(instigator, target)
 
         # Now check for any other bot
-        elif target.bot:
-            return cog.target_is_bot(instigator, target)
+        if target.bot:
+            return self.target_is_bot(instigator, target)
 
     @staticmethod
     def valid_target(instigator:Member, target:Member):
