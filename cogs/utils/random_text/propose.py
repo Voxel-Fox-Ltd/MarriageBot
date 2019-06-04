@@ -23,7 +23,7 @@ class ProposeRandomText(TextTemplate):
             f"{instigator.mention} liked it so they want to put a ring on it...do you accept, {target.mention}?",
             f"{instigator.mention} longs for a married life together with {target.mention}. Do you share this fantasy, {target.mention}?",
             f"{target.mention}, you be the jelly in my peanut butter and jelly sandwich?",
-            f"{target.mention}, {author.mention} wants to marry you. Will you accept?",
+            f"{target.mention}, {instigator.mention} wants to marry you. Will you accept?",
             f"I hear wedding bells chiming, {target.mention}! Do you?",
             f"Oh boy, {target.mention}, I can sense big things in your future. Will you say yes to marrying {instigator.mention}?",
             f"Would you like to marry {instigator.mention}, {target.mention}?",
