@@ -60,40 +60,16 @@ class Simulation(Cog):
             return
 
 
-    @command()
+    @command(enabled=False)
     @cooldown(1, 5, BucketType.user)
-    async def feed(self, ctx:Context, user:Member, food:str=None):
+    async def feed(self, ctx:Context, user:Member):
         '''
         Feeds a mentioned user
         '''
 
-        #Checks to see if food exists and then gives responses
-        if food != None:
-          
+        user = user or ctx.author
         responses = [
-                f"{user.mention} has been fed {food}.",
-                f"You feed {user.mention} some {food}.",
-                f"*Feeds {user.mention} some {food}.*",
-                f"You feed {user.mention} too much {food}.",
-            ]
-            await ctx.send(choice(responses))
-            return
             
-        if user == ctx.author:
-            responses = [
-                f"You feed yourself candy",
-                f"You have been fed",
-                f"You feed yourself",
-                f"You feed yourself some chicken",
-                f"You fed yourself too much.",
-            ]
-        else:
-            responses = [
-                f"*Feeds {user.mention} some candy.*",
-                f"{user.mention} has been fed.",
-                f"You feed {user.mention}.",
-                f"*Feeds {user.mention} some chicken.",
-                f"You feed {user.mention} too much.",
         ]            
         await ctx.send(choice(responses))
 
