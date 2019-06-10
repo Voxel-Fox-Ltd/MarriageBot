@@ -1,24 +1,24 @@
+from asyncio import TimeoutError as AsyncTimeoutError
+from asyncio import wait_for
 from re import compile
-from asyncio import TimeoutError as AsyncTimeoutError, wait_for
 from typing import Union
 
 from discord import Member, User
-from discord.ext.commands import command, Context, cooldown
-from discord.ext.commands import BadArgument, MissingRequiredArgument, CommandOnCooldown
+from discord.ext.commands import (BadArgument, CommandOnCooldown, Context,
+                                  MissingRequiredArgument, command, cooldown)
 from discord.ext.commands.cooldowns import BucketType
 
-from cogs.utils.custom_bot import CustomBot
-from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
-from cogs.utils.checks.is_donator import is_patreon_predicate
 from cogs.utils.acceptance_check import AcceptanceCheck
+from cogs.utils.checks.bot_is_ready import BotNotReady, bot_is_ready
+from cogs.utils.checks.is_donator import is_patreon_predicate, is_patreon, IsNotDonator
+from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
+from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog
-from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
-
-from cogs.utils.random_text.makeparent import MakeParentRandomText
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.random_text.adopt import AdoptRandomText
 from cogs.utils.random_text.disown import DisownRandomText
 from cogs.utils.random_text.emancipate import EmancipateRandomText
+from cogs.utils.random_text.makeparent import MakeParentRandomText
 
 
 class Parentage(Cog):
@@ -38,7 +38,7 @@ class Parentage(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown, IsNotDonator):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -73,6 +73,15 @@ class Parentage(Cog):
         # Bot ready
         elif isinstance(error, BotNotReady):
             await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+            return
+
+        # Donator
+        elif isinstance(error, IsNotDonator):
+            # Bypass for owner
+            if ctx.author.id in self.bot.config['owners']:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(f"You need to be a Patreon subscriber (`{ctx.prefix}donate`) to be able to run this command.")
             return
 
 
@@ -274,7 +283,7 @@ class Parentage(Cog):
             try:
                 target_tree = instigator_tree.children[instigator_tree._children.index(target)]
             except ValueError:
-                await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
+                await ctx.send(text_processor.instigator_is_unqualified(instigator, target if isinstance(target, User) else None))
                 return 
 
         # If they're a name
@@ -288,21 +297,21 @@ class Parentage(Cog):
                         target_tree = instigator_tree.children[c]
                         break 
             if target_tree == None:
-                await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
+                await ctx.send(text_processor.instigator_is_unqualified(instigator, target if isinstance(target, User) else None))
                 return 
 
         # Make sure they're the child of the instigator
-        if not target.id in instigator_tree._children:
-            await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
+        if not target_tree.id in instigator_tree._children:
+            await ctx.send(text_processor.instigator_is_unqualified(instigator, target if isinstance(target, User) else None))
             return 
         
         # Oh hey they are - remove from database
         async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3', target.id, instigator.id, instigator_tree._guild_id)
-        await ctx.send(text_processor.valid_target(instigator, target))
+            await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3', target_tree.id, instigator.id, instigator_tree._guild_id)
+        await ctx.send(text_processor.valid_target(instigator, target if isinstance(target, User) else None))
 
         # Remove family caching
-        instigator_tree._children.remove(target.id)
+        instigator_tree._children.remove(target_tree.id)
         target_tree._parent = None
 
         # Ping em off over redis
@@ -348,6 +357,37 @@ class Parentage(Cog):
             await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3', target_tree.id, instigator.id, instigator_tree._guild_id)
         v = text_processor.valid_target(instigator)
         await ctx.send(v)
+
+
+    @command()
+    @is_patreon()
+    async def disownall(self, ctx:Context):
+        '''Disowns all of your children'''
+
+        # Get their children
+        user_tree = FamilyTreeMember.get(ctx.author.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        children = user_tree.children[:]
+        if not children:
+            await ctx.send("You don't have any children to disown .-.") # TODO make this text into a template
+            return
+        
+        # Disown em
+        for child in children:
+            child._parent = None 
+        user_tree.children = [] 
+
+        # Save em
+        async with self.bot.database() as db:
+            for child in children:
+                await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3', user_tree.id, child.id, user_tree._guild_id)
+        
+        # Redis em
+        async with self.bot.redis() as re:
+            for person in children + [user_tree]:
+                await re.publish_json('TreeMemberUpdate', person.to_json())
+        
+        # Output to user
+        await ctx.send("You've sucessfully disowned all of your children.")  # TODO
 
 
 def setup(bot:CustomBot):
