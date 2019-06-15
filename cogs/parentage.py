@@ -95,6 +95,7 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
+        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
@@ -179,6 +180,7 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
+        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
@@ -271,6 +273,7 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
+        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = None
 
@@ -297,18 +300,18 @@ class Parentage(Cog):
                         target_tree = instigator_tree.children[c]
                         break 
             if target_tree == None:
-                await ctx.send(text_processor.instigator_is_unqualified(instigator, target if isinstance(target, User) else None))
+                await ctx.send(text_processor.instigator_is_unqualified(instigator, None))
                 return 
 
         # Make sure they're the child of the instigator
         if not target_tree.id in instigator_tree._children:
-            await ctx.send(text_processor.instigator_is_unqualified(instigator, target if isinstance(target, User) else None))
+            await ctx.send(text_processor.instigator_is_unqualified(instigator, ctx.guild.get_member(target_tree.id)))
             return 
         
         # Oh hey they are - remove from database
         async with self.bot.database() as db:
             await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3', target_tree.id, instigator.id, instigator_tree._guild_id)
-        await ctx.send(text_processor.valid_target(instigator, target if isinstance(target, User) else None))
+        await ctx.send(text_processor.valid_target(instigator, ctx.guild.get_member(target_tree.id)), ignore_error=True)
 
         # Remove family caching
         instigator_tree._children.remove(target_tree.id)
@@ -330,6 +333,7 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
+        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
         # Manage output strings
@@ -365,6 +369,7 @@ class Parentage(Cog):
         '''Disowns all of your children'''
 
         # Get their children
+        if ctx.author.bot: return
         user_tree = FamilyTreeMember.get(ctx.author.id, self.bot.get_tree_guild_id(ctx.guild.id))
         children = user_tree.children[:]
         if not children:
