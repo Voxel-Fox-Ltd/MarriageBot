@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
-from discord import Game, Message, Permissions, User
+from discord import Game, Message, Permissions, User, ClientUser, Member
 from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
 from ujson import load
@@ -192,7 +192,7 @@ class CustomBot(AutoShardedBot):
         user = self.get_user(user_id) or self.shallow_users.get(user_id)
 
         # See if it's a user in a guild this instance handles
-        if user and isinstance(user, User):
+        if user and isinstance(user, (User, ClientUser, Member)):
             return str(user)
         
         # See if it's something I already cached
@@ -207,7 +207,10 @@ class CustomBot(AutoShardedBot):
 
         # It isn't - fetch user
         if data == None:
-            name = await self.fetch_user(user_id)
+            try:
+                name = await self.fetch_user(user_id)
+            except Exception:
+                name = f'<DELETED {user_id}>'
             self.shallow_users[user_id] = [name, 20]
             return str(name)
 
