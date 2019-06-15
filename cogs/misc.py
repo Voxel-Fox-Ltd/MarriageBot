@@ -1,6 +1,6 @@
 from os import getpid
 from asyncio import Task
-from random import choice, randint
+from random import choice, randint, choices
 from datetime import datetime as dt, timedelta
 
 from psutil import Process, virtual_memory
@@ -115,9 +115,28 @@ class Misc(Cog):
     async def perks(self, ctx:Context):
         '''Shows you the perks associated with different support tiers'''
 
+        # Perks for voting
+        voting_perks = [
+            "30s tree cooldown",
+        ]
+
+        # Perks for $1 Patrons
+        t1_donate_perks = [
+            "15s tree cooldown",
+            "`stupidtree` command (shows all relations, not just blood relatives)",
+            "Up to 30 children",
+            "`disownall` command (disowns all of your children at once)",
+        ]
+
+        # Perks for $5 Patrons
+        t2_donate_perks = [
+            "Perks from previous tiers"
+            "5s tree cooldown",
+            "Something else?????"
+        ]
         e = Embed()
-        e.add_field(name=f'Voting ({ctx.clean_prefix}vote)', value=f"Gives you access to:\n* 30s tree cooldown")
-        e.add_field(name=f'Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* 15s tree cooldown\n* `stupidtree` command (shows all relations, not just blood relatives)\n* Up to 30 children")
+        e.add_field(name=f'Voting ({ctx.clean_prefix}vote)', value=f"Gives you access to:\n* " + '\n* '.join(voting_perks))
+        e.add_field(name=f'T1 Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* " + '\n* '.join(t1_donate_perks))
         await ctx.send(embed=e)
 
 
@@ -203,6 +222,15 @@ class Misc(Cog):
                 ctx.author.id, user.id
             )
         await ctx.send("That user is now unblocked.")
+
+
+    # @command()
+    # async def emoji(self, ctx:Context, amount:int=30):
+    #     '''Shows you a given amount of custom emoji'''
+
+    #     await ctx.send("Caleb fucks")
+    #     await ctx.send(''.join([str(i) for i in choices(self.bot.emojis, k=amount)]))
+    #     await ctx.send(''.join([str(i) for i in list(set(choices([i for i in self.bot.emojis if 'bulbasaur' in i.name.lower()], k=50)))]))
 
 
 def setup(bot:CustomBot):
