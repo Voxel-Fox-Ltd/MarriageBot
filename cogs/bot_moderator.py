@@ -25,7 +25,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, MissingPermissions)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
