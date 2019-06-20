@@ -156,6 +156,17 @@ class Simulation(Cog):
 
 
         await ctx.send(f"*Gives {user.mention} a cookie*")
+
+
+    @command()
+    @cooldown(1, 5, BucketType.user) 
+    async def poke(self, ctx:Context, user:Member):
+        '''Pokes a given user'''
+
+        if user == ctx.author:
+            await ctx.send("You poke yourself.")
+            return 
+        await ctx.send(f"*Pokes {user.mention}.*")
         
         
     @command()
