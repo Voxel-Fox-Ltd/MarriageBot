@@ -14,7 +14,7 @@ async def is_patreon_predicate(bot, user):
     '''Returns True if the user is a Patreon sub'''
 
     # Make sure both settings are set
-    if ctx.bot.config.get('guild') in [None, ''] or ctx.bot.config.get('patreon_sub_role') in [None, '']:
+    if bot.config.get('guild') in [None, ''] or bot.config.get('patreon_sub_role') in [None, '']:
         return None
 
     # Set the support guild
