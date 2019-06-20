@@ -11,7 +11,7 @@ from discord.ext.commands import CommandOnCooldown, MissingRequiredArgument, Bad
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
-from cogs.utils.checks.can_send_files import can_send_files
+from cogs.utils.checks.can_send_files import can_send_files, CantSendFiles
 from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
 from cogs.utils.checks.is_donator import is_patreon, IsNotDonator, is_patreon_predicate
 from cogs.utils.checks.no_tree_cache import no_tree_cache, IsTreeCached
@@ -47,8 +47,13 @@ class Information(Cog):
             await ctx.send(text)
             raise error
 
+        # Can't senf files
+        if isinstance(error, CantSendFiles):
+            await ctx.send("I'm unable to send files into this channel")
+            return 
+
         # Missing argument
-        if isinstance(error, MissingRequiredArgument):
+        elif isinstance(error, MissingRequiredArgument):
             await ctx.send("You need to specify a person for this command to work properly.")
             return
 
