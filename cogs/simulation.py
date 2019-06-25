@@ -153,8 +153,6 @@ class Simulation(Cog):
         if user == ctx.author:
             await ctx.send(f"*You gave yourself a cookie.*")
             return
-
-
         await ctx.send(f"*Gives {user.mention} a cookie*")
 
 

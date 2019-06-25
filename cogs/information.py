@@ -42,7 +42,7 @@ class Information(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached)):
+        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached, BotNotReady)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -305,7 +305,7 @@ class Information(Cog):
         if root == None:
             root = ctx.author
 
-        text = FamilyTreeMember.get(root.id, self.bot.get_tree_guild_id(ctx.guild.id)).generate_gedcom_script(self.bot)
+        text = await FamilyTreeMember.get(root.id, self.bot.get_tree_guild_id(ctx.guild.id)).generate_gedcom_script()
         file = BytesIO(text.encode())
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 

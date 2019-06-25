@@ -294,7 +294,7 @@ class FamilyTreeMember(object):
         return None
 
 
-    def generate_gedcom_script(self, bot) -> str:
+    async def generate_gedcom_script(self) -> str:
         '''
         Gives you the INDI and FAM gedcom strings for this family tree
         Includes their spouse, if they have one, and any children
@@ -317,7 +317,7 @@ class FamilyTreeMember(object):
         full_family = self.span(add_parent=True, expand_upwards=True)
 
         for i in full_family:
-            name = self.bot.get_name(i.id)
+            name = await self.bot.get_name(i.id)
             working_text = [
                 f'0 @I{i.tree_id}@ INDI',
                 f'\t1 NAME {name}'
