@@ -3,7 +3,6 @@ from ujson import dumps
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog 
-from cogs.utils.shallow_user_guilds import ShallowUserGuilds
 
 
 class UserUpdateEvent(Cog):
