@@ -9,7 +9,7 @@ from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relation_simplifier import Simplifier
 
 
-def get_random_string(length:int=10):
+def get_random_string(length:int=10) -> str:
     return ''.join(choices(ascii_letters, k=length))
 
 
@@ -25,19 +25,19 @@ class FamilyTreeMember(object):
         guild_id: int=None
     '''
 
-    all_users = {}  # id: FamilyTreeMember
+    all_users = {}  # (user_id, guild_id): cls
     NAME_SUBSTITUTION = compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
     INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
     bot = None
 
 
     def __init__(self, discord_id:int, children:list=None, parent_id:int=None, partner_id:int=None, guild_id:int=0):
-        self.id = discord_id  # The ID of the user whose tree this is
-        self._children = children or list()  # List of the children's IDs
-        self._parent = parent_id  # ID of the parent
-        self._partner = partner_id  # ID of the partner
-        self.tree_id = get_random_string()  # Used purely for the dot joining two spouses in the GZ script
-        self._guild_id = guild_id  # The guild that this FTM is from
+        self.id: int = discord_id  # The ID of the user whose tree this is
+        self._children: list = children or list()  # List of the children's IDs
+        self._parent: int = parent_id  # ID of the parent
+        self._partner: int = partner_id  # ID of the partner
+        self.tree_id: str = get_random_string()  # Used purely for the dot joining two spouses in the GZ script
+        self._guild_id: int = guild_id  # The guild that this FTM is from
         self.all_users[(self.id, self._guild_id)] = self  # Add this object to cache
 
 
@@ -210,6 +210,7 @@ class FamilyTreeMember(object):
 
         # Avoid loops
         already_processed = []
+        member_in_guild = lambda user_id: guild.get_member(user_id) if guild is not None else True
 
         while True:
             # Loop avoidance 2.0
@@ -217,27 +218,19 @@ class FamilyTreeMember(object):
                 return root_user
             already_processed.append(root_user)
 
-            if guild:
-                # See if they have a parent
-                if root_user._parent and guild.get_member(root_user._parent):
-                    root_user = root_user.parent
+            # See if they have a parent
+            if root_user._parent and member_in_guild(root_user._parent):
+                root_user = root_user.parent
 
-                # They don't but their partner might
-                elif root_user._partner and guild.get_member(root_user._partner):
-                    partner = root_user.partner
-                    if partner._parent and guild.get_member(partner._parent):
-                        root_user = partner.parent
-                else:
-                    return root_user
+            # They don't but their partner might
+            elif root_user._partner and member_in_guild(root_user._partner):
+                partner = root_user.partner
+                if partner._parent and member_in_guild(partner._parent):
+                    root_user = partner.parent
+
+            # Nope, we're outa here
             else:
-                if root_user._parent:
-                    root_user = root_user.parent
-                elif root_user._partner:
-                    partner = root_user.partner 
-                    if partner._parent:
-                        root_user = partner.parent
-                else:
-                    return root_user
+                return root_user
 
 
     def get_unshortened_relation(self, target_user, working_relation:list=None, added_already:list=None) -> str:
