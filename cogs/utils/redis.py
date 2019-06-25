@@ -45,6 +45,11 @@ class RedisConnection(object):
         logger.debug(f"Publishing JSON to channel {channel}: {json!s}")
         return await self.conn.publish_json(channel, json)
 
+    
+    async def publish(self, channel:str, message:str):
+        logger.debug(f"Publishing message to channel {channel}: {message}")
+        return await self.conn.publish(channel, message)
+
 
     async def set(self, key:str, value:str):
         logger.debug(f"Publishing Redis key:value pair with {key}:{value}")
