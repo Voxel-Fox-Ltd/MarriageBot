@@ -1,11 +1,37 @@
+from typing import List
+from string import Formatter
+
 from discord import Member
 
 
 class TextTemplate(object):
 
+    formatter = Formatter()
+
 
     def __init__(self, bot):
         self.bot = bot 
+
+
+    @classmethod 
+    def get_string_kwargs(cls, string:str) -> List[str]:
+        '''Returns a list of kwargs that the passed string contains'''
+
+        return [i.split('.')[0] for _, i, _, _ in cls.formatter.parse(string) if i]
+
+    
+    @classmethod 
+    def get_valid_strings(cls, strings:str, *provided) -> List[str]:
+        '''Filters down a list of inputs to outputs that are valid with the given locals,
+        ie will filter out strings that require a 'target' if none has been provided'''
+
+        v = []
+        provided = set(provided)
+        for i in strings:
+            string_has = set(cls.get_string_kwargs(i))
+            if provided == string_has or provided.issuperset(string_has):
+                v.append(i) 
+        return v
 
 
     def process(self, instigator:Member, target:Member) -> str:
