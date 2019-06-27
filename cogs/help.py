@@ -77,7 +77,7 @@ class Help(Cog):
         # Add commands to it
         if command_name:
             # if isinstance(base_command, Group):
-            help_embed.add_field(name=f"{ctx.prefix}{base_command.signature}", value=f"{base_command.help}")
+            help_embed.add_field(name=f"{ctx.prefix}{base_command.qualified_name}", value=f"{base_command.help}")
             # else:
             #     help_embed.description = f"{ctx.prefix}{base_command.signature}\n\n{base_command.help}"
         for cog_commands in runnable_commands:
