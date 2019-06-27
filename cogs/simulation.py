@@ -12,6 +12,7 @@ from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.custom_cog import Cog
 from cogs.utils.random_text.copulate import CopulateRandomText
 from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
+from cogs.utils.acceptance_check import AcceptanceCheck
 
 
 class Simulation(Cog):
@@ -68,9 +69,8 @@ class Simulation(Cog):
         '''
 
         user = user or ctx.author
-        responses = [
-            
-        ]            
+        responses = [ 
+        ]
         await ctx.send(choice(responses))
 
 
@@ -81,11 +81,8 @@ class Simulation(Cog):
         Hugs a mentioned user
         '''
 
-        if user == ctx.author:
-            await ctx.send(f"*You hug yourself... and start crying.*")
-            return
-
-        await ctx.send(f"*Hugs {user.mention}*")
+        text = f"*You hug yourself... and start crying.*" if user == ctx.author else f"*Hugs {user.mention}*"
+        await ctx.send(text)
 
 
     @command()
@@ -96,24 +93,29 @@ class Simulation(Cog):
         Kisses a mentioned user
         '''
 
+        # Check if they're themself
         if user == ctx.author:
-            await ctx.send(f"How does one even manage to do that?")
+            await ctx.send(f"How would you even manage to do that?")
             return
 
-        #Check if they are related
+        # Check if they're related
         x = FamilyTreeMember.get(ctx.author.id)
         y = FamilyTreeMember.get(user.id)
         relationship = x.get_relation(y)
+
+        # Generate responses
         if relationship == None or relationship.casefold() == 'partner':
-            await ctx.send(f"*Kisses {user.mention}*")
-            return
+            responses = [
+                f"*Kisses {user.mention}*"
+            ]
         else:
             responses = [
-                f"Well you two lovebirds may be related but... I'll allow it :smirk:",
                 f"Woah woah, you two are family!",
                 f"Incest is wincest, I guess.",
                 f"You two are related but go off I guess.",
             ]
+    
+        # Boop an output
         await ctx.send(choice(responses))
 
 
@@ -124,10 +126,8 @@ class Simulation(Cog):
         Slaps a mentioned user
         '''
 
-        if user == ctx.author:
-            await ctx.send(f"*You slapped yourself... for some reason.*")
-            return
-        await ctx.send(f"*Slaps {user.mention}*")
+        text = f"*You slapped yourself... for some reason.*" if user == ctx.author else f"*Slaps {user.mention}*"
+        await ctx.send(text)
 
 
     @command()
@@ -137,10 +137,8 @@ class Simulation(Cog):
         Punches a mentioned user
         '''
         
-        if user == ctx.author:
-            await ctx.send(f"*You punched yourself... for some reason.*")
-            return
-        await ctx.send(f"*Punches {user.mention} right in the nose*")
+        text = "*You punched yourself... for some reason.*" if user == ctx.author else f"*Punches {user.mention} right in the nose*"
+        await ctx.send(text)
 
 
     @command()
@@ -150,10 +148,8 @@ class Simulation(Cog):
         Gives a cookie to a mentioned user
         '''
 
-        if user == ctx.author:
-            await ctx.send(f"*You gave yourself a cookie.*")
-            return
-        await ctx.send(f"*Gives {user.mention} a cookie*")
+        text = "*You gave yourself a cookie.*" if user == ctx.author else f"*Gives {user.mention} a cookie*"
+        await ctx.send(text)
 
 
     @command()
@@ -161,10 +157,8 @@ class Simulation(Cog):
     async def poke(self, ctx:Context, user:Member):
         '''Pokes a given user'''
 
-        if user == ctx.author:
-            await ctx.send("You poke yourself.")
-            return 
-        await ctx.send(f"*Pokes {user.mention}.*")
+        text = "You poke yourself." if user == ctx.author else f"*Pokes {user.mention}.*"
+        await ctx.send(text)
         
         
     @command()
@@ -178,7 +172,7 @@ class Simulation(Cog):
             responses = [
                 f"You stab yourself.",
                 f"Looks like you don't have a knife, oops!",
-                f"No",
+                f"No.",
             ]
         else:
             responses = [
@@ -198,25 +192,19 @@ class Simulation(Cog):
         Lets you heck someone
         '''
 
+        # Check for NSFW channel
         if not ctx.channel.is_nsfw():
             await ctx.send("This command can't be run in a non-NSFW channel.")
             return
 
+        # Check for the most common catches
         text_processor = CopulateRandomText(self.bot)
-        
-        if user == ctx.author:
-            await ctx.send(text_processor.proposing_to_themselves(ctx.author, user))
+        text = text_processor.process(instigator, target)
+        if text:
+            await ctx.send(text) 
             return
 
-        # Check for a bot
-        if user.id == self.bot.user.id:
-            await ctx.send(text_processor.target_is_me(ctx.author, user))
-            return
-        elif user.bot:
-            await ctx.send(text_processor.target_is_bot(ctx.author, user))
-            return 
-
-        #Check if they are related
+        # Check if they are related
         x = FamilyTreeMember.get(ctx.author.id)
         y = FamilyTreeMember.get(user.id)
         relationship = x.get_relation(y)
@@ -226,40 +214,23 @@ class Simulation(Cog):
             await ctx.send(text_processor.target_is_relation(ctx.author, user, relationship))
             return
 
-        # Make the check
-        def check(message):
-            '''
-            The check to make sure that the user is giving a valid yes/no
-            when provided with a proposal
-            '''
-            
-            if message.author.id != user.id:
-                return False
-            if message.channel.id != ctx.channel.id:
-                return False
-            c = message.content.casefold()
-            if not c:
-                return False
-            no = self.proposal_no.search(c)
-            yes = self.proposal_yes.search(c)
-            if any([yes, no]):
-                return 'NO' if no else 'YES'
-            return False
+        # Ping out a message for them
+        await ctx.send(text_processor.valid_target(ctx.author, user))    
 
         # Wait for a response
         try:
-            await ctx.send(text_processor.valid_proposal(ctx.author, user))
+            check = AcceptanceCheck(target.id, ctx.channel.id).check
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except AsyncTimeoutError as e:
             await ctx.send(text_processor.proposal_timed_out(ctx.author, user), ignore_error=True)
             return
 
+        # Process response
         if response == "NO":
-            await ctx.send(text_processor.declining_valid_proposal(ctx.author, user))
+            await ctx.send(text_processor.request_denied(ctx.author, user))
             return
-
-        await ctx.send(text_processor.valid_target(ctx.author, user))
+        await ctx.send(text_processor.request_accepted(ctx.author, user))
 
 
 def setup(bot:CustomBot):

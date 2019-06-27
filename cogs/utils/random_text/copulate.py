@@ -7,7 +7,7 @@ class CopulateRandomText(TextTemplate):
 
 
     @classmethod
-    def valid_target(cls, instigator=None, target=None):
+    def request_accepted(cls, instigator=None, target=None):
         '''
         Valid copulation target
         '''
@@ -37,7 +37,7 @@ class CopulateRandomText(TextTemplate):
 
     
     @classmethod 
-    def declining_valid_proposal(cls, instigator=None, target=None):
+    def request_denied(cls, instigator=None, target=None):
         '''
         They said no to the banging
         '''
@@ -70,7 +70,7 @@ class CopulateRandomText(TextTemplate):
 
 
     @classmethod
-    def valid_proposal(cls, instigator=None, target=None):
+    def valid_target(cls, instigator=None, target=None):
         '''
         When the proposal is valid
         '''
