@@ -181,7 +181,24 @@ class Simulation(Cog):
                 f"*stabs {user.mention}.*",
                 f"Looks like you don't have a knife, oops!"
             ]
-        await ctx.send(choice(responses))        
+        await ctx.send(choice(responses))
+
+
+    @command(hidden=True, aliases=['murder'])
+    async def kill(self, ctx:Context, user=None):
+        '''
+        Do you really want to kill a person?
+        '''
+        
+        responses = [
+            "That would violate at least one of the laws of robotics.",
+            "I am a text-based bot. I cannot kill.",
+            "Unfortunately, murder isn't supported in this version of MarriageBot.",
+            "Haha good joke there, but I'd never kill a person! >.>",
+            "To my knowledge, you can't kill via the internet. Let me know when that changes.",
+            "I am designed to bring people together, not murder them.",
+        ]
+        await ctx.send(choice(responses))
 
 
     @command(aliases=['intercourse', 'fuck', 'smash'])
