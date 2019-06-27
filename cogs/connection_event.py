@@ -11,17 +11,9 @@ class ConnectionEvent(Cog):
         self.bot = bot 
 
 
-    @property
-    def event_log_channel(self):
-        channel_id = self.bot.config['event_log_channel']
-        channel = self.bot.get_channel(channel_id)
-        return channel
-
-
     @Cog.listener()
     async def on_shard_ready(self, shard_id:int):
         self.log_handler.info(f"`on_shard_ready` called for shard ID `{shard_id}`.")
-
         presence_text = self.bot.config['presence_text']
         game = Game(f"{presence_text} (shard {shard_id})".strip())
         await self.bot.change_presence(activity=game, shard_id=shard_id)

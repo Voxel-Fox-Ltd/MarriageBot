@@ -11,14 +11,7 @@ class GuildEvent(Cog):
 
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
-        self.bot = bot
-
-
-    @property
-    def event_log_channel(self):
-        channel_id = self.bot.config['event_log_channel']
-        channel = self.bot.get_channel(channel_id)
-        return channel    
+        self.bot = bot 
 
 
     @Cog.listener()
