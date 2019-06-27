@@ -18,7 +18,7 @@ class DisownRandomText(TextTemplate):
             "Oof, {target.mention}, {instigator.mention} doesn't seem to want you any more...",
             "Well, {instigator.mention}, say goodbye to {target.mention}.",
             "Might be good news for you, {target.mention}, but you're finally free of {instigator.mention}.",
-        ], *['instigator' if instigator else None, 'target' if target else None]))
+        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
     @classmethod 
@@ -30,4 +30,4 @@ class DisownRandomText(TextTemplate):
             "They aren't your child...",
             "Have you considered disowning someone who's *actually* your child?",
             "Strangely enough you can only disown *your* children.",
-        ], *['instigator' if instigator else None, 'target' if target else None]))
+        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)

@@ -236,12 +236,6 @@ class Parentage(Cog):
             try:
                 await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             except Exception as e:
-                # child_data = await db('SELECT FROM parents WHERE child_id=$1 AND guild_id=$2', target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-                # if child_data:
-                #     target_tree._parent = child_data[0]['parent_id']
-                #     await ctx.send("Apparently this user already had a parent that I didn't quite see. Oops!")
-                #     return
-                # raise e 
                 pass
 
         # Add family caching
