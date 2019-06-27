@@ -261,6 +261,7 @@ class Information(Cog):
         if user == ctx.author:
             await ctx.send(f"Unsurprisingly, you're pretty closely related to yourself.")
             return
+        await ctx.channel.trigger_typing()
 
         if other == None:
             user, other = ctx.author, user
@@ -286,6 +287,8 @@ class Information(Cog):
 
         if user == None:
             user = ctx.author 
+        await ctx.channel.trigger_typing()
+
         user = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
         span = user.span(expand_upwards=True, add_parent=True)
         username = await self.bot.get_name(user.id)
@@ -304,6 +307,7 @@ class Information(Cog):
 
         if root == None:
             root = ctx.author
+        await ctx.channel.trigger_typing()
 
         text = await FamilyTreeMember.get(root.id, self.bot.get_tree_guild_id(ctx.guild.id)).generate_gedcom_script()
         file = BytesIO(text.encode())
@@ -355,7 +359,7 @@ class Information(Cog):
             raise e
 
 
-    @command(aliases=['fulltree', 'ft', 'gt'], )
+    @command(aliases=['fulltree', 'ft', 'gt'])
     @can_send_files()
     @no_tree_cache()
     @bot_is_ready()
@@ -397,7 +401,6 @@ class Information(Cog):
 
         is_patreon = await is_patreon_predicate(ctx.bot, ctx.author)
         cooldown_time = min([
-            0 if ctx.author.id in self.bot.owners else error.retry_after,
             30 if is_voter_predicate(ctx) else error.retry_after,
             15 if is_patreon else error.retry_after,
         ])
@@ -426,9 +429,9 @@ class Information(Cog):
         await self.bot.tree_cache.add(ctx.author.id)
         m = await ctx.send("Generating tree - this may take a few minutes...", embeddify=False)
         await ctx.channel.trigger_typing()
-        start_time = dt.now()
 
         # Write their treemaker code to a file
+        start_time = dt.now()
         ctu = await CustomisedTreeUser.get(ctx.author.id)
         if stupid_tree:
             dot_code = await tree.to_full_dot_script(self.bot, ctu)
@@ -456,24 +459,17 @@ class Information(Cog):
         try:
             dot.kill()
         except ProcessLookupError:
-            pass
+            pass  # It already died
         except Exception as e: 
             raise e
+
+        # Get time taken
         end_time = dt.now()
         time_taken = (end_time - start_time).total_seconds()
 
         # Send file and delete cached
         try:
             file = File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-            # text = f"{ctx.author.mention}, " + choice([
-            #     f"you can update how your tree looks with `{ctx.prefix}help customise` c:",
-            #     f"feel free to help out the bot's development by `{ctx.prefix}donate`-ing c:",
-            #     f"pitch in ideas, suggestions, and code help at `{ctx.prefix}git` c:",
-            #     f"join the MarriageBot server at any time by running `{ctx.prefix}server` c:",
-            #     f"know that whatever happens I love you very much c:",
-            #     f"make sure to `{ctx.prefix}hug` and `{ctx.prefix}kiss` your partner! c:",
-            #     f"vote for MarriageBot by running `{ctx.prefix}vote` c:",
-            # ])
             await ctx.send(f"Tree generated in `{time_taken:.2f}` seconds.", file=file)
             await m.delete()
         except Exception as e:
