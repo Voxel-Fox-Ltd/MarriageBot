@@ -27,21 +27,6 @@ class GuildEvent(Cog):
         When the client is added to a new guild
         '''
 
-        text = f'''**Added to Guild** (`#{len(self.bot.guilds)}`)
-            Guild Name: `{guild.name}`
-            Guild ID: `{guild.id}`
-            Member Count: `{len(guild.members)}` (Humans/Bots - `{len([i for i in guild.members if not i.bot])}`/`{len([i for i in guild.members if i.bot])}`)
-            Current Datetime: `{datetime.now().strftime("%A, %x %X")}`'''.replace('\t\t\t', '').replace(' '*12, '')
-
-        if guild.id in self.bot.blacklisted_guilds:
-            text = text.replace('Added to Guild', 'Added to Blacklisted Guild')
-            await guild.leave()
-
-        try:
-            await self.event_log_channel.send(text)
-        except AttributeError:
-            self.log_handler.error(f"Unable to send message to event_log channel: {text}")
-
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
 
@@ -51,16 +36,6 @@ class GuildEvent(Cog):
         '''
         When the client is removed from a guild
         '''
-
-        text = f'''**Removed from Guild** (`#{len(self.bot.guilds)}`)
-            Guild Name: `{guild.name}`
-            Guild ID: `{guild.id}`
-            Member Count: `{len(guild.members)}` (Humans/Bots - `{len([i for i in guild.members if not i.bot])}`/`{len([i for i in guild.members if i.bot])}`)
-            Current Datetime: `{datetime.now().strftime("%A, %x %X")}`'''.replace('\t\t\t', '').replace(' '*12, '')
-        try:
-            await self.event_log_channel.send(text)
-        except AttributeError:
-            self.log_handler.error(f"Unable to send message to event_log channel: {text}")
 
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
