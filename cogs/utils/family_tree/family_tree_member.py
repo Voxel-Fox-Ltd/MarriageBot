@@ -1,6 +1,7 @@
 from re import compile
 from random import choices
 from string import ascii_letters
+from typing import Dict, List
 
 from discord import User, Guild
 # from unidecode import unidecode
@@ -466,9 +467,10 @@ class FamilyTreeMember(object):
         '''
 
         ctu = customised_tree_user
+        gen_span: Dict[int, List[self.__class__]] = gen_span  # Wew let's just make VSC happy
 
         # Find my own depth
-        my_depth = None
+        my_depth: int = None
         for depth, l in gen_span.items():
             if self in l:
                 my_depth = depth
@@ -488,65 +490,88 @@ class FamilyTreeMember(object):
                 x.append(parent)
                 gen_span[my_depth-1] = x
 
-        # Add the labels for each user
-        all_text = [
-            'digraph {',
-            f"\tnode [shape=box, fontcolor={ctu.hex['font']}, color={ctu.hex['edge']}, fillcolor={ctu.hex['node']}, style=filled];",
-            f"\tedge [dir=none, color={ctu.hex['edge']}];",
-            f"\tbgcolor={ctu.hex['background']}",
-            '',
-        ]
-        all_users = []
-        user_parent_tree = {}  # Parent: random_string (the dot between a couple)
+        # Make some initial digraph stuff
+        all_text: str = (
+            'digraph {'
+            f"node [shape=box, fontcolor={ctu.hex['font']}, color={ctu.hex['edge']}, fillcolor={ctu.hex['node']}, style=filled];"
+            f"edge [dir=none, color={ctu.hex['edge']}];"
+            f"bgcolor={ctu.hex['background']};"
+        )
+
+        # Set up some stuff for later
+        all_users: List[self.__class__] = []
+        user_parent_tree: Dict[self.__class__: str] = {}  # Connects a parent to a random string used to connect the children
+
+        # Add the username for each user (from unflattened list)
         for generation in gen_span.values():
             for i in generation:
                 all_users.append(i)
                 name = await self.bot.get_name(i.id)
                 name = name.replace('"', '\\"')
-                # name = self.NAME_SUBSTITUTION.sub('_', name)
                 if i == self:
-                    all_text.append(f'\t{i.id}[label="{name}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];')
+                    all_text += f'{i.id}[label="{name}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];'
                 else:
-                    all_text.append(f'\t{i.id}[label="{name}"];')
+                    all_text += f'{i.id}[label="{name}"];'
         
         # Order the generations
-        generation_numbers = sorted(list(gen_span.keys()))
+        generation_numbers: List[int] = sorted(list(gen_span.keys()))  # The ordered list of generation numbers - just a list of sequential numbers
 
-        # Go through each generation's users
+        # Go through the members for each generation
         for generation_number in generation_numbers:
             generation = gen_span.get(generation_number)
 
-            # Add each user and their spouse
-            added_already = []
-            all_text.append("\t{ rank=same;")
+            # Make sure you don't add a spouse twice
+            added_already: List[self.__class__] = []
+            
+            # Add a ranking for this generation
+            all_text += "{rank=same;"
+
+            # Add linking
             previous_person = None
+
+            # Go through each person in the generation
             for person in generation:
+
+                # Don't add a person twice
                 if person in added_already:
                     continue
-                user_parent_tree[person.id] = person.id
                 added_already.append(person)
-                if previous_person:
-                    all_text.append(f"\t\t{previous_person.id} -> {person.id} [style=invis];")
                 partner = person.partner
+
+                # Give them something in the dict so it doesn't make a keyerror
+                user_parent_tree[person.id] = person.id
+
+                # Make sure they stay in line
+                if previous_person:
+                    all_text += f"{previous_person.id} -> {person.id} [style=invis];"
+
+                # Add the user and their partner
                 if partner and partner in generation:
+                    
+                    # Set their user parent tree so they share a family value
                     user_parent_tree[partner.id] = user_parent_tree[person.id] = get_random_string()
-                    all_text.append(f"\t\t{person.id} -> {user_parent_tree[person.id]} -> {partner.id};")
-                    all_text.append(f"\t\t{user_parent_tree[person.id]} {self.INVISIBLE}")
+
+                    # Add the users and family value
+                    all_text += f"{person.id} -> {user_parent_tree[person.id]} -> {partner.id};"
+                    all_text += f"{user_parent_tree[person.id]} {self.INVISIBLE};"
                     added_already.append(partner)
                     previous_person = partner
-                else:
-                    all_text.append(f"\t\t{person.id};")
-                    previous_person = person
-            all_text.append("\t}")
 
-            # Add the connecting node from parent to child
-            all_text.append("\t{")
+                # No partner? No problem
+                else:
+                    all_text += f"{person.id};"
+                    previous_person = person
+            
+            # Close off the generation and open a new ranking for adding children
+            all_text += "}{"
+
+            # Go through the people in the generation and add add links
             for person in generation:
                 if person._children:
-                    children = person.children
+                    children: List[self.__class__] = person.children
                     if any([i in all_users for i in children]):
-                        all_text.append(f"\t\th{user_parent_tree[person.id]} {self.INVISIBLE};")
-            all_text.append("\t}")
+                        all_text += f"h{user_parent_tree[person.id]} {self.INVISIBLE};"
+            all_text += "}"
 
             # Add the lines from parent to node to child
             added_already.clear()
@@ -557,10 +582,10 @@ class FamilyTreeMember(object):
                         if user_parent_tree[person.id] in added_already:
                             pass
                         else:
-                            all_text.append(f"\t\t{user_parent_tree[person.id]} -> h{user_parent_tree[person.id]};")
+                            all_text += f"\t\t{user_parent_tree[person.id]} -> h{user_parent_tree[person.id]};"
                             added_already.append(user_parent_tree[person.id])
                         for child in [i for i in children if i in all_users]:
-                            all_text.append(f"\t\th{user_parent_tree[person.id]} -> {child.id};")
-        all_text.append("}")
+                            all_text += f"\t\th{user_parent_tree[person.id]} -> {child.id};"
+        all_text += "}"
 
-        return '\n'.join(all_text)
+        return all_text

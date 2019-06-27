@@ -13,14 +13,14 @@ class DivorceRandomText(TextTemplate):
         '''
 
         return choice(cls.get_valid_strings([
-            f"Sorry, {target.mention}, looks like you're single now. Congrats, {instigator.mention}!",
-            f"I hope you figure it out some day, but for now it looks like the two of you are divorced, {instigator.mention}, {target.mention}.",
-            f"At least you don't have to deal with {instigator.mention} any more, {target.mention}, right...?",
-            f"Not the happiest of news for you, {target.mention}, but it looks like {instigator.mention} just left you...",
-            f"You and {target.mention} are now divorced. I wish you luck in your lives.",
+            "Sorry, {target.mention}, looks like you're single now. Congrats, {instigator.mention}!",
+            "I hope you figure it out some day, but for now it looks like the two of you are divorced, {instigator.mention}, {target.mention}.",
+            "At least you don't have to deal with {instigator.mention} any more, {target.mention}, right...?",
+            "Not the happiest of news for you, {target.mention}, but it looks like {instigator.mention} just left you...",
+            "You and {target.mention} are now divorced. I wish you luck in your lives.",
             "You and your partner are now divorced. I wish you luck in your lives.",
-            f"I hope you figure it out some day, but for now, you and your partner are divorced, {instigator.mention}.",
-        ], *['instigator' if instigator else None, 'target' if target else None]))
+            "I hope you figure it out some day, but for now, you and your partner are divorced, {instigator.mention}.",
+        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
     
     @classmethod
@@ -34,4 +34,4 @@ class DivorceRandomText(TextTemplate):
             "It may seem like a stretch, but you need to marry someone before you can divorce them.",
             "Maybe try marrying them first?",
             "You're not married. Don't try to divorce strangers .-.",
-        ], *['instigator' if instigator else None, 'target' if target else None]))
+        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)

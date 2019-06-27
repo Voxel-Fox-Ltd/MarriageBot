@@ -15,9 +15,9 @@ class DisownRandomText(TextTemplate):
             "One child down, the rest to go.",
             "A sad day when a parent disowns their child...",
             "I'm sure this is very emotional for you. I'm sorry for your loss.",
-            f"Oof, {target.mention}, {instigator.mention} doesn't seem to want you any more...",
-            f"Well, {instigator.mention}, say goodbye to {target.mention}.",
-            f"Might be good news for you, {target.mention}, but you're finally free of {instigator.mention}.",
+            "Oof, {target.mention}, {instigator.mention} doesn't seem to want you any more...",
+            "Well, {instigator.mention}, say goodbye to {target.mention}.",
+            "Might be good news for you, {target.mention}, but you're finally free of {instigator.mention}.",
         ], *['instigator' if instigator else None, 'target' if target else None]))
 
 

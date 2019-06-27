@@ -26,7 +26,7 @@ class TextTemplate(object):
         ie will filter out strings that require a 'target' if none has been provided'''
 
         v = []
-        provided = set(provided)
+        provided = set([i for i in provided if i])
         for i in strings:
             string_has = set(cls.get_string_kwargs(i))
             if provided == string_has or provided.issuperset(string_has):
