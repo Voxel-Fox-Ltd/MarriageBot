@@ -341,7 +341,7 @@ class Information(Cog):
     @command(aliases=['st'])
     @can_send_files()
     @no_tree_cache()
-    @is_patreon()
+    @is_patreon(tier=1)
     @bot_is_ready()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:User=None):
@@ -399,7 +399,7 @@ class Information(Cog):
         else:
             raise error
 
-        is_patreon = await is_patreon_predicate(ctx.bot, ctx.author)
+        is_patreon = await is_patreon_predicate(ctx.bot, ctx.author, 1)
         cooldown_time = min([
             30 if is_voter_predicate(ctx) else error.retry_after,
             15 if is_patreon else error.retry_after,

@@ -117,7 +117,7 @@ class Parentage(Cog):
             return
 
         # Manage children
-        is_patreon = await is_patreon_predicate(ctx.bot, target)
+        is_patreon = await is_patreon_predicate(ctx.bot, target, 1)
         children_amount = 30 if is_patreon else 15
         if len(target_tree._children) >= children_amount:
             await ctx.send({
@@ -202,7 +202,7 @@ class Parentage(Cog):
             return
 
         # Manage children
-        is_patreon = await is_patreon_predicate(ctx.bot, instigator)
+        is_patreon = await is_patreon_predicate(ctx.bot, instigator, 1)
         children_amount = 30 if is_patreon else 15
         if len(instigator_tree._children) >= children_amount:
             await ctx.send({
@@ -358,7 +358,7 @@ class Parentage(Cog):
 
 
     @command()
-    @is_patreon()
+    @is_patreon(tier=1)
     async def disownall(self, ctx:Context):
         '''Disowns all of your children'''
 
