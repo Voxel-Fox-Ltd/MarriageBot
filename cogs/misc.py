@@ -26,14 +26,14 @@ class Misc(Cog):
         '''Local error handler for the cog'''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
 
         # Cooldown
         if isinstance(error, CommandOnCooldown):
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
@@ -41,7 +41,7 @@ class Misc(Cog):
 
         # Disabled command 
         elif isinstance(error, DisabledCommand):
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send("This command has been disabled.")

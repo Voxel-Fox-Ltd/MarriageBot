@@ -35,7 +35,7 @@ class Marriage(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -47,7 +47,7 @@ class Marriage(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")

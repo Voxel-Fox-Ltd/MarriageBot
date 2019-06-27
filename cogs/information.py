@@ -42,7 +42,7 @@ class Information(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached, BotNotReady)):
+        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached, BotNotReady)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -59,7 +59,7 @@ class Information(Cog):
 
         # Tree cache
         elif isinstance(error, IsTreeCached):
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send("Please wait for your other tree to be generated first.")
@@ -71,7 +71,7 @@ class Information(Cog):
             if ctx.command.name in ['tree', 'globaltree']:
                 return
             # Bypass for owner
-            elif ctx.author.id in self.bot.config['owners']:
+            elif ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
@@ -80,7 +80,7 @@ class Information(Cog):
         # Voter
         elif isinstance(error, IsNotVoter):
             # Bypass for owner
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You need to vote on DBL (`{ctx.prefix}vote`) to be able to run this command.")
@@ -89,7 +89,7 @@ class Information(Cog):
         # Donator
         elif isinstance(error, IsNotDonator):
             # Bypass for owner
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You need to be a Patreon subscriber (`{ctx.prefix}donate`) to be able to run this command.")
@@ -103,7 +103,7 @@ class Information(Cog):
 
         # Disabled command
         elif isinstance(error, DisabledCommand):
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send("This command has been temporarily disabled. Apologies for any inconvenience.")

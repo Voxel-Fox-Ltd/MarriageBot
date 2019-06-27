@@ -13,6 +13,11 @@ class NoOutputContext(Context):
 class CustomContext(Context):
 
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_author_id = self.author.id
+
+
     def _set_footer(self, embed:Embed):
         '''Sets the custom footer for the embed based on the bot config'''
 

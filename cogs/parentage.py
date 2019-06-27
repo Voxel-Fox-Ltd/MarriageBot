@@ -38,7 +38,7 @@ class Parentage(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, IsNotDonator)):
+        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, IsNotDonator)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -50,7 +50,7 @@ class Parentage(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
@@ -78,7 +78,7 @@ class Parentage(Cog):
         # Donator
         elif isinstance(error, IsNotDonator):
             # Bypass for owner
-            if ctx.author.id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You need to be a Patreon subscriber (`{ctx.prefix}donate`) to be able to run this command.")
