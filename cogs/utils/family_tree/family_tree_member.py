@@ -4,7 +4,6 @@ from string import ascii_letters
 from typing import Dict, List
 
 from discord import User, Guild
-# from unidecode import unidecode
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relation_simplifier import Simplifier
@@ -68,7 +67,7 @@ class FamilyTreeMember(object):
     def from_json(cls, data:dict):
         '''Loads an object from JSON to the cache'''
 
-        # Yeah this is completely pointless
+        # Yeah this method is completely pointless
         return cls(**data)
 
     
@@ -84,7 +83,6 @@ class FamilyTreeMember(object):
         if not isinstance(other, self.__class__):
             return False
         return all([
-            __class__ == other.__class__, 
             self.id == other.id,
             self._guild_id == other._guild_id, 
         ])

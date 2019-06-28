@@ -176,6 +176,8 @@ class CustomBot(AutoShardedBot):
     async def on_message(self, message):
         '''Use custom context for commands'''
 
+        if message.author.bot:
+            return
         ctx = await self.get_context(message, cls=CustomContext)
         await self.invoke(ctx)
 

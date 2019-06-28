@@ -95,7 +95,6 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
@@ -180,7 +179,6 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
@@ -267,7 +265,6 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = None
 
@@ -327,7 +324,6 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
         # Manage output strings
@@ -363,7 +359,6 @@ class Parentage(Cog):
         '''Disowns all of your children'''
 
         # Get their children
-        if ctx.author.bot: return
         user_tree = FamilyTreeMember.get(ctx.author.id, self.bot.get_tree_guild_id(ctx.guild.id))
         children = user_tree.children[:]
         if not children:

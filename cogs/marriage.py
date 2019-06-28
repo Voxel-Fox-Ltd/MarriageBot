@@ -80,7 +80,6 @@ class Marriage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
@@ -159,7 +158,6 @@ class Marriage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        if instigator.bot: return
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
         # Manage output strings
