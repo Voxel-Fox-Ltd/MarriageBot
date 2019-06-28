@@ -57,6 +57,8 @@ bot = CustomBot(
     shard_count=args.shardcount,
     shard_ids=shard_ids,
     shard_id=args.min,
+    max_messages=100,
+    fetch_offline_members=False,
 )
 
 # Create website object - this is used for the webhook handler
