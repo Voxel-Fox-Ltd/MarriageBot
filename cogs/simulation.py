@@ -216,7 +216,7 @@ class Simulation(Cog):
 
         # Check for the most common catches
         text_processor = CopulateRandomText(self.bot)
-        text = text_processor.process(instigator, target)
+        text = text_processor.process(ctx.author, user)
         if text:
             await ctx.send(text) 
             return
@@ -236,7 +236,7 @@ class Simulation(Cog):
 
         # Wait for a response
         try:
-            check = AcceptanceCheck(target.id, ctx.channel.id).check
+            check = AcceptanceCheck(user.id, ctx.channel.id).check
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except AsyncTimeoutError as e:
