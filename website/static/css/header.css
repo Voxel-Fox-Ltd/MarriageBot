@@ -48,18 +48,19 @@ header .mb-title {
 }
 
 header .header-button {
-    width: 130px;
-    height: 100%;
+    width: 100px;
+    height: 75%;
     background-color: rgb(var(--blurple));
     border: none;
     font-size: 1.3em;
-    border-radius: 5px;
+    border-radius: 2px;
     appearance: button;
     text-decoration: none;
     color: initial;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 1px 1px 1px lightcyan;
 }
 
 header .user-avatar {
@@ -93,5 +94,9 @@ header a, header a:visited {
 
     header .user-avatar {
         display: none;
+    }
+    
+    header .header-button {
+        margin-right: 50px;
     }
 }

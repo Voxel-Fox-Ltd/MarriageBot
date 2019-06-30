@@ -6,7 +6,7 @@ from ssl import SSLContext
 from warnings import filterwarnings
 import logging
 
-from aiohttp.web import Application, AppRunner, TCPSite
+from aiohttp.web import Application, AppRunner, TCPSite, middleware, HTTPFound
 from discord import Game, Status
 from discord.ext.commands import when_mentioned_or
 from aiohttp_jinja2 import template, setup as jinja_setup
@@ -45,8 +45,17 @@ args = parser.parse_args()
 with open(args.config_file) as a:
     config = load(a)
 
+# Make the SSL redirect
+@middleware
+async def ssl_redirect(request, handler):
+    if request.url.scheme == 'http':
+        url = str(request.url).replace('http://', 'https://', 1)
+        return HTTPFound(location=url)
+    return await handler(request)
+
+
 # Create website object - don't start based on argv
-app = Application(loop=get_event_loop(), debug=True)
+app = Application(loop=get_event_loop(), debug=True, middlewares=[ssl_redirect])
 app.add_routes(frontend_routes)
 app.router.add_static('/static', getcwd() + '/website/static')
 app.router.add_static('/trees', config['tree_file_location'])
