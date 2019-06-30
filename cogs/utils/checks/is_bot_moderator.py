@@ -10,8 +10,7 @@ async def is_bot_moderator_predicate(ctx:Context):
 
     # Set the support guild
     if not ctx.bot.support_guild:
-        support_invite = await ctx.bot.fetch_invite(ctx.bot.config['guild'])
-        guild_id = support_invite.guild.id
+        guild_id = ctx.bot.config['guild_id']
         guild = await bot.fetch_guild(guild_id)
         ctx.bot.support_guild = guild
 

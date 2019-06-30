@@ -44,6 +44,7 @@
     "github": "",
     "patreon": "",
     "paypal": "",
-    "guild": "",
+    "guild_invite": "",
+    "guild_id": 1,
     "embed_default_text": null
 }

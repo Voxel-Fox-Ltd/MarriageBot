@@ -99,7 +99,7 @@ class Misc(Cog):
     async def server(self, ctx:Context):
         '''Gives you a server invite link'''
 
-        await ctx.send(self.bot.config['guild'], embeddify=False)
+        await ctx.send(self.bot.config['guild_invite'], embeddify=False)
 
 
     @command(hidden=True)

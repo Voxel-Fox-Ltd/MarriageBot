@@ -29,8 +29,10 @@ logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
 logger = logging.getLogger('marriagebot.web')
 logger.setLevel(logging.DEBUG)
 
+
 # Filter warnings
 filterwarnings('ignore', category=RuntimeWarning)
+
 
 # Parse arguments
 parser = ArgumentParser()
@@ -41,9 +43,11 @@ parser.add_argument("--port", type=int, default=8080, help="The port to run the 
 parser.add_argument("--sslport", type=int, default=8443, help="The port to run the SSL webserver on.")
 args = parser.parse_args()
 
+
 # Read config
 with open(args.config_file) as a:
     config = load(a)
+
 
 # Make the SSL redirect
 @middleware
