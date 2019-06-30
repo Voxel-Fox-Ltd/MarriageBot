@@ -20,6 +20,8 @@ class DivorceRandomText(TextTemplate):
             "You and {target.mention} are now divorced. I wish you luck in your lives.",
             "You and your partner are now divorced. I wish you luck in your lives.",
             "I hope you figure it out some day, but for now, you and your partner are divorced, {instigator.mention}.",
+            "You just committed marriagen't.",
+            "_Sad violin noises._",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
     
@@ -33,5 +35,7 @@ class DivorceRandomText(TextTemplate):
             "Crazy idea, but you could try getting married first?",
             "It may seem like a stretch, but you need to marry someone before you can divorce them.",
             "Maybe try marrying them first?",
-            "You're not married. Don't try to divorce strangers .-.",
+            "You're not married. Don't try to divorce strangers .",
+            "Way to use your imagination, {instigator.mention}! But unfortunately for you, you need to be married to someone before you can divorce them.",
+            "Sorry but you're too lonely to do that.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)

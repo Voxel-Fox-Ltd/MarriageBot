@@ -50,6 +50,10 @@ class AdoptRandomText(TextTemplate):
             "Thank you for the offer, but I'll have to refuse.",
             "No thank you.",
             "I think it best you don't adopt me. No offense.",
+            "I have one daddy and one daddy only, sorry. ",
+            "Caleb would be pretty upset not gonna lie, so I'm gonna have to decline.",
+            "The fee to adopt me is $50. Cough that up monthly and you've got yourself a MarriageBaby, {instigator.mention}.",
+            "Sorry but I'd rather not live with trash.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -64,6 +68,8 @@ class AdoptRandomText(TextTemplate):
             "I don't think you can adopt a robot quite yet.",
             "Robots tend to not need parents most of the time.",
             "I think a robot would make a bad child for you.",
+            "Pretty sure you have to adopt someone with sentience, {instigator.mention}, why don't you try a different server member?",
+            "#BotsAreNotPeopleToo",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -78,6 +84,7 @@ class AdoptRandomText(TextTemplate):
             "That's you. You can't adopt the you.",
             "Did you expect me to say yes?",
             "Why did you think that would work?",
+            "Stop it. Weirdo.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -92,6 +99,9 @@ class AdoptRandomText(TextTemplate):
             "Woah, slow down, wait for a response on the other proposal first.",
             "You can only make one proposal at a time. Please wait.",
             "I know it's all very exciting but you can only make one proposal at a time.",
+            "Wait your turn, you absolute nonce!",
+            "Don't be greedy, {instigator.mention}, wait your turn.",
+            "Excuse me you soggy waffle, calm the heck town and wait pls and thx.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -119,6 +129,7 @@ class AdoptRandomText(TextTemplate):
             "They just proposed to someone themself - give it a minute and see how it goes.",
             "You'll have to wait until their own proposal is dealt with.",
             "They asked someone out themself; see what happens with that first.",
+            "Please respond to your other proposal first.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -158,6 +169,7 @@ class AdoptRandomText(TextTemplate):
             "They said yes! I'm happy to introduce {instigator.mention} as your new parent, {target.mention}!",
             "You have a new child, {instigator.mention}! Say hello to {target.mention}~",
             "I'm sure {instigator.mention} will be happy to welcome you into the family, {target.mention}.",
+            "WHO'S YOUR DADDY? Or...mommy...or parent...whatever, welcome to {instigator.mention}'s family, {target.mention}.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -184,4 +196,5 @@ class AdoptRandomText(TextTemplate):
             "It looks like they have a parent already.",
             "Sorry but they have a parent already!",
             "Looks like they already have a loving(?) parent. Sorry!",
+            "Looks like you missed the adoption train, {instigator.mention}, because {target.mention} already has a parent.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)

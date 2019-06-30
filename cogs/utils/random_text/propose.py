@@ -27,19 +27,19 @@ class ProposeRandomText(TextTemplate):
             "I hear wedding bells chiming, {target.mention}! Do you?",
             "Oh boy, {target.mention}, I can sense big things in your future. Will you say yes to marrying {instigator.mention}?",
             "Would you like to marry {instigator.mention}, {target.mention}?",
-            "Whether it’ll last forever starts with one question: {target.mention}, would you like to marry {instigator.mention}?",
+            "Whether it'll last forever starts with one question: {target.mention}, would you like to marry {instigator.mention}?",
             "You know the drill: {target.mention}, marry {instigator.mention}?",
             "Commitment starts with a question. {target.mention}, will you marry {instigator.mention}?",
             "Yo {target.mention}, you down to marry {instigator.mention}?",
-            "Hey {target.mention} it’s time to get _intimate_~ Do you wanna marry {instigator.mention}?",
+            "Hey {target.mention} it's time to get _intimate_~ Do you wanna marry {instigator.mention}?",
             "Hey {target.mention} I dare you to marry {instigator.mention} ;3",
             "{target.mention}, you ready to uwu over {instigator.mention}? ",
             "Hey {target.mention}, are you free tomorrow night? If so, you should get dinner with {instigator.mention} or maybe marry them or something idk.",
             "Could {target.mention} and {instigator.mention} make a cuter married couple than Ollie and Caleb? They sure can try! c;",
-            "Wouldn’t {target.mention} and {instigator.mention} look cute as wedding cake toppers? Let’s make it happen!",
+            "Wouldn't {target.mention} and {instigator.mention} look cute as wedding cake toppers? Let's make it happen!",
             "Hey {target.mention}, wanna marry {instigator.mention} and achieve tumblr crackship fame?",
             "Does anyone ever daydream about {target.mention} snuggling {instigator.mention} in the moonlight?",
-            "{instigator.mention} and {target.mention} together? I don’t see it myself, but what does {target.mention} have to say?",
+            "{instigator.mention} and {target.mention} together? I don't see it myself, but what does {target.mention} have to say?",
             "{instigator.mention} and {target.mention}? Oh boy I can already see their adopted children! {target.mention}, what do you say?",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
@@ -57,10 +57,10 @@ class ProposeRandomText(TextTemplate):
             "Ah... this is awkward... they already have someone, {instigator.mention}...",
             "Polygamy is much harder to store in a database, {instigator.mention}. My apologies.",
             "They're already married, m8. Suck it up and move on.",
-            "They’re already with someone - don’t know if you knew.",
+            "They're already with someone - don't know if you knew.",
             "Unfortunately they found someone they liked more than you. Sorry!",
             "As crazy a concept as this may sound, monogamy is the way I roll.",
-            "Poor unfortunate soul… they found someone before you got to them. ",
+            "Poor unfortunate soul… they found someone before you got to them.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -77,6 +77,7 @@ class ProposeRandomText(TextTemplate):
             "I hate to rain on your parade, {instigator.mention}, but I don't think that appropriate while you're married already.",
             "Polygamy is much harder to store in a database, {instigator.mention}. My apologies.",
             "Unfortunately I can't show family trees with polygamy in them, {instigator.mention}.",
+            "YOU HAVE A SPOUSE ALREADY, {instigator.mention}!",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -92,6 +93,8 @@ class ProposeRandomText(TextTemplate):
             "We've made great strides towards equality recently, {instigator.mention}, but you still can't marry a relative of yours.",
             "{instigator.mention} you're related to them .-.",
             "Incestuous relationships tend to mess up the family tree, so I'm afraid I'll have to say no, {instigator.mention}.",
+            "Despite what Mia says, incest is not wincest, {instigator.mention}.",
+            "Wh...what. That's gross. No thank you, {instigator.mention}.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -106,6 +109,8 @@ class ProposeRandomText(TextTemplate):
             "You can only make one proposal at a time, {instigator.mention}.",
             "One proposal at a time is the max limit, {instigator.mention}.",
             "Calm it, {instigator.mention}, you already proposed to someone!",
+            "Calm your figurative or literal titties, {instigator.mention}, you've already proposed!",
+            "Hold those horsies, {instigator.mention}. Don't just move on so quickly!",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -171,6 +176,11 @@ class ProposeRandomText(TextTemplate):
             "Thanks, but I could do better.",
             "Are you serious? No.",
             "I'm a robot, I'm not interested, and you could do better, sweetheart.",
+            "Daddy Caleb says no, sorry.",
+            "What type of cruel and unusual punishment is this? No thanks!",
+            "Oh dear god. No.",
+            "Daddy Caleb says no. Your loss.",
+            "Sorry, I don't marry the inferior. I mean the less fortunate. I mean humans.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -185,6 +195,8 @@ class ProposeRandomText(TextTemplate):
             "The majority of robots are incapable of love, I'm afraid.",
             "You can't marry a robot _quite yet_ in this country. Give it a few years.",
             "Robots, although attractive, aren't great spouses.",
+            "Although that robot may love you, it's afraid of commitment. Give it a few years.",
+            "Long distance relationships are hard, but they're even harder with a robot incapable of feelings.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -198,6 +210,9 @@ class ProposeRandomText(TextTemplate):
             "That is you. You cannot marry the you.",
             "Are... are you serious? No.",
             "Marriage is a union between two people. You are one people. No.",
+            "Self-cest ain't cute. Try going for someone who's not you.",
+            "No.",
+            "Autosexuality? Sorry, our architecture doesn't support that.",
             "{target.mention}, do you accept {instigator.mention}'s proposal?\n... Wait, no, you're the same person. The marriage is off!",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
@@ -227,7 +242,8 @@ class ProposeRandomText(TextTemplate):
             "Oh boy. The wedding is off. You two talk it out.",
             "I hate to say it, {instigator.mention}, but they said no...",
             "Oh boy. They said no. That can't be good.",
-            "Maybe a night in a cheap motel with you, but marriage is too much commitment for `{target!s}`.",
+            "Maybe a night in a cheap motel with you, but marriage is too much commitment for `{target.mention}`.",
+            "Sorry bb, you're still one single pringle.",
             "Roses are red,\nViolets are blue,\nIt looks like they don't want to be with you, {instigator.mention}.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
@@ -242,4 +258,6 @@ class ProposeRandomText(TextTemplate):
             "{instigator.mention}, your proposal has timed out. Try again when they're online!",
             "Huh. Seems like they didn't respond. Maybe try again later, {instigator.mention}?",
             "Apparently you aren't even deemed worthy a response. That's rude. Try later, {instigator.mention}.",
+            "Time limits can't bring you down, no no no no no no noooo!",
+            "Looks like they ghosted you! Maybe next time...",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
