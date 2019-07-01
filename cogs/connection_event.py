@@ -1,4 +1,5 @@
 from discord import Game
+from discord.ext.tasks import loop
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog
@@ -9,14 +10,32 @@ class ConnectionEvent(Cog):
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
         self.bot = bot 
+        self.shard_ready_loop.start()
+
+
+    def cog_unload(self):
+        self.shard_ready_loop.cancel()
 
 
     @Cog.listener()
     async def on_shard_ready(self, shard_id:int):
+        '''Update the presence when the shard becomes ready'''
+
         self.log_handler.info(f"`on_shard_ready` called for shard ID `{shard_id}`.")
         presence_text = self.bot.config['presence_text']
         game = Game(f"{presence_text} (shard {shard_id})".strip())
         await self.bot.change_presence(activity=game, shard_id=shard_id)
+
+
+    @loop(minutes=1)
+    async def shard_ready_loop(self):
+        '''Check minutely if the bot is ready and update based on that'''
+
+        if self.bot.is_ready():
+            for i in self.bot.shard_ids:
+                presence_text = self.bot.config['presence_text']
+                game = Game(f"{presence_text} (shard {i})".strip())
+                await self.bot.change_presence(activity=game, shard_id=i)
 
 
 def setup(bot:CustomBot):
