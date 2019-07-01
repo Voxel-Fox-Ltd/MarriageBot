@@ -44,6 +44,9 @@ class ModeratorOnly(Cog):
 
         # Missing permissions
         elif isinstance(error, MissingPermissions):
+            if ctx.original_author_id in self.bot.config['owners']:
+                await ctx.reinvoke()
+                return
             await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
             return
 

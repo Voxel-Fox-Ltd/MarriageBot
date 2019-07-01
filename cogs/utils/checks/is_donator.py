@@ -19,7 +19,7 @@ async def is_patreon_predicate(bot, user, tier=1):
 
     # Set the support guild
     if not bot.support_guild:
-        guild_id = ctx.bot.config['guild_id']
+        guild_id = bot.config['guild_id']
         guild = await bot.fetch_guild(guild_id)
         bot.support_guild = guild
 
