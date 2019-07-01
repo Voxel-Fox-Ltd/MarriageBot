@@ -97,7 +97,29 @@ async def index(request:Request):
             'login_url': login_url
         }
     return HTTPFound(location=f"/settings")
-    # return HTTPFound(location=f"/user_settings")
+
+
+@routes.get("/reset2019")
+@template('blog.jinja')
+async def reset(request:Request):
+    ''''''
+
+    session = await get_session(request)
+    config = request.app['config']
+    login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
+        'client_id': config['oauth']['client_id'],
+        'redirect_uri': config['oauth']['redirect_uri'],
+        'response_type': 'code',
+        'scope': OAUTH_SCOPE
+    })
+    if not session.get('user_id'):
+        return {
+            'user_info': None, 
+            'login_url': login_url
+        }
+    return {
+        'user_info': session['user_info'], 
+    }
 
 
 @routes.get('/login')

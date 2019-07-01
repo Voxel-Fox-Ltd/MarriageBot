@@ -30,11 +30,11 @@
 } */
 
 #content a, #content a:visited {
-    color: initial;
+    color: darkblue;
     text-decoration: none;
 }
 
 #content a:hover {
     text-decoration: underline;
-    color: darkblue;
+    color: rgb(51, 51, 207);
 }
