@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 from importlib import import_module
-from asyncio import sleep, create_subprocess_exec
+from asyncio import sleep, create_subprocess_exec, TimeoutError as AsyncioTimeoutError, wait_for
 from glob import glob
 from re import compile
 from logging import getLogger
@@ -178,8 +178,12 @@ class CustomBot(AutoShardedBot):
 
         if message.author.bot:
             return
-        ctx = await self.get_context(message, cls=CustomContext)
-        await self.invoke(ctx)
+        ctx: CustomContext = await self.get_context(message, cls=CustomContext)
+        try:
+            # await self.invoke(ctx)
+            await wait_for(self.invoke(ctx), 120.0)
+        except AsyncioTimeoutError:
+            await ctx.send(f"{message.author.mention}, your command has been cancelled for taking longer than 120 seconds to process.", embeddify=False, ignore_error=True)
 
 
     def get_tree_guild_id(self, guild_id:int):

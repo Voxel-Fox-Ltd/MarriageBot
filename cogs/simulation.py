@@ -101,7 +101,8 @@ class Simulation(Cog):
         # Check if they're related
         x = FamilyTreeMember.get(ctx.author.id)
         y = FamilyTreeMember.get(user.id)
-        relationship = x.get_relation(y)
+        async with ctx.channel.typing():
+            relationship = x.get_relation(y)
 
         # Generate responses
         if relationship == None or relationship.casefold() == 'partner':
@@ -224,7 +225,8 @@ class Simulation(Cog):
         # Check if they are related
         x = FamilyTreeMember.get(ctx.author.id)
         y = FamilyTreeMember.get(user.id)
-        relationship = x.get_relation(y)
+        async with ctx.channel.typing():
+            relationship = x.get_relation(y)
         if relationship == None or relationship.casefold() == 'partner':
             pass 
         else:

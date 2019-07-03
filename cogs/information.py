@@ -266,7 +266,8 @@ class Information(Cog):
         if other == None:
             user, other = ctx.author, user
         user, other = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id)), FamilyTreeMember.get(other.id, self.bot.get_tree_guild_id(ctx.guild.id))
-        relation = user.get_relation(other)
+        async with ctx.channel.typing():
+            relation = user.get_relation(other)
 
         username = await self.bot.get_name(user.id)
         othername = await self.bot.get_name(other.id)
@@ -290,7 +291,8 @@ class Information(Cog):
         await ctx.channel.trigger_typing()
 
         user = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
-        span = user.span(expand_upwards=True, add_parent=True)
+        async with ctx.channel.typing():
+            span = user.span(expand_upwards=True, add_parent=True)
         username = await self.bot.get_name(user.id)
         await ctx.send(f"There are `{len(span)}` people in `{username}`'s family tree.")
 
@@ -307,9 +309,8 @@ class Information(Cog):
 
         if root == None:
             root = ctx.author
-        await ctx.channel.trigger_typing()
-
-        text = await FamilyTreeMember.get(root.id, self.bot.get_tree_guild_id(ctx.guild.id)).generate_gedcom_script()
+        async with ctx.channel.typing():
+            text = await FamilyTreeMember.get(root.id, self.bot.get_tree_guild_id(ctx.guild.id)).generate_gedcom_script()
         file = BytesIO(text.encode())
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
@@ -433,10 +434,11 @@ class Information(Cog):
         # Write their treemaker code to a file
         start_time = dt.now()
         ctu = await CustomisedTreeUser.get(ctx.author.id)
-        if stupid_tree:
-            dot_code = await tree.to_full_dot_script(self.bot, ctu)
-        else:
-            dot_code = await tree.to_dot_script(self.bot, None if all_guilds else ctx.guild, ctu)
+        async with ctx.channel.typing():
+            if stupid_tree:
+                dot_code = await tree.to_full_dot_script(self.bot, ctu)
+            else:
+                dot_code = await tree.to_dot_script(self.bot, None if all_guilds else ctx.guild, ctu)
 
         try:
             with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:

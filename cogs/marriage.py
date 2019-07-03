@@ -101,7 +101,9 @@ class Marriage(Cog):
             return
 
         # See if they're already related
-        if instigator_tree.get_relation(target_tree):
+        async with ctx.channel.typing():
+            relation = instigator_tree.get_relation(target_tree)
+        if relation:
             await ctx.send(text_processor.target_is_family(instigator, target))
             return
 
