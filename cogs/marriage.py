@@ -83,6 +83,12 @@ class Marriage(Cog):
         instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
         target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
 
+        # Check the size of their trees
+        MAX_FAMILY_MEMBERS = 500
+        if len(instigator_tree.span(expand_upwards=True, add_parent=True)) + len(target_tree.span(expand_upwards=True, add_parent=True)) > MAX_FAMILY_MEMBERS:
+            await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
+            return
+
         # Manage output strings
         text_processor = ProposeRandomText(self.bot)
         text = text_processor.process(instigator, target)
