@@ -395,7 +395,7 @@ class Information(Cog):
 
         if isinstance(error, CommandOnCooldown):
             pass
-        elif isinstance(error, (MissingRequiredArgument, IsTreeCached, IsNotVoter, IsNotDonator, BadArgument, DisabledCommand, BotNotReady)):
+        elif isinstance(error, (MissingRequiredArgument, CantSendFiles, IsTreeCached, IsNotVoter, IsNotDonator, BadArgument, DisabledCommand, BotNotReady)):
             return
         else:
             raise error
