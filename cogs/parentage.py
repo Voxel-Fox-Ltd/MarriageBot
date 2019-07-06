@@ -125,13 +125,13 @@ class Parentage(Cog):
             return
 
         # Manage children
-        is_patreon = await is_patreon_predicate(ctx.bot, target, 1)
-        children_amount = 30 if is_patreon else 5
-        if len(target_tree._children) >= children_amount:
-            await ctx.send({
-                False: f"You can't have more than 5 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
-                True: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
-            }.get(is_patreon))
+        normal = 5
+        patreon_t1 = await is_patreon_predicate(ctx.bot, instigator, 1)
+        patreon_t2 = await is_patreon_predicate(ctx.bot, instigator, 2)
+        patreon_t3 = await is_patreon_predicate(ctx.bot, instigator, 3)
+        children_amount = max([normal, 10 if patreon_t1 else 0, 15 if patreon_t2 else 0, 20 if patreon_t3 else 0])
+        if len(instigator_tree._children) >= children_amount:
+            await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
             return
 
         # Valid request
@@ -218,13 +218,13 @@ class Parentage(Cog):
             return
 
         # Manage children
-        is_patreon = await is_patreon_predicate(ctx.bot, instigator, 1)
-        children_amount = 30 if is_patreon else 5
+        normal = 5
+        patreon_t1 = await is_patreon_predicate(ctx.bot, instigator, 1)
+        patreon_t2 = await is_patreon_predicate(ctx.bot, instigator, 2)
+        patreon_t3 = await is_patreon_predicate(ctx.bot, instigator, 3)
+        children_amount = max([normal, 10 if patreon_t1 else 0, 15 if patreon_t2 else 0, 20 if patreon_t3 else 0])
         if len(instigator_tree._children) >= children_amount:
-            await ctx.send({
-                False: f"You can't have more than 5 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
-                True: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
-            }.get(is_patreon))
+            await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
             return
 
         # No parent, send request

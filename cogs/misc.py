@@ -115,6 +115,12 @@ class Misc(Cog):
     async def perks(self, ctx:Context):
         '''Shows you the perks associated with different support tiers'''
 
+        # Normies
+        normal_users = [
+            "60s tree cooldown",
+            "5 children",
+        ]
+
         # Perks for voting
         voting_perks = [
             "30s tree cooldown",
@@ -123,20 +129,27 @@ class Misc(Cog):
         # Perks for $1 Patrons
         t1_donate_perks = [
             "15s tree cooldown",
-            "`stupidtree` command (shows all relations, not just blood relatives)",
-            "Up to 30 children",
+            "Up to 10 children",
             "`disownall` command (disowns all of your children at once)",
         ]
 
-        # Perks for $5 Patrons
+        # $3 Patrons
         t2_donate_perks = [
-            "Perks from previous tiers"
+            "Up to 15 children",
+            "`stupidtree` command (shows all relations, not just blood relatives)",
+        ]
+
+        # Perks for $5 Patrons
+        t3_donate_perks = [
             "5s tree cooldown",
-            "Something else?????"
+            "Up to 20 children",
         ]
         e = Embed()
+        e.add_field(name=f'Normal Users', value=f"Gives you access to:\n* " + '\n* '.join(normal_users))
         e.add_field(name=f'Voting ({ctx.clean_prefix}vote)', value=f"Gives you access to:\n* " + '\n* '.join(voting_perks))
         e.add_field(name=f'T1 Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* " + '\n* '.join(t1_donate_perks))
+        e.add_field(name=f'T2 Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* " + '\n* '.join(t2_donate_perks))
+        e.add_field(name=f'T3 Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* " + '\n* '.join(t3_donate_perks))
         await ctx.send(embed=e)
 
 

@@ -340,7 +340,7 @@ class Information(Cog):
 
     @command(aliases=['st'])
     @can_send_files()
-    @is_patreon(tier=1)
+    @is_patreon(tier=2)
     @bot_is_ready()
     @cooldown(1, 60, BucketType.guild)
     async def stupidtree(self, ctx:Context, root:User=None):
