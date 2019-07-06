@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from typing import Union
 
 from discord import User
-from discord.ext.commands import command, Context, cooldown, UserConverter
+from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
@@ -10,15 +10,7 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.checks.is_bot_moderator import is_bot_moderator
 from cogs.utils.custom_cog import Cog
-
-
-class UserID(int):
-    async def convert(self, ctx, value):
-        v = None
-        try: v = int(value)
-        except ValueError: v = await UserConverter().convert(value)
-        if v: return v 
-        raise BadArgument()
+from cogs.utils.converters import UserID
 
 
 class ModeratorOnly(Cog):
