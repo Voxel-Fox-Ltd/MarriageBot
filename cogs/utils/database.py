@@ -88,6 +88,7 @@ class DatabaseConnection(object):
         await self(
             'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
             instigator_id, target_id, guild_id,
+        )
         await self(
             'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($2, $1, $3)',
             instigator_id, target_id, guild_id,
