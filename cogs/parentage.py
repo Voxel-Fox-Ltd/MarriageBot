@@ -126,10 +126,10 @@ class Parentage(Cog):
 
         # Manage children
         is_patreon = await is_patreon_predicate(ctx.bot, target, 1)
-        children_amount = 30 if is_patreon else 15
+        children_amount = 30 if is_patreon else 5
         if len(target_tree._children) >= children_amount:
             await ctx.send({
-                False: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
+                False: f"You can't have more than 5 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
                 True: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
             }.get(is_patreon))
             return
@@ -178,7 +178,7 @@ class Parentage(Cog):
         await self.bot.proposal_cache.remove(instigator, target)
 
 
-    @command()
+    @command(aliases=['afopt'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def adopt(self, ctx:Context, *, target:UnblockedMember):
@@ -219,10 +219,10 @@ class Parentage(Cog):
 
         # Manage children
         is_patreon = await is_patreon_predicate(ctx.bot, instigator, 1)
-        children_amount = 30 if is_patreon else 15
+        children_amount = 30 if is_patreon else 5
         if len(instigator_tree._children) >= children_amount:
             await ctx.send({
-                False: f"You can't have more than 15 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
+                False: f"You can't have more than 5 children unless you're a Patreon donator (`{ctx.prefix}donate`)",
                 True: f"You don't need more than 30 children. Please enter the Chill Zone:tm:.",
             }.get(is_patreon))
             return
