@@ -39,8 +39,11 @@ class ModeratorOnly(Cog):
     
         # Argument conversion error
         elif isinstance(error, BadArgument):
-            argument_text = self.bot.bad_argument.search(str(error)).group(2)
-            await ctx.send(f"User `{argument_text}` could not be found.")
+            try:
+                argument_text = self.bot.bad_argument.search(str(error)).group(2)
+                await ctx.send(f"User `{argument_text}` could not be found.")
+            except Exception:
+                await ctx.send(str(error))
             return
 
         # Missing permissions
