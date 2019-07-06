@@ -127,7 +127,7 @@ class Information(Cog):
             user = ctx.author
 
         # Get the user's info
-        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        user_info = FamilyTreeMember.get(user.id, ctx.family_guild_id)
         if user_info._partner == None:
             await ctx.send(f"`{user!s}` is not currently married.")
             return
@@ -151,7 +151,7 @@ class Information(Cog):
         output = ''
 
         # Get the user's info
-        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        user_info = FamilyTreeMember.get(user.id, ctx.family_guild_id)
         if len(user_info._children) == 0:
             output += f"`{user!s}` has no children right now."
         else:
@@ -196,7 +196,7 @@ class Information(Cog):
         output = ''
 
         # Get the parent's info
-        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        user_info = FamilyTreeMember.get(user.id, ctx.family_guild_id)
         if user_info._parent == None:
             output += f"`{user!s}` has no parent right now."
             await ctx.send(output)
@@ -242,7 +242,7 @@ class Information(Cog):
         if user == None:
             user = ctx.author
 
-        user_info = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        user_info = FamilyTreeMember.get(user.id, ctx.family_guild_id)
         if user_info._parent == None:
             await ctx.send(f"`{user!s}` has no parent.")
             return
@@ -265,7 +265,7 @@ class Information(Cog):
 
         if other == None:
             user, other = ctx.author, user
-        user, other = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id)), FamilyTreeMember.get(other.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        user, other = FamilyTreeMember.get(user.id, ctx.family_guild_id), FamilyTreeMember.get(other.id, ctx.family_guild_id)
         async with ctx.channel.typing():
             relation = user.get_relation(other)
 
@@ -290,7 +290,7 @@ class Information(Cog):
             user = ctx.author 
         await ctx.channel.trigger_typing()
 
-        user = FamilyTreeMember.get(user.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        user = FamilyTreeMember.get(user.id, ctx.family_guild_id)
         async with ctx.channel.typing():
             span = user.span(expand_upwards=True, add_parent=True)
         username = await self.bot.get_name(user.id)
@@ -309,7 +309,7 @@ class Information(Cog):
         if root == None:
             root = ctx.author
         async with ctx.channel.typing():
-            text = await FamilyTreeMember.get(root.id, self.bot.get_tree_guild_id(ctx.guild.id)).generate_gedcom_script()
+            text = await FamilyTreeMember.get(root.id, ctx.family_guild_id).generate_gedcom_script()
         file = BytesIO(text.encode())
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
@@ -419,7 +419,7 @@ class Information(Cog):
         root_user = root
 
         # Get their family tree
-        tree = FamilyTreeMember.get(root_user.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        tree = FamilyTreeMember.get(root_user.id, ctx.family_guild_id)
 
         # Make sure they have one
         if tree.is_empty:

@@ -95,8 +95,8 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
-        target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
+        target_tree = FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
         # Check the size of their trees
         MAX_FAMILY_MEMBERS = 500
@@ -188,8 +188,8 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
-        target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
+        target_tree = FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
         # Check the size of their trees
         MAX_FAMILY_MEMBERS = 500
@@ -283,12 +283,12 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
         target_tree = None
 
         # Run target converter to get target's tree
         if isinstance(target, User):
-            target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
+            target_tree = FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
         # If they're an ID
         elif isinstance(target, int):
@@ -342,7 +342,7 @@ class Parentage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
 
         # Manage output strings
         text_processor = EmancipateRandomText(self.bot)
@@ -377,7 +377,7 @@ class Parentage(Cog):
         '''Disowns all of your children'''
 
         # Get their children
-        user_tree = FamilyTreeMember.get(ctx.author.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        user_tree = FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
         children = user_tree.children[:]
         if not children:
             await ctx.send("You don't have any children to disown .-.") # TODO make this text into a template

@@ -18,6 +18,13 @@ class CustomContext(Context):
         self.original_author_id = self.author.id
 
 
+    @property 
+    def family_guild_id(self):
+        '''Returns the guild ID that should be used for family databases in this guild'''
+
+        return self.guild.id if self.guild.id in self.bot.server_specific_families else 0
+
+
     def _set_footer(self, embed:Embed):
         '''Sets the custom footer for the embed based on the bot config'''
 

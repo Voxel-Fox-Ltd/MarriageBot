@@ -80,8 +80,8 @@ class Marriage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
-        target_tree = FamilyTreeMember.get(target.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
+        target_tree = FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
         # Check the size of their trees
         MAX_FAMILY_MEMBERS = 500
@@ -139,7 +139,7 @@ class Marriage(Cog):
         # They said yes!
         async with self.bot.database() as db:
             try:
-                await db.marry(instigator, target, self.bot.get_tree_guild_id(ctx.guild.id))
+                await db.marry(instigator, target, ctx.family_guild_id)
             except Exception as e:
                 return 
         await ctx.send(text_processor.request_accepted(instigator, target), ignore_error=True)
@@ -167,7 +167,7 @@ class Marriage(Cog):
 
         # Variables we're gonna need for later
         instigator = ctx.author
-        instigator_tree = FamilyTreeMember.get(instigator.id, self.bot.get_tree_guild_id(ctx.guild.id))
+        instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
 
         # Manage output strings
         text_processor = DivorceRandomText(self.bot)
@@ -187,7 +187,7 @@ class Marriage(Cog):
                 'DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3', 
                 instigator.id, 
                 target_tree.id, 
-                self.bot.get_tree_guild_id(ctx.guild.id)
+                ctx.family_guild_id
             )
         await ctx.send(text_processor.valid_target(instigator, target))
 

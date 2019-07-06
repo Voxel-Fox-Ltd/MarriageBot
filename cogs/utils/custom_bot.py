@@ -188,12 +188,6 @@ class CustomBot(AutoShardedBot):
         except AsyncioTimeoutError:
             await ctx.send(f"{message.author.mention}, your command has been cancelled for taking longer than 120 seconds to process.", embeddify=False, ignore_error=True)
 
-
-    def get_tree_guild_id(self, guild_id:int):
-        '''Gives you the ID of the guild the family should be processed on''' 
-        
-        return guild_id if guild_id in self.server_specific_families else 0
-
     
     async def get_name(self, user_id):
         '''Gets the name for a user - first from cache, then from redis, then from HTTP'''
