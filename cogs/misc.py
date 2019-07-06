@@ -10,6 +10,7 @@ from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot 
 from cogs.utils.custom_cog import Cog
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
 class Misc(Cog):
@@ -244,13 +245,14 @@ class Misc(Cog):
         await ctx.send(f"The shard that your server is on is shard `{ctx.guild.shard_id}`.")
 
 
-    # @command()
-    # async def emoji(self, ctx:Context, amount:int=30):
-    #     '''Shows you a given amount of custom emoji'''
+    @command()
+    @cooldown(1, 5, BucketType.guild)
+    async def toptree(self, ctx:Context):
+        '''Gives you the amount of users in the top tree'''
 
-    #     await ctx.send("Caleb fucks")
-    #     await ctx.send(''.join([str(i) for i in choices(self.bot.emojis, k=amount)]))
-    #     await ctx.send(''.join([str(i) for i in list(set(choices([i for i in self.bot.emojis if 'bulbasaur' in i.name.lower()], k=50)))]))
+        async with ctx.channel.typing():
+            top_users = max([len(i.span(add_parent=True, expand_upwards=True)) for i in FamilyTreeMember.all_users.copy().values() if i])
+        await ctx.send(f"The top tree I handle has `{top_users}` users in it.")
 
 
 def setup(bot:CustomBot):
