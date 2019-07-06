@@ -224,6 +224,13 @@ class Misc(Cog):
         await ctx.send("That user is now unblocked.")
 
 
+    @command()
+    async def shard(self, ctx:Context):
+        '''Gives you the shard that your server is running on'''
+
+        await ctx.send(f"The shard that your server is on is shard `{ctx.guild.shard_id}`.")
+
+
     # @command()
     # async def emoji(self, ctx:Context, amount:int=30):
     #     '''Shows you a given amount of custom emoji'''
