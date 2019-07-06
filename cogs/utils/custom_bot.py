@@ -3,15 +3,16 @@ from importlib import import_module
 from asyncio import sleep, create_subprocess_exec, TimeoutError as AsyncioTimeoutError, wait_for
 from glob import glob
 from re import compile
-from logging import getLogger
+import logging
 from urllib.parse import urlencode
+from collections import defaultdict
 
 from aiohttp import ClientSession
 from aiohttp.web import Application, AppRunner, TCPSite
 from discord import Game, Message, Permissions, User, ClientUser, Member
 from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
-from ujson import load
+import ujson as json
 
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.redis import RedisConnection
@@ -22,7 +23,7 @@ from cogs.utils.tree_cache import TreeCache
 from cogs.utils.custom_context import CustomContext
 
 
-logger = getLogger('marriagebot')
+logger = logging.getLogger('marriagebot.bot')
 
 
 def get_prefix(bot, message:Message):
@@ -49,7 +50,7 @@ class CustomBot(AutoShardedBot):
             super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
         # Hang out and make all the stuff I'll need
-        self.config = None  # the config dict - None until reload_config() is sucessfully called
+        self.config: dict = None  # the config dict - None until reload_config() is sucessfully called
         self.config_file = config_file  # the config filename - used in reload_config()
         self.reload_config()  # populate bot.config 
         self.bad_argument = compile(r'(User|Member) "(.*)" not found')  # bad argument regex converter
@@ -69,7 +70,7 @@ class CustomBot(AutoShardedBot):
         self.deletion_method = None  # store deletion method so I can cancel it on shutdown
         self.proposal_cache = ProposalCache()  # cache for users who've been proposed to/are proposing
         self.blacklisted_guilds = []  # a list of guilds that are blacklisted by the bot
-        self.blocked_users = {}  # user_id: list(user_id) - users who've blocked other users
+        self.blocked_users = defaultdict(list) # user_id: list(user_id) - users who've blocked other users
         self.guild_prefixes = {}  # guild_id: prefix - custom prefixes per guild
         self.dbl_votes = {}  # uid: timestamp (of last vote) - cast dbl votes
         self.tree_cache = TreeCache()  # cache of users generating trees
@@ -112,31 +113,27 @@ class CustomBot(AutoShardedBot):
         self.dbl_votes.clear() 
         self.blocked_users.clear() 
 
+        db: DatabaseConnection = await self.database.get_connection()
+        
         # Pick up the blacklisted guilds from the db
-        async with self.database() as db:
-            blacklisted = await db('SELECT * FROM blacklisted_guilds')
+        blacklisted = await db('SELECT * FROM blacklisted_guilds')
         logger.debug(f"Caching {len(blacklisted)} blacklisted guilds")
         self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
         # Pick up the blocked users
-        async with self.database() as db:
-            blocked = await db('SELECT * FROM blocked_user')
+        blocked = await db('SELECT * FROM blocked_user')
         logger.debug(f"Caching {len(blocked)} blocked users")
         for user in blocked:
-            x = self.blocked_users.get(user['user_id'], list())
-            x.append(user['blocked_user_id'])
-            self.blocked_users[user['user_id']] = x
+            self.blocked_users[user['user_id']].append(user['blocked_user_id'])
 
         # Grab the command prefixes per guild
-        async with self.database() as db:
-            settings = await db('SELECT * FROM guild_settings')
+        settings = await db('SELECT * FROM guild_settings')
         logger.debug(f"Caching {len(settings)} guild settings")
         for guild_setting in settings:
             self.guild_prefixes[guild_setting['guild_id']] = guild_setting['prefix']
 
         # Grab the last vote times of each user 
-        async with self.database() as db:
-            votes = await db('SELECT * FROM dbl_votes')
+        votes = await db('SELECT * FROM dbl_votes')
         logger.debug(f"Caching {len(votes)} DBL votes")
         for v in votes:
             self.dbl_votes[v['user_id']] = v['timestamp']
@@ -146,10 +143,9 @@ class CustomBot(AutoShardedBot):
         await self.wait_until_ready()
 
         # Get family data from database
-        async with self.database() as db:
-            partnerships = await db('SELECT * FROM marriages')
-            parents = await db('SELECT * FROM parents')
-            customisations = await db('SELECT * FROM customisation')
+        partnerships = await db('SELECT * FROM marriages')
+        parents = await db('SELECT * FROM parents')
+        customisations = await db('SELECT * FROM customisation')
         
         # Cache the family data - partners
         logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
@@ -164,6 +160,9 @@ class CustomBot(AutoShardedBot):
             child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
             child._parent = i['parent_id']
 
+        # Disconnect from the database
+        await db.disconnect()
+
         # Save all available names to redis
         async with self.redis() as re:
             for user in self.users:
@@ -176,11 +175,15 @@ class CustomBot(AutoShardedBot):
     async def on_message(self, message):
         '''Use custom context for commands'''
 
+        # Be mean to bots
         if message.author.bot:
             return
+
+        # Invoke context
         ctx: CustomContext = await self.get_context(message, cls=CustomContext)
+
+        # Add timeout to all commands - 2 minutes or bust
         try:
-            # await self.invoke(ctx)
             await wait_for(self.invoke(ctx), 120.0)
         except AsyncioTimeoutError:
             await ctx.send(f"{message.author.mention}, your command has been cancelled for taking longer than 120 seconds to process.", embeddify=False, ignore_error=True)
@@ -277,7 +280,6 @@ class CustomBot(AutoShardedBot):
         # Update presence
         presence_text = self.config['presence_text']
         if not shard_id:
-            logger.debug("Setting default bot presence globally")
             if self.shard_count > 1:
                 for i in range(self.shard_count):
                     game = Game(f"{presence_text} (shard {i})".strip())
@@ -286,7 +288,6 @@ class CustomBot(AutoShardedBot):
                 game = Game(presence_text)
                 await self.change_presence(activity=game)
         else:
-            logger.debug(f"Setting default bot presence for shard {shard_id}")   
             game = Game(f"{presence_text} (shard {i})".strip())
             await self.change_presence(activity=game, shard_id=i)     
 
@@ -299,7 +300,6 @@ class CustomBot(AutoShardedBot):
             return
         if self.shard_count > 1 and 0 not in self.shard_ids:
             return
-        logger.debug("Sending POST request to DBL")
 
         url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
         json = {
@@ -310,6 +310,7 @@ class CustomBot(AutoShardedBot):
         headers = {
             'Authorization': self.config['dbl_token']
         }
+        logger.debug(f"Sending POST request to DBL with data {json.dumps(json)}")
         async with self.session.post(url, json=json, headers=headers) as r:
             pass
 
@@ -337,7 +338,7 @@ class CustomBot(AutoShardedBot):
 
         logger.debug("Reloading config")
         with open(self.config_file) as a:
-            self.config = load(a)
+            self.config = json.load(a)
 
 
     def run(self, *args, **kwargs):
