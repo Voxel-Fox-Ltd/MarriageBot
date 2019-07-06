@@ -29,92 +29,15 @@
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
 }
+
+svg {
+    max-width: 100vw;
+}
 </style>
 
-<svg id="preview" viewBox="0.00 0.00 299.86 262.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 258)">
-        <title>%0</title>
-        <polygon class="background" fill="#ffffff" stroke="transparent" points="-4,4 -4,-258 295.8612,-258 295.8612,4 -4,4"/>
-        <!-- User1 --> 
-        <g id="node1" class="node">
-            <title>User1</title>
-            <polygon fill="#ffffff" stroke="#000000" points="140.6276,-254 -.2096,-254 -.2096,-218 140.6276,-218 140.6276,-254"/>
-            <text text-anchor="middle" x="70.209" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">MobsterLobster#1066</text>
-        </g>
-        <!-- hUser1 --> 
-        <g id="node6" class="node">
-            <title>hUser1</title>
-            <ellipse fill="#ffffff" stroke="#000000" cx="70.209" cy="-181.5" rx=".5" ry=".5"/>
-        </g>
-        <!-- User1&#45;&gt;hUser1 --> 
-        <g id="edge1" class="edge">
-            <title>User1&#45;&gt;hUser1</title>
-            <path fill="none" stroke="#000000" d="M70.209,-217.8523C70.209,-203.4845 70.209,-185.3026 70.209,-182.0198"/>
-        </g>
-        <!-- User2 --> 
-        <g id="node2" class="highlighted-node node">
-            <title>User2</title>
-            <polygon fill="#0000ff" stroke="#000000" points="131.2554,-145 9.1626,-145 9.1626,-109 131.2554,-109 131.2554,-145"/>
-            <text text-anchor="middle" x="70.209" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#ffffff">soapy_kitten#0007</text>
-        </g>
-        <!-- Family1 --> 
-        <g id="node7" class="node">
-            <title>Family1</title>
-            <ellipse fill="#ffffff" stroke="#000000" cx="150.209" cy="-127" rx=".5" ry=".5"/>
-        </g>
-        <!-- User2&#45;&gt;Family1 --> 
-        <g id="edge3" class="edge">
-            <title>User2&#45;&gt;Family1</title>
-            <path fill="none" stroke="#000000" d="M131.459,-127C137.5137,-127 143.5684,-127 149.6231,-127"/>
-        </g>
-        <!-- User3 --> 
-        <g id="node3" class="node">
-            <title>User3</title>
-            <polygon fill="#ffffff" stroke="#000000" points="292.0138,-145 168.4042,-145 168.4042,-109 292.0138,-109 292.0138,-145"/>
-            <text text-anchor="middle" x="230.209" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#000000">gardenhoe94#0420</text>
-        </g>
-        <!-- User4 --> 
-        <g id="node4" class="node">
-            <title>User4</title>
-            <polygon fill="#ffffff" stroke="#000000" points="153.5067,-36 22.9113,-36 22.9113,0 153.5067,0 153.5067,-36"/>
-            <text text-anchor="middle" x="88.209" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">GermyJeremy#6909</text>
-        </g>
-        <!-- User5 --> 
-        <g id="node5" class="node">
-            <title>User5</title>
-            <polygon fill="#ffffff" stroke="#000000" points="252.6494,-36 171.7686,-36 171.7686,0 252.6494,0 252.6494,-36"/>
-            <text text-anchor="middle" x="212.209" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">snail.#0001</text>
-        </g>
-        <!-- User4&#45;&gt;User5 --> <!-- hUser1&#45;&gt;User2 --> 
-        <g id="edge2" class="edge">
-            <title>hUser1&#45;&gt;User2</title>
-            <path fill="none" stroke="#000000" d="M70.209,-180.8879C70.209,-177.3796 70.209,-159.4816 70.209,-145.2614"/>
-        </g>
-        <!-- Family1&#45;&gt;User3 --> 
-        <g id="edge4" class="edge">
-            <title>Family1&#45;&gt;User3</title>
-            <path fill="none" stroke="#000000" d="M150.834,-127C156.7251,-127 162.6162,-127 168.5073,-127"/>
-        </g>
-        <!-- hFamily1 --> 
-        <g id="node8" class="node">
-            <title>hFamily1</title>
-            <ellipse fill="#ffffff" stroke="#000000" cx="150.209" cy="-72.5" rx=".5" ry=".5"/>
-        </g>
-        <!-- Family1&#45;&gt;hFamily1 --> 
-        <g id="edge5" class="edge">
-            <title>Family1&#45;&gt;hFamily1</title>
-            <path fill="none" stroke="#000000" d="M150.209,-126.3879C150.209,-120.7746 150.209,-78.3238 150.209,-73.0394"/>
-        </g>
-        <!-- hFamily1&#45;&gt;User4 --> 
-        <g id="edge6" class="edge">
-            <title>hFamily1&#45;&gt;User4</title>
-            <path fill="none" stroke="#000000" d="M149.8131,-72.152C146.6779,-69.396 125.5479,-50.8221 108.8972,-36.1856"/>
-        </g>
-        <!-- hFamily1&#45;&gt;User5 --> 
-        <g id="edge7" class="edge">
-            <title>hFamily1&#45;&gt;User5</title>
-            <path fill="none" stroke="#000000" d="M150.6049,-72.152C153.7401,-69.396 174.8701,-50.8221 191.5208,-36.1856"/>
-        </g>
-    </g>
-</svg>
+{% if hex_strings.direction == "TB" %}
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><!-- Generated by graphviz version 2.40.1 (20161225.0304) --><!-- Title: %0 Pages: 1 --><svg id="preview" width="285pt" height="262pt" viewBox="0.00 0.00 284.86 262.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 258)"><title>%0</title><!-- abcd --><g id="node1" class="node"><title>abcd</title><polygon fill="#0000ff" stroke="#000000" points="130.6992,-145 9.7188,-145 9.7188,-109 130.6992,-109 130.6992,-145"/><text text-anchor="middle" x="70.209" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#ffffff">SoapyKitten#0007</text></g><!-- qmlRWXEpXj --><g id="node7" class="node"><title>qmlRWXEpXj</title><ellipse fill="#ffffff" stroke="#000000" cx="149.209" cy="-127" rx=".5" ry=".5"/></g><!-- abcd&#45;&gt;qmlRWXEpXj --><g id="edge3" class="edge"><title>abcd&#45;&gt;qmlRWXEpXj</title><path fill="none" stroke="#000000" d="M131.002,-127C136.8813,-127 142.7607,-127 148.64,-127"/></g><!-- abc --><g id="node2" class="highlighted-node node"><title>abc</title><polygon fill="#ffffff" stroke="#000000" points="277.0138,-145 167.4042,-145 167.4042,-109 277.0138,-109 277.0138,-145"/><text text-anchor="middle" x="222.209" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#000000">gardenhoe#0420</text></g><!-- ab --><g id="node3" class="node"><title>ab</title><polygon fill="#ffffff" stroke="#000000" points="153.6684,-36 18.7496,-36 18.7496,0 153.6684,0 153.6684,-36"/><text text-anchor="middle" x="86.209" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">GermyGeremy#6969</text></g><!-- a --><g id="node4" class="node"><title>a</title><polygon fill="#ffffff" stroke="#000000" points="252.6494,-36 171.7686,-36 171.7686,0 252.6494,0 252.6494,-36"/><text text-anchor="middle" x="212.209" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">snail.#0001</text></g><!-- ab&#45;&gt;a --><!-- abcdef --><g id="node5" class="node"><title>abcdef</title><polygon fill="#ffffff" stroke="#000000" points="140.6276,-254 -.2096,-254 -.2096,-218 140.6276,-218 140.6276,-254"/><text text-anchor="middle" x="70.209" y="-231.8" font-family="Times,serif" font-size="14.00" fill="#000000">MobsterLobster#1066</text></g><!-- abcde --><g id="node6" class="node"><title>abcde</title><ellipse fill="#ffffff" stroke="#000000" cx="70.209" cy="-181.5" rx=".5" ry=".5"/></g><!-- abcdef&#45;&gt;abcde --><g id="edge1" class="edge"><title>abcdef&#45;&gt;abcde</title><path fill="none" stroke="#000000" d="M70.209,-217.8523C70.209,-203.4845 70.209,-185.3026 70.209,-182.0198"/></g><!-- abcde&#45;&gt;abcd --><g id="edge2" class="edge"><title>abcde&#45;&gt;abcd</title><path fill="none" stroke="#000000" d="M70.209,-180.8879C70.209,-177.3796 70.209,-159.4816 70.209,-145.2614"/></g><!-- qmlRWXEpXj&#45;&gt;abc --><g id="edge4" class="edge"><title>qmlRWXEpXj&#45;&gt;abc</title><path fill="none" stroke="#000000" d="M149.7793,-127C155.6265,-127 161.4737,-127 167.3209,-127"/></g><!-- hqmlRWXEpXj --><g id="node8" class="node"><title>hqmlRWXEpXj</title><ellipse fill="#ffffff" stroke="#000000" cx="149.209" cy="-72.5" rx=".5" ry=".5"/></g><!-- qmlRWXEpXj&#45;&gt;hqmlRWXEpXj --><g id="edge5" class="edge"><title>qmlRWXEpXj&#45;&gt;hqmlRWXEpXj</title><path fill="none" stroke="#000000" d="M149.209,-126.3879C149.209,-120.7746 149.209,-78.3238 149.209,-73.0394"/></g><!-- hqmlRWXEpXj&#45;&gt;ab --><g id="edge6" class="edge"><title>hqmlRWXEpXj&#45;&gt;ab</title><path fill="none" stroke="#000000" d="M148.8067,-72.152C145.6209,-69.396 124.1501,-50.8221 107.2309,-36.1856"/></g><!-- hqmlRWXEpXj&#45;&gt;a --><g id="edge7" class="edge"><title>hqmlRWXEpXj&#45;&gt;a</title><path fill="none" stroke="#000000" d="M149.6113,-72.152C152.7971,-69.396 174.2679,-50.8221 191.1871,-36.1856"/></g></g></svg>
+{% elif hex_strings.direction == "LR" %}
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><!-- Generated by graphviz version 2.40.1 (20161225.0304) --><!-- Title: %0 Pages: 1 --><svg id="preview" width="550pt" height="118pt" viewBox="0.00 0.00 550.37 118.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 114)"><title>%0</title><!-- abcd --><g id="node1" class="node"><title>abcd</title><polygon fill="#0000ff" stroke="#000000" points="334.4033,-110 213.4229,-110 213.4229,-74 334.4033,-74 334.4033,-110"/><text text-anchor="middle" x="273.9131" y="-87.8" font-family="Times,serif" font-size="14.00" fill="#ffffff">SoapyKitten#0007</text></g><!-- qmlRWXEpXj --><g id="node7" class="node"><title>qmlRWXEpXj</title><ellipse fill="#ffffff" stroke="#000000" cx="273.9131" cy="-55" rx=".5" ry=".5"/></g><!-- abcd&#45;&gt;qmlRWXEpXj --><g id="edge3" class="edge"><title>abcd&#45;&gt;qmlRWXEpXj</title><path fill="none" stroke="#000000" d="M273.9131,-73.7891C273.9131,-67.7188 273.9131,-61.6484 273.9131,-55.5781"/></g><!-- abc --><g id="node2" class="highlighted-node node"><title>abc</title><polygon fill="#ffffff" stroke="#000000" points="328.7179,-36 219.1083,-36 219.1083,0 328.7179,0 328.7179,-36"/><text text-anchor="middle" x="273.9131" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">gardenhoe#0420</text></g><!-- ab --><g id="node3" class="node"><title>ab</title><polygon fill="#ffffff" stroke="#000000" points="542.3473,-100 407.4285,-100 407.4285,-64 542.3473,-64 542.3473,-100"/><text text-anchor="middle" x="474.8879" y="-77.8" font-family="Times,serif" font-size="14.00" fill="#000000">GermyGeremy#6969</text></g><!-- a --><g id="node4" class="node"><title>a</title><polygon fill="#ffffff" stroke="#000000" points="515.3283,-46 434.4475,-46 434.4475,-10 515.3283,-10 515.3283,-46"/><text text-anchor="middle" x="474.8879" y="-23.8" font-family="Times,serif" font-size="14.00" fill="#000000">snail.#0001</text></g><!-- ab&#45;&gt;a --><!-- abcdef --><g id="node5" class="node"><title>abcdef</title><polygon fill="#ffffff" stroke="#000000" points="140.6276,-110 -.2096,-110 -.2096,-74 140.6276,-74 140.6276,-110"/><text text-anchor="middle" x="70.209" y="-87.8" font-family="Times,serif" font-size="14.00" fill="#000000">MobsterLobster#1066</text></g><!-- abcde --><g id="node6" class="node"><title>abcde</title><ellipse fill="#ffffff" stroke="#000000" cx="176.918" cy="-92" rx=".5" ry=".5"/></g><!-- abcdef&#45;&gt;abcde --><g id="edge1" class="edge"><title>abcdef&#45;&gt;abcde</title><path fill="none" stroke="#000000" d="M140.4933,-92C157.9749,-92 172.7514,-92 176.1723,-92"/></g><!-- abcde&#45;&gt;abcd --><g id="edge2" class="edge"><title>abcde&#45;&gt;abcd</title><path fill="none" stroke="#000000" d="M177.5374,-92C180.732,-92 195.8689,-92 213.2337,-92"/></g><!-- qmlRWXEpXj&#45;&gt;abc --><g id="edge4" class="edge"><title>qmlRWXEpXj&#45;&gt;abc</title><path fill="none" stroke="#000000" d="M273.9131,-54.4128C273.9131,-48.3455 273.9131,-42.2782 273.9131,-36.2109"/></g><!-- hqmlRWXEpXj --><g id="node8" class="node"><title>hqmlRWXEpXj</title><ellipse fill="#ffffff" stroke="#000000" cx="370.9082" cy="-55" rx=".5" ry=".5"/></g><!-- qmlRWXEpXj&#45;&gt;hqmlRWXEpXj --><g id="edge5" class="edge"><title>qmlRWXEpXj&#45;&gt;hqmlRWXEpXj</title><path fill="none" stroke="#000000" d="M274.5325,-55C282.406,-55 362.8229,-55 370.3447,-55"/></g><!-- hqmlRWXEpXj&#45;&gt;ab --><g id="edge6" class="edge"><title>hqmlRWXEpXj&#45;&gt;ab</title><path fill="none" stroke="#000000" d="M371.5722,-55.1724C374.8412,-56.0213 389.775,-59.8991 407.3163,-64.454"/></g><!-- hqmlRWXEpXj&#45;&gt;a --><g id="edge7" class="edge"><title>hqmlRWXEpXj&#45;&gt;a</title><path fill="none" stroke="#000000" d="M371.5722,-54.8276C376.467,-53.5566 407.5153,-45.4944 434.3097,-38.5368"/></g></g></svg>
+{% endif %}
 {% endblock body %}

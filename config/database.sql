@@ -39,6 +39,7 @@ CREATE TABLE guild_settings(
 -- A config for a guild to change their prefix
 
 
+CREATE TYPE direction AS ENUM('TB', 'LR');
 CREATE TABLE customisation(
     user_id BIGINT NOT NULL,
     edge INTEGER DEFAULT NULL,
@@ -47,6 +48,7 @@ CREATE TABLE customisation(
     highlighted_font INTEGER DEFAULT NULL,
     highlighted_node INTEGER DEFAULT NULL,
     background INTEGER DEFAULT NULL,
+    direction direction DEFAULT 'TB',
     PRIMARY KEY (user_id)
 );
 -- A table for user tree customisations

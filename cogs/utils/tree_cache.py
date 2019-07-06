@@ -18,8 +18,8 @@ class TreeCache(list):
         super().__init__(*args, **kwargs)
 
     async def add(self, *users):
-        async with self.bot.redis() as re:
-            await re.publish_json('TreeCacheAdd', [get_id(i) for i in users])
+        # async with self.bot.redis() as re:
+        #     await re.publish_json('TreeCacheAdd', [get_id(i) for i in users])
         self.raw_add(*users)
 
     def raw_add(self, *users):
@@ -30,8 +30,8 @@ class TreeCache(list):
             self.append(i)
     
     async def remove(self, *users):
-        async with self.bot.redis() as re:
-            await re.publish_json('TreeCacheRemove', [get_id(i) for i in users])
+        # async with self.bot.redis() as re:
+        #     await re.publish_json('TreeCacheRemove', [get_id(i) for i in users])
         self.raw_remove(*users)
 
     def raw_remove(self, *users):

@@ -299,7 +299,6 @@ class Information(Cog):
 
     @command(enabled=False)
     @can_send_files()
-    @no_tree_cache()
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def treefile(self, ctx:Context, root:Member=None):
@@ -317,7 +316,6 @@ class Information(Cog):
 
     @command(aliases=['familytree', 't', 'fulltree', 'ft', 'gt'])
     @can_send_files()
-    @no_tree_cache()
     @bot_is_ready()
     @cooldown(1, 60, BucketType.guild)
     async def tree(self, ctx:Context, root:Member=None):
@@ -342,7 +340,6 @@ class Information(Cog):
 
     @command(aliases=['st'])
     @can_send_files()
-    @no_tree_cache()
     @is_patreon(tier=1)
     @bot_is_ready()
     @cooldown(1, 60, BucketType.guild)

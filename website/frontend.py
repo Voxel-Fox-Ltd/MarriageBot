@@ -224,6 +224,7 @@ async def user_settings(request:Request):
             'highlighted_font': request.query.get('highlighted_font'),
             'highlighted_node': request.query.get('highlighted_node'),
             'background': request.query.get('background'),
+            'direction': request.query.get('direction', 'TB'),
         } 
         colours = {}
         for i, o in colours_raw.items():
@@ -239,7 +240,7 @@ async def user_settings(request:Request):
             colours = CustomisedTreeUser.get_default_unquoted_hex()
 
     # Make a URL for the preview
-    tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' for i, o in colours.items()])
+    tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' if i != 'direction' else f'{i}={o}' for i, o in colours.items()])
 
     # Give all the data to the page
     return {
@@ -258,7 +259,10 @@ async def user_settings_post_handler(request:Request):
     except Exception as e: 
         raise e 
         pass
-    colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in dict(colours_raw).items()}
+    colours_raw = dict(colours_raw)
+    direction = colours_raw.pop("direction")
+    colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in colours_raw.items()}
+    colours['direction'] = direction
     session = await get_session(request)
     user_id = session['user_id']
     async with request.app['database']() as db:
@@ -284,11 +288,14 @@ async def tree_preview(request:Request):
         'highlighted_font': request.query.get('highlighted_font'),
         'highlighted_node': request.query.get('highlighted_node'),
         'background': request.query.get('background'),
+        'direction': request.query.get('direction'),
     } 
     colours = {}
     for i, o in colours_raw.items():
         if o == None or o == 'transparent':
             o = 'transparent'
+        elif i == 'direction':
+            pass
         else:
             o = f'#{o.strip("#")}'
         colours[i] = o

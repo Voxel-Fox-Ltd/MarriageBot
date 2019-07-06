@@ -6,7 +6,7 @@ class CustomisedTreeUser(object):
     all_users = {}  # discord_id: CTU
     bot = None
 
-    def __init__(self, user_id:int, *, edge:int=None, node:int=None, font:int=None, highlighted_font:int=None, highlighted_node:int=None, background:int=None):
+    def __init__(self, user_id:int, *, edge:int=None, node:int=None, font:int=None, highlighted_font:int=None, highlighted_node:int=None, background:int=None, direction:str="TB"):
         self.id = user_id
         self.edge = edge
         self.node = node
@@ -14,6 +14,7 @@ class CustomisedTreeUser(object):
         self.highlighted_font = highlighted_font
         self.highlighted_node = highlighted_node
         self.background = background
+        self.direction = direction
         self.all_users[user_id] = self
 
     
@@ -68,6 +69,7 @@ class CustomisedTreeUser(object):
             'highlighted_font': highlighted_font,
             'highlighted_node': highlighted_node,
             'background': background,
+            'direction': f'"{self.direction}"'
         }
 
     
@@ -85,6 +87,7 @@ class CustomisedTreeUser(object):
             'highlighted_font': '"#FFFFFF"',
             'highlighted_node': '"#0000FF"',
             'background': '"#FFFFFF"',
+            'direction': '"TB"',
         }
 
 
@@ -98,12 +101,12 @@ class CustomisedTreeUser(object):
 
         try:
             await db(
-                '''INSERT INTO customisation (user_id, edge, node, font, highlighted_font, highlighted_node, background)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)''',
-                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background
+                '''INSERT INTO customisation (user_id, edge, node, font, highlighted_font, highlighted_node, background, direction)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)''',
+                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background, self.direction
             )
         except Exception:
             await db(
-                '''UPDATE customisation SET edge=$2, node=$3, font=$4, highlighted_font=$5, highlighted_node=$6, background=$7 WHERE user_id=$1''',
-                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background
+                '''UPDATE customisation SET edge=$2, node=$3, font=$4, highlighted_font=$5, highlighted_node=$6, background=$7, direction=$8 WHERE user_id=$1''',
+                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background, self.direction
             )

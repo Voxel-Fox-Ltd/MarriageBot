@@ -494,6 +494,7 @@ class FamilyTreeMember(object):
             f"node [shape=box, fontcolor={ctu.hex['font']}, color={ctu.hex['edge']}, fillcolor={ctu.hex['node']}, style=filled];"
             f"edge [dir=none, color={ctu.hex['edge']}];"
             f"bgcolor={ctu.hex['background']};"
+            f"rankdir={ctu.hex['direction']};"
         )
 
         # Set up some stuff for later

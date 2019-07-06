@@ -28,32 +28,40 @@ function updatePreview(submitButton) {
 <form id="colour-selector">
     <div class="colour-choice">
         <label for="edge">Edge: </label>
-        <input name="edge" id="edge" value="{{ hex_strings.edge }}" onchange="updatePreview(this.parentNode);">
+        <input name="edge" id="edge" value="{{ hex_strings.edge }}" onchange="updatePreview(this.parentNode);" />
     </div>
 
     <div class="colour-choice">
         <label for="node">Node: </label>
-        <input name="node" value="{{ hex_strings.node }}" id="node" onchange="updatePreview(this.parentNode);">
+        <input name="node" value="{{ hex_strings.node }}" id="node" onchange="updatePreview(this.parentNode);" />
     </div>
 
     <div class="colour-choice">
         <label for="font">Font: </label>
-        <input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this.parentNode);">
+        <input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this.parentNode);" />
     </div>
     
     <div class="colour-choice">
         <label for="background">Background: </label>
-        <input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this.parentNode);">
+        <input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this.parentNode);" />
     </div>
 
     <div class="colour-choice">
         <label for="highlighted_font">Highlighted Font: </label>
-        <input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font" onchange="updatePreview(this.parentNode);">
+        <input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font" onchange="updatePreview(this.parentNode);" />
     </div>
 
     <div class="colour-choice">
         <label for="highlighted_node">Highlighted Node: </label>
-        <input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node" onchange="updatePreview(this.parentNode);">
+        <input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node" onchange="updatePreview(this.parentNode);" />
+    </div>
+
+    <div class="colour-choice">
+        <label for="direction">Tree Direction: </label>
+        <select name="direction" id="direction" onchange="updatePreview(this.parentNode);">
+            <option {% if hex_strings.direction == "TB" %}selected="TRUE" {% endif %}value="TB" >TB</option>
+            <option {% if hex_strings.direction == "LR" %}selected="TRUE" {% endif %}value="LR" >LR</option>
+        </select>
     </div>
 
     <script>
