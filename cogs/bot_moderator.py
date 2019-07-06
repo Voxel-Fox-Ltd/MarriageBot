@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from typing import Union
 
 from discord import User
-from discord.ext.commands import command, Context, cooldown
+from discord.ext.commands import command, Context, cooldown, UserConverter
 from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown
 from discord.ext.commands.cooldowns import BucketType
 
@@ -10,6 +10,15 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.checks.is_bot_moderator import is_bot_moderator
 from cogs.utils.custom_cog import Cog
+
+
+class UserID(int):
+    async def convert(self, ctx, value):
+        v = None
+        try: v = int(value)
+        except ValueError: v = await UserConverter().convert(value)
+        if v: return v 
+        raise BadArgument()
 
 
 class ModeratorOnly(Cog):
@@ -53,42 +62,32 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def uncache(self, ctx:Context, user:Union[User, int]):
+    async def uncache(self, ctx:Context, user:UserID):
         '''
         Removes a user from the propsal cache.
         '''
-
-        if isinstance(user, User):
-            user_id = user.id
-        else:
-            user_id = user 
-        await self.bot.proposal_cache.remove(user_id)
+        
+        await self.bot.proposal_cache.remove(user)
         await ctx.send("Sent Redis request to remove user from cache.")
 
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def recache(self, ctx:Context, user:Union[User, int], guild_id:int=0):
+    async def recache(self, ctx:Context, user:UserID, guild_id:int=0):
         '''Recaches a user's family tree member object'''
-
-        # Get user ID
-        if isinstance(user, User):
-            user_id = user.id 
-        else:
-            user_id = user 
 
         # Read data from DB
         async with self.bot.database() as db:
-            parent = await db('SELECT parent_id FROM parents WHERE child_id=$1 AND guild_id=$2', user_id, guild_id)
-            children = await db('SELECT child_id FROM parents WHERE parent_id=$1 AND guild_id=$2', user_id, guild_id)
-            partner = await db('SELECT partner_id FROM marriages WHERE user_id=$1 AND guild_id=$2', user_id, guild_id)
+            parent = await db('SELECT parent_id FROM parents WHERE child_id=$1 AND guild_id=$2', user, guild_id)
+            children = await db('SELECT child_id FROM parents WHERE parent_id=$1 AND guild_id=$2', user, guild_id)
+            partner = await db('SELECT partner_id FROM marriages WHERE user_id=$1 AND guild_id=$2', user, guild_id)
 
         # Load data into cache
         children = [i['child_id'] for i in children]
         parent_id = parent[0]['parent_id'] if len(parent) > 0 else None 
         partner_id = partner[0]['partner_id'] if len(partner) > 0 else None
         f = FamilyTreeMember(
-            user_id, 
+            user, 
             children=children, 
             parent_id=parent_id,
             partner_id=partner_id,
@@ -117,14 +116,14 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def forcemarry(self, ctx:Context, user_a:User, user_b:User):
+    async def forcemarry(self, ctx:Context, user_a:UserID, user_b:UserID):
         '''
         Marries the two specified users
         '''
 
         # Get users
-        me = FamilyTreeMember.get(user_a.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        them = FamilyTreeMember.get(user_b.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(user_a, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = FamilyTreeMember.get(user_b, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
 
         # See if they have partners
         if me.partner != None or them.partner != None:
@@ -138,20 +137,20 @@ class ModeratorOnly(Cog):
             except Exception as e:
                 await ctx.send(f"Error encountered: `{e}`")
                 return  # Only thrown if two people try to marry at once, so just return
-        me._partner = user_b.id 
-        them._partner = user_a.id
+        me._partner = user_b
+        them._partner = user_a
         await ctx.send("Consider it done.")
 
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def forcedivorce(self, ctx:Context, user:User):
+    async def forcedivorce(self, ctx:Context, user:UserID):
         '''
         Divorces a user from their spouse
         '''
 
         # Run check
-        me = FamilyTreeMember.get(user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(user, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if not me.partner:
             await ctx.send("That person isn't even married .-.")
             return
@@ -159,7 +158,7 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('DELETE FROM marriages WHERE (user_id=$1 OR partner_id=$1) AND guild_id=$2', user.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('DELETE FROM marriages WHERE (user_id=$1 OR partner_id=$1) AND guild_id=$2', user, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             except Exception as e:
                 await ctx.send(f"Error encountered: `{e}`")
                 return  # Honestly this should never be thrown unless the database can't connect
@@ -170,13 +169,13 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def forceadopt(self, ctx:Context, parent:User, child:User):
+    async def forceadopt(self, ctx:Context, parent:UserID, child:UserID):
         '''
         Adds the child to the specified parent
         '''
 
         # Run check
-        them = FamilyTreeMember.get(child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = FamilyTreeMember.get(child, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if them.parent:
             await ctx.send("`{child!s}` already has a parent.")
             return
@@ -184,28 +183,23 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parent.id, child.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parentd, child, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
             except Exception as e:
                 return  # Only thrown when multiple people do at once, just return
-        me = FamilyTreeMember.get(parent.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        me._children.append(child.id)
-        them._parent = parent.id
+        me = FamilyTreeMember.get(parent, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me._children.append(child)
+        them._parent = parent
         await ctx.send("Consider it done.")
 
 
     @command(aliases=['forceeman'], hidden=True)
     @is_bot_moderator()
-    async def forceemancipate(self, ctx:Context, user:Union[User, int]):
+    async def forceemancipate(self, ctx:Context, user:UserID):
         '''
         Force emancipates a child
         '''
-
-        # Run check
-        if isinstance(user, User):
-            user_id = user.id
-        else:
-            user_id = user 
-        me = FamilyTreeMember.get(user_id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        
+        me = FamilyTreeMember.get(user, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
         if not me.parent:
             await ctx.send("That user doesn't even have a parent .-.")
             return
@@ -217,7 +211,7 @@ class ModeratorOnly(Cog):
             except Exception as e:
                 # await ctx.send(e)
                 return  # Should only be thrown when the database can't connect 
-        me.parent._children.remove(user_id)
+        me.parent._children.remove(user)
         parent = me.parent
         me._parent = None
         async with self.bot.redis() as re:
@@ -228,17 +222,17 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
-    async def addvoter(self, ctx:Context, user:User):
+    async def addvoter(self, ctx:Context, user:UserID):
         '''
         Adds a voter to the database
         '''
 
-        self.bot.dbl_votes[user.id] = dt.now()
+        self.bot.dbl_votes[user] = dt.now()
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user.id, self.bot.dbl_votes[user.id])
+                await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user, self.bot.dbl_votes[user])
             except Exception as e:
-                await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user.id, self.bot.dbl_votes[user.id])
+                await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user, self.bot.dbl_votes[user])
         await ctx.send("Consider it done.")
 
 

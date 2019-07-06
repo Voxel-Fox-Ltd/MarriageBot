@@ -69,15 +69,18 @@ class DatabaseConnection(object):
         Marries two users together
         '''
 
+        instigator_id = instigator if isinstance(instigator, int) else instigator.id
+        target_id = target if isinstance(target, int) else target.id
+
         await self(
             'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
-            instigator.id,
-            target.id,
+            instigator_id,
+            target_id,
             guild_id,
         )
         await self(
             'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($2, $1, $3)',
-            instigator.id,
-            target.id,
+            instigator_id,
+            target_id,
             guild_id,
         )
