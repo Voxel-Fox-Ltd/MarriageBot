@@ -28,7 +28,7 @@ class ErrorEvent(Cog):
             try:
                 await ctx.send("I'm not able to send files into this channel.")
             except Exception:
-                await ctx.author.send("I'm unable to send messages into that channel.")
+                await ctx.author.send("I'm unable to send messages into that channel.", ignore_error=True)
             return
 
         # Can't send message to channel

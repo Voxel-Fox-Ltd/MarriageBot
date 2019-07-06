@@ -47,10 +47,13 @@ class Information(Cog):
             await ctx.send(text)
             raise error
 
-        # Can't senf files
+        # Can't send files
         if isinstance(error, CantSendFiles):
-            await ctx.send("I'm unable to send files into this channel")
-            return 
+            try:
+                await ctx.send("I'm not able to send files into this channel.")
+            except Exception:
+                await ctx.author.send("I'm unable to send messages into that channel.", ignore_error=True)
+            return
 
         # Missing argument
         elif isinstance(error, MissingRequiredArgument):
