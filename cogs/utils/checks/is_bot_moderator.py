@@ -5,7 +5,7 @@ async def is_bot_moderator_predicate(ctx:Context):
     '''Returns True if the user is a bot moderator'''
 
     # Make sure both settings are set
-    if ctx.bot.config.get('guild') in [None, ''] or ctx.bot.config.get('bot_admin_role') in [None, '']:
+    if ctx.bot.config.get('guild_id') in [None, ''] or ctx.bot.config.get('bot_admin_role') in [None, '']:
         return None
 
     # Set the support guild
