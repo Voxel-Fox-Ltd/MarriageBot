@@ -159,7 +159,7 @@ class Parentage(Cog):
         # They said yes - add to database
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (child_id, parent_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('INSERT INTO parents (child_id, parent_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.family_guild_id)
             except Exception as e:
                 raise e
                 return  # Only thrown when multiple people do at once, just return
@@ -250,7 +250,7 @@ class Parentage(Cog):
         # Database it up
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.family_guild_id)
             except Exception as e:
                 pass
 

@@ -114,8 +114,8 @@ class ModeratorOnly(Cog):
         '''
 
         # Get users
-        me = FamilyTreeMember.get(user_a, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
-        them = FamilyTreeMember.get(user_b, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(user_a, ctx.family_guild_id)
+        them = FamilyTreeMember.get(user_b, ctx.family_guild_id)
 
         # See if they have partners
         if me.partner != None or them.partner != None:
@@ -125,7 +125,7 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db.marry(user_a, user_b, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db.marry(user_a, user_b, ctx.family_guild_id)
             except Exception as e:
                 await ctx.send(f"Error encountered: `{e}`")
                 return  # Only thrown if two people try to marry at once, so just return
@@ -142,7 +142,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Run check
-        me = FamilyTreeMember.get(user, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(user, ctx.family_guild_id)
         if not me.partner:
             await ctx.send("That person isn't even married .-.")
             return
@@ -150,7 +150,7 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('DELETE FROM marriages WHERE (user_id=$1 OR partner_id=$1) AND guild_id=$2', user, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('DELETE FROM marriages WHERE (user_id=$1 OR partner_id=$1) AND guild_id=$2', user, ctx.family_guild_id)
             except Exception as e:
                 await ctx.send(f"Error encountered: `{e}`")
                 return  # Honestly this should never be thrown unless the database can't connect
@@ -167,7 +167,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Run check
-        them = FamilyTreeMember.get(child, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        them = FamilyTreeMember.get(child, ctx.family_guild_id)
         if them.parent:
             await ctx.send("`{child!s}` already has a parent.")
             return
@@ -175,10 +175,10 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parentd, child, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parentd, child, ctx.family_guild_id)
             except Exception as e:
                 return  # Only thrown when multiple people do at once, just return
-        me = FamilyTreeMember.get(parent, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(parent, ctx.family_guild_id)
         me._children.append(child)
         them._parent = parent
         await ctx.send("Consider it done.")
@@ -191,7 +191,7 @@ class ModeratorOnly(Cog):
         Force emancipates a child
         '''
         
-        me = FamilyTreeMember.get(user, ctx.guild.id if ctx.guild.id in self.bot.server_specific_families else 0)
+        me = FamilyTreeMember.get(user, ctx.family_guild_id)
         if not me.parent:
             await ctx.send("That user doesn't even have a parent .-.")
             return
