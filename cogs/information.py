@@ -315,7 +315,7 @@ class Information(Cog):
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 
 
-    @command(aliases=['familytree', 't'])
+    @command(aliases=['familytree', 't', 'fulltree', 'ft', 'gt'])
     @can_send_files()
     @no_tree_cache()
     @bot_is_ready()
@@ -325,15 +325,16 @@ class Information(Cog):
         Gets the family tree of a given user
         '''
 
-        if ctx.guild == None:
-            await ctx.send("This command cannot be used in private messages. Please use the `fulltree` command in its place.")
-            return
+        # if ctx.guild == None:
+        #     await ctx.send("This command cannot be used in private messages. Please use the `fulltree` command in its place.")
+        #     return
 
         try:
             return await self.treemaker(
                 ctx=ctx, 
                 root=root, 
-                all_guilds=False
+                # all_guilds=False
+                all_guilds=True,
             )
         except Exception as e:
             raise e
@@ -360,24 +361,24 @@ class Information(Cog):
             raise e
 
 
-    @command(aliases=['fulltree', 'ft', 'gt'])
-    @can_send_files()
-    @no_tree_cache()
-    @bot_is_ready()
-    @cooldown(1, 60, BucketType.guild)
-    async def globaltree(self, ctx:Context, root:User=None):
-        '''
-        Gets the global family tree of a given user
-        '''
+    # @command(aliases=['fulltree', 'ft', 'gt'])
+    # @can_send_files()
+    # @no_tree_cache()
+    # @bot_is_ready()
+    # @cooldown(1, 60, BucketType.guild)
+    # async def globaltree(self, ctx:Context, root:User=None):
+    #     '''
+    #     Gets the global family tree of a given user
+    #     '''
 
-        try:
-            return await self.treemaker(
-                ctx=ctx, 
-                root=root, 
-                all_guilds=True
-            )
-        except Exception as e:
-            raise e
+    #     try:
+    #         return await self.treemaker(
+    #             ctx=ctx, 
+    #             root=root, 
+    #             all_guilds=True
+    #         )
+    #     except Exception as e:
+    #         raise e
 
 
     @tree.error
@@ -385,8 +386,8 @@ class Information(Cog):
         await self.tree_error_handler(ctx, error)
 
 
-    @globaltree.error
-    async def globaltree_error(self, ctx:Context, error):
+    @stupidtree.error
+    async def stupidtree_error(self, ctx:Context, error):
         await self.tree_error_handler(ctx, error)
 
 
@@ -428,8 +429,8 @@ class Information(Cog):
             await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
         await self.bot.tree_cache.add(ctx.author.id)
-        m = await ctx.send("Generating tree - this may take a few minutes...", embeddify=False)
-        await ctx.channel.trigger_typing()
+        # m = await ctx.send("Generating tree - this may take a few minutes...", embeddify=False)
+        # await ctx.channel.trigger_typing()
 
         # Write their treemaker code to a file
         start_time = dt.now()
@@ -472,7 +473,7 @@ class Information(Cog):
         # Send file and delete cached
         try:
             file = File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-            await ctx.send(f"Tree generated in `{time_taken:.2f}` seconds.", file=file)
+            await ctx.send(f"[Click here](https://marriagebot.xyz/) to customise your tree. Generated in `{time_taken:.2f}` seconds from `{len(dot_code)}` bytes of DOT code.", file=file)
             await m.delete()
         except Exception as e:
             pass
