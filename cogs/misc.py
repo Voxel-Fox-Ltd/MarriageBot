@@ -11,6 +11,7 @@ from discord.ext.commands.cooldowns import BucketType
 from cogs.utils.custom_bot import CustomBot 
 from cogs.utils.custom_cog import Cog
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.converters import UserID
 
 
 class Misc(Cog):
@@ -221,19 +222,20 @@ class Misc(Cog):
 
 
     @command()
-    async def unblock(self, ctx:Context, user:Member):
+    async def unblock(self, ctx:Context, user:UserID):
         '''Unblocks a user and allows them to adopt/makeparent/whatever you'''
 
-        current_blocks = self.bot.blocked_users.get(ctx.author.id, list())
-        if user.id not in current_blocks:
+        # Get the current blocks for a user
+        current_blocks = self.bot.blocked_users[ctx.author.id]
+        if user not in current_blocks:
             await ctx.send("You don't have that user blocked.")
             return 
-        current_blocks.remove(user.id)
+        current_blocks.remove(user)
         self.bot.blocked_users[ctx.author.id] = current_blocks
         async with self.bot.database() as db:
             await db(
                 'DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2',
-                ctx.author.id, user.id
+                ctx.author.id, user
             )
         await ctx.send("That user is now unblocked.")
 
