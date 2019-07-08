@@ -130,7 +130,7 @@ class Parentage(Cog):
         patreon_t2 = await is_patreon_predicate(ctx.bot, instigator, 2)
         patreon_t3 = await is_patreon_predicate(ctx.bot, instigator, 3)
         children_amount = max([normal, 10 if patreon_t1 else 0, 15 if patreon_t2 else 0, 20 if patreon_t3 else 0])
-        if len(instigator_tree._children) >= children_amount:
+        if len(target_tree._children) >= children_amount:
             await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
             return
 
