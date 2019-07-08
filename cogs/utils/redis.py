@@ -40,6 +40,20 @@ class RedisConnection(object):
     async def __aexit__(self, exc_type, exc, tb):
         pass
 
+
+    @classmethod 
+    async def get_connection(cls) -> 'RedisConnection':
+        '''Gets a connection from the connection pool'''
+
+        conn = cls.pool
+        return cls(conn)
+
+
+    async def disconnect(self) -> None:
+        '''Releases a connection from the connection pool'''
+
+        del self
+
     
     async def publish_json(self, channel:str, json:dict):
         logger.debug(f"Publishing JSON to channel {channel}: {json!s}")

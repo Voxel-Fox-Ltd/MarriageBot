@@ -99,6 +99,45 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator()
+    async def recachefamily(self, ctx:Context, user:UserID, guild_id:int=0):
+        '''Recaches a user's family tree member object, but through their whole family'''
+
+        # Get connections
+        db = await self.bot.database.get_connection()
+        re = await self.bot.redis.get_connect()
+
+        # Loop through their tree
+        family = FamilyTreeMember.get(user, guild_id).span(expand_upwards=True, add_parent=True)[:]
+        for i in family:
+            parent = await db('SELECT parent_id FROM parents WHERE child_id=$1 AND guild_id=$2', i.id, guild_id)
+            children = await db('SELECT child_id FROM parents WHERE parent_id=$1 AND guild_id=$2', i.id, guild_id)
+            partner = await db('SELECT partner_id FROM marriages WHERE user_id=$1 AND guild_id=$2', i.id, guild_id)
+
+            # Load data into cache
+            children = [i['child_id'] for i in children]
+            parent_id = parent[0]['parent_id'] if len(parent) > 0 else None 
+            partner_id = partner[0]['partner_id'] if len(partner) > 0 else None
+            f = FamilyTreeMember(
+                i.id, 
+                children=children, 
+                parent_id=parent_id,
+                partner_id=partner_id,
+                guild_id=guild_id,
+            )
+
+            # Push update via redis
+            await re.publish_json('TreeMemberUpdate', f.to_json())
+
+        # Disconnect from database
+        await db.disconnect()
+        await re.disconnect()
+
+        # Output to user
+        await ctx.send(f"Published `{len(family)}` updates.")
+
+
+    @command(hidden=True)
+    @is_bot_moderator()
     async def loadusers(self, ctx:Context, shard_id:int=None):
         '''
         Loads all families up from the database again
