@@ -217,12 +217,16 @@ class ModeratorOnly(Cog):
         # Update database
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parentd, child, ctx.family_guild_id)
+                await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parent, child, ctx.family_guild_id)
             except Exception as e:
+                raise e
                 return  # Only thrown when multiple people do at once, just return
         me = FamilyTreeMember.get(parent, ctx.family_guild_id)
         me._children.append(child)
         them._parent = parent
+        async with self.bot.redis() as re:
+            await re.publish_json('TreeMemberUpdate', me.to_json())
+            await re.publish_json('TreeMemberUpdate', them.to_json())
         await ctx.send("Consider it done.")
 
 
