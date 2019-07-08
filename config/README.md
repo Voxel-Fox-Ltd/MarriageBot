@@ -44,7 +44,7 @@ This file is going to be a brief explanation of how to set up your config file. 
     "tree_file_location": "Where should your trees be output to",
     "dbl_vainity": "Your DBL vainity link - leave this blank probably",
     "github": "https://github.com/4Kaylum/MarriageBot",
-    "patreon": "https://patreon.com/CalebB",
+    "patreon": "https://patreon.com/join/CalebB",
     "paypal": "https://paypal.me/CalebBartlett",
     "guild": "Link to the bot's support server - leave this blank probably",
     "embed_default_text": null
