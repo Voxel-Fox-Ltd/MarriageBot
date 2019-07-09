@@ -98,13 +98,6 @@ class Parentage(Cog):
         instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
         target_tree = FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
-        # Check the size of their trees
-        MAX_FAMILY_MEMBERS = 500
-        async with ctx.channel.typing():
-            if len(instigator_tree.span(expand_upwards=True, add_parent=True)) + len(target_tree.span(expand_upwards=True, add_parent=True)) > MAX_FAMILY_MEMBERS:
-                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
-                return
-
         # Manage output strings
         text_processor = MakeParentRandomText(self.bot)
         text = text_processor.process(instigator, target)
@@ -133,6 +126,13 @@ class Parentage(Cog):
         if len(target_tree._children) >= children_amount:
             await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
             return
+
+        # Check the size of their trees
+        MAX_FAMILY_MEMBERS = 500
+        async with ctx.channel.typing():
+            if len(instigator_tree.span(expand_upwards=True, add_parent=True)) + len(target_tree.span(expand_upwards=True, add_parent=True)) > MAX_FAMILY_MEMBERS:
+                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
+                return
 
         # Valid request
         if not target.bot:
@@ -191,13 +191,6 @@ class Parentage(Cog):
         instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
         target_tree = FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
-        # Check the size of their trees
-        MAX_FAMILY_MEMBERS = 500
-        async with ctx.channel.typing():
-            if len(instigator_tree.span(expand_upwards=True, add_parent=True)) + len(target_tree.span(expand_upwards=True, add_parent=True)) > MAX_FAMILY_MEMBERS:
-                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
-                return
-
         # Manage output strings
         text_processor = AdoptRandomText(self.bot)
         text = text_processor.process(instigator, target)
@@ -226,6 +219,13 @@ class Parentage(Cog):
         if len(instigator_tree._children) >= children_amount:
             await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
             return
+
+        # Check the size of their trees
+        MAX_FAMILY_MEMBERS = 500
+        async with ctx.channel.typing():
+            if len(instigator_tree.span(expand_upwards=True, add_parent=True)) + len(target_tree.span(expand_upwards=True, add_parent=True)) > MAX_FAMILY_MEMBERS:
+                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
+                return
 
         # No parent, send request
         await ctx.send(text_processor.valid_target(instigator, target))

@@ -83,13 +83,6 @@ class Marriage(Cog):
         instigator_tree = FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
         target_tree = FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
-        # Check the size of their trees
-        MAX_FAMILY_MEMBERS = 500
-        async with ctx.channel.typing():
-            if len(instigator_tree.span(expand_upwards=True, add_parent=True)) + len(target_tree.span(expand_upwards=True, add_parent=True)) > MAX_FAMILY_MEMBERS:
-                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
-                return
-
         # Manage output strings
         text_processor = ProposeRandomText(self.bot)
         text = text_processor.process(instigator, target)
@@ -113,6 +106,13 @@ class Marriage(Cog):
         if relation:
             await ctx.send(text_processor.target_is_family(instigator, target))
             return
+
+        # Check the size of their trees
+        MAX_FAMILY_MEMBERS = 500
+        async with ctx.channel.typing():
+            if len(instigator_tree.span(expand_upwards=True, add_parent=True)) + len(target_tree.span(expand_upwards=True, add_parent=True)) > MAX_FAMILY_MEMBERS:
+                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
+                return
 
         # Neither are married, set up the proposal
         await ctx.send(text_processor.valid_target(instigator, target))
