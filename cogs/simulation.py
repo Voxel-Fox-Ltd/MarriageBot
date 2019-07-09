@@ -186,7 +186,7 @@ class Simulation(Cog):
 
 
     @command(hidden=True, aliases=['murder'])
-    async def kill(self, ctx:Context, user=None):
+    async def kill(self, ctx:Context, user:Member=None):
         '''
         Do you really want to kill a person?
         '''
@@ -198,6 +198,20 @@ class Simulation(Cog):
             "Haha good joke there, but I'd never kill a person! >.>",
             "To my knowledge, you can't kill via the internet. Let me know when that changes.",
             "I am designed to bring people together, not murder them.",
+        ]
+        await ctx.send(choice(responses))
+
+
+    @command(aliases=['vore'], hidden=True)
+    async def eat(self, ctx:Context, user:Member=None):
+        '''Eats a person OwO'''
+
+        responses = [
+            f"You swallowed {user.mention}... through the wrong hole.",
+            f"You've eaten {user.mention}. Gross.",
+            f"Are you into this or something? You've eaten {user.mention}.",
+            f"I guess lunch wasnt good enough. You eat {user.mention}.",
+            f"You insert {user.mention} into your mouth and proceed to digest them.",
         ]
         await ctx.send(choice(responses))
 
