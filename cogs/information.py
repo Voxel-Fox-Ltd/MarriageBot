@@ -19,6 +19,7 @@ from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.custom_cog import Cog
 from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady
+from cogs.utils.converters import UserID
 
 
 class Information(Cog):
@@ -121,44 +122,46 @@ class Information(Cog):
     @command(aliases=['spouse', 'husband', 'wife', 'marriage'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
-    async def partner(self, ctx:Context, user:User=None):
+    async def partner(self, ctx:Context, user:UserID=None):
         '''
         Shows you the partner of a given user
         '''
 
         if not user:
-            user = ctx.author
+            user = ctx.author.id
 
         # Get the user's info
-        user_info = FamilyTreeMember.get(user.id, ctx.family_guild_id)
+        user_name = await self.bot.get_name(user)
+        user_info = FamilyTreeMember.get(user, ctx.family_guild_id)
         if user_info._partner == None:
-            await ctx.send(f"`{user!s}` is not currently married.")
+            await ctx.send(f"`{user_name}` is not currently married.")
             return
 
         partner_name = await self.bot.get_name(user_info._partner)
-        await ctx.send(f"`{user!s}` is currently married to `{partner_name}` (`{user_info._partner}`).")
+        await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`).")
 
 
     @command(aliases=['child', 'kids'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
-    async def children(self, ctx:Context, user:User=None):
+    async def children(self, ctx:Context, user:UserID=None):
         '''
         Gives you a list of all of your children
         '''
 
         if user == None:
-            user = ctx.author
+            user = ctx.author.id
 
         # Setup output variable
         output = ''
 
         # Get the user's info
-        user_info = FamilyTreeMember.get(user.id, ctx.family_guild_id)
+        user_name = await self.bot.get_name(user)
+        user_info = FamilyTreeMember.get(user, ctx.family_guild_id)
         if len(user_info._children) == 0:
-            output += f"`{user!s}` has no children right now."
+            output += f"`{user_name}` has no children right now."
         else:
-            output += f"`{user!s}` has `{len(user_info._children)}` child" + {False:"ren", True:""}.get(len(user_info._children)==1) + ": "
+            output += f"`{user_name}` has `{len(user_info._children)}` child" + {False:"ren", True:""}.get(len(user_info._children)==1) + ": "
             out_names = []
             for i in user_info._children:
                 name = await self.bot.get_name(i)
@@ -237,20 +240,21 @@ class Information(Cog):
     @command(aliases=['parents'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
-    async def parent(self, ctx:Context, user:User=None):
+    async def parent(self, ctx:Context, user:UserID=None):
         '''
         Tells you who someone's parent is
         '''
 
         if user == None:
-            user = ctx.author
+            user = ctx.author.id
 
-        user_info = FamilyTreeMember.get(user.id, ctx.family_guild_id)
+        user_info = FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_name = await self.bot.get_name(user)
         if user_info._parent == None:
-            await ctx.send(f"`{user!s}` has no parent.")
+            await ctx.send(f"`{user_name}` has no parent.")
             return
         name = await self.bot.get_name(user_info._parent)
-        await ctx.send(f"`{user!s}`'s parent is `{name}` (`{user_info._parent}`).")
+        await ctx.send(f"`{user_name}`'s parent is `{name}` (`{user_info._parent}`).")
 
 
     @command(aliases=['relation'])
@@ -361,26 +365,6 @@ class Information(Cog):
             raise e
 
 
-    # @command(aliases=['fulltree', 'ft', 'gt'])
-    # @can_send_files()
-    # @no_tree_cache()
-    # @bot_is_ready()
-    # @cooldown(1, 60, BucketType.guild)
-    # async def globaltree(self, ctx:Context, root:User=None):
-    #     '''
-    #     Gets the global family tree of a given user
-    #     '''
-
-    #     try:
-    #         return await self.treemaker(
-    #             ctx=ctx, 
-    #             root=root, 
-    #             all_guilds=True
-    #         )
-    #     except Exception as e:
-    #         raise e
-
-
     @tree.error
     async def tree_error(self, ctx:Context, error):
         await self.tree_error_handler(ctx, error)
@@ -409,6 +393,7 @@ class Information(Cog):
 
         if cooldown_time <= error.retry_after:
             await ctx.reinvoke()
+            ctx.command.reset_cooldown(ctx)
             return
         else:
             await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in `{cooldown_time:.1f} seconds`.")
