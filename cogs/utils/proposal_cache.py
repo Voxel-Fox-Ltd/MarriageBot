@@ -19,15 +19,18 @@ class ProposalCache(dict):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # self[user_id] = (ROLE, COG, TIMEOUT)
 
 
-    def get(self, key, d=None,*args, **kwargs):
+    def get(self, key, d=None, ignore_timeout:bool=False *args, **kwargs):
+        '''Only return if not timed out'''
+
         item = super().get(key, d, *args, **kwargs)
         if item in [None, d]:
             return item
         if len(item) == 2:
             return item 
-        if dt.now() > item[2]:
+        if dt.now() > item[2] and ignore_timeout is False:
             return d
         return item
 
