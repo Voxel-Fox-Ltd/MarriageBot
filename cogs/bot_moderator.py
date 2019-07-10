@@ -104,7 +104,7 @@ class ModeratorOnly(Cog):
 
         # Get connections
         db = await self.bot.database.get_connection()
-        re = await self.bot.redis.get_connect()
+        re = await self.bot.redis.get_connection()
 
         # Loop through their tree
         family = FamilyTreeMember.get(user, guild_id).span(expand_upwards=True, add_parent=True)[:]
