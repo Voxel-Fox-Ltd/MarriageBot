@@ -10,7 +10,7 @@ class ConnectionEvent(Cog):
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
         self.bot = bot 
-        self.shard_ready_loop.start()
+        self.counter = 0
 
 
     def cog_unload(self):
@@ -27,11 +27,12 @@ class ConnectionEvent(Cog):
         await self.bot.change_presence(activity=game, shard_id=shard_id)
 
 
-    @loop(minutes=1)
-    async def shard_ready_loop(self):
+    @Cog.listener('on_message')
+    async def shard_ready_loop(self, message):
         '''Check minutely if the bot is ready and update based on that'''
 
-        if self.bot.is_ready():
+        self.counter += 1
+        if self.counter % 100 == 0 and self.bot.is_ready():
             for i in self.bot.shard_ids:
                 presence_text = self.bot.config['presence_text']
                 game = Game(f"{presence_text} (shard {i})".strip())
