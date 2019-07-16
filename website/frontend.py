@@ -6,6 +6,7 @@ from aiohttp.web import RouteTableDef, Request, HTTPFound, static, Response
 from aiohttp_session import new_session, get_session
 from aiohttp_jinja2 import template
 from ujson import dumps
+from discord import TextChannel
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 
@@ -355,11 +356,19 @@ async def guild_settings(request:Request):
     except IndexError:
         prefix = 'm!'
 
+    # Get channels
+    try:
+        guild_object = await request.app['bot'].fetch_guild(int(guild_id))
+        channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, TextChannel)], key=lambda c: c.position)
+    except Exception:
+        channels = []
+
     # Return info to the page
     return {
         'user_info': session['user_info'],
         'guild': guild[0],
         'prefix': prefix,
+        'channels': channels,
     }
 
 

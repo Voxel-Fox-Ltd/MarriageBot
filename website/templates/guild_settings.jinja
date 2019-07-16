@@ -18,4 +18,23 @@ MarriageBot - Guild Picker
     <p><input name="prefix" value="{{ prefix }}" placeholder="m!" /></p>
     <p><button type="submit" formmethod="post">Submit</button></p>
 </form> <!-- prefix -->
+<form id="blacklisted-channels">
+    <p>Blacklisted channels - the channels where you don't want the bot to run commands</p>
+    <span style="display: flex; flex-wrap: wrap;">
+        <style>
+        #blacklisted-channels .col {
+            width: 32%;
+        }
+
+        @media screen and (max-width: 576px) {
+            #blacklisted-channels .col {
+                width: 49%;
+            }
+        }
+        </style>
+        {% for channel in channels %}
+        <p class="col" style="margin: 6px 0;"><input type="checkbox" name="blacklisted-channel" value="{{ channel.id }}">#{{ channel.name }}</p>
+        {% endfor %}
+    </span>
+</form>
 {% endblock content %}

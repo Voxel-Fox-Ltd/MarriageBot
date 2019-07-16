@@ -7,7 +7,7 @@ from warnings import filterwarnings
 import logging
 
 from aiohttp.web import Application, AppRunner, TCPSite, middleware, HTTPFound
-from discord import Game, Status
+from discord import Game, Status, Client
 from discord.ext.commands import when_mentioned_or
 from aiohttp_jinja2 import template, setup as jinja_setup
 from aiohttp_session import setup as session_setup, SimpleCookieStorage
@@ -16,7 +16,6 @@ from aiohttp_session.redis_storage import RedisStorage
 from jinja2 import FileSystemLoader
 from ujson import load
 
-from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.redis import RedisConnection
 from website.api import routes as api_routes
@@ -67,6 +66,7 @@ app['static_root_url'] = '/static'
 app['database'] = DatabaseConnection
 app['redis'] = RedisConnection
 app['config'] = config
+app['bot'] = Client()
 jinja_setup(app, loader=FileSystemLoader(getcwd() + '/website/templates'))
 
 
@@ -76,6 +76,9 @@ if __name__ == '__main__':
     '''
 
     loop = app.loop 
+
+    logger.info("Creating bot")
+    loop.run_until_complete(app['bot'].login(app['config']['token']))
 
     logger.info("Creating database pool")
     loop.run_until_complete(DatabaseConnection.create_pool(app['config']['database']))
@@ -126,5 +129,7 @@ if __name__ == '__main__':
     loop.run_until_complete(application.cleanup())
     logger.info("Closing database pool")
     loop.run_until_complete(DatabaseConnection.pool.close())
+    logger.info("Closing bot")
+    loop.run_until_complete(app['bot'].close())
     logger.info("Closing asyncio loop")
     loop.close()
