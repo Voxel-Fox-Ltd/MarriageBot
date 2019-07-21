@@ -247,7 +247,7 @@ class Misc(Cog):
         await ctx.send(f"The shard that your server is on is shard `{ctx.guild.shard_id}`.")
 
 
-    @command()
+    @command(enabled=False)
     @cooldown(1, 5, BucketType.guild)
     async def toptree(self, ctx:Context):
         '''Gives you the amount of users in the top tree'''

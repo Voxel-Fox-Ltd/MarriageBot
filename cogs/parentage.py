@@ -386,7 +386,7 @@ class Parentage(Cog):
         # Disown em
         for child in children:
             child._parent = None 
-        user_tree.children = [] 
+        user_tree._children = [] 
 
         # Save em
         async with self.bot.database() as db:
