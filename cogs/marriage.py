@@ -132,7 +132,7 @@ class Marriage(Cog):
 
         # They said no
         if response == 'NO':
-            await ctx.send(text_processor.declining_valid_proposal(instigator, target), ignore_error=True)
+            await ctx.send(text_processor.request_denied(instigator, target), ignore_error=True)
             await self.bot.proposal_cache.remove(instigator, target)
             return
 
