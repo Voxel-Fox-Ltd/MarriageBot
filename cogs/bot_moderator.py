@@ -51,6 +51,9 @@ class ModeratorOnly(Cog):
             if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
                 return
+            if error.missing_perms[0] == 'SSF MarriageBot moderator' and [i.name for i in ctx.author.roles if i.name.lower() == 'marriagebot moderator']:
+                await ctx.reinvoke()
+                return
             await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
             return
 
@@ -149,7 +152,7 @@ class ModeratorOnly(Cog):
 
 
     @command(hidden=True)
-    @is_bot_moderator()
+    @is_bot_moderator('SSF MarriageBot moderator')
     async def forcemarry(self, ctx:Context, user_a:UserID, user_b:UserID):
         '''
         Marries the two specified users
@@ -177,7 +180,7 @@ class ModeratorOnly(Cog):
 
 
     @command(hidden=True)
-    @is_bot_moderator()
+    @is_bot_moderator('SSF MarriageBot moderator')
     async def forcedivorce(self, ctx:Context, user:UserID):
         '''
         Divorces a user from their spouse
@@ -202,7 +205,7 @@ class ModeratorOnly(Cog):
 
 
     @command(hidden=True)
-    @is_bot_moderator()
+    @is_bot_moderator('SSF MarriageBot moderator')
     async def forceadopt(self, ctx:Context, parent:UserID, child:UserID):
         '''
         Adds the child to the specified parent
@@ -231,7 +234,7 @@ class ModeratorOnly(Cog):
 
 
     @command(aliases=['forceeman'], hidden=True)
-    @is_bot_moderator()
+    @is_bot_moderator('SSF MarriageBot moderator')
     async def forceemancipate(self, ctx:Context, user:UserID):
         '''
         Force emancipates a child

@@ -24,11 +24,11 @@ async def is_bot_moderator_predicate(ctx:Context):
     return False
 
 
-def is_bot_moderator():
+def is_bot_moderator(permission:str='MarriageBot moderator'):
     '''The check to make sure that a given author is a bot mod'''
 
     async def predicate(ctx:Context):
         if await is_bot_moderator_predicate(ctx):
             return True 
-        raise MissingPermissions(['MarriageBot moderator'])
+        raise MissingPermissions([permission])
     return check(predicate)
