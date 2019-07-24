@@ -90,10 +90,7 @@ class Misc(Cog):
     async def invite(self, ctx:Context):
         '''Gives you an invite link for the bot'''
 
-        await ctx.send(
-            f"<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=35840>",
-            embeddify=False
-        )
+        await ctx.send(f"<{self.bot.invite_link}>", embeddify=False)
 
 
     @command(aliases=['guild', 'support'])
