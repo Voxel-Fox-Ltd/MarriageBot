@@ -22,7 +22,7 @@ class ProposalCache(dict):
         # self[user_id] = (ROLE, COG, TIMEOUT)
 
 
-    def get(self, key, d=None, ignore_timeout:bool=False *args, **kwargs):
+    def get(self, key, d=None, ignore_timeout:bool=False, *args, **kwargs):
         '''Only return if not timed out'''
 
         item = super().get(key, d, *args, **kwargs)
