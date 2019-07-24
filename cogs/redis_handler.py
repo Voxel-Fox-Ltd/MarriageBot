@@ -15,17 +15,19 @@ class RedisHandler(Cog):
         task = bot.loop.create_task
         self.channels = []  # Populated automatically
         self.handlers = [
-            task(self.channel_handler('TreeMemberUpdate', lambda data: FamilyTreeMember(**data))),
-            task(self.channel_handler('RunGlobalCommand', self.run_global_command)),
-            task(self.channel_handler('ProposalCacheAdd', lambda data: bot.proposal_cache.raw_add(**data))),
-            task(self.channel_handler('ProposalCacheRemove', lambda data: bot.proposal_cache.raw_remove(*data))),
             # task(self.channel_handler('TreeCacheAdd', lambda data: bot.tree_cache.raw_add(*data))),
             # task(self.channel_handler('TreeCacheRemove', lambda data: bot.tree_cache.raw_remove(*data))),
+            task(self.channel_handler('RunGlobalCommand', self.run_global_command)),
             task(self.channel_handler('DBLVote', lambda data: bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f")))),
             task(self.channel_handler('TriggerStartup', self.trigger_startup)),
             task(self.channel_handler('UpdateGuildPrefix', lambda data: bot.guild_prefixes.__setitem__(data['guild_id'], data['prefix']))),
         ]
-
+        if not self.bot.config['server_specific']:
+            self.handlers.extend([
+                task(self.channel_handler('TreeMemberUpdate', lambda data: FamilyTreeMember(**data))),
+                task(self.channel_handler('ProposalCacheAdd', lambda data: bot.proposal_cache.raw_add(**data))),
+                task(self.channel_handler('ProposalCacheRemove', lambda data: bot.proposal_cache.raw_remove(*data))),
+            ])
 
     def cog_unload(self):
         for handler in self.handlers:

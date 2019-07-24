@@ -32,9 +32,11 @@ def get_prefix(bot, message:Message):
     '''
 
     try:
-        x = bot.guild_prefixes.get(message.guild.id, bot.config['default_prefix'])
+        x = bot.guild_prefixes.get(message.guild.id, bot.config['prefix']['default_prefix'])
     except AttributeError:
-        x = bot.config['default_prefix']
+        x = bot.config['prefix']['default_prefix']
+    if not bot.config['prefix']['respect_custom']:
+        x = bot.config['prefix']['default_prefix']
     return when_mentioned_or(x)(bot, message)
 
 
@@ -142,9 +144,23 @@ class CustomBot(AutoShardedBot):
         logger.debug("Waiting until ready before completing startup method.")
         await self.wait_until_ready()
 
+        # Look through and find what servers the bot is allowed to be on, if server specific
+        if self.config['server_specific']:
+            allowed_guilds = await db('SELECT guild_id FROM guild_specific_families')
+            allowed_guild_ids = [i['guild_id'] for i in allowed_guilds]
+            current_guild_ids = self._connection._guilds.keys()
+            guild_ids_to_leave = [i for i in current_guild_ids if i not in allowed_guild_ids]
+            for guild_id in guild_ids_to_leave:
+                guild = self.get_guild(guild_id)
+                await guild.leave()
+
         # Get family data from database
-        partnerships = await db('SELECT * FROM marriages')
-        parents = await db('SELECT * FROM parents')
+        if self.config['server_specific']:
+            partnerships = await db('SELECT * FROM marriages WHERE guild_id<>0')
+            parents = await db('SELECT * FROM parents WHERE guild_id<>0')
+        else:
+            partnerships = await db('SELECT * FROM marriages WHERE guild_id=0')
+            parents = await db('SELECT * FROM parents WHERE guild_id=0')
         customisations = await db('SELECT * FROM customisation')
         
         # Cache the family data - partners
@@ -271,19 +287,14 @@ class CustomBot(AutoShardedBot):
     async def set_default_presence(self, shard_id:int=None):
         '''Sets the default presence of the bot as appears in the config file'''
         
-        # Update presence
         presence_text = self.config['presence_text']
-        if not shard_id:
-            if self.shard_count > 1:
-                for i in range(self.shard_count):
-                    game = Game(f"{presence_text} (shard {i})".strip())
-                    await self.change_presence(activity=game, shard_id=i)
-            else:
-                game = Game(presence_text)
-                await self.change_presence(activity=game)
+        if self.shard_ids:
+            for i in self.shard_ids:
+                game = Game(f"{presence_text} (shard {i})".strip())
+                await self.change_presence(activity=game, shard_id=i)
         else:
-            game = Game(f"{presence_text} (shard {i})".strip())
-            await self.change_presence(activity=game, shard_id=i)     
+            game = Game(f"{presence_text} (shard 0)".strip())
+            await self.change_presence(activity=game)
 
 
     async def post_guild_count(self):

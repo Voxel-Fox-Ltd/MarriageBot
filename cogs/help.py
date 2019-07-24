@@ -71,7 +71,7 @@ class Help(Cog):
         if self.bot.config.get('guild'):
             extra.append({'text': f'MarriageBot - Join the official Discord server! ({ctx.prefix}server)'})
         footer = choice(extra)
-        footer['text'] = footer['text'].replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", self.bot.config['default_prefix'])
+        footer['text'] = footer['text'].replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", self.bot.config['prefix']['default_prefix'])
         help_embed.set_footer(**footer)
 
         # Add commands to it

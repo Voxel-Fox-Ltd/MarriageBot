@@ -16,7 +16,10 @@
         "db": 0
     },
     "presence_text": "m!help",
-    "default_prefix": "m!",
+    "prefix": {
+        "default_prefix": "m!",
+        "respect_custom": true
+    },
     "google_analytics": {
         "tracking_id": "",
         "app_name": "",
@@ -46,5 +49,6 @@
     "paypal": "",
     "guild_invite": "",
     "guild_id": 1,
-    "embed_default_text": null
+    "embed_default_text": null,
+    "server_specific": false
 }

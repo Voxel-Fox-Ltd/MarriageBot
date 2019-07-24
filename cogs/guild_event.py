@@ -20,6 +20,15 @@ class GuildEvent(Cog):
         When the client is added to a new guild
         '''
 
+        if self.bot.config['server_specific']:
+            async with self.bot.database() as db:
+                data = await db('SELECT guild_id FROM guild_specific_families WHERE guild_id=$1', guild.id)
+                if not data:
+                    self.log_handler.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
+                    await guild.leave()
+                    return
+        self.log_handler.info(f"Added to guild {guild.name} ({guild.id})")
+
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
 
@@ -30,6 +39,7 @@ class GuildEvent(Cog):
         When the client is removed from a guild
         '''
 
+        self.log_handler.info(f"Removed from guild {guild.name} ({guild.id})")
         if len(self.bot.guilds) % 5 == 0:
             await self.bot.post_guild_count()
 

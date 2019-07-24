@@ -31,6 +31,13 @@ CREATE TABLE blacklisted_guilds(
 -- Basically a big ol' list of blacklisted guild IDs
 
 
+CREATE TABLE guild_specific_families(
+    guild_id BIGINT NOT NULL,
+    PRIMARY KEY (guild_id)
+);
+-- A big ol' list of guild IDs of people who've paid
+
+
 CREATE TABLE guild_settings(
     guild_id BIGINT NOT NULL,
     prefix VARCHAR(30),

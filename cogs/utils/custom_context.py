@@ -22,7 +22,10 @@ class CustomContext(Context):
     def family_guild_id(self):
         '''Returns the guild ID that should be used for family databases in this guild'''
 
-        return self.guild.id if self.guild.id in self.bot.server_specific_families else 0
+        if self.bot.config['server_specific']:
+            return self.guild.id
+        return 0
+        # return self.guild.id if self.guild.id in self.bot.server_specific_families else 0
 
 
     def _set_footer(self, embed:Embed):
