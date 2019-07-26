@@ -164,7 +164,7 @@ class Simplifier(object):
         x = c + 1 if (c + 1) < p + 1 else p + 1  # nth cousin
         y = abs(p - c)  # y times removed
 
-        if y < 1:
+        if x < 1:
             return string
         if x == 1 and y == 0:
             return string[:k.span()[0]] + "cousin" + string[k.span()[1]:]

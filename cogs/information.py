@@ -265,7 +265,7 @@ class Information(Cog):
         Gets the relationship between the two specified users
         '''
 
-        if user == ctx.author:
+        if user == ctx.author and other is None:
             await ctx.send(f"Unsurprisingly, you're pretty closely related to yourself.")
             return
         await ctx.channel.trigger_typing()
