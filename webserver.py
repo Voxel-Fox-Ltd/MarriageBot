@@ -58,7 +58,7 @@ async def ssl_redirect(request, handler):
 
 
 # Create website object - don't start based on argv
-app = Application(loop=get_event_loop(), debug=True, middlewares=[ssl_redirect])
+app = Application(loop=get_event_loop(), debug=False, middlewares=[ssl_redirect])
 app.add_routes(frontend_routes)
 app.router.add_static('/static', getcwd() + '/website/static')
 app.router.add_static('/trees', config['tree_file_location'])

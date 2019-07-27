@@ -320,7 +320,11 @@ async def guild_picker(request:Request):
 
     # Get the guilds they're valid to alter
     all_guilds = session['guild_info']
-    guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
+    try:
+        guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
+    except TypeError:
+        # No guilds provided - did they remove the scope? who knows
+        guilds = []
     return {
         'user_info': session['user_info'],
         'guilds': guilds,
