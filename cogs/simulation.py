@@ -216,6 +216,13 @@ class Simulation(Cog):
         await ctx.send(choice(responses))
 
 
+    @command(hidden=True)
+    async def sleep(self, ctx:Context):
+        '''Todd Howard strikes once more'''
+
+        await ctx.send("You sleep for a while and when you wake up you're in a cart with your hands bound. A man says \"Hey, you. You're finally awake. You were trying to cross the border, right?\"")
+
+
     @command(aliases=['intercourse', 'fuck', 'smash'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
