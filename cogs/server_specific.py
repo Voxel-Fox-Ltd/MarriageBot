@@ -1,5 +1,5 @@
 from asyncpg import UniqueViolationError
-from discord.ext.commands import command, Context, check, CheckFailure, MissingPermissions, MissingRequiredArgument, BadArgument
+from discord.ext.commands import command, Context, check, CheckFailure, MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown
 
 from cogs.utils.checks.is_bot_moderator import is_bot_moderator
 from cogs.utils.custom_bot import CustomBot 
@@ -18,7 +18,7 @@ def is_server_specific():
     return check(predicate)
 
 
-def ServerSpecific(Cog):
+class ServerSpecific(Cog):
 
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
@@ -35,6 +35,11 @@ def ServerSpecific(Cog):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
+
+        # Not server specific
+        if isinstance(error, NotServerSpecific):
+            await ctx.send("You need to be running the server specific version of MarriageBot for this command to work (see `{ctx.clean_prefix}ssf` for more information).")
+            return
 
         # Missing argument
         if isinstance(error, MissingRequiredArgument):
@@ -78,7 +83,7 @@ def ServerSpecific(Cog):
                 )
             except UniqueViolationError:
                 await db(
-                    'UDPATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
+                    'UPDATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
                     ctx.guild.id, True,
                 )
         
@@ -110,7 +115,7 @@ def ServerSpecific(Cog):
                 )
             except UniqueViolationError:
                 await db(
-                    'UDPATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
+                    'UPDATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
                     ctx.guild.id, False,
                 )
         

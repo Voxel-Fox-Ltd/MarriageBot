@@ -70,7 +70,7 @@ class Administrator(Cog):
                 'prefix': prefix,
                 'allow_incest': False,
             }
-        await ctx.send(f"Your guild's prefix has been udpated to `{prefix}`.")
+        await ctx.send(f"Your guild's prefix has been updated to `{prefix}`.")
 
 
 def setup(bot:CustomBot):
