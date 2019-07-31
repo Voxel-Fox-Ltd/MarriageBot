@@ -103,7 +103,7 @@ class Marriage(Cog):
         # See if they're already related
         async with ctx.channel.typing():
             relation = instigator_tree.get_relation(target_tree)
-        if relation:
+        if relation and not self.bot.allows_incest(ctx.guild.id):
             await ctx.send(text_processor.target_is_family(instigator, target))
             return
 

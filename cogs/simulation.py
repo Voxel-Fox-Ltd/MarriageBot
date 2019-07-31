@@ -250,6 +250,8 @@ class Simulation(Cog):
             relationship = x.get_relation(y)
         if relationship == None or relationship.casefold() == 'partner':
             pass 
+        elif not self.bot.allows_incest(ctx.guild.id):
+            pass
         else:
             await ctx.send(text_processor.target_is_relation(ctx.author, user, relationship))
             return

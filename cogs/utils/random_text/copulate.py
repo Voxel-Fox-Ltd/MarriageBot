@@ -121,7 +121,7 @@ class CopulateRandomText(TextTemplate):
 
 
     @classmethod 
-    def target_is_me(instigator=None, target=None):
+    def target_is_me(cls, instigator=None, target=None):
         '''
         When they propose to MB
         '''

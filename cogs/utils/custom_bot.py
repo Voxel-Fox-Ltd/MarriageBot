@@ -107,6 +107,12 @@ class CustomBot(AutoShardedBot):
     def is_server_specific(self) -> bool:
         return self.config['server_specific']
 
+    
+    def allows_incest(self, guild_id:int) -> bool:
+        '''Returns whether a specified guild allows incest or not'''
+
+        return self.is_server_specific and guild_id in self.guild_settings and self.guild_settings[guild_id]['allow_incest']
+
 
     async def startup(self):
         '''Resets and fills the FamilyTreeMember cache with objects'''
