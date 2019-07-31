@@ -7,3 +7,4 @@ _*
 *.code*
 trees/*
 *.gz
+settings.json

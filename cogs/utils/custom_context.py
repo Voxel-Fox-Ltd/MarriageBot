@@ -22,7 +22,7 @@ class CustomContext(Context):
     def family_guild_id(self):
         '''Returns the guild ID that should be used for family databases in this guild'''
 
-        if self.bot.config['server_specific']:
+        if self.bot.is_server_specific:
             return self.guild.id
         return 0
         # return self.guild.id if self.guild.id in self.bot.server_specific_families else 0

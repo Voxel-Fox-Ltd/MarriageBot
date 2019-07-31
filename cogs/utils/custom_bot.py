@@ -102,6 +102,11 @@ class CustomBot(AutoShardedBot):
 
         return self.invite_link + f'&guild_id={guild_id}'
 
+    
+    @property 
+    def is_server_specific(self) -> bool:
+        return self.config['server_specific']
+
 
     async def startup(self):
         '''Resets and fills the FamilyTreeMember cache with objects'''
@@ -145,7 +150,7 @@ class CustomBot(AutoShardedBot):
         await self.wait_until_ready()
 
         # Look through and find what servers the bot is allowed to be on, if server specific
-        if self.config['server_specific']:
+        if self.is_server_specific:
             allowed_guilds = await db('SELECT guild_id FROM guild_specific_families')
             allowed_guild_ids = [i['guild_id'] for i in allowed_guilds]
             current_guild_ids = self._connection._guilds.keys()
@@ -155,7 +160,7 @@ class CustomBot(AutoShardedBot):
                 await guild.leave()
 
         # Get family data from database
-        if self.config['server_specific']:
+        if self.is_server_specific:
             partnerships = await db('SELECT * FROM marriages WHERE guild_id<>0')
             parents = await db('SELECT * FROM parents WHERE guild_id<>0')
         else:

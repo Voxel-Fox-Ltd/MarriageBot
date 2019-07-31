@@ -20,7 +20,7 @@ class GuildEvent(Cog):
         When the client is added to a new guild
         '''
 
-        if self.bot.config['server_specific']:
+        if self.bot.is_server_specific:
             async with self.bot.database() as db:
                 data = await db('SELECT guild_id FROM guild_specific_families WHERE guild_id=$1', guild.id)
                 if not data:

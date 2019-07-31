@@ -24,7 +24,7 @@ class RedisHandler(Cog):
             task(self.channel_handler('ProposalCacheAdd', lambda data: bot.proposal_cache.raw_add(**data))),
             task(self.channel_handler('ProposalCacheRemove', lambda data: bot.proposal_cache.raw_remove(*data))),
         ]
-        if not self.bot.config['server_specific']:
+        if not self.bot.is_server_specific:
             self.handlers.extend([
                 task(self.channel_handler('TreeMemberUpdate', lambda data: FamilyTreeMember(**data))),
             ])
