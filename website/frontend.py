@@ -358,7 +358,7 @@ async def guild_settings(request:Request):
     try:
         prefix = prefix[0]['prefix']
     except IndexError:
-        prefix = 'm!'
+        prefix = request.app['config']['prefix']['default_prefix']
 
     # Get channels
     try:

@@ -20,7 +20,7 @@ class RedisHandler(Cog):
             task(self.channel_handler('RunGlobalCommand', self.run_global_command)),
             task(self.channel_handler('DBLVote', lambda data: bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f")))),
             task(self.channel_handler('TriggerStartup', self.trigger_startup)),
-            task(self.channel_handler('UpdateGuildPrefix', lambda data: bot.guild_prefixes.__setitem__(data['guild_id'], data['prefix']))),
+            task(self.channel_handler('UpdateGuildPrefix', self.set_prefix)),
             task(self.channel_handler('ProposalCacheAdd', lambda data: bot.proposal_cache.raw_add(**data))),
             task(self.channel_handler('ProposalCacheRemove', lambda data: bot.proposal_cache.raw_remove(*data))),
         ]
@@ -101,6 +101,18 @@ class RedisHandler(Cog):
         else:
             return 
         await self.bot.startup()
+
+
+    def set_prefix(self, data):
+        '''Caches a prefix for a guild'''
+
+        try:
+            self.bot.guild_prefixes[data['guild_id']] = data['prefix']
+        except KeyError:
+            self.bot.guild_prefixes[data['guild_id']] = {
+                'prefix': data['prefix'],
+                'allow_incest': False
+            }
 
 
 def setup(bot:CustomBot):
