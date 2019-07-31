@@ -63,7 +63,13 @@ class Administrator(Cog):
                 await db('INSERT INTO guild_settings VALUES ($1, $2)', ctx.guild.id, prefix)
             except Exception as e:
                 await db('UPDATE guild_settings SET prefix=$1 WHERE guild_id=$2', prefix, ctx.guild.id)
-        self.bot.guild_prefixes[ctx.guild.id] = prefix
+        try:
+            self.bot.guild_settings[ctx.guild.id]['prefix'] = prefix
+        except KeyError:
+            self.bot.guild_Settings[ctx.guild.id] = {
+                'prefix': prefix,
+                'allow_incest': False,
+            }
         await ctx.send(f"Your guild's prefix has been udpated to `{prefix}`.")
 
 

@@ -32,7 +32,7 @@ def get_prefix(bot, message:Message):
     '''
 
     try:
-        x = bot.guild_prefixes.get(message.guild.id, bot.config['prefix']['default_prefix'])
+        x = bot.guild_settings.get(message.guild.id, {'prefix': bot.config['prefix']['default_prefix']})['prefix']
     except AttributeError:
         x = bot.config['prefix']['default_prefix']
     if not bot.config['prefix']['respect_custom']:
@@ -73,7 +73,7 @@ class CustomBot(AutoShardedBot):
         self.proposal_cache = ProposalCache()  # cache for users who've been proposed to/are proposing
         self.blacklisted_guilds = []  # a list of guilds that are blacklisted by the bot
         self.blocked_users = defaultdict(list) # user_id: list(user_id) - users who've blocked other users
-        self.guild_prefixes = {}  # guild_id: prefix - custom prefixes per guild
+        self.guild_settings = {}  # guild_id: Dict - custom setings per guild
         self.dbl_votes = {}  # uid: timestamp (of last vote) - cast dbl votes
         self.tree_cache = TreeCache()  # cache of users generating trees
         cooldown(1, 5, BucketType.user)(self.get_command('help'))  # add cooldown to help command
@@ -116,7 +116,7 @@ class CustomBot(AutoShardedBot):
         FamilyTreeMember.all_users.clear()
         CustomisedTreeUser.all_users.clear()
         self.blacklisted_guilds.clear() 
-        self.guild_prefixes.clear() 
+        self.guild_settings.clear() 
         self.dbl_votes.clear() 
         self.blocked_users.clear() 
 
@@ -137,7 +137,7 @@ class CustomBot(AutoShardedBot):
         settings = await db('SELECT * FROM guild_settings')
         logger.debug(f"Caching {len(settings)} guild settings")
         for guild_setting in settings:
-            self.guild_prefixes[guild_setting['guild_id']] = guild_setting['prefix']
+            self.guild_settings[guild_setting['guild_id']] = dict(guild_setting)
 
         # Grab the last vote times of each user 
         votes = await db('SELECT * FROM dbl_votes')
