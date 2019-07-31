@@ -291,6 +291,9 @@ class CustomBot(AutoShardedBot):
                 self.load_extension(i)
                 log_string += 'sucess'
             except Exception as e:
+                logger.critical(str(e))
+                raise e 
+                exit(1)
                 log_string += str(e)
             logger.debug(log_string)
 
