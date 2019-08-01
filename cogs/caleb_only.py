@@ -321,7 +321,7 @@ class CalebOnly(Cog):
                 'message_id': ctx.message.id,
             })
 
-    @command(hidden=True)
+    @command()
     async def copyfamilytoguild(self, ctx:Context, user:UserID, guild_id:int):
         '''Copies a family's span to a given guild ID for server specific families'''
 
@@ -348,6 +348,15 @@ class CalebOnly(Cog):
         # Send to user
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
+
+    
+    @command()
+    async def addserverspecific(self, ctx:Context, guild_id:int):
+        '''Adds a guild to the MarriageBot Gold whitelist'''
+
+        async with self.bot.database() as db:
+            await db('INSERT INTO guild_specific_families VALUES ($1)', guild_id)
+        await ctx.send("Done.")
 
 
 def setup(bot:CustomBot):
