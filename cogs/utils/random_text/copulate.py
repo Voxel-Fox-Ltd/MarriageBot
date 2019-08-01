@@ -35,6 +35,13 @@ class CopulateRandomText(TextTemplate):
             "{target.mention} and {instigator.mention} went to town, if you know what I mean.",
             "{target.mention} and {instigator.mention} got it on. I sure hope Jesus consented, too…",
             "JESUS CONSENTS, GOD WILLS IT.",
+            "{target.mention} and {instigator.mention} are getting freaky, looks like they aren’t afraid to show the pie.",
+            "{target.mention} and {instigator.mention} are fucking like rabbits, looks like they broke the bed. A new bed will be needed.",
+            "{target.mention} bends over {instigator.mention} and fucks them raw. ",
+            "{target.mention} pushes {instigator.mention} against the wall, choking them and fucking them silly.",
+            "{target.mention} fucks {instigator.mention} in the ass, but they accidentally shit the bed.",
+            "{target.mention} fucks {instigator.mention} vigorously with a dildo! Jackhammer!",
+            "{target.mention} plows {instigator.mention} into the couch before spraying {instigator.mention} with their semen!",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
     
@@ -53,6 +60,13 @@ class CopulateRandomText(TextTemplate):
             "Haters are your motivators~",
             "Bing bong, they don't want your ding dong!",
             "No means no. Sorry!",
+            "I'd love to, but I'm going to have a migraine that night.",
+            "I think I hear someone calling me... way, way over there. *poofs* Sorry {instigator.mention}.",
+            "Like right now? I don't think that's a great idea, what with my infectious mouth disease and all...",
+            "This feels like the beginning of a really great friendship! Ouch.. Friendzoned.",
+            "It's not you; it's your facial hair. And your shirt. And your personality.",
+            "I'd fuck you, but I'd be afraid of my future children inheriting your face",
+            "Oh, wait, I think I just spotted someone else that I'd rather be talking to! That has to sting...",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -70,6 +84,7 @@ class CopulateRandomText(TextTemplate):
             "You're all alone with no one to bone.",
             "Sorry {instigator.mention}",
             "¯\_(ツ)_/¯ {instigator.mention}",
+            "Seems they got cold feet! Sorry buddy!",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
@@ -87,6 +102,10 @@ class CopulateRandomText(TextTemplate):
             "Yoooo, you up to _smash_?",
             "Hey {target.mention}, u wan sum fuk?",
             "Hey, {target.mention}, ready to mingle? B)",
+            "Fuck me Daddy? ",
+            "H-hi *playfully plays with your shirt* m-my princess pa- parts tingle.",
+            "Roses are red, Violets are blue, I suck at poems, let's fuck.",
+            "What's the drop rate on your panties?",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
