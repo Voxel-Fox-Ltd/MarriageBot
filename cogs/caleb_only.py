@@ -12,6 +12,7 @@ from pympler import summary, muppy
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.converters import UserID
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.custom_cog import Cog
 
@@ -319,6 +320,34 @@ class CalebOnly(Cog):
                 'guild_id': ctx.guild.id,
                 'message_id': ctx.message.id,
             })
+
+    @command(hidden=True)
+    async def copyfamilytoguild(self, ctx:Context, user:UserID, guild_id:int):
+        '''Copies a family's span to a given guild ID for server specific families'''
+
+        # Get their current family
+        tree = FamilyTreeMember.get(user)
+        users = tree.span(expand_upwards=True, add_parent=True)
+        await ctx.channel.trigger_typing()
+
+        # Database it to the new guild
+        db = await self.bot.database.get_connection()
+
+        # Delete current guild data
+        await db('DELETE FROM marriages WHERE guild_id=$1', guild_id)
+        await db('DELETE FROM parents WHERE guild_id=$1', guild_id)
+
+        # Generate new data to copy
+        parents = ((i.id, i._parent, guild_id) for i in users if i._parent)
+        partners = ((i.id, i._partner, guild_id) for i in users if i._partner)
+
+        # Push to db
+        await db.conn.copy_records_to_table('parents', columns=['child_id', 'parent_id', 'guild_id'], records=parents)
+        await db.conn.copy_records_to_table('marriages', columns=['user_id', 'partner_id', 'guild_id'], records=partners)
+
+        # Send to user
+        await ctx.send(f"Copied over `{len(users)}` users.")
+        await db.disconnect()
 
 
 def setup(bot:CustomBot):
