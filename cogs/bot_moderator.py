@@ -213,8 +213,9 @@ class ModeratorOnly(Cog):
 
         # Run check
         them = FamilyTreeMember.get(child, ctx.family_guild_id)
+        child_name = await self.bot.get_name(child)
         if them.parent:
-            await ctx.send("`{child!s}` already has a parent.")
+            await ctx.send(f"`{child_name!s}` already has a parent.")
             return
 
         # Update database
