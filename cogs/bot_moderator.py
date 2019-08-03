@@ -153,11 +153,13 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator('SSF MarriageBot moderator')
-    async def forcemarry(self, ctx:Context, user_a:UserID, user_b:UserID):
+    async def forcemarry(self, ctx:Context, user_a:UserID, user_b:UserID=None):
         '''
         Marries the two specified users
         '''
-        
+
+        if user_b is None:
+            user_b = ctx.author.id        
         if user_a == user_b:
             await ctx.send("You can't marry yourself (but you can be your own parent ;3).")
             return
@@ -210,10 +212,14 @@ class ModeratorOnly(Cog):
 
     @command(hidden=True)
     @is_bot_moderator('SSF MarriageBot moderator')
-    async def forceadopt(self, ctx:Context, parent:UserID, child:UserID):
+    async def forceadopt(self, ctx:Context, parent:UserID, child:UserID=None):
         '''
         Adds the child to the specified parent
         '''
+
+        if child is None:
+            child = parent 
+            parent = ctx.author.id
 
         # Run check
         them = FamilyTreeMember.get(child, ctx.family_guild_id)
