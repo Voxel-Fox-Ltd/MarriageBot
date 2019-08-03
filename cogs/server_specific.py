@@ -61,7 +61,7 @@ class ServerSpecific(Cog):
             if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
                 return
-            if error.missing_perms[0] == 'SSF MarriageBot moderator' and [i.name for i in ctx.author.roles if i.name.lower() == 'marriagebot moderator']:
+            if error.missing_perms[0] == 'SSF MarriageBot moderator' and [i.name for i in ctx.author.roles if i.name.lower() in ('marriagebot moderator', 'ssf marriagebot moderator')]:
                 await ctx.reinvoke()
                 return
             await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
