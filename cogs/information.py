@@ -71,12 +71,12 @@ class Information(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            # Possible bypass for voter
-            if ctx.command.name in ['tree', 'globaltree']:
-                return
             # Bypass for owner
-            elif ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
+            # Possible bypass for voter
+            elif ctx.command.name in ['tree', 'globaltree']:
+                await self.tree_timeout_handler(ctx, error)
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return
@@ -116,6 +116,25 @@ class Information(Cog):
         # Bot ready
         elif isinstance(error, BotNotReady):
             await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+            return
+
+
+    async def tree_timeout_handler(self, ctx:Context, error):
+        '''Handles errors for the tree commands'''
+
+        is_patreon = await is_patreon_predicate(ctx.bot, ctx.author, 1)
+        cooldown_time = min([
+            error.cooldown.per,
+            30 if is_voter_predicate(ctx) else error.retry_after,
+            15 if is_patreon else error.retry_after,
+        ])
+
+        if (error.cooldown.per - cooldown_time) > error.retry_after:
+            ctx.command.reset_cooldown(ctx)
+            await ctx.command.invoke(ctx)
+            return
+        else:
+            await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in `{error.retry_after - (error.cooldown.per - cooldown_time):.1f} seconds`.")
             return
 
 
@@ -363,41 +382,6 @@ class Information(Cog):
             )
         except Exception as e:
             raise e
-
-
-    @tree.error
-    async def tree_error(self, ctx:Context, error):
-        await self.tree_error_handler(ctx, error)
-
-
-    @stupidtree.error
-    async def stupidtree_error(self, ctx:Context, error):
-        await self.tree_error_handler(ctx, error)
-
-
-    async def tree_error_handler(self, ctx:Context, error):
-        '''Handles errors for the tree commands'''
-
-        if isinstance(error, CommandOnCooldown):
-            pass
-        elif isinstance(error, (MissingRequiredArgument, CantSendFiles, IsTreeCached, IsNotVoter, IsNotDonator, BadArgument, DisabledCommand, BotNotReady)):
-            return
-        else:
-            raise error
-
-        is_patreon = await is_patreon_predicate(ctx.bot, ctx.author, 1)
-        cooldown_time = min([
-            30 if is_voter_predicate(ctx) else error.retry_after,
-            15 if is_patreon else error.retry_after,
-        ])
-
-        if cooldown_time <= error.retry_after:
-            await ctx.reinvoke()
-            ctx.command.reset_cooldown(ctx)
-            return
-        else:
-            await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in `{cooldown_time:.1f} seconds`.")
-            return
 
 
     async def treemaker(self, ctx:Context, root:User, all_guilds:bool=False, stupid_tree:bool=False):
