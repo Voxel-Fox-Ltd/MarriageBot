@@ -157,6 +157,10 @@ class ModeratorOnly(Cog):
         '''
         Marries the two specified users
         '''
+        
+        if user_a == user_b:
+            await ctx.send("You can't marry yourself (but you can be your own parent ;3).")
+            return
 
         # Get users
         me = FamilyTreeMember.get(user_a, ctx.family_guild_id)
