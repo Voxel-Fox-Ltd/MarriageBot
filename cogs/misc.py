@@ -56,9 +56,9 @@ class Misc(Cog):
         '''Gives you a link to upvote the bot'''
 
         if self.bot.config['dbl_vainity']:
-            await ctx.send(f"<https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote>\nSee {ctx.prefix}perks for more information.", embeddify=False)
+            await ctx.send(f"[Add a DBL vote](https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote)!\nSee {ctx.prefix}perks for more information.")
         else:
-            await ctx.send(f"<https://discordbots.org/bot/{self.bot.user.id}/vote>\nSee {ctx.prefix}perks for more information.", embeddify=False)
+            await ctx.send(f"[Add a DBL vote](https://discordbots.org/bot/{self.bot.user.id}/vote)!\nSee {ctx.prefix}perks for more information.")
 
 
     @command(aliases=['git', 'code'])
