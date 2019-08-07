@@ -4,18 +4,7 @@ from discord.ext.commands import command, Context, check, CheckFailure, MissingP
 from cogs.utils.checks.is_bot_moderator import is_bot_moderator
 from cogs.utils.custom_bot import CustomBot 
 from cogs.utils.custom_cog import Cog 
-
-
-class NotServerSpecific(CheckFailure):
-    pass
-
-
-def is_server_specific():
-    def predicate(ctx):
-        if ctx.bot.is_server_specific:
-            return True
-        raise NotServerSpecific()
-    return check(predicate)
+from cogs.utils.checks.is_server_specific import is_server_specific, NotServerSpecific
 
 
 class ServerSpecific(Cog):
