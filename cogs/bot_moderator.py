@@ -3,12 +3,12 @@ from typing import Union
 
 from discord import User
 from discord.ext.commands import command, Context, cooldown
-from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown
+from discord.ext.commands import MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown, MissingRole
 from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils.checks.is_bot_moderator import is_bot_moderator
+from cogs.utils.checks.is_bot_moderator import is_bot_moderator, NotServerSpecific
 from cogs.utils.custom_cog import Cog
 from cogs.utils.converters import UserID
 
@@ -46,15 +46,17 @@ class ModeratorOnly(Cog):
                 await ctx.send(str(error))
             return
 
+        # Not server specific
+        elif isinstance(error, NotServerSpecific):
+            await ctx.send(f"You need to be running the server specific version of MarriageBot for this command to work (see `{ctx.clean_prefix}ssf` for more information).")
+            return
+
         # Missing permissions
-        elif isinstance(error, MissingPermissions):
+        elif isinstance(error, MissingRole):
             if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
                 return
-            if error.missing_perms[0] == 'SSF MarriageBot moderator' and [i.name for i in ctx.author.roles if i.name.lower() in ('marriagebot moderator', 'ssf marriagebot moderator')]:
-                await ctx.reinvoke()
-                return
-            await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
+            await ctx.send(f"You need the `{error.missing_role}` role to run this command.")
             return
 
 
@@ -152,7 +154,7 @@ class ModeratorOnly(Cog):
 
 
     @command(hidden=True)
-    @is_bot_moderator('SSF MarriageBot moderator')
+    @is_server_specific_bot_moderator()
     async def forcemarry(self, ctx:Context, user_a:UserID, user_b:UserID=None):
         '''
         Marries the two specified users
@@ -186,7 +188,7 @@ class ModeratorOnly(Cog):
 
 
     @command(hidden=True)
-    @is_bot_moderator('SSF MarriageBot moderator')
+    @is_server_specific_bot_moderator()
     async def forcedivorce(self, ctx:Context, user:UserID):
         '''
         Divorces a user from their spouse
@@ -211,7 +213,7 @@ class ModeratorOnly(Cog):
 
 
     @command(hidden=True)
-    @is_bot_moderator('SSF MarriageBot moderator')
+    @is_server_specific_bot_moderator()
     async def forceadopt(self, ctx:Context, parent:UserID, child:UserID=None):
         '''
         Adds the child to the specified parent
@@ -245,7 +247,7 @@ class ModeratorOnly(Cog):
 
 
     @command(aliases=['forceeman'], hidden=True)
-    @is_bot_moderator('SSF MarriageBot moderator')
+    @is_server_specific_bot_moderator()
     async def forceemancipate(self, ctx:Context, user:UserID):
         '''
         Force emancipates a child

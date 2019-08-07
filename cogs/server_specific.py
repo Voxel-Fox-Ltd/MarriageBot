@@ -1,7 +1,7 @@
 from asyncpg import UniqueViolationError
-from discord.ext.commands import command, Context, check, CheckFailure, MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown
+from discord.ext.commands import command, Context, check, CheckFailure, MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown, MissingRole
 
-from cogs.utils.checks.is_bot_moderator import is_bot_moderator
+from cogs.utils.checks.is_bot_moderator import is_server_specific_bot_moderator
 from cogs.utils.custom_bot import CustomBot 
 from cogs.utils.custom_cog import Cog 
 from cogs.utils.checks.is_server_specific import is_server_specific, NotServerSpecific
@@ -26,12 +26,12 @@ class ServerSpecific(Cog):
             raise error
 
         # Not server specific
-        if isinstance(error, NotServerSpecific):
+        elif isinstance(error, NotServerSpecific):
             await ctx.send(f"You need to be running the server specific version of MarriageBot for this command to work (see `{ctx.clean_prefix}ssf` for more information).")
             return
 
         # Missing argument
-        if isinstance(error, MissingRequiredArgument):
+        elif isinstance(error, MissingRequiredArgument):
             await ctx.send("You need to specify a person for this command to work properly.")
             return
 
@@ -46,20 +46,17 @@ class ServerSpecific(Cog):
             return
 
         # Missing permissions
-        elif isinstance(error, MissingPermissions):
+        elif isinstance(error, MissingRole):
             if ctx.original_author_id in self.bot.config['owners']:
                 await ctx.reinvoke()
                 return
-            if error.missing_perms[0] == 'SSF MarriageBot moderator' and [i.name for i in ctx.author.roles if i.name.lower() in ('marriagebot moderator', 'ssf marriagebot moderator')]:
-                await ctx.reinvoke()
-                return
-            await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
+            await ctx.send(f"You need the `{error.missing_role}` role to run this command.")
             return
 
     
     @command()
     @is_server_specific()
-    @is_bot_moderator('SSF MarriageBot moderator')
+    @is_server_specific_bot_moderator()
     async def allowincest(self, ctx:Context):
         '''Toggles allowing incest on your guild'''
 
@@ -91,7 +88,7 @@ class ServerSpecific(Cog):
     
     @command()
     @is_server_specific()
-    @is_bot_moderator('SSF MarriageBot moderator')
+    @is_server_specific_bot_moderator()
     async def disallowincest(self, ctx:Context):
         '''Toggles allowing incest on your guild'''
 
