@@ -51,22 +51,22 @@ class CustomBot(AutoShardedBot):
         # Hang out and make all the stuff I'll need
         self.config: dict = None  # the config dict - None until reload_config() is sucessfully called
         self.config_file = config_file  # the config filename - used in reload_config()
-        self.logger = logger
-        self.reload_config()  # populate bot.config 
+        self.logger: logging.Logger = logger
+        self.reload_config()  # populate bot.config
         self.bad_argument = compile(r'(User|Member) "(.*)" not found')  # bad argument regex converter
         self._invite_link = None  # the invite for the bot - dynamically generated
         self.shallow_users = {}  # id: (User, age) - age is how long until it needs re-fetching from Discord
         self.support_guild = None  # the support guild - populated by patreon check and event log
         self.session = ClientSession(loop=self.loop)  # aiohttp session for get/post requests
-        self.database = DatabaseConnection  # database connection class 
-        self.redis = RedisConnection  # redis connection class 
+        self.database = DatabaseConnection  # database connection class
+        self.redis = RedisConnection  # redis connection class
         self.server_specific_families = []  # list[guild_id] - guilds that have server-specific families attached
         FamilyTreeMember.bot = self
         CustomisedTreeUser.bot = self
         ProposalCache.bot = self
         TreeCache.bot = self
         self.startup_time = dt.now()  # store bot startup time
-        self.startup_method = None  # store startup method so I can see errors in it 
+        self.startup_method = None  # store startup method so I can see errors in it
         self.deletion_method = None  # store deletion method so I can cancel it on shutdown
         self.proposal_cache = ProposalCache()  # cache for users who've been proposed to/are proposing
         self.blacklisted_guilds = []  # a list of guilds that are blacklisted by the bot
@@ -77,16 +77,16 @@ class CustomBot(AutoShardedBot):
         cooldown(1, 5, BucketType.user)(self.get_command('help'))  # add cooldown to help command
 
 
-    @property 
+    @property
     def invite_link(self):
         '''The invite link for the bot'''
 
         if self._invite_link: return self._invite_link
         permissions = Permissions()
-        permissions.read_messages = True 
-        permissions.send_messages = True 
-        permissions.embed_links = True 
-        permissions.attach_files = True 
+        permissions.read_messages = True
+        permissions.send_messages = True
+        permissions.embed_links = True
+        permissions.attach_files = True
         self._invite_link = 'https://discordapp.com/oauth2/authorize?' + urlencode({
             'client_id': self.config['oauth']['client_id'],
             'scope': 'bot',
@@ -100,12 +100,12 @@ class CustomBot(AutoShardedBot):
 
         return self.invite_link + f'&guild_id={guild_id}'
 
-    
-    @property 
+
+    @property
     def is_server_specific(self) -> bool:
         return self.config['server_specific']
 
-    
+
     def allows_incest(self, guild_id:int) -> bool:
         '''Returns whether a specified guild allows incest or not'''
 
@@ -119,13 +119,13 @@ class CustomBot(AutoShardedBot):
         self.logger.debug("Clearing caches")
         FamilyTreeMember.all_users.clear()
         CustomisedTreeUser.all_users.clear()
-        self.blacklisted_guilds.clear() 
-        self.guild_settings.clear() 
-        self.dbl_votes.clear() 
-        self.blocked_users.clear() 
+        self.blacklisted_guilds.clear()
+        self.guild_settings.clear()
+        self.dbl_votes.clear()
+        self.blocked_users.clear()
 
         db: DatabaseConnection = await self.database.get_connection()
-        
+
         # Pick up the blacklisted guilds from the db
         blacklisted = await db('SELECT * FROM blacklisted_guilds')
         self.logger.debug(f"Caching {len(blacklisted)} blacklisted guilds")
@@ -143,7 +143,7 @@ class CustomBot(AutoShardedBot):
         for guild_setting in settings:
             self.guild_settings[guild_setting['guild_id']] = dict(guild_setting)
 
-        # Grab the last vote times of each user 
+        # Grab the last vote times of each user
         votes = await db('SELECT * FROM dbl_votes')
         self.logger.debug(f"Caching {len(votes)} DBL votes")
         for v in votes:
@@ -171,7 +171,7 @@ class CustomBot(AutoShardedBot):
             partnerships = await db('SELECT * FROM marriages WHERE guild_id=0')
             parents = await db('SELECT * FROM parents WHERE guild_id=0')
         customisations = await db('SELECT * FROM customisation')
-        
+
         # Cache the family data - partners
         self.logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
@@ -194,9 +194,9 @@ class CustomBot(AutoShardedBot):
                 await re.set(f'UserName-{user.id}', str(user))
 
         # And update DBL
-        await self.post_guild_count()        
-        
-        
+        await self.post_guild_count()
+
+
     async def on_message(self, message):
         '''Use custom context for commands'''
 
@@ -213,7 +213,7 @@ class CustomBot(AutoShardedBot):
         except AsyncioTimeoutError:
             await ctx.send(f"{message.author.mention}, your command has been cancelled for taking longer than 120 seconds to process.", embeddify=False, ignore_error=True)
 
-    
+
     async def get_name(self, user_id):
         '''Gets the name for a user - first from cache, then from redis, then from HTTP'''
 
@@ -222,11 +222,11 @@ class CustomBot(AutoShardedBot):
         # See if it's a user in a guild this instance handles
         if user and isinstance(user, (User, ClientUser, Member)):
             return str(user)
-        
+
         # See if it's something I already cached
         elif user:
             if user[1] > 0:
-                self.shallow_users[user_id] = [user[0], user[1] - 1] 
+                self.shallow_users[user_id] = [user[0], user[1] - 1]
                 return str(user[0])
 
         # See if it's in the Redis
@@ -254,7 +254,7 @@ class CustomBot(AutoShardedBot):
         return (dt.now() - self.startup_time).total_seconds()
 
 
-    @property 
+    @property
     def owners(self) -> list:
         return self.config['owners']
 
@@ -290,7 +290,7 @@ class CustomBot(AutoShardedBot):
                 log_string += 'sucess'
             except Exception as e:
                 self.logger.critical(str(e))
-                raise e 
+                raise e
                 exit(1)
                 log_string += str(e)
             self.logger.debug(log_string)
@@ -298,7 +298,7 @@ class CustomBot(AutoShardedBot):
 
     async def set_default_presence(self, shard_id:int=None):
         '''Sets the default presence of the bot as appears in the config file'''
-        
+
         presence_text = self.config['presence_text']
         if self.shard_ids:
             for i in self.shard_ids:
@@ -336,7 +336,7 @@ class CustomBot(AutoShardedBot):
         '''A loop that runs every hour, deletes all files in the tree storage directory'''
 
         await self.wait_until_ready()
-        while not self.is_closed: 
+        while not self.is_closed:
             self.logger.debug("Deleting all residual tree files")
             await create_subprocess_exec('rm', f'{self.config["tree_file_location"]}/*', loop=self.bot.loop)
             await sleep(60*60)
@@ -367,14 +367,14 @@ class CustomBot(AutoShardedBot):
     async def start(self, token:str=None, *args, **kwargs):
         '''Starts up the bot and whathaveyou'''
 
-        self.logger.debug("Running startup method") 
+        self.logger.debug("Running startup method")
         self.startup_method = self.loop.create_task(self.startup())
         # self.logger.debug("Starting delete loop")
         # self.deletion_method = self.loop.create_task(self.delete_loop())
         self.logger.debug("Running original D.py start method")
         await super().start(token or self.config['token'], *args, **kwargs)
 
-    
+
     async def logout(self, *args, **kwargs):
         '''Logs out the bot and all of its started processes'''
 
