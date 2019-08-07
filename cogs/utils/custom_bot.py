@@ -13,6 +13,7 @@ from discord import Game, Message, Permissions, User, ClientUser, Member
 from discord.ext.commands import AutoShardedBot, when_mentioned_or, cooldown
 from discord.ext.commands.cooldowns import BucketType
 import ujson as json
+import toml
 
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.redis import RedisConnection
@@ -355,7 +356,7 @@ class CustomBot(AutoShardedBot):
 
         self.logger.debug("Reloading config")
         with open(self.config_file) as a:
-            self.config = json.load(a)
+            self.config = toml.load(a)
 
 
     def run(self, *args, **kwargs):

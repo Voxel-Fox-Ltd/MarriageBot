@@ -1,0 +1,92 @@
+token = ""  # The token of the bot
+dbl_token = ""  # The API token for discordbots.org - probably best left blank
+bot_admin_role = 1  # The role ID for bot admins
+patreon_roles = [ 1,]  # A list of role IDs for Patreon subscribers
+owners = [ 141231597155385344,]  # A list of user IDs for owners
+presence_text = "m!help"  # The presence text used by default when the bot is ready
+tree_file_location = "./trees"  # The location where the tree files are to be output
+dbl_vainity = ""  # The vainity link that goes on the 'vote' command
+github = ""  # The link that is output when 'git' is called
+patreon = ""  # The link that is output when 'donate' is called
+paypal = ""  # The link that s output when 'donate' is called
+guild_invite = ""  # An invite link to the support guild for the bot
+guild_id = 1  # The ID for the support guild - used to find the bot admin and Patreon roles
+server_specific = false  # Bool flag for whether the bot uses global or server specific trees
+embed_default_text = ""  # The content of messages the bot outputs by default with the embeds
+
+
+# A list of footer texts for the embeds
+# 'text' is the text for the footer
+# 'amount' is the amount of that text to be put into the shuffle
+# The actual footer is picked at random from the mix
+# Text can include '{prefix}' to be formatted into the bot's command prefix
+[[footer]]
+text = "MarriageBot"
+amount = 1
+[[footer]]
+text = "MarriageBot - Made by Caleb#2831"
+amount = 3
+[[footer]]
+text = "MarriageBot - Add a vote on Discord Bot List! ({prefix}vote)"
+amount = 3
+[[footer]]
+text = "MarriageBot - Support me on Patreon! ({prefix}donate)"
+amount = 3
+[[footer]]
+text = "MarriageBot - Please help keep me alive ({prefix}donate)"
+amount = 10
+[[footer]]
+text = "MarriageBot - Join the official Discord server! ({prefix}server)"
+amount = 3
+
+
+# The database configuration!
+# This is pretty simple tbh
+# 'user' is the username to be used, 'password' is the password,
+# etc
+[database]
+user = "marriagebot"
+password = ""
+database = "marriagebot"
+host = "127.0.0.1"
+
+
+# Pretty much the same as the database config
+# 'host' is the host, 'port' is the port, 'db' is the db to connect to
+[redis]
+host = "127.0.0.1"
+port = 6379
+db = 0
+
+
+# This is where you can set the prefix for the bot to use
+# 'defaut_prefix' is the prefix that the bot'll use when it joins a server anew
+# 'respect_custom' is whether the bot will respect custom prefixes that've been
+# set or not
+[prefix]
+default_prefix = "m!"
+respect_custom = true
+
+
+# This is where you can set up all of your analytics to be sent to GA
+# 'tracking_id' is the tracking ID for your GA instance
+# 'app_name' is the name of this particular bot - where you want it to say the traffic is from
+# 'document_host' is the URL the traffic should be from - you can put any fake website you want really
+[google_analytics]
+tracking_id = ""
+app_name = ""
+document_host = ""
+
+
+# Here we have the Oauth info - this is used for the invite link and the webserver
+[oauth]
+client_id = ""
+client_secret = ""
+redirect_uri = "https://marriagebot.xyz/login"
+
+
+# This is where we store the SSL files for the webserver
+# Probably don't lose them
+[ssl_context]
+certfile = "/etc/letsencrypt/live/www.marriagebot.xyz/cert.pem"
+keyfile = "/etc/letsencrypt/live/www.marriagebot.xyz/privkey.pem"

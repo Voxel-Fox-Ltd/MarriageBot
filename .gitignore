@@ -1,10 +1,12 @@
 __pycache__/*
 *.pyc
 config/*.json
+config/*.toml
+!*.example.*
 *sublime*
 _*
 !__*
 *.code*
 trees/*
 *.gz
-settings.json
+.vscode/*
