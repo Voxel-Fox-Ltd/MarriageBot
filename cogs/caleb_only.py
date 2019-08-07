@@ -1,6 +1,6 @@
 from traceback import format_exc
 from asyncio import iscoroutine, wait_for
-from io import StringIO 
+from io import StringIO
 from textwrap import indent
 from contextlib import redirect_stdout
 from copy import copy
@@ -8,7 +8,6 @@ from copy import copy
 from aiohttp import ClientSession
 from discord import Member, Message, Activity, ActivityType, User, Status, Embed, File
 from discord.ext.commands import command, Context, group, NotOwner, CommandOnCooldown, ExtensionAlreadyLoaded
-from pympler import summary, muppy
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
@@ -56,24 +55,6 @@ class CalebOnly(Cog):
         await user.send(content)
 
 
-    @command(hidden=True)
-    async def seememory(self, ctx:Context):
-        '''
-        Shows you the number of each created object in the program
-        '''
-
-        # summary.print_(summary.summarize(muppy.get_objects()))
-
-        awaitable_dot_code = self.bot.loop.run_in_executor(None, muppy.get_objects)
-        try:
-            objects = await wait_for(awaitable_dot_code, timeout=10.0, loop=self.bot.loop)
-        except Exception as e:
-            await ctx.send(f"{e!s}")
-            return
-        summary.print_(summary.summarize(objects))
-        await ctx.send("Printed to console.")
-
-
     def cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
 
@@ -92,7 +73,7 @@ class CalebOnly(Cog):
         '''
         Evaluates some Python code
 
-        Gracefully stolen from Rapptz -> 
+        Gracefully stolen from Rapptz ->
         https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L72-L117
         '''
 
@@ -226,7 +207,7 @@ class CalebOnly(Cog):
 
         # Add some final values before returning to the user
         line = '-' * len(key_string)
-        output = [key_string, line] + output 
+        output = [key_string, line] + output
         string_output = '\n'.join(output)
         await ctx.send('```\n{}```'.format(string_output))
 
@@ -248,7 +229,7 @@ class CalebOnly(Cog):
 
         if len(username) > 32:
             await ctx.send('That username is too long to be compatible with Discord.')
-            return 
+            return
 
         await self.bot.user.edit(username=username)
         await ctx.send('Done.')
@@ -262,7 +243,7 @@ class CalebOnly(Cog):
 
         if image_url == None:
             try:
-                image_url = ctx.message.attachments[0].url 
+                image_url = ctx.message.attachments[0].url
             except IndexError:
                 await ctx.send("You need to provide an image.")
                 return
@@ -349,7 +330,7 @@ class CalebOnly(Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    
+
     @command()
     async def addserverspecific(self, ctx:Context, guild_id:int):
         '''Adds a guild to the MarriageBot Gold whitelist'''
