@@ -23,9 +23,6 @@ from cogs.utils.tree_cache import TreeCache
 from cogs.utils.custom_context import CustomContext
 
 
-logger = logging.getLogger('marriagebot.bot')
-
-
 def get_prefix(bot, message:Message):
     '''
     Gives the prefix for the given guild
@@ -42,7 +39,7 @@ def get_prefix(bot, message:Message):
 
 class CustomBot(AutoShardedBot):
 
-    def __init__(self, config_file:str='config/config.json', *args, **kwargs):
+    def __init__(self, config_file:str='config/config.json', logger=logging.getLogger(), *args, **kwargs):
         '''Make the bot WEW'''
 
         # Get the command prefix from the kwargs
@@ -54,6 +51,7 @@ class CustomBot(AutoShardedBot):
         # Hang out and make all the stuff I'll need
         self.config: dict = None  # the config dict - None until reload_config() is sucessfully called
         self.config_file = config_file  # the config filename - used in reload_config()
+        self.logger = logger
         self.reload_config()  # populate bot.config 
         self.bad_argument = compile(r'(User|Member) "(.*)" not found')  # bad argument regex converter
         self._invite_link = None  # the invite for the bot - dynamically generated
@@ -118,7 +116,7 @@ class CustomBot(AutoShardedBot):
         '''Resets and fills the FamilyTreeMember cache with objects'''
 
         # Remove caches
-        logger.debug("Clearing caches")
+        self.logger.debug("Clearing caches")
         FamilyTreeMember.all_users.clear()
         CustomisedTreeUser.all_users.clear()
         self.blacklisted_guilds.clear() 
@@ -130,29 +128,29 @@ class CustomBot(AutoShardedBot):
         
         # Pick up the blacklisted guilds from the db
         blacklisted = await db('SELECT * FROM blacklisted_guilds')
-        logger.debug(f"Caching {len(blacklisted)} blacklisted guilds")
+        self.logger.debug(f"Caching {len(blacklisted)} blacklisted guilds")
         self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
         # Pick up the blocked users
         blocked = await db('SELECT * FROM blocked_user')
-        logger.debug(f"Caching {len(blocked)} blocked users")
+        self.logger.debug(f"Caching {len(blocked)} blocked users")
         for user in blocked:
             self.blocked_users[user['user_id']].append(user['blocked_user_id'])
 
         # Grab the command prefixes per guild
         settings = await db('SELECT * FROM guild_settings')
-        logger.debug(f"Caching {len(settings)} guild settings")
+        self.logger.debug(f"Caching {len(settings)} guild settings")
         for guild_setting in settings:
             self.guild_settings[guild_setting['guild_id']] = dict(guild_setting)
 
         # Grab the last vote times of each user 
         votes = await db('SELECT * FROM dbl_votes')
-        logger.debug(f"Caching {len(votes)} DBL votes")
+        self.logger.debug(f"Caching {len(votes)} DBL votes")
         for v in votes:
             self.dbl_votes[v['user_id']] = v['timestamp']
 
         # Wait for the bot to cache users before continuing
-        logger.debug("Waiting until ready before completing startup method.")
+        self.logger.debug("Waiting until ready before completing startup method.")
         await self.wait_until_ready()
 
         # Look through and find what servers the bot is allowed to be on, if server specific
@@ -175,12 +173,12 @@ class CustomBot(AutoShardedBot):
         customisations = await db('SELECT * FROM customisation')
         
         # Cache the family data - partners
-        logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
+        self.logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
             FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'], guild_id=i['guild_id'])
 
         # - children
-        logger.debug(f"Caching {len(parents)} parents/children from parents")
+        self.logger.debug(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
             parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
             parent._children.append(i['child_id'])
@@ -268,14 +266,14 @@ class CustomBot(AutoShardedBot):
         # rand = glob('cogs/utils/random_text/[!_]*.py')
         rand = []
         extensions = [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
-        logger.debug("Getting all extensions: " + str(extensions))
+        self.logger.debug("Getting all extensions: " + str(extensions))
         return extensions
 
 
     def load_all_extensions(self):
         '''Loads all extensions from .get_extensions()'''
 
-        logger.debug('Unloading extensions... ')
+        self.logger.debug('Unloading extensions... ')
         for i in self.get_extensions():
             log_string = f' * {i}... '
             try:
@@ -283,19 +281,19 @@ class CustomBot(AutoShardedBot):
                 log_string += 'sucess'
             except Exception as e:
                 log_string += str(e)
-            logger.debug(log_string)
-        logger.debug('Loading extensions... ')
+            self.logger.debug(log_string)
+        self.logger.debug('Loading extensions... ')
         for i in self.get_extensions():
             log_string = f' * {i}... '
             try:
                 self.load_extension(i)
                 log_string += 'sucess'
             except Exception as e:
-                logger.critical(str(e))
+                self.logger.critical(str(e))
                 raise e 
                 exit(1)
                 log_string += str(e)
-            logger.debug(log_string)
+            self.logger.debug(log_string)
 
 
     async def set_default_presence(self, shard_id:int=None):
@@ -329,7 +327,7 @@ class CustomBot(AutoShardedBot):
         headers = {
             'Authorization': self.config['dbl_token']
         }
-        logger.debug(f"Sending POST request to DBL with data {json.dumps(json)}")
+        self.logger.debug(f"Sending POST request to DBL with data {json.dumps(json)}")
         async with self.session.post(url, json=json, headers=headers) as r:
             pass
 
@@ -339,7 +337,7 @@ class CustomBot(AutoShardedBot):
 
         await self.wait_until_ready()
         while not self.is_closed: 
-            logger.debug("Deleting all residual tree files")
+            self.logger.debug("Deleting all residual tree files")
             await create_subprocess_exec('rm', f'{self.config["tree_file_location"]}/*', loop=self.bot.loop)
             await sleep(60*60)
 
@@ -355,7 +353,7 @@ class CustomBot(AutoShardedBot):
     def reload_config(self):
         '''Opens, loads, and stores the config from the given config file'''
 
-        logger.debug("Reloading config")
+        self.logger.debug("Reloading config")
         with open(self.config_file) as a:
             self.config = json.load(a)
 
@@ -369,18 +367,18 @@ class CustomBot(AutoShardedBot):
     async def start(self, token:str=None, *args, **kwargs):
         '''Starts up the bot and whathaveyou'''
 
-        logger.debug("Running startup method") 
+        self.logger.debug("Running startup method") 
         self.startup_method = self.loop.create_task(self.startup())
-        # logger.debug("Starting delete loop")
+        # self.logger.debug("Starting delete loop")
         # self.deletion_method = self.loop.create_task(self.delete_loop())
-        logger.debug("Running original D.py start method")
+        self.logger.debug("Running original D.py start method")
         await super().start(token or self.config['token'], *args, **kwargs)
 
     
     async def logout(self, *args, **kwargs):
         '''Logs out the bot and all of its started processes'''
 
-        logger.debug("Closing aiohttp ClientSession")
+        self.logger.debug("Closing aiohttp ClientSession")
         await self.session.close()
-        logger.debug("Running original D.py logout method")
+        self.logger.debug("Running original D.py logout method")
         await super().logout(*args, **kwargs)
