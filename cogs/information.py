@@ -14,7 +14,6 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.checks.can_send_files import can_send_files, CantSendFiles
 from cogs.utils.checks.is_voter import is_voter_predicate, is_voter, IsNotVoter
 from cogs.utils.checks.is_donator import is_patreon, IsNotDonator, is_patreon_predicate
-from cogs.utils.checks.no_tree_cache import no_tree_cache, IsTreeCached
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.custom_cog import Cog
@@ -43,7 +42,7 @@ class Information(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached, BotNotReady)):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached, BotNotReady)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -63,7 +62,7 @@ class Information(Cog):
 
         # Tree cache
         elif isinstance(error, IsTreeCached):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send("Please wait for your other tree to be generated first.")
@@ -72,7 +71,7 @@ class Information(Cog):
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
             # Bypass for owner
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             # Possible bypass for voter
             elif ctx.command.name in ['tree', 'globaltree']:
@@ -84,7 +83,7 @@ class Information(Cog):
         # Voter
         elif isinstance(error, IsNotVoter):
             # Bypass for owner
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You need to vote on DBL (`{ctx.prefix}vote`) to be able to run this command.")
@@ -93,12 +92,12 @@ class Information(Cog):
         # Donator
         elif isinstance(error, IsNotDonator):
             # Bypass for owner
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You need to be a Patreon subscriber (`{ctx.prefix}donate`) to be able to run this command.")
             return
-    
+
         # Argument conversion error
         elif isinstance(error, BadArgument):
             argument_text = self.bot.bad_argument.search(str(error)).group(2)
@@ -107,7 +106,7 @@ class Information(Cog):
 
         # Disabled command
         elif isinstance(error, DisabledCommand):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send("This command has been temporarily disabled. Apologies for any inconvenience.")
@@ -313,7 +312,7 @@ class Information(Cog):
         '''
 
         if user == None:
-            user = ctx.author 
+            user = ctx.author
         await ctx.channel.trigger_typing()
 
         user = FamilyTreeMember.get(user.id, ctx.family_guild_id)
@@ -355,8 +354,8 @@ class Information(Cog):
 
         try:
             return await self.treemaker(
-                ctx=ctx, 
-                root=root, 
+                ctx=ctx,
+                root=root,
                 # all_guilds=False
                 all_guilds=True,
             )
@@ -376,8 +375,8 @@ class Information(Cog):
 
         try:
             return await self.treemaker(
-                ctx=ctx, 
-                root=root, 
+                ctx=ctx,
+                root=root,
                 stupid_tree=True
             )
         except Exception as e:
@@ -413,18 +412,18 @@ class Information(Cog):
         try:
             with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:
                 a.write(dot_code)
-        except Exception as e: 
+        except Exception as e:
             self.log_handler.error(f"Could not write to {self.bot.config['tree_file_location']}/{ctx.author.id}.gz")
             raise e
 
         # Convert to an image
         dot = await create_subprocess_exec(*[
-            'dot', 
-            '-Tpng', 
-            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 
-            '-o', 
-            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png', 
-            '-Gcharset=UTF-8', 
+            'dot',
+            '-Tpng',
+            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz',
+            '-o',
+            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png',
+            '-Gcharset=UTF-8',
             ], loop=self.bot.loop
         )
         await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
@@ -432,7 +431,7 @@ class Information(Cog):
             dot.kill()
         except ProcessLookupError:
             pass  # It already died
-        except Exception as e: 
+        except Exception as e:
             raise e
 
         # Get time taken
@@ -446,7 +445,7 @@ class Information(Cog):
             await m.delete()
         except Exception as e:
             pass
-        await self.bot.tree_cache.remove(ctx.author.id) 
+        await self.bot.tree_cache.remove(ctx.author.id)
 
 
 def setup(bot:CustomBot):

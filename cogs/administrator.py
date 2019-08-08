@@ -5,11 +5,11 @@ from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog
 
 
-class Administrator(Cog): 
+class Administrator(Cog):
 
     def __init__(self,bot:CustomBot):
         super().__init__(self.__class__.__name__)
-        self.bot = bot 
+        self.bot = bot
 
 
     async def cog_command_error(self, ctx:Context, error):
@@ -18,7 +18,7 @@ class Administrator(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -30,7 +30,7 @@ class Administrator(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
@@ -38,7 +38,7 @@ class Administrator(Cog):
 
 
     async def cog_check(self, ctx:Context):
-        if ctx.original_author_id in self.bot.config['owners']:
+        if ctx.original_author_id in self.bot.owners:
             return True
         if ctx.author.permissions_in(ctx.channel).manage_guild:
             return True

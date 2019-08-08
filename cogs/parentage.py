@@ -38,7 +38,7 @@ class Parentage(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, IsNotDonator)):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, (CommandOnCooldown, IsNotDonator)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -50,7 +50,7 @@ class Parentage(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
@@ -60,7 +60,7 @@ class Parentage(Cog):
         elif isinstance(error, BlockedUserError):
             await ctx.send("That user has blocked you, so you can't run this command.")
             return
-    
+
         # Argument conversion error
         elif isinstance(error, BadArgument):
             try:
@@ -78,7 +78,7 @@ class Parentage(Cog):
         # Donator
         elif isinstance(error, IsNotDonator):
             # Bypass for owner
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You need to be a Patreon subscriber (`{ctx.prefix}donate`) to be able to run this command.")
@@ -102,9 +102,9 @@ class Parentage(Cog):
         text_processor = MakeParentRandomText(self.bot)
         text = text_processor.process(instigator, target)
         if text:
-            await ctx.send(text) 
+            await ctx.send(text)
             return
-        
+
         # See if our user already has a parent
         if instigator_tree._parent:
             await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
@@ -139,7 +139,7 @@ class Parentage(Cog):
             await ctx.send(text_processor.valid_target(instigator, target))
         await self.bot.proposal_cache.add(instigator, target, 'MAKEPARENT')
 
-        # Wait for a response 
+        # Wait for a response
         try:
             if target.bot: raise KeyError  # Auto-say yes
             check = AcceptanceCheck(target.id, ctx.channel.id).check
@@ -154,7 +154,7 @@ class Parentage(Cog):
         if response == 'NO':
             await ctx.send(text_processor.request_denied(instigator, target), ignore_error=True)
             await self.bot.proposal_cache.remove(instigator, target)
-            return 
+            return
 
         # They said yes - add to database
         async with self.bot.database() as db:
@@ -166,7 +166,7 @@ class Parentage(Cog):
         await ctx.send(text_processor.request_accepted(instigator, target), ignore_error=True)
 
         # Cache
-        instigator_tree._parent = target.id 
+        instigator_tree._parent = target.id
         target_tree._children.append(instigator.id)
 
         # Ping em off over redis
@@ -195,9 +195,9 @@ class Parentage(Cog):
         text_processor = AdoptRandomText(self.bot)
         text = text_processor.process(instigator, target)
         if text:
-            await ctx.send(text) 
+            await ctx.send(text)
             return
-        
+
         # See if our user already has a parent
         if target_tree._parent:
             await ctx.send(text_processor.target_is_unqualified(instigator, target))
@@ -246,7 +246,7 @@ class Parentage(Cog):
             await ctx.send(text_processor.request_denied(instigator, target), ignore_error=True)
             await self.bot.proposal_cache.remove(instigator, target)
             return
-            
+
         # Database it up
         async with self.bot.database() as db:
             try:
@@ -296,7 +296,7 @@ class Parentage(Cog):
                 target_tree = instigator_tree.children[instigator_tree._children.index(target)]
             except ValueError:
                 await ctx.send(text_processor.instigator_is_unqualified(instigator, target if isinstance(target, User) else None))
-                return 
+                return
 
         # If they're a name
         elif isinstance(target, str):
@@ -307,16 +307,16 @@ class Parentage(Cog):
                     name = await re.get(f'UserName-{i}')
                     if target == name:
                         target_tree = instigator_tree.children[c]
-                        break 
+                        break
             if target_tree == None:
                 await ctx.send(text_processor.instigator_is_unqualified(instigator, None))
-                return 
+                return
 
         # Make sure they're the child of the instigator
         if not target_tree.id in instigator_tree._children:
             await ctx.send(text_processor.instigator_is_unqualified(instigator, ctx.guild.get_member(target_tree.id)))
-            return 
-        
+            return
+
         # Oh hey they are - remove from database
         async with self.bot.database() as db:
             await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3', target_tree.id, instigator.id, instigator_tree._guild_id)
@@ -350,7 +350,7 @@ class Parentage(Cog):
         # Make sure they're the child of the instigator
         if not instigator_tree._parent:
             await ctx.send(text_processor.instigator_is_unqualified(instigator))
-            return 
+            return
 
         # They do have a parent, yes
         target_tree = instigator_tree.parent
@@ -382,22 +382,22 @@ class Parentage(Cog):
         if not children:
             await ctx.send("You don't have any children to disown .-.") # TODO make this text into a template
             return
-        
+
         # Disown em
         for child in children:
-            child._parent = None 
-        user_tree._children = [] 
+            child._parent = None
+        user_tree._children = []
 
         # Save em
         async with self.bot.database() as db:
             for child in children:
                 await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3', user_tree.id, child.id, user_tree._guild_id)
-        
+
         # Redis em
         async with self.bot.redis() as re:
             for person in children + [user_tree]:
                 await re.publish_json('TreeMemberUpdate', person.to_json())
-        
+
         # Output to user
         await ctx.send("You've sucessfully disowned all of your children.")  # TODO
 

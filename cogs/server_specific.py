@@ -2,8 +2,8 @@ from asyncpg import UniqueViolationError
 from discord.ext.commands import command, Context, check, CheckFailure, MissingPermissions, MissingRequiredArgument, BadArgument, CommandOnCooldown, MissingRole
 
 from cogs.utils.checks.is_bot_moderator import is_server_specific_bot_moderator
-from cogs.utils.custom_bot import CustomBot 
-from cogs.utils.custom_cog import Cog 
+from cogs.utils.custom_bot import CustomBot
+from cogs.utils.custom_cog import Cog
 from cogs.utils.checks.is_server_specific import is_server_specific, NotServerSpecific
 
 
@@ -11,7 +11,7 @@ class ServerSpecific(Cog):
 
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
-        self.bot = bot 
+        self.bot = bot
 
 
     async def cog_command_error(self, ctx:Context, error):
@@ -20,7 +20,7 @@ class ServerSpecific(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, MissingPermissions)):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, (CommandOnCooldown, MissingPermissions)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -35,7 +35,7 @@ class ServerSpecific(Cog):
             await ctx.send("You need to specify a person for this command to work properly.")
             return
 
-    
+
         # Argument conversion error
         elif isinstance(error, BadArgument):
             try:
@@ -47,13 +47,13 @@ class ServerSpecific(Cog):
 
         # Missing permissions
         elif isinstance(error, MissingRole):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
                 return
             await ctx.send(f"You need the `{error.missing_role}` role to run this command.")
             return
 
-    
+
     @command()
     @is_server_specific()
     @is_server_specific_bot_moderator()
@@ -72,10 +72,10 @@ class ServerSpecific(Cog):
                     'UPDATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
                     ctx.guild.id, True,
                 )
-        
-        # Cache it 
+
+        # Cache it
         try:
-            self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True 
+            self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
         except KeyError:
             self.bot.guild_settings[ctx.guild.id] = {
                 'allow_incest': True,
@@ -85,7 +85,7 @@ class ServerSpecific(Cog):
         # Boop the user
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
-    
+
     @command()
     @is_server_specific()
     @is_server_specific_bot_moderator()
@@ -104,10 +104,10 @@ class ServerSpecific(Cog):
                     'UPDATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
                     ctx.guild.id, False,
                 )
-        
-        # Cache it 
+
+        # Cache it
         try:
-            self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False 
+            self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         except KeyError:
             self.bot.guild_settings[ctx.guild.id] = {
                 'allow_incest': False,

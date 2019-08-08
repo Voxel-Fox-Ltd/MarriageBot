@@ -8,7 +8,7 @@ from discord import Embed, __version__ as dpy_version, Member
 from discord.ext.commands import command, Context, cooldown, Group, CommandOnCooldown, DisabledCommand
 from discord.ext.commands.cooldowns import BucketType
 
-from cogs.utils.custom_bot import CustomBot 
+from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.converters import UserID
@@ -18,7 +18,7 @@ class Misc(Cog):
 
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
-        self.bot = bot 
+        self.bot = bot
         pid = getpid()
         self.process = Process(pid)
         self.process.cpu_percent()
@@ -28,22 +28,22 @@ class Misc(Cog):
         '''Local error handler for the cog'''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
 
         # Cooldown
         if isinstance(error, CommandOnCooldown):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return
 
-        # Disabled command 
+        # Disabled command
         elif isinstance(error, DisabledCommand):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send("This command has been disabled.")
@@ -80,9 +80,9 @@ class Misc(Cog):
         if self.bot.config['paypal']:
             links.append(f"PayPal: <{self.bot.config['paypal']}> (doesn't get you the perks, but is very appreciated)")
         if not links:
-            ctx.command.enabled = False 
+            ctx.command.enabled = False
             ctx.command.hidden = True
-        await ctx.send('\n'.join(links), embeddify=False)        
+        await ctx.send('\n'.join(links), embeddify=False)
 
 
     @command()
@@ -164,7 +164,7 @@ class Misc(Cog):
     @command(aliases=['status'])
     @cooldown(1, 5, BucketType.user)
     async def stats(self, ctx:Context):
-        '''Gives you the stats for the bot'''       
+        '''Gives you the stats for the bot'''
 
         # await ctx.channel.trigger_typing()
         embed = Embed(
@@ -216,7 +216,7 @@ class Misc(Cog):
         current_blocks = self.bot.blocked_users.get(ctx.author.id, list())
         if user.id in current_blocks:
             await ctx.send("That user is already blocked.")
-            return 
+            return
         current_blocks.append(user.id)
         self.bot.blocked_users[ctx.author.id] = current_blocks
         async with self.bot.database() as db:
@@ -235,7 +235,7 @@ class Misc(Cog):
         current_blocks = self.bot.blocked_users[ctx.author.id]
         if user not in current_blocks:
             await ctx.send("You don't have that user blocked.")
-            return 
+            return
         current_blocks.remove(user)
         self.bot.blocked_users[ctx.author.id] = current_blocks
         async with self.bot.database() as db:

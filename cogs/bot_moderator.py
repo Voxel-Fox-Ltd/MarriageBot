@@ -17,7 +17,7 @@ class ModeratorOnly(Cog):
 
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
-        self.bot = bot 
+        self.bot = bot
 
 
     async def cog_command_error(self, ctx:Context, error):
@@ -26,7 +26,7 @@ class ModeratorOnly(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, (CommandOnCooldown, MissingPermissions)):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, (CommandOnCooldown, MissingPermissions)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -36,7 +36,7 @@ class ModeratorOnly(Cog):
             await ctx.send("You need to specify a person for this command to work properly.")
             return
 
-    
+
         # Argument conversion error
         elif isinstance(error, BadArgument):
             try:
@@ -53,7 +53,7 @@ class ModeratorOnly(Cog):
 
         # Missing permissions
         elif isinstance(error, MissingRole):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
                 return
             await ctx.send(f"You need the `{error.missing_role}` role to run this command.")
@@ -66,7 +66,7 @@ class ModeratorOnly(Cog):
         '''
         Removes a user from the propsal cache.
         '''
-        
+
         await self.bot.proposal_cache.remove(user)
         await ctx.send("Sent Redis request to remove user from cache.")
 
@@ -84,11 +84,11 @@ class ModeratorOnly(Cog):
 
         # Load data into cache
         children = [i['child_id'] for i in children]
-        parent_id = parent[0]['parent_id'] if len(parent) > 0 else None 
+        parent_id = parent[0]['parent_id'] if len(parent) > 0 else None
         partner_id = partner[0]['partner_id'] if len(partner) > 0 else None
         f = FamilyTreeMember(
-            user, 
-            children=children, 
+            user,
+            children=children,
             parent_id=parent_id,
             partner_id=partner_id,
             guild_id=guild_id,
@@ -120,11 +120,11 @@ class ModeratorOnly(Cog):
 
             # Load data into cache
             children = [i['child_id'] for i in children]
-            parent_id = parent[0]['parent_id'] if len(parent) > 0 else None 
+            parent_id = parent[0]['parent_id'] if len(parent) > 0 else None
             partner_id = partner[0]['partner_id'] if len(partner) > 0 else None
             f = FamilyTreeMember(
-                i.id, 
-                children=children, 
+                i.id,
+                children=children,
                 parent_id=parent_id,
                 partner_id=partner_id,
                 guild_id=guild_id,
@@ -161,7 +161,7 @@ class ModeratorOnly(Cog):
         '''
 
         if user_b is None:
-            user_b = ctx.author.id        
+            user_b = ctx.author.id
         if user_a == user_b:
             await ctx.send("You can't marry yourself (but you can be your own parent ;3).")
             return
@@ -207,7 +207,7 @@ class ModeratorOnly(Cog):
             except Exception as e:
                 await ctx.send(f"Error encountered: `{e}`")
                 return  # Honestly this should never be thrown unless the database can't connect
-        me.partner._partner = None 
+        me.partner._partner = None
         me._partner = None
         await ctx.send("Consider it done.")
 
@@ -220,7 +220,7 @@ class ModeratorOnly(Cog):
         '''
 
         if child is None:
-            child = parent 
+            child = parent
             parent = ctx.author.id
 
         # Run check
@@ -252,7 +252,7 @@ class ModeratorOnly(Cog):
         '''
         Force emancipates a child
         '''
-        
+
         me = FamilyTreeMember.get(user, ctx.family_guild_id)
         if not me.parent:
             await ctx.send("That user doesn't even have a parent .-.")
@@ -264,7 +264,7 @@ class ModeratorOnly(Cog):
                 await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', me.id, me._guild_id)
             except Exception as e:
                 # await ctx.send(e)
-                return  # Should only be thrown when the database can't connect 
+                return  # Should only be thrown when the database can't connect
         me.parent._children.remove(user)
         parent = me.parent
         me._parent = None
@@ -293,4 +293,4 @@ class ModeratorOnly(Cog):
 def setup(bot:CustomBot):
     x = ModeratorOnly(bot)
     bot.add_cog(x)
-    
+

@@ -35,7 +35,7 @@ class Marriage(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -47,7 +47,7 @@ class Marriage(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
@@ -57,7 +57,7 @@ class Marriage(Cog):
         elif isinstance(error, BlockedUserError):
             await ctx.send("That user has blocked you, so you can't run this command.")
             return
-    
+
         # Argument conversion error
         elif isinstance(error, BadArgument):
             argument_text = self.bot.bad_argument.search(str(error)).group(2)
@@ -87,7 +87,7 @@ class Marriage(Cog):
         text_processor = ProposeRandomText(self.bot)
         text = text_processor.process(instigator, target)
         if text:
-            await ctx.send(text) 
+            await ctx.send(text)
             return
 
         # See if our user is already married
@@ -95,7 +95,7 @@ class Marriage(Cog):
             await ctx.send(text_processor.instigator_is_unqualified(instigator, target))
             return
 
-        # See if the *target* is already married 
+        # See if the *target* is already married
         if target_tree._partner:
             await ctx.send(text_processor.target_is_unqualified(instigator, target))
             return
@@ -141,11 +141,11 @@ class Marriage(Cog):
             try:
                 await db.marry(instigator, target, ctx.family_guild_id)
             except Exception as e:
-                return 
+                return
         await ctx.send(text_processor.request_accepted(instigator, target), ignore_error=True)
 
         # Cache values locally
-        instigator_tree._partner = target.id 
+        instigator_tree._partner = target.id
         target_tree._partner = instigator.id
 
         # Ping em off over redis
@@ -184,9 +184,9 @@ class Marriage(Cog):
         # Remove them from the database
         async with self.bot.database() as db:
             await db(
-                'DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3', 
-                instigator.id, 
-                target_tree.id, 
+                'DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3',
+                instigator.id,
+                target_tree.id,
                 ctx.family_guild_id
             )
         await ctx.send(text_processor.valid_target(instigator, target))

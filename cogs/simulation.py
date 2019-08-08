@@ -31,7 +31,7 @@ class Simulation(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, CommandOnCooldown):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -43,12 +43,12 @@ class Simulation(Cog):
 
         # Cooldown
         elif isinstance(error, CommandOnCooldown):
-            if ctx.original_author_id in self.bot.config['owners']:
+            if ctx.original_author_id in self.bot.owners:
                 await ctx.reinvoke()
             else:
                 await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
             return
-    
+
         # Argument conversion error
         elif isinstance(error, BadArgument):
             argument_text = self.bot.bad_argument.search(str(error)).group(2)
@@ -69,7 +69,7 @@ class Simulation(Cog):
         '''
 
         user = user or ctx.author
-        responses = [ 
+        responses = [
         ]
         await ctx.send(choice(responses))
 
@@ -115,7 +115,7 @@ class Simulation(Cog):
                 f"Incest is wincest, I guess.",
                 f"You two are related but go off I guess.",
             ]
-    
+
         # Boop an output
         await ctx.send(choice(responses))
 
@@ -137,7 +137,7 @@ class Simulation(Cog):
         '''
         Punches a mentioned user
         '''
-        
+
         text = "*You punched yourself... for some reason.*" if user == ctx.author else f"*Punches {user.mention} right in the nose*"
         await ctx.send(text)
 
@@ -154,14 +154,14 @@ class Simulation(Cog):
 
 
     @command()
-    @cooldown(1, 5, BucketType.user) 
+    @cooldown(1, 5, BucketType.user)
     async def poke(self, ctx:Context, user:Member):
         '''Pokes a given user'''
 
         text = "You poke yourself." if user == ctx.author else f"*Pokes {user.mention}.*"
         await ctx.send(text)
-        
-        
+
+
     @command()
     @cooldown(1, 5, BucketType.user)
     async def stab(self, ctx:Context, user:Member):
@@ -190,7 +190,7 @@ class Simulation(Cog):
         '''
         Do you really want to kill a person?
         '''
-        
+
         responses = [
             "That would violate at least one of the laws of robotics.",
             "I am a text-based bot. I cannot kill.",
@@ -240,7 +240,7 @@ class Simulation(Cog):
         text_processor = CopulateRandomText(self.bot)
         text = text_processor.process(ctx.author, user)
         if text:
-            await ctx.send(text) 
+            await ctx.send(text)
             return
 
         # Check if they are related
@@ -249,7 +249,7 @@ class Simulation(Cog):
         async with ctx.channel.typing():
             relationship = x.get_relation(y)
         if relationship == None or relationship.casefold() == 'partner':
-            pass 
+            pass
         elif not self.bot.allows_incest(ctx.guild.id):
             pass
         else:
@@ -257,7 +257,7 @@ class Simulation(Cog):
             return
 
         # Ping out a message for them
-        await ctx.send(text_processor.valid_target(ctx.author, user))    
+        await ctx.send(text_processor.valid_target(ctx.author, user))
 
         # Wait for a response
         try:
