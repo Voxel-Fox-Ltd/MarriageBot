@@ -1,20 +1,21 @@
-from re import compile as _compile, IGNORECASE
+import re as regex
 
-from discord import Message
+import discord
 
 
 class AcceptanceCheck(object):
-    
-    PROPOSAL_YES = _compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(accept)", IGNORECASE)
-    PROPOSAL_NO = _compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)", IGNORECASE)
+    """A general helper to check if a user is saying yes or no to a given
+    proposal"""
+
+    PROPOSAL_YES = regex.compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(accept)", regex.IGNORECASE)
+    PROPOSAL_NO = regex.compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)", regex.IGNORECASE)
 
     def __init__(self, target_id:int, channel_id:int=None):
-        self.target_id = target_id 
+        self.target_id = target_id
         self.channel_id = channel_id
 
-
-    def check(self, message:Message):
-        '''The check to be passed over to wait_for'''
+    def check(self, message:discord.Message):
+        """The check that should be passed to a bot.wait_for method"""
 
         # Check it's the right user
         if message.author.id != self.target_id:
