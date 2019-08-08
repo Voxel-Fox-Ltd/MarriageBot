@@ -1,7 +1,9 @@
-from re import compile as _compile
+import re as regex
 
 
 class Simplifier(object):
+    """A general static class for simplifying a list of relations from
+    a set of two users"""
 
     pre_operations = [
         lambda x: x.replace("parent's partner", "parent"),
@@ -38,23 +40,22 @@ class Simplifier(object):
         lambda x: x if not x.startswith("'s") else x[2:],
         lambda x: x.strip(),
     ]
-    # cousin_matcher = _compile(r"(((great )*?)(grand)?(parent)'s )?(cousin)('s)? ?((((great )*? ?(grand)?)child('s)?)*)")  # magic
-    cousin_matcher = _compile(r"(parent('s)?) (((parent('s)?)|(child('s)?)) ?)+($|(partner))")
-    sibling_cousin_matcher = _compile(r"sibling's \d+((st)|(nd)|(rd)|(th)) cousin")
-    nephew_child_matcher = _compile(r"(niece\/nephew's )((child('s )?)+)")
-
+    # cousin_matcher = regex.compile(r"(((great )*?)(grand)?(parent)'s )?(cousin)('s)? ?((((great )*? ?(grand)?)child('s)?)*)")  # magic
+    cousin_matcher = regex.compile(r"(parent('s)?) (((parent('s)?)|(child('s)?)) ?)+($|(partner))")
+    sibling_cousin_matcher = regex.compile(r"sibling's \d+((st)|(nd)|(rd)|(th)) cousin")
+    nephew_child_matcher = regex.compile(r"(niece\/nephew's )((child('s )?)+)")
 
     @staticmethod
     def relation_simplify_simple(string:str, search_string:str) -> str:
-        '''
-        Simplifies down a range of "child's child's child's..." to one set of "[great...] grandchild
+        """Simplifies down a range of "child's child's child's..."
+        to one set of "[great...] grandchild
 
         Params:
             string: str
                 The string to be searched and modified
             search_string: str
                 The name to be searched for and expanded upon
-        '''
+        """
 
         # Split it to be able to iterate through
         split = string.strip().split(' ')
@@ -95,13 +96,13 @@ class Simplifier(object):
 
     @classmethod
     def relation_simplify_nephew(cls, string:str) -> str:
-        '''
-        Simplifies down a range of "niece/nephew's child's childs..." to one set of "[great...] grandniece/nephew
+        """Simplifies down a range of "niece/nephew's child's childs..."
+        to one set of "[great...] grandniece/nephew
 
         Params:
             string: str
                 The string to be searched and modified
-        '''
+        """
 
         # k = cls.nephew_child_matcher.search(string)
         # great_count = k.group(2).count(' ')
@@ -113,7 +114,7 @@ class Simplifier(object):
 
     @staticmethod
     def get_cousin_parent_count(k):
-        '''Gets the amount of generations UP the cousin count goes'''
+        """Gets the amount of generations UP the cousin count goes"""
 
         p = 0
         if k.group(3):
@@ -129,7 +130,7 @@ class Simplifier(object):
 
     @staticmethod
     def get_cousin_child_count(k):
-        '''Gets the amount of generations DOWN the cousin count goes'''
+        """Gets the amount of generations DOWN the cousin count goes"""
 
         # group 5 is cousin, so we get an extra space
         # group 7 is [child's child's...]
@@ -138,16 +139,13 @@ class Simplifier(object):
 
     @classmethod
     def get_cousin_string(cls, string:str):
-        '''Gets the full cousin string'''
+        """Gets the full cousin string"""
 
         k = cls.cousin_matcher.search(string)
         if not k:
             return string
-        # if k.group(0).startswith("parent's child"):
-        #     span = k.span()
-        #     return string[:span[0]] + " sibling's " + string[span[1]:]
-        
-        p = k.group(0).count('parent')  # p = cls.get_cousin_parent_count(k)  # parent 
+
+        p = k.group(0).count('parent')  # p = cls.get_cousin_parent_count(k)  # parent
         c = k.group(0).count('child')  # c = cls.get_cousin_child_count(k)  # child
 
         if p < 2:
@@ -186,59 +184,59 @@ class Simplifier(object):
     def sibling_cousin_remover(cls, string:str):
         '''Removes "sibling's nth cousin" to "nth cousin"'''
 
-        k = cls.sibling_cousin_matcher.search(string) 
+        k = cls.sibling_cousin_matcher.search(string)
         if not k:
             return string
         span = k.span()
         return string[:span[0]] + k.group(0).replace("sibling's ", "") + string[span[1]:]
 
 
-    @classmethod 
+    @classmethod
     def simplify(cls, string:str):
-        '''Runs the given input through the shortening operations
+        """Runs the given input through the shortening operations
         a number of times so as to shorten the input to a nice
-        family relationship string'''
+        family relationship string"""
 
         before = string
-        for i in range(10):
+        for _ in range(10):
             for o in cls.pre_operations:
-                string = o(string) 
+                string = o(string)
                 if string == before:
-                    continue 
+                    continue
                 else:
                     before = string
-        for i in range(5):
+        for _ in range(5):
             string = cls.get_cousin_string(string)
             if string == before:
-                continue 
+                continue
             else:
                 before = string
-        for i in range(10):
+        for _ in range(10):
             for o in cls.operations:
-                string = o(string) 
+                string = o(string)
                 if string == before:
-                    continue 
+                    continue
                 else:
                     before = string
-        for i in range(10):
+        for _ in range(10):
             for o in cls.short_operations:
                 string = o(string)
                 if string == before:
-                    continue 
+                    continue
                 else:
                     before = string
-        for i in range(10):
+        for _ in range(10):
             for o in cls.post_operations:
-                string = o(string) 
+                string = o(string)
                 if string == before:
-                    continue 
+                    continue
                 else:
                     before = string
-        for i in range(10):
+        for _ in range(10):
             for o in cls.short_operations:
                 string = o(string)
                 if string == before:
-                    continue 
+                    continue
                 else:
                     before = string
         return string
