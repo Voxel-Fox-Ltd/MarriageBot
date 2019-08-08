@@ -1,74 +1,67 @@
-from typing import Union
 import logging
 
-from aioredis import create_redis_pool as _create_redis_pool, RedisConnection
-
+import aioredis
 
 
 class RedisConnection(object):
+    """A wrapper for an aioredis.Redis object, to make things easier to work
+    with for me"""
 
-    config = None
-    pool = None
+    config: dict = None
+    pool: aioredis.Redis = None
     logger: logging.Logger = None
 
-
-    def __init__(self, connection:RedisConnection=None, sustain:bool=False):
+    def __init__(self, connection:aioredis.RedisConnection=None):
         self.conn = connection
-        self.sustain = sustain
 
+    @staticmethod
+    async def create_pool(config:dict):
+        """Creates and connects the pool object"""
 
-    @classmethod
-    def set_config(cls, config:dict):
+        RedisConnection.config = config
         address = config.pop('host'), config.pop('port')
-        cls.config = dict(address=address, **config)
-
-
-    @classmethod
-    async def create_pool(cls, config:dict):
-        cls.config = config
-        address = config.pop('host'), config.pop('port')
-        cls.pool = await _create_redis_pool(address, **config)
-
+        RedisConnection.pool = await aioredis.create_redis_pool(address, **config)
 
     async def __aenter__(self):
         self.conn = self.pool
         return self
 
-
     async def __aexit__(self, exc_type, exc, tb):
         pass
 
-
     @classmethod
     async def get_connection(cls) -> 'RedisConnection':
-        '''Gets a connection from the connection pool'''
+        """Acquires a connection from the connection pool"""
 
         conn = cls.pool
         return cls(conn)
 
-
     async def disconnect(self) -> None:
-        '''Releases a connection from the connection pool'''
+        """Releases a connection back into the connection pool"""
 
         del self
 
+    async def publish_json(self, channel:str, json:dict) -> None:
+        """Publishes some JSON to a given redis channel"""
 
-    async def publish_json(self, channel:str, json:dict):
         self.logger.debug(f"Publishing JSON to channel {channel}: {json!s}")
         return await self.conn.publish_json(channel, json)
 
+    async def publish(self, channel:str, message:str) -> None:
+        """Publishes a message to a given redis channel"""
 
-    async def publish(self, channel:str, message:str):
         self.logger.debug(f"Publishing message to channel {channel}: {message}")
         return await self.conn.publish(channel, message)
 
+    async def set(self, key:str, value:str) -> None:
+        """Sets a key/value pair in the redis DB"""
 
-    async def set(self, key:str, value:str):
         self.logger.debug(f"Publishing Redis key:value pair with {key}:{value}")
         return await self.conn.set(key, value)
 
+    async def get(self, key:str) -> str:
+        """Grabs a value from the redis DB given a key"""
 
-    async def get(self, key:str):
         v = await self.conn.get(key)
         self.logger.debug(f"Getting Redis key with {key}:{v!s}")
         if v:
