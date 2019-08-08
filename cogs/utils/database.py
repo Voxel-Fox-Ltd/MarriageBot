@@ -1,21 +1,18 @@
 from random import choices
 from asyncio import create_subprocess_exec, get_event_loop
-from logging import getLogger
 from typing import Union, List
+import logging
 
 from discord import Member
 from asyncpg import connect as _connect, Connection, create_pool as _create_pool
 from asyncpg.pool import Pool
 
 
-logger = getLogger('marriagebot.db')
-
-
-
 class DatabaseConnection(object):
 
     config = None
     pool = None
+    logger: logging.Logger = None
 
 
     def __init__(self, connection:Connection=None):
@@ -30,7 +27,7 @@ class DatabaseConnection(object):
         cls.pool = await _create_pool(**config)
 
 
-    @classmethod 
+    @classmethod
     async def get_connection(cls) -> 'DatabaseConnection':
         '''Gets a connection from the connection pool'''
 
@@ -61,7 +58,7 @@ class DatabaseConnection(object):
         '''Runs a line of SQL using the internal database'''
 
         # Runs the SQL
-        logger.debug(f"Running SQL: {sql} {args!s}")
+        self.logger.debug(f"Running SQL: {sql} {args!s}")
         x = await self.conn.fetch(sql, *args)
 
         # If it got something, return the dict, else None

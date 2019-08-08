@@ -1,10 +1,7 @@
-from logging import getLogger
 from typing import Union
+import logging
 
 from aioredis import create_redis_pool as _create_redis_pool, RedisConnection
-
-
-logger = getLogger('marriagebot.redis')
 
 
 
@@ -12,6 +9,7 @@ class RedisConnection(object):
 
     config = None
     pool = None
+    logger: logging.Logger = None
 
 
     def __init__(self, connection:RedisConnection=None, sustain:bool=False):
@@ -41,7 +39,7 @@ class RedisConnection(object):
         pass
 
 
-    @classmethod 
+    @classmethod
     async def get_connection(cls) -> 'RedisConnection':
         '''Gets a connection from the connection pool'''
 
@@ -54,25 +52,25 @@ class RedisConnection(object):
 
         del self
 
-    
+
     async def publish_json(self, channel:str, json:dict):
-        logger.debug(f"Publishing JSON to channel {channel}: {json!s}")
+        self.logger.debug(f"Publishing JSON to channel {channel}: {json!s}")
         return await self.conn.publish_json(channel, json)
 
-    
+
     async def publish(self, channel:str, message:str):
-        logger.debug(f"Publishing message to channel {channel}: {message}")
+        self.logger.debug(f"Publishing message to channel {channel}: {message}")
         return await self.conn.publish(channel, message)
 
 
     async def set(self, key:str, value:str):
-        logger.debug(f"Publishing Redis key:value pair with {key}:{value}")
+        self.logger.debug(f"Publishing Redis key:value pair with {key}:{value}")
         return await self.conn.set(key, value)
 
-    
+
     async def get(self, key:str):
         v = await self.conn.get(key)
-        logger.debug(f"Getting Redis key with {key}:{v!s}")
+        self.logger.debug(f"Getting Redis key with {key}:{v!s}")
         if v:
             return v.decode()
         return v
