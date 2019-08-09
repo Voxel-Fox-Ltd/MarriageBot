@@ -1,3 +1,4 @@
+import discord
 from discord.ext.commands import MissingPermissions, Context, check, MissingRole
 
 from cogs.utils.checks.is_server_specific import NotServerSpecific
@@ -32,6 +33,8 @@ async def is_bot_moderator_predicate(ctx:Context):
         if ctx.bot.config['bot_admin_role'] in [i.id for i in member.roles]:
             return True
     except AttributeError:
+        pass
+    except discord.NotFound:
         pass
     return False
 
