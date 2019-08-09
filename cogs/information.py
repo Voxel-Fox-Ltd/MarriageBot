@@ -42,7 +42,7 @@ class Information(Cog):
         '''
 
         # Throw errors properly for me
-        if ctx.original_author_id in self.bot.owners and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, IsTreeCached, BotNotReady)):
+        if ctx.original_author_id in self.bot.owners and not isinstance(error, (CommandOnCooldown, DisabledCommand, IsNotVoter, IsNotDonator, BotNotReady)):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
@@ -58,14 +58,6 @@ class Information(Cog):
         # Missing argument
         elif isinstance(error, MissingRequiredArgument):
             await ctx.send("You need to specify a person for this command to work properly.")
-            return
-
-        # Tree cache
-        elif isinstance(error, IsTreeCached):
-            if ctx.original_author_id in self.bot.owners:
-                await ctx.reinvoke()
-            else:
-                await ctx.send("Please wait for your other tree to be generated first.")
             return
 
         # Cooldown
@@ -396,7 +388,6 @@ class Information(Cog):
         if tree.is_empty:
             await ctx.send(f"`{root_user!s}` has no family to put into a tree .-.")
             return
-        await self.bot.tree_cache.add(ctx.author.id)
         # m = await ctx.send("Generating tree - this may take a few minutes...", embeddify=False)
         # await ctx.channel.trigger_typing()
 
@@ -445,7 +436,6 @@ class Information(Cog):
             await m.delete()
         except Exception as e:
             pass
-        await self.bot.tree_cache.remove(ctx.author.id)
 
 
 def setup(bot:CustomBot):

@@ -288,7 +288,8 @@ class CustomBot(AutoShardedBot):
         # See if it's something I already cached
         if user:
             if user[1] > 0:
-                self.shallow_users[user_id] = (user[0], user[1] - 1, user[2])  # name, age, get_http_when_expires
+                self.shallow_users[user_id] = (user[0], user[1] - 1, user[2])
+                # name, age, get_http_when_expires
                 return str(user[0])
 
         # Try and get the username from Redis
@@ -303,9 +304,9 @@ class CustomBot(AutoShardedBot):
             except discord.Forbidden:
                 name = f'DELETED USER'
             # Cache
-            self.shallow_users[user_id] = (name, 10, False)
+            self.shallow_users[user_id] = (str(name), 10, False)
             async with self.redis() as re:
-                await re.set(f"UserName-{user_id}", name)
+                await re.set(f"UserName-{user_id}", str(name))
             return str(name)
 
         # There was redis data
@@ -411,7 +412,7 @@ class CustomBot(AutoShardedBot):
 
         super().run(self.config['token'], *args, **kwargs)
 
-    async def start(self, *args, token:str=None, **kwargs):
+    async def start(self, token:str=None, *args, **kwargs):
         """The original start method from the bot, using the token from the config
         and running the bot startup method with it"""
 
