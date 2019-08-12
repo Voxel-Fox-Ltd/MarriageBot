@@ -1,5 +1,4 @@
-from discord import User, Guild, Member
-from ujson import dumps
+import discord
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog 
@@ -11,10 +10,9 @@ class UserUpdateEvent(Cog):
         self.bot = bot
         super().__init__(__class__.__name__)
 
-
     @Cog.listener()
-    async def on_user_update(self, before:User, after:User):
-        '''Recaches a username change'''
+    async def on_user_update(self, before:discord.User, after:discord.User):
+        """Recaches a username change"""
 
         if before.name == after.name:
             return 
