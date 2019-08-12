@@ -32,9 +32,7 @@ async def is_bot_moderator_predicate(ctx:Context):
         member = await ctx.bot.support_guild.fetch_member(ctx.author.id)
         if ctx.bot.config['bot_admin_role'] in [i.id for i in member.roles]:
             return True
-    except AttributeError:
-        pass
-    except discord.NotFound:
+    except (AttributeError, discord.NotFound, discord.Forbidden):
         pass
     return False
 
