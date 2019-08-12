@@ -1,8 +1,7 @@
-from re import compile
 from random import choice
 from asyncio import TimeoutError as AsyncTimeoutError
 
-from discord import Member
+import discord
 from discord.ext.commands import command, Context, cooldown
 from discord.ext.commands import MissingRequiredArgument, CommandOnCooldown, BadArgument
 from discord.ext.commands.cooldowns import BucketType
@@ -16,19 +15,14 @@ from cogs.utils.acceptance_check import AcceptanceCheck
 
 
 class Simulation(Cog):
-
+    """A class to handle the simulation commands inside of the bot"""
 
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
         self.bot = bot
-        self.proposal_yes = compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(accept)")
-        self.proposal_no = compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)")
-
 
     async def cog_command_error(self, ctx:Context, error):
-        '''
-        Local error handler for the cog
-        '''
+        """Local error handler for the cog - mostly cooldown and missing args"""
 
         # Throw errors properly for me
         if ctx.original_author_id in self.bot.owners and not isinstance(error, CommandOnCooldown):
@@ -60,38 +54,21 @@ class Simulation(Cog):
             await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
             return
 
-
-    @command(enabled=False)
-    @cooldown(1, 5, BucketType.user)
-    async def feed(self, ctx:Context, user:Member):
-        '''
-        Feeds a mentioned user
-        '''
-
-        user = user or ctx.author
-        responses = [
-        ]
-        await ctx.send(choice(responses))
-
-
     @command(aliases=['snuggle'])
     @cooldown(1, 5, BucketType.user)
-    async def hug(self, ctx:Context, user:Member):
-        '''
-        Hugs a mentioned user
-        '''
+    async def hug(self, ctx:Context, user:discord.Member):
+        """Hugs a mentioned user"""
 
-        text = f"*You hug yourself... and start crying.*" if user == ctx.author else f"*Hugs {user.mention}*"
-        await ctx.send(text)
-
+        if user == ctx.author:
+            await ctx.send(f"*You hug yourself... and start crying.*") 
+        else:
+            await ctx.send(f"*Hugs {user.mention}*")
 
     @command()
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
-    async def kiss(self, ctx:Context, user:Member):
-        '''
-        Kisses a mentioned user
-        '''
+    async def kiss(self, ctx:Context, user:discord.Member):
+        """Kisses a mentioned user"""
 
         # Check if they're themself
         if user == ctx.author:
@@ -119,55 +96,50 @@ class Simulation(Cog):
         # Boop an output
         await ctx.send(choice(responses))
 
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def slap(self, ctx:Context, user:discord.Member):
+        """Slaps a mentioned user"""
+
+        if user == ctx.author:
+            await ctx.send(f"*You slapped yourself... for some reason.*")
+        else:
+            await ctx.send(f"*Slaps {user.mention}*")
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def slap(self, ctx:Context, user:Member):
-        '''
-        Slaps a mentioned user
-        '''
+    async def punch(self, ctx:Context, user:discord.Member):
+        """Punches a mentioned user"""
 
-        text = f"*You slapped yourself... for some reason.*" if user == ctx.author else f"*Slaps {user.mention}*"
-        await ctx.send(text)
-
-
-    @command()
-    @cooldown(1, 5, BucketType.user)
-    async def punch(self, ctx:Context, user:Member):
-        '''
-        Punches a mentioned user
-        '''
-
-        text = "*You punched yourself... for some reason.*" if user == ctx.author else f"*Punches {user.mention} right in the nose*"
-        await ctx.send(text)
-
+        if user == ctx.author:
+            await ctx.send("*You punched yourself... for some reason.*")
+        else:
+            await ctx.send(f"*Punches {user.mention} right in the nose*")
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def cookie(self, ctx:Context, user:Member):
-        '''
-        Gives a cookie to a mentioned user
-        '''
+    async def cookie(self, ctx:Context, user:discord.Member):
+        """Gives a cookie to a mentioned user"""
 
-        text = "*You gave yourself a cookie.*" if user == ctx.author else f"*Gives {user.mention} a cookie*"
-        await ctx.send(text)
-
-
-    @command()
-    @cooldown(1, 5, BucketType.user)
-    async def poke(self, ctx:Context, user:Member):
-        '''Pokes a given user'''
-
-        text = "You poke yourself." if user == ctx.author else f"*Pokes {user.mention}.*"
-        await ctx.send(text)
-
+        if user == ctx.author:
+            await ctx.send("*You gave yourself a cookie.*")
+        else:
+            await ctx.send(f"*Gives {user.mention} a cookie*")
 
     @command()
     @cooldown(1, 5, BucketType.user)
-    async def stab(self, ctx:Context, user:Member):
-        '''
-        Stabs a mentioned user
-        '''
+    async def poke(self, ctx:Context, user:discord.Member):
+        """Pokes a given user"""
+
+        if user == ctx.author:
+            await ctx.send("You poke yourself.")
+        else:
+            await ctx.send(f"*Pokes {user.mention}.*")
+
+    @command()
+    @cooldown(1, 5, BucketType.user)
+    async def stab(self, ctx:Context, user:discord.Member):
+        """Stabs a mentioned user"""
 
         if user == ctx.author:
             responses = [
@@ -180,16 +152,16 @@ class Simulation(Cog):
                 f"You stab {user.mention}.",
                 f"{user.mention} has been stabbed.",
                 f"*stabs {user.mention}.*",
-                f"Looks like you don't have a knife, oops!"
+                f"Looks like you don't have a knife, oops!",
+                "You can't legally stab someone without thier consent.",
+                "Stab? Isn't that, like, illegal?",
+                "I wouldn't recommend doing that tbh.",
             ]
         await ctx.send(choice(responses))
 
-
     @command(hidden=True, aliases=['murder'])
-    async def kill(self, ctx:Context, user:Member=None):
-        '''
-        Do you really want to kill a person?
-        '''
+    async def kill(self, ctx:Context, user:discord.Member=None):
+        """Kills a person :/"""
 
         responses = [
             "That would violate at least one of the laws of robotics.",
@@ -201,10 +173,9 @@ class Simulation(Cog):
         ]
         await ctx.send(choice(responses))
 
-
     @command(aliases=['vore'], hidden=True)
-    async def eat(self, ctx:Context, user:Member=None):
-        '''Eats a person OwO'''
+    async def eat(self, ctx:Context, user:discord.Member=None):
+        """Eats a person OwO"""
 
         responses = [
             f"You swallowed {user.mention}... through the wrong hole.",
@@ -215,21 +186,19 @@ class Simulation(Cog):
         ]
         await ctx.send(choice(responses))
 
-
     @command(hidden=True)
     async def sleep(self, ctx:Context):
-        '''Todd Howard strikes once more'''
+        """Todd Howard strikes once more"""
 
-        await ctx.send("You sleep for a while and when you wake up you're in a cart with your hands bound. A man says \"Hey, you. You're finally awake. You were trying to cross the border, right?\"")
-
+        await ctx.send("You sleep for a while and when you wake up you're in a cart "
+                       "with your hands bound. A man says \"Hey, you. You're finally "
+                       "awake. You were trying to cross the border, right?\"")
 
     @command(aliases=['intercourse', 'fuck', 'smash'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
-    async def copulate(self, ctx:Context, user:Member):
-        '''
-        Lets you heck someone
-        '''
+    async def copulate(self, ctx:Context, user:discord.Member):
+        """Let's you... um... heck someone"""
 
         # Check for NSFW channel
         if not ctx.channel.is_nsfw():
@@ -264,7 +233,7 @@ class Simulation(Cog):
             check = AcceptanceCheck(user.id, ctx.channel.id).check
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
-        except AsyncTimeoutError as e:
+        except AsyncTimeoutError:
             await ctx.send(text_processor.proposal_timed_out(ctx.author, user), ignore_error=True)
             return
 
