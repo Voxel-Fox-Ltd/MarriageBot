@@ -18,7 +18,6 @@ from cogs.utils.redis import RedisConnection
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.proposal_cache import ProposalCache
-from cogs.utils.tree_cache import TreeCache
 from cogs.utils.custom_context import CustomContext
 
 
@@ -92,7 +91,6 @@ class CustomBot(AutoShardedBot):
         FamilyTreeMember.bot = self
         CustomisedTreeUser.bot = self
         ProposalCache.bot = self
-        TreeCache.bot = self
 
     @property
     def invite_link(self):
