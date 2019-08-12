@@ -94,6 +94,7 @@ log_level = getattr(logging, args.loglevel.upper(), None)
 if log_level is None:
     raise Exception("Invalid log level provided")
     exit(1)
+logging.getLogger('discord').setLevel(logging.INFO)
 logger.setLevel(log_level)
 
 # Create website object - this is used for the webhook handler
@@ -104,6 +105,14 @@ app['bot'] = bot
 app['static_root_url'] = '/static'
 jinja.setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
 session.setup(app, ECS(secrets.token_bytes(32)))
+
+
+@bot.event
+async def on_shard_connect(shard_id:int):
+    """Simple logger for shard connection"""
+
+    logger.info(f"Shard {shard_id} successfully connected")
+
 
 
 if __name__ == '__main__':
