@@ -22,17 +22,13 @@ class CustomBot(commands.AutoShardedBot):
     """A child of discord.ext.commands.AutoShardedBot to make things a little easier when
     doing my own stuff"""
 
-    def __init__(self, config_file:str='config/config.toml', commandline_args=None, *args, **kwargs):
-        # Things I would need anyway
-        if kwargs.get('command_prefix'):
-            super().__init__(*args, **kwargs)
-        else:
-            super().__init__(command_prefix=get_prefix, *args, **kwargs)
+    def __init__(self, config_file:str='config/config.toml', commandline_args=None, logger:logging.Logger=None, *args, **kwargs):
+        super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
         # Store the config file for later
         self.config = None
         self.config_file = config_file
-        self.logger = logging.getLogger(os.getcwd().split(os.sep)[-1])
+        self.logger = logger or logging.getLogger(os.getcwd().split(os.sep)[-1]).getChild("bot")
         self.reload_config()
         self.commandline_args = commandline_args
         self._invite_link = None

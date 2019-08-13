@@ -1,7 +1,5 @@
-from asyncio import sleep
-
-from discord import Message
-from discord.ext.commands import Context
+from discord.ext import commands
+from discord.ext import tasks
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog
@@ -12,47 +10,41 @@ class CommandEvent(Cog):
 
     def __init__(self, bot:CustomBot):
         super().__init__(bot, self.get_class_name('cog'))
-        self.logger = self.bot.loop.create_task(self.run_logger())
         self.command_cache = []
+        self.cache_logger.start()
 
     def cog_unload(self):
-        """Cancel the logger and empty the cache"""
+        """Stop the logger from running on cog unload"""
 
-        self.logger.cancel()
-        self.bot.loop.run_until_complete(self.log_cache())
+        self.cache_logger.stop()
 
     @Cog.listener()
-    async def on_command_completion(self, ctx:Context):
+    async def on_command_completion(self, ctx:commands.Context):
+        """Add command to cog cache on completion"""
+
         self.command_cache.append(ctx)
 
     @Cog.listener()
-    async def on_command_error(self, ctx:Context, error):
+    async def on_command_error(self, ctx:commands.Context, error):
+        """Add command to cog cache on error"""
+
         self.command_cache.append(ctx)
 
     @Cog.listener()
-    async def on_command(self, ctx:Context):
-        """Output the command to the debug log"""
+    async def on_command(self, ctx:commands.Context):
+        """Log command out to terminal when run"""
 
         cog = self.bot.get_cog(ctx.command.cog_name)
         if not cog:
             logger = self.log_handler
         else:
             logger = cog.log_handler 
-        if ctx.guild:
-            logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on {ctx.guild.id}/{ctx.channel.id}")
-        else:
-            logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on PMs/{ctx.channel.id}")
+        guild_id = ctx.guild.id or 'PMs'
+        logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} "
+                      "on {guild_id}/{ctx.channel.id}")
 
-    async def run_logger(self):
-        """Run the logger loop to database up the stored commands"""
-
-        await self.bot.wait_until_ready()
-        while not self.bot.is_closed():
-            await sleep(15)
-            await self.log_cache()
-
-
-    async def log_cache(self):
+    @tasks.loop(seconds=15)
+    async def cache_logger(self):
         """Log and empty the cache of commands"""
 
         # Copy and clear caches
@@ -79,7 +71,9 @@ class CommandEvent(Cog):
         async with self.bot.database() as db:
             await db.conn.copy_records_to_table(
                 'command_log',
-                columns=['guild_id', 'channel_id', 'user_id', 'message_id', 'content', 'command_name', 'invoked_with', 'command_prefix', 'timestamp', 'command_failed', 'valid', 'shard_id'],
+                columns=['guild_id', 'channel_id', 'user_id', 'message_id', 'content', 
+                         'command_name', 'invoked_with', 'command_prefix', 'timestamp', 
+                         'command_failed', 'valid', 'shard_id'],
                 records=command_values,
             )
 

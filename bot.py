@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from warnings import filterwarnings
 import logging
 
-from discord import Game, Status
+import discord
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection
@@ -17,9 +17,18 @@ filterwarnings('ignore', category=RuntimeWarning)
 # Parse arguments
 parser = ArgumentParser()
 parser.add_argument("config_file", help="The configuration for the bot.")
-parser.add_argument("--min", type=int, default=None, help="The minimum shard ID that this instance will run with (inclusive)")
-parser.add_argument("--max", type=int, default=None, help="The maximum shard ID that this instance will run with (inclusive)")
-parser.add_argument("--shardcount", type=int, default=None, help="The amount of shards that the bot should be using.")
+parser.add_argument(
+    "--min", type=int, default=None, 
+    help="The minimum shard ID that this instance will run with (inclusive)"
+)
+parser.add_argument(
+    "--max", type=int, default=None, 
+    help="The maximum shard ID that this instance will run with (inclusive)"
+)
+parser.add_argument(
+    "--shardcount", type=int, default=None, 
+    help="The amount of shards that the bot should be using."
+)
 parser.add_argument("--loglevel", default="INFO")
 args = parser.parse_args()
 
@@ -30,20 +39,21 @@ if args.shardcount == None and (args.min or args.max):
     exit(1) 
 bot = CustomBot(
     config_file=args.config_file,
-    activity=Game(name="Reconnecting..."),
-    status=Status.dnd,
+    activity=discord.Game(name="Reconnecting..."),
+    status=discord.Status.dnd,
     case_insensitive=True,
     shard_count=args.shardcount,
     shard_ids=shard_ids,
     shard_id=args.min,
 )
-logging.basicConfig()
+
+# Set up our loggers
 logger = bot.logger
 log_level = getattr(logging, args.loglevel.upper(), None)
 if log_level is None:
     raise Exception("Invalid log level provided")
-    exit(1)
 logger.setLevel(log_level)
+logging.getLogger("discord").setLevel(logging.INFO)
 
 
 @bot.event
@@ -73,7 +83,6 @@ if __name__ == '__main__':
     except Exception as e:
         logger.critical("Error creating database pool")
         raise e
-        exit(1)
 
     # Load the bot's extensions
     logger.info('Loading extensions... ')

@@ -4,9 +4,8 @@ from io import StringIO
 from textwrap import indent
 from contextlib import redirect_stdout
 
-from aiohttp import ClientSession
-from discord import Member, Message, Activity, ActivityType, User, Status, Embed, File
-from discord.ext.commands import command, Context, group, NotOwner, CommandOnCooldown, ExtensionAlreadyLoaded
+import discord
+from discord.ext import commands
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.custom_cog import Cog
@@ -19,29 +18,29 @@ class OwnerOnly(Cog):
         super().__init__(bot, self.get_class_name('cog'))
         self._last_result = None
 
-    async def cog_command_error(self, ctx:Context, error):
+    async def cog_command_error(self, ctx:commands.Context, error:commands.CheckFailure):
         """Local error handling - pretty much just "raise error" and "you
         shouldn't be here" tbh"""
 
         # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners'] and not isinstance(error, CommandOnCooldown):
+        if ctx.author.id in self.bot.config['owners']:
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
         
-        elif isinstance(error, NotOwner):
+        elif isinstance(error, commands.NotOwner):
             await ctx.send("You need to be registered as an owner to run this command.")
             return
 
-    async def cog_check(self, ctx:Context):
+    async def cog_check(self, ctx:commands.Context):
         """Local check for the cog - make sure the person running the command is an owner"""
 
         if ctx.author.id in self.bot.config['owners']:
             return True
-        raise NotOwner
+        raise commands.NotOwner
 
-    @command(aliases=['pm', 'dm'], hidden=True)
-    async def message(self, ctx:Context, user:User, *, content:str):
+    @commands.command(aliases=['pm', 'dm'], hidden=True)
+    async def message(self, ctx:commands.Context, user:discord.User, *, content:str):
         """PMs a user the given content"""
 
         await user.send(content)
@@ -58,8 +57,8 @@ class OwnerOnly(Cog):
         # remove `foo`
         return content.strip('` \n')
 
-    @command(hidden=True)
-    async def ev(self, ctx:Context, *, content:str):
+    @commands.command(hidden=True)
+    async def ev(self, ctx:commands.Context, *, content:str):
         """
         Evaluates some Python code
 
@@ -122,18 +121,18 @@ class OwnerOnly(Cog):
                 self._last_result = ret
                 text = f'```py\n{value}{ret}\n```'
                 if len(text) > 2000:
-                    return await ctx.send(file=File(StringIO('\n'.join(text.split('\n')[1:-1])), filename='ev.txt'))
+                    return await ctx.send(file=discord.File(StringIO('\n'.join(text.split('\n')[1:-1])), filename='ev.txt'))
                 await ctx.send(text)
 
-    @command(aliases=['rld'], hidden=True)
-    async def reload(self, ctx:Context, *cog_name:str):
+    @commands.command(aliases=['rld'], hidden=True)
+    async def reload(self, ctx:commands.Context, *cog_name:str):
         """Unloads and reloads a cog from the bot"""
 
         cog_name = 'cogs.' + '_'.join([i for i in cog_name])
 
         try:
             self.bot.load_extension(cog_name)
-        except ExtensionAlreadyLoaded:
+        except commands.ExtensionAlreadyLoaded:
             try:
                 self.bot.unload_extension(cog_name)
                 self.bot.load_extension(cog_name)
@@ -145,8 +144,8 @@ class OwnerOnly(Cog):
             return
         await ctx.send('Cog reloaded.')
 
-    @command(hidden=True)
-    async def runsql(self, ctx:Context, *, content:str):
+    @commands.command(hidden=True)
+    async def runsql(self, ctx:commands.Context, *, content:str):
         """Throws some SQL into the database handler"""
 
         async with self.bot.database() as db:
@@ -195,14 +194,14 @@ class OwnerOnly(Cog):
         string_output = '\n'.join(output)
         await ctx.send('```\n{}```'.format(string_output))
 
-    @group(hidden=True)
-    async def profile(self, ctx:Context):
+    @commands.group(hidden=True)
+    async def profile(self, ctx:commands.Context):
         """A parent command for the profile section"""
 
         pass
 
     @profile.command(aliases=['username'], hidden=True)
-    async def name(self, ctx:Context, *, username:str):
+    async def name(self, ctx:commands.Context, *, username:str):
         """Lets you set the username for the bot account"""
 
         if len(username) > 32:
@@ -212,7 +211,7 @@ class OwnerOnly(Cog):
         await ctx.send('Done.')
 
     @profile.command(aliases=['photo', 'image', 'avatar'], hidden=True)
-    async def picture(self, ctx:Context, *, image_url:str=None):
+    async def picture(self, ctx:commands.Context, *, image_url:str=None):
         """Lets you set the profile picture of the bot"""
 
         if image_url == None:
@@ -222,28 +221,27 @@ class OwnerOnly(Cog):
                 await ctx.send("You need to provide an image.")
                 return
 
-        async with ClientSession(loop=self.bot.loop) as session:
-            async with session.get(image_url) as r:
-                image_content = await r.read()
+        async with self.bot.session.get(image_url) as r:
+            image_content = await r.read()
         await self.bot.user.edit(avatar=image_content)
         await ctx.send('Done.')
 
     @profile.command(aliases=['game'], hidden=True)
-    async def activity(self, ctx:Context, activity_type:str, *, name:str=None):
+    async def activity(self, ctx:commands.Context, activity_type:str, *, name:str=None):
         """Changes the activity of the bot"""
 
         if name:
-            activity = Activity(name=name, type=getattr(ActivityType, activity_type.lower()))
+            activity = discord.Activity(name=name, type=getattr(discord.ActivityType, activity_type.lower()))
         else:
             await self.bot.set_default_presence()
             return
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
     @profile.command(hidden=True)
-    async def status(self, ctx:Context, status:str):
+    async def status(self, ctx:commands.Context, status:str):
         """Changes the online status of the bot"""
 
-        status_o = getattr(Status, status.lower())
+        status_o = getattr(discord.Status, status.lower())
         await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_o)
 
 
