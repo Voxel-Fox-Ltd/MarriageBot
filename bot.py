@@ -61,10 +61,7 @@ async def on_ready():
     """Run when the bot connects to Discord properly
     Sets presence to default and not a lot else"""
 
-    logger.info('Bot connected:')
-    logger.info(f'\t{bot.user}')
-    logger.info(f'\t{bot.user.id}')
-    
+    logger.info(f"Bot connected - {bot.user} // {bot.user.id}")    
     logger.info("Setting activity to default")
     await bot.set_default_presence()
     logger.info('Bot loaded.')
@@ -79,10 +76,21 @@ if __name__ == '__main__':
     # Connect the database
     logger.info("Creating database pool")
     try:
-        loop.run_until_complete(DatabaseConnection.create_pool(bot.config['database']))
+        db_connect = DatabaseConnection.create_pool(bot.config['database'])
+        loop.run_until_complete(db_connect)
+    except KeyError as e:
+        logger.critical("KeyError creating database pool - "
+                        "is there a 'database' object in the config?")
+        raise e
+    except ConnectionRefusedError as e:
+        logger.critical("ConnectionRefusedError creating database pool - "
+                        "did you set the right information in the config, "
+                        "and is the database running?")
+        raise e
     except Exception as e:
         logger.critical("Error creating database pool")
         raise e
+    logger.info("Created database pool successfully")
 
     # Load the bot's extensions
     logger.info('Loading extensions... ')
