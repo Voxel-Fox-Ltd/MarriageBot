@@ -79,13 +79,11 @@ class CustomBot(commands.AutoShardedBot):
         # Close database connection
         await db.disconnect()
         
-        
     # async def on_message(self, message:discord.Message):
     #     """Invokes the command with a custom context"""
 
     #     ctx = await self.get_context(message)
     #     await self.invoke(ctx)
-
 
     def get_uptime(self) -> float:
         """Gets the uptime of the bot in seconds
@@ -94,7 +92,6 @@ class CustomBot(commands.AutoShardedBot):
 
         return (dt.now() - self.startup_time).total_seconds()
 
-
     def get_extensions(self) -> list:
         """Gets a list of filenames of all the loadable cogs"""
 
@@ -102,7 +99,6 @@ class CustomBot(commands.AutoShardedBot):
         extensions = [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext]
         self.logger.debug("Getting all extensions: " + str(extensions))
         return extensions
-
 
     def load_all_extensions(self):
         """Loads all the given extensions from self.get_extensions()"""
@@ -131,14 +127,22 @@ class CustomBot(commands.AutoShardedBot):
         
         # Update presence
         self.logger.info("Setting default bot presence")
-        presence_text = self.config['presence_text']
+        presence = self.config['presence']
         if self.shard_count > 1:
             for i in range(self.shard_count):
-                game = discord.Game(f"{presence_text} (shard {i})")
-                await self.change_presence(activity=game, shard_id=i)
+                activity = discord.Activity(
+                    name=f"{presence['text']} (shard {i})",
+                    type=getattr(discord.ActivityType, presence['activity_type'].lower())
+                )
+                status = getattr(discord.Status, presence['status'].lower())
+                await self.change_presence(activity=activity, status=status, shard_id=i)
         else:
-            game = discord.Game(presence_text)
-            await self.change_presence(activity=game)
+            activity = discord.Activity(
+                name=presence['text'],
+                type=getattr(discord.ActivityType, presence['activity_type'].lower())
+            )
+            status = getattr(discord.Status, presence['status'].lower())
+            await self.change_presence(activity=activity, status=status)
 
     def reload_config(self):
         """Re-reads the config file into cache"""
