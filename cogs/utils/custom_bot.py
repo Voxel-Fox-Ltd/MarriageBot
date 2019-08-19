@@ -28,7 +28,7 @@ class CustomBot(commands.AutoShardedBot):
         # Store the config file for later
         self.config = None
         self.config_file = config_file
-        self.logger = logger or logging.getLogger(os.getcwd().split(os.sep)[-1]).getChild("bot")
+        self.logger = logger or logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower()).getChild("bot")
         self.reload_config()
         self.commandline_args = commandline_args
         self._invite_link = None
@@ -49,13 +49,13 @@ class CustomBot(commands.AutoShardedBot):
         """Gets the invite link for the bot, with permissions all set properly"""
 
         # https://discordapp.com/oauth2/authorize?client_id=468281173072805889&scope=bot&permissions=35840&guild_id=208895639164026880
-        if self._invite_link: 
+        if self._invite_link:
             return self._invite_link
         permissions = discord.Permissions()
-        permissions.read_messages = True 
-        permissions.send_messages = True 
-        permissions.embed_links = True 
-        permissions.attach_files = True 
+        permissions.read_messages = True
+        permissions.send_messages = True
+        permissions.embed_links = True
+        permissions.attach_files = True
         self._invite_link = 'https://discordapp.com/oauth2/authorize?' + urlencode({
             'client_id': self.user.id,
             'scope': 'bot',
@@ -74,11 +74,11 @@ class CustomBot(commands.AutoShardedBot):
 
         # Wait for the bot to cache users before continuing
         self.logger.debug("Waiting until ready before completing startup method.")
-        await self.wait_until_ready() 
+        await self.wait_until_ready()
 
         # Close database connection
         await db.disconnect()
-        
+
     # async def on_message(self, message:discord.Message):
     #     """Invokes the command with a custom context"""
 
@@ -124,7 +124,7 @@ class CustomBot(commands.AutoShardedBot):
 
     async def set_default_presence(self):
         """Sets the default presence for the bot as appears in the config file"""
-        
+
         # Update presence
         self.logger.info("Setting default bot presence")
         presence = self.config['presence']
@@ -163,7 +163,7 @@ class CustomBot(commands.AutoShardedBot):
     async def start(self, token:str=None):
         """Start the bot with the given token, create the startup method task"""
 
-        self.logger.info("Running startup method") 
+        self.logger.info("Running startup method")
         self.startup_method = self.loop.create_task(self.startup())
         self.logger.info("Running original D.py start method")
         await super().start(token or self.config['token'])
