@@ -5,7 +5,7 @@ import typing
 
 from discord import User, Guild
 
-from cogs.utils.custom_bot import CustomBot
+# from cogs.utils.custom_bot import CustomBot
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relation_simplifier import Simplifier
 
@@ -20,7 +20,7 @@ class FamilyTreeMember(object):
     all_users: typing.Dict[typing.Tuple[int, int], 'FamilyTreeMember'] = {}
     NAME_SUBSTITUTION = regex.compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
     INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
-    bot: CustomBot = None
+    bot: 'cogs.utils.custom_bot.CustomBot' = None
     __slots__ = ('id', '_children', '_parent', '_partner', 'tree_id', '_guild_id')
 
     def __init__(self, discord_id:int, children:list=None, parent_id:int=None, partner_id:int=None, guild_id:int=0):

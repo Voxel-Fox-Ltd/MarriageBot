@@ -3,7 +3,7 @@ from datetime import datetime as dt, timedelta
 
 import discord
 
-from cogs.utils.custom_bot import CustomBot
+# from cogs.utils.custom_bot import CustomBot
 
 
 def get_id(user:typing.Union[int, discord.User]):
@@ -20,7 +20,7 @@ class ProposalCache(dict):
     Generally the setup of things here is self[user_id] = (ROLE, COG, TIMEOUT)
     """
 
-    bot: CustomBot = None
+    bot: 'cogs.utils.custom_bot.CustomBot' = None
 
     def get(self, key, *args, d=None, ignore_timeout:bool=False, **kwargs):
         """Gets a key from self, as a normal dict would - but here we check

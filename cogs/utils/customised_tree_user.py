@@ -2,7 +2,7 @@ import typing
 
 import asyncpg
 
-from cogs.utils.custom_bot import CustomBot
+# from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection as DBC
 
 
@@ -10,7 +10,7 @@ class CustomisedTreeUser(object):
     """A class to hold the custom tree setup for a given user"""
 
     all_users: typing.Dict[int, 'CustomisedTreeUser'] = {}
-    bot: CustomBot = None
+    bot: 'cogs.utils.custom_bot.CustomBot' = None
     __slots__ = (
         'id', 'edge', 'node', 'font', 'highlighted_font',
         'highlighted_node', 'background', 'direction'

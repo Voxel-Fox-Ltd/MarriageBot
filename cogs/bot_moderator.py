@@ -8,7 +8,7 @@ from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils.checks.is_bot_moderator import is_bot_moderator, NotServerSpecific
+from cogs.utils.checks.is_bot_moderator import is_bot_moderator, is_server_specific_bot_moderator, NotServerSpecific
 from cogs.utils.custom_cog import Cog
 from cogs.utils.converters import UserID
 
