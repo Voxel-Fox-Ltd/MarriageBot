@@ -8,16 +8,14 @@ from cogs.utils.checks.is_server_specific import is_server_specific, NotServerSp
 
 
 class ServerSpecific(Cog):
+    """A cog to group together all of the server specific commands"""
 
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
         self.bot = bot
 
-
     async def cog_command_error(self, ctx:Context, error):
-        '''
-        Local error handler for the cog
-        '''
+        """Local error handler for the cog"""
 
         # Throw errors properly for me
         if ctx.original_author_id in self.bot.owners and not isinstance(error, (CommandOnCooldown, MissingPermissions)):
@@ -53,12 +51,11 @@ class ServerSpecific(Cog):
             await ctx.send(f"You need the `{error.missing_role}` role to run this command.")
             return
 
-
     @command()
-    @is_server_specific()
     @is_server_specific_bot_moderator()
+    @is_server_specific()
     async def allowincest(self, ctx:Context):
-        '''Toggles allowing incest on your guild'''
+        """Toggles allowing incest on your guild"""
 
         # Database it
         async with self.bot.database() as db:
@@ -85,12 +82,11 @@ class ServerSpecific(Cog):
         # Boop the user
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
-
     @command()
-    @is_server_specific()
     @is_server_specific_bot_moderator()
+    @is_server_specific()
     async def disallowincest(self, ctx:Context):
-        '''Toggles allowing incest on your guild'''
+        """Toggles allowing incest on your guild"""
 
         # Database it
         async with self.bot.database() as db:
@@ -117,10 +113,9 @@ class ServerSpecific(Cog):
         # Boop the user
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-
     @command(aliases=['ssf'])
     async def serverspecificfamilies(self, ctx:Context):
-        '''Gives you the information about server specific families and MarriageBot gold'''
+        """Gives you the information about server specific families and MarriageBot gold"""
 
         await ctx.send(f"MarriageBot Gold (the server specific version of MarriageBot) is a one time payment of £20 GBP (~$25 USD, price may adjust over time). It's a new bot you add to your server (MarriageBot Gold) that has a non configurable prefix of `m.`. When you add the bot, any user on your server with a role named \"MarriageBot Moderator\" is able to run the force commands (ie `forceadopt`, `forceeman`, `forcedivorce`, `forcemarry`). The 500 person limit still applies. The children limits still apply (though this may change in future, and become configurable also). You're also able to allow incestuous relationships on your server via the `allowincest` and `disallowincest` commands. Since it's a separate bot, you can have both bots on your server at once, if it's something you want to do.\n\nIf you'd like to know more, contact `Caleb` at `{ctx.clean_prefix}support`.")
 

@@ -302,7 +302,7 @@ class CalebOnly(Cog):
                 'message_id': ctx.message.id,
             })
 
-    @command()
+    @command(hidden=True)
     async def copyfamilytoguild(self, ctx:Context, user:UserID, guild_id:int):
         '''Copies a family's span to a given guild ID for server specific families'''
 
@@ -331,7 +331,7 @@ class CalebOnly(Cog):
         await db.disconnect()
 
 
-    @command()
+    @command(hidden=True)
     async def addserverspecific(self, ctx:Context, guild_id:int):
         '''Adds a guild to the MarriageBot Gold whitelist'''
 

@@ -301,7 +301,6 @@ class Parentage(Cog):
         # If they're a name
         elif isinstance(target, str):
             child_ids = instigator_tree._children
-            child_names = []
             async with self.bot.redis() as re:
                 for c, i in enumerate(child_ids):
                     name = await re.get(f'UserName-{i}')
@@ -331,14 +330,11 @@ class Parentage(Cog):
             await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
-
-    @command(aliases=['eman'])
+    @command(aliases=['eman', 'runaway', 'runawayfromhome'])
     @bot_is_ready()
     @cooldown(1, 5, BucketType.user)
     async def emancipate(self, ctx:Context):
-        '''
-        Making it so you no longer have a parent
-        '''
+        """Removes your parent"""
 
         # Variables we're gonna need for later
         instigator = ctx.author
@@ -370,11 +366,10 @@ class Parentage(Cog):
         v = text_processor.valid_target(instigator)
         await ctx.send(v)
 
-
     @command()
     @is_patreon(tier=1)
     async def disownall(self, ctx:Context):
-        '''Disowns all of your children'''
+        """Disowns all of your children"""
 
         # Get their children
         user_tree = FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
