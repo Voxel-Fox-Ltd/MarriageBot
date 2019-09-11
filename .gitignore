@@ -1,4 +1,5 @@
 __pycache__
 config/config.toml
 _*.py
+!__*.py
 *.code-*
