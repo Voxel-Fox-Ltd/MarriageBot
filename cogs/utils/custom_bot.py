@@ -299,7 +299,7 @@ class CustomBot(AutoShardedBot):
             # Get over HTTP
             try:
                 name = await self.fetch_user(user_id)
-            except discord.Forbidden:
+            except (discord.Forbidden, discord.NotFound):
                 name = f'DELETED USER'
             # Cache
             self.shallow_users[user_id] = (str(name), 10, False)
