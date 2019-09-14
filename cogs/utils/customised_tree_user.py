@@ -52,32 +52,32 @@ class CustomisedTreeUser(object):
         if self.edge is not None:
             edge =  f'"#{self.edge:06X}"' if self.edge >= 0 else 'transparent'
         else:
-            edge = self.get_default_hex['edge']
+            edge = self.get_default_hex()['edge']
 
         if self.font is not None:
             font =  f'"#{self.font:06X}"' if self.font >= 0 else 'transparent'
         else:
-            font = self.get_default_hex['font']
+            font = self.get_default_hex()['font']
 
         if self.node is not None:
             node =  f'"#{self.node:06X}"' if self.node >= 0 else 'transparent'
         else:
-            node = self.get_default_hex['node']
+            node = self.get_default_hex()['node']
 
         if self.highlighted_font is not None:
             highlighted_font =  f'"#{self.highlighted_font:06X}"' if self.highlighted_font >= 0 else 'transparent'
         else:
-            highlighted_font = self.get_default_hex['highlighted_font']
+            highlighted_font = self.get_default_hex()['highlighted_font']
 
         if self.highlighted_node is not None:
             highlighted_node =  f'"#{self.highlighted_node:06X}"' if self.highlighted_node >= 0 else 'transparent'
         else:
-            highlighted_node = self.get_default_hex['highlighted_node']
+            highlighted_node = self.get_default_hex()['highlighted_node']
 
         if self.background is not None:
             background =  f'"#{self.background:06X}"' if self.background >= 0 else 'transparent'
         else:
-            background = self.get_default_hex['background']
+            background = self.get_default_hex()['background']
 
         return {
             'edge': edge,
