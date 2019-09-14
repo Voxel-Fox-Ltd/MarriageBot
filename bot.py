@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from warnings import filterwarnings
 import logging
+import os
 
 import discord
 
@@ -10,6 +11,7 @@ from cogs.utils.database import DatabaseConnection
 
 # Set up loggers
 logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
+logger = logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower())
 
 # Filter warnings
 filterwarnings('ignore', category=RuntimeWarning)
@@ -35,8 +37,8 @@ args = parser.parse_args()
 # Create bot object
 shard_ids = None if args.shardcount == None else list(range(args.min, args.max+1))
 if args.shardcount == None and (args.min or args.max):
-    raise Exception("You set a min/max shard but no shard count.")
-    exit(1) 
+    logger.critical("You set a min/max shard but no shard count.")
+    exit(1)
 bot = CustomBot(
     config_file=args.config_file,
     activity=discord.Game(name="Reconnecting..."),
@@ -45,10 +47,10 @@ bot = CustomBot(
     shard_count=args.shardcount,
     shard_ids=shard_ids,
     shard_id=args.min,
+    logger=logger.getChild('bot')
 )
 
 # Set up our loggers
-logger = bot.logger
 log_level = getattr(logging, args.loglevel.upper(), None)
 if log_level is None:
     raise Exception("Invalid log level provided")

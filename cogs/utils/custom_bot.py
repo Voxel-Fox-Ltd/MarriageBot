@@ -22,7 +22,7 @@ class CustomBot(commands.AutoShardedBot):
     """A child of discord.ext.commands.AutoShardedBot to make things a little easier when
     doing my own stuff"""
 
-    def __init__(self, config_file:str='config/config.toml', commandline_args=None, logger:logging.Logger=None, *args, **kwargs):
+    def __init__(self, config_file:str='config/config.toml', logger:logging.Logger=None, *args, **kwargs):
         super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
         # Store the config file for later
@@ -30,8 +30,6 @@ class CustomBot(commands.AutoShardedBot):
         self.config_file = config_file
         self.logger = logger or logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower()).getChild("bot")
         self.reload_config()
-        self.commandline_args = commandline_args
-        self._invite_link = None
 
         # Aiohttp session
         self.session = aiohttp.ClientSession(loop=self.loop)
@@ -44,24 +42,17 @@ class CustomBot(commands.AutoShardedBot):
         self.startup_time = dt.now()
         self.startup_method = None
 
-    @property
-    def invite_link(self):
+    def get_invite_link(self, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
-
-        # https://discordapp.com/oauth2/authorize?client_id=468281173072805889&scope=bot&permissions=35840&guild_id=208895639164026880
-        if self._invite_link:
-            return self._invite_link
+        
         permissions = discord.Permissions()
-        permissions.read_messages = True
-        permissions.send_messages = True
-        permissions.embed_links = True
-        permissions.attach_files = True
-        self._invite_link = 'https://discordapp.com/oauth2/authorize?' + urlencode({
+        for name, value in kwargs.items():
+            setattr(permissions, name, value)
+        return 'https://discordapp.com/oauth2/authorize?' + urlencode({
             'client_id': self.user.id,
             'scope': 'bot',
             'permissions': permissions.value
         })
-        return self.invite_link
 
     async def startup(self):
         """Clears all the bot's caches and fills them from a DB read"""
@@ -78,13 +69,7 @@ class CustomBot(commands.AutoShardedBot):
 
         # Close database connection
         await db.disconnect()
-
-    # async def on_message(self, message:discord.Message):
-    #     """Invokes the command with a custom context"""
-
-    #     ctx = await self.get_context(message)
-    #     await self.invoke(ctx)
-
+        
     def get_uptime(self) -> float:
         """Gets the uptime of the bot in seconds
         Uptime is a bit of a misnomer, since it starts when the instance is created, but
@@ -110,7 +95,8 @@ class CustomBot(commands.AutoShardedBot):
                 self.unload_extension(i)
             except Exception as e:
                 self.logger.warning(f' * {i}... failed - {e!s}')
-            self.logger.info(f' * {i}... success')
+            else:
+                self.logger.info(f' * {i}... success')
 
         # Now load em up again
         self.logger.info('Loading extensions... ')
@@ -118,9 +104,10 @@ class CustomBot(commands.AutoShardedBot):
             try:
                 self.load_extension(i)
             except Exception as e:
-                self.logger.error(f' * {i}... failed - {e!s}')
+                self.logger.critical(f' * {i}... failed - {e!s}')
                 raise e
-            self.logger.info(f' * {i}... success')
+            else:
+                self.logger.info(f' * {i}... success')
 
     async def set_default_presence(self):
         """Sets the default presence for the bot as appears in the config file"""
