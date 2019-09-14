@@ -61,8 +61,20 @@ parser.add_argument(
     help="The port to run the SSL webserver on"
 )
 parser.add_argument(
-    "--loglevel", default="INFO",
+    "--loglevel-bot", default="INFO",
     help="Logging level for the bot - probably most useful is INFO and DEBUG"
+)
+parser.add_argument(
+    "--loglevel-discord", default="INFO",
+    help="Logging level for discord - probably most useful is INFO and DEBUG"
+)
+parser.add_argument(
+    "--loglevel-redis", default="INFO",
+    help="Logging level for redis - probably most useful is INFO and DEBUG"
+)
+parser.add_argument(
+    "--loglevel-database", default="INFO",
+    help="Logging level for database - probably most useful is INFO and DEBUG"
 )
 args = parser.parse_args()
 
@@ -90,12 +102,14 @@ bot = CustomBot(
 )
 
 # Set up out loggers
-log_level = getattr(logging, args.loglevel.upper(), None)
+log_level = getattr(logging, args.loglevel_bot.upper(), None)
 if log_level is None:
     raise Exception("Invalid log level provided")
     exit(1)
-logging.getLogger('discord').setLevel(logging.INFO)
 logger.setLevel(log_level)
+logging.getLogger('discord').setLevel(getattr(logging, args.loglevel_discord.upper(), log_level))
+bot.database.logger.setLevel(getattr(logging, args.loglevel_redis.upper(), log_level))
+bot.redis.logger.setLevel(getattr(logging, args.loglevel_database.upper(), log_level))
 
 # Create website object - this is used for the webhook handler
 app = Application(loop=bot.loop, debug=True)
@@ -112,7 +126,6 @@ async def on_shard_connect(shard_id:int):
     """Simple logger for shard connection"""
 
     logger.info(f"Shard {shard_id} successfully connected")
-
 
 
 if __name__ == '__main__':
