@@ -66,7 +66,7 @@ class Administrator(Cog):
         try:
             self.bot.guild_settings[ctx.guild.id]['prefix'] = prefix
         except KeyError:
-            self.bot.guild_Settings[ctx.guild.id] = {
+            self.bot.guild_settings[ctx.guild.id] = {
                 'prefix': prefix,
                 'allow_incest': False,
             }
