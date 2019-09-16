@@ -1,18 +1,12 @@
-from random import choice
-
-from cogs.utils.random_text.text_template import TextTemplate
+from cogs import utils
 
 
-class ProposeRandomText(TextTemplate):
+class ProposeRandomText(utils.random_text.TextTemplate):
 
-
-    @classmethod
-    def valid_target(cls, instigator=None, target=None):
-        '''
-        When you make a valid proposal
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def valid_target(instigator=None, target=None):
+        return [
             "{target.mention}, do you accept {instigator.mention}'s proposal?",
             "{target.mention}, {instigator.mention} has proposed to you. What do you say?",
             "{instigator.mention} may be young, but they're full of heart. Do you want to marry them, {target.mention}",
@@ -41,16 +35,12 @@ class ProposeRandomText(TextTemplate):
             "Does anyone ever daydream about {target.mention} snuggling {instigator.mention} in the moonlight?",
             "{instigator.mention} and {target.mention} together? I don't see it myself, but what does {target.mention} have to say?",
             "{instigator.mention} and {target.mention}? Oh boy I can already see their adopted children! {target.mention}, what do you say?",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def target_is_unqualified(cls, instigator=None, target=None):
-        '''
-        When you're proposing to a married person
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def target_is_unqualified(instigator=None, target=None):
+        return [
             "I hate to tell you this, {instigator.mention}, but they're already married...",
             "I don't know if you knew this but they're already married, {instigator.mention}...",
             "Oh, uh, sorry {instigator.mention}, but they're already seeing someone.",
@@ -61,16 +51,12 @@ class ProposeRandomText(TextTemplate):
             "Unfortunately they found someone they liked more than you. Sorry!",
             "As crazy a concept as this may sound, monogamy is the way I roll.",
             "Poor unfortunate soul… they found someone before you got to them.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def instigator_is_unqualified(cls, instigator=None, target=None):
-        '''
-        When you make a proposal while married
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def instigator_is_unqualified(instigator=None, target=None):
+        return [
             "Maybe you should wait until after you're divorced, {instigator.mention}.",
             "You already have someone, {instigator.mention}."
             "You're not single, {instigator.mention}.",
@@ -78,16 +64,12 @@ class ProposeRandomText(TextTemplate):
             "Polygamy is much harder to store in a database, {instigator.mention}. My apologies.",
             "Unfortunately I can't show family trees with polygamy in them, {instigator.mention}.",
             "YOU HAVE A SPOUSE ALREADY, {instigator.mention}!",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def target_is_family(cls, instigator=None, target=None):
-        '''
-        When you propose to a family member
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def target_is_family(instigator=None, target=None):
+        return [
             "That... that's a family member of yours, {instigator.mention}...",
             "Though we support free speech and all, you can't really marry someone you're related to, {instigator.mention}.",
             "We've made great strides towards equality recently, {instigator.mention}, but you still can't marry a relative of yours.",
@@ -95,75 +77,55 @@ class ProposeRandomText(TextTemplate):
             "Incestuous relationships tend to mess up the family tree, so I'm afraid I'll have to say no, {instigator.mention}.",
             "Despite what Mia says, incest is not wincest, {instigator.mention}.",
             "Wh...what. That's gross. No thank you, {instigator.mention}.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def instigator_is_instigator(cls, instigator=None, target=None):
-        '''
-        When you propose while you're already waiting on a response from another proposal
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def instigator_is_instigator(instigator=None, target=None):
+        return [
             "You've already proposed to someone, {instigator.mention}, just wait for a response.",
             "You can only make one proposal at a time, {instigator.mention}.",
             "One proposal at a time is the max limit, {instigator.mention}.",
             "Calm it, {instigator.mention}, you already proposed to someone!",
             "Calm your figurative or literal titties, {instigator.mention}, you've already proposed!",
             "Hold those horsies, {instigator.mention}. Don't just move on so quickly!",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def instigator_is_target(cls, instigator=None, target=None):
-        '''
-        When you propose while they're yet to respond to another proposal
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def instigator_is_target(instigator=None, target=None):
+        return [
             "Sorry but you've gotta answer your current proposal before you can make one of your own.",
             "You need to answer the proposal you have already before you can make a new one.",
             "You've been proposed to already, {instigator.mention}. Please respond before moving on.",
             "Don't you want to answer the proposal you have already?",
             "Someone already proposed to you though! Answer them first, {instigator.mention}.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def target_is_instigator(cls, instigator=None, target=None):
-        '''
-        When they propose to someone who's already proposed to someone
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def target_is_instigator(instigator=None, target=None):
+        return [
             "I'm afraid they've already proposed to someone. Give it a minute - see how it goes.",
             "They seem to have just proposed to someone. See how that goes before you try yourself.",
             "Hold your horses - they've just proposed to someone else.",
             "They're waiting on a response from soneone else; give it a minute.",
             "I think they're interested in someone else, having just proposed to them.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def target_is_target(cls, instigator=None, target=None):
-        '''
-        When they propose to someone who's yet to respond to another
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def target_is_target(instigator=None, target=None):
+        return [
             "They're a popular choice, I see. Wait to see what they say to the other proposal they have before trying yourself.",
             "Someone just proposed to them. See what they say there first.",
             "Woah, hold on a minute - someone else proposed first. I wonder what they'll say...",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def target_is_me(cls, instigator=None, target=None):
-        '''
-        When they propose to the bot
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def target_is_me(instigator=None, target=None):
+        return [
             "I'm flattered, but my heart belongs to another.",
             "Unfortunately, my standards raise above you.",
             "My love is exclusive to one other...",
@@ -181,32 +143,24 @@ class ProposeRandomText(TextTemplate):
             "Oh dear god. No.",
             "Daddy Caleb says no. Your loss.",
             "Sorry, I don't marry the inferior. I mean the less fortunate. I mean humans.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def target_is_bot(cls, instigator=None, target=None):
-        '''
-        When they propose to another bot
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def target_is_bot(instigator=None, target=None):
+        return [
             "To the best of my knowledge, most robots can't consent.",
             "The majority of robots are incapable of love, I'm afraid.",
             "You can't marry a robot _quite yet_ in this country. Give it a few years.",
             "Robots, although attractive, aren't great spouses.",
             "Although that robot may love you, it's afraid of commitment. Give it a few years.",
             "Long distance relationships are hard, but they're even harder with a robot incapable of feelings.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def target_is_you(cls, instigator=None, target=None):
-        '''
-        When they propose to themselves
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def target_is_you(instigator=None, target=None):
+        return [
             "That is you. You cannot marry the you.",
             "Are... are you serious? No.",
             "Marriage is a union between two people. You are one people. No.",
@@ -214,30 +168,22 @@ class ProposeRandomText(TextTemplate):
             "No.",
             "Autosexuality? Sorry, our architecture doesn't support that.",
             "{target.mention}, do you accept {instigator.mention}'s proposal?\n... Wait, no, you're the same person. The marriage is off!",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def request_accepted(cls, instigator=None, target=None):
-        '''
-        When the target accepts a proposal from the instigator
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def request_accepted(instigator=None, target=None):
+        return [
             "{instigator.mention}, {target.mention}, I now pronounce you married.",
             "{instigator.mention}, you're now married to {target.mention} c:",
             "And with that, {instigator.mention} and {target.mention} are partners.",
             "After all the love and pining, it is done. {instigator.mention}, {target.mention}, you're now married.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def request_denied(cls, instigator=None, target=None):
-        '''
-        When the target declins a valid proposal from the instigator
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def request_denied(instigator=None, target=None):
+        return [
             "That's fair. The marriage has been called off.",
             "Oh boy. The wedding is off. You two talk it out.",
             "I hate to say it, {instigator.mention}, but they said no...",
@@ -245,19 +191,15 @@ class ProposeRandomText(TextTemplate):
             "Maybe a night in a cheap motel with you, but marriage is too much commitment for `{target.mention}`.",
             "Sorry bb, you're still one single pringle.",
             "Roses are red,\nViolets are blue,\nIt looks like they don't want to be with you, {instigator.mention}.",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]
 
-
-    @classmethod
-    def request_timeout(cls, instigator=None, target=None):
-        '''
-        When the instigator's propsal times out
-        '''
-
-        return choice(cls.get_valid_strings([
+    @staticmethod
+    @utils.random_text.get_random_valid_string
+    def request_timeout(instigator=None, target=None):
+        return [
             "{instigator.mention}, your proposal has timed out. Try again when they're online!",
             "Huh. Seems like they didn't respond. Maybe try again later, {instigator.mention}?",
             "Apparently you aren't even deemed worthy a response. That's rude. Try later, {instigator.mention}.",
             "Time limits can't bring you down, no no no no no no noooo!",
             "Looks like they ghosted you! Maybe next time...",
-        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
+        ]

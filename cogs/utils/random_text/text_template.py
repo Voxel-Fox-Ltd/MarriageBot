@@ -1,15 +1,13 @@
 import typing
 import string
+import random
 
 import discord
 
 
-class TextTemplate(object):
+class TextValidator(object):
 
     formatter = string.Formatter()
-
-    def __init__(self, bot):
-        self.bot = bot
 
     @classmethod
     def get_string_kwargs(cls, string:str) -> typing.List[str]:
@@ -18,17 +16,35 @@ class TextTemplate(object):
         return [i.split('.')[0] for _, i, _, _ in cls.formatter.parse(string) if i]
 
     @classmethod
-    def get_valid_strings(cls, strings:str, *provided) -> typing.List[str]:
+    def get_valid_strings(cls, strings:typing.List[str], provided_arguments:typing.List[str]) -> typing.List[str]:
         """Filters down a list of inputs to outputs that are valid with the given locals,
         ie will filter out strings that require a 'target' if none has been provided"""
 
         v = []
-        provided = set([i for i in provided if i])
+        provided_arguments = set([i for i in provided_arguments if i])
         for i in strings:
             string_has = set(cls.get_string_kwargs(i))
-            if provided == string_has or provided.issuperset(string_has):
+            if provided_arguments == string_has or provided_arguments.issuperset(string_has):
                 v.append(i)
         return v
+
+
+def get_random_valid_string(func):
+    def wrapper(*args):
+        strings = func(*args)
+        provided_arguments = [
+            'instigator' if args[0] else None,
+            'target' if args[1] else None
+        ]
+        valid_strings = TextValidator.get_valid_strings(strings, provided_arguments)
+        return random.choice(valid_strings).format(instigator=args[0], target=args[1])
+    return wrapper
+
+
+class TextTemplate(object):
+
+    def __init__(self, bot):
+        self.bot = bot
 
     def process(self, instigator:discord.Member, target:discord.Member) -> str:
         """Processes a target/instigator pair to get the appropriate validation response"""

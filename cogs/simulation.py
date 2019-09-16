@@ -60,7 +60,7 @@ class Simulation(Cog):
         """Hugs a mentioned user"""
 
         if user == ctx.author:
-            await ctx.send(f"*You hug yourself... and start crying.*") 
+            await ctx.send(f"*You hug yourself... and start crying.*")
         else:
             await ctx.send(f"*Hugs {user.mention}*")
 
@@ -222,7 +222,7 @@ class Simulation(Cog):
         elif not self.bot.allows_incest(ctx.guild.id):
             pass
         else:
-            await ctx.send(text_processor.target_is_relation(ctx.author, user, relationship))
+            await ctx.send(text_processor.target_is_relation(ctx.author, user))
             return
 
         # Ping out a message for them

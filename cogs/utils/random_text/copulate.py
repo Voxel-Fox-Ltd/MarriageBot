@@ -44,8 +44,8 @@ class CopulateRandomText(TextTemplate):
             "{target.mention} plows {instigator.mention} into the couch before spraying {instigator.mention} with their semen!",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
-    
-    @classmethod 
+
+    @classmethod
     def request_denied(cls, instigator=None, target=None):
         '''
         They said no to the banging
@@ -109,7 +109,7 @@ class CopulateRandomText(TextTemplate):
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
-    @classmethod 
+    @classmethod
     def proposing_to_themselves(cls, instigator=None, target=None):
         '''
         When they propose to themself
@@ -125,7 +125,7 @@ class CopulateRandomText(TextTemplate):
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
-    @classmethod 
+    @classmethod
     def target_is_bot(cls, instigator=None, target=None):
         '''
         When they propose to a bot
@@ -139,7 +139,7 @@ class CopulateRandomText(TextTemplate):
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
 
-    @classmethod 
+    @classmethod
     def target_is_me(cls, instigator=None, target=None):
         '''
         When they propose to MB
@@ -159,17 +159,15 @@ class CopulateRandomText(TextTemplate):
             "#Binch is the only relationship I'm interested in, sorry.",
         ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
 
-    
-    @classmethod 
-    def target_is_relation(cls, instigator, target, relationship:str):
+
+    @classmethod
+    def target_is_relation(cls, instigator, target):
         '''
         When the target is related to the instigator
         '''
 
         return choice(cls.get_valid_strings([
             "This ain't the South, partner. Stop.",
-            "No, {instigator.mention}, I am your {relationship}.",
-            "They're actually your {relationship} so I'm not sure that's a great idea.",
             "Don't turn the family tree into a family donut.",
             "That's gross, {instigator.mention} please reconsider.",
-        ], *['instigator' if instigator else None, 'target' if target else None, 'relationship' if relationship else None])).format(instigator=instigator, target=target, relationship=relationship)
+        ], *['instigator' if instigator else None, 'target' if target else None])).format(instigator=instigator, target=target)
