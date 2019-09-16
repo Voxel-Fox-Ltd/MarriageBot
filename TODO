@@ -3,7 +3,7 @@
 [ ] Make redis optional
 
 [ ] Clean files
-    [ ] cogs.utils.random_text.text_template
+    [x] cogs.utils.random_text.text_template
     [ ] cogs.utils.random_text.propose
     [ ] cogs.utils.random_text.makeparent
     [ ] cogs.utils.random_text.emancipate
