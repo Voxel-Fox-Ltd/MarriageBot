@@ -113,7 +113,7 @@ class Information(Cog):
         is_patreon = await is_patreon_predicate(ctx.bot, ctx.author, 1)
         is_patreon_3 = await is_patreon_predicate(ctx.bot, ctx.author, 3)
         cooldown_time = min([
-            error.cooldown.per,
+            error.cooldown.per if not self.bot.is_server_specific else 5,
             30 if is_voter_predicate(ctx) else error.cooldown.per,
             15 if is_patreon else error.cooldown.per,
             5 if is_patreon_3 else error.cooldown.per,

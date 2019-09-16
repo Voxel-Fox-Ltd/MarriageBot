@@ -122,11 +122,13 @@ class Misc(Cog):
 
         # Perks for voting
         voting_perks = [
+            "Previous tiers' perks",
             "30s tree cooldown",
         ]
 
         # Perks for $1 Patrons
         t1_donate_perks = [
+            "Previous tiers' perks",
             "15s tree cooldown",
             "Up to 10 children",
             "`disownall` command (disowns all of your children at once)",
@@ -134,18 +136,21 @@ class Misc(Cog):
 
         # $3 Patrons
         t2_donate_perks = [
+            "Previous tiers' perks",
             "Up to 15 children",
             "`stupidtree` command (shows all relations, not just blood relatives)",
         ]
 
         # Perks for $5 Patrons
         t3_donate_perks = [
+            "Previous tiers' perks",
             "5s tree cooldown",
             "Up to 20 children",
         ]
 
         # Perks for MarriageBot Gold
         gold_perks = [
+            "5s tree cooldown for all users",
             "Togglable incest",
             "Faster bot responses",
             "Server specific families",
