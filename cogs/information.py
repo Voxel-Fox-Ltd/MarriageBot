@@ -27,9 +27,6 @@ class Information(Cog):
     Handles all marriage/divorce/etc commands
     '''
 
-    VOTER_TREE_COOLDOWN_TIME = 30.0  # Seconds
-    DONATOR_TREE_COOLDOWN_TIME = 10.0
-
     def __init__(self, bot:CustomBot):
         super().__init__(self.__class__.__name__)
         self.bot = bot
@@ -114,10 +111,12 @@ class Information(Cog):
         '''Handles errors for the tree commands'''
 
         is_patreon = await is_patreon_predicate(ctx.bot, ctx.author, 1)
+        is_patreon_3 = await is_patreon_predicate(ctx.bot, ctx.author, 3)
         cooldown_time = min([
             error.cooldown.per,
-            30 if is_voter_predicate(ctx) else error.retry_after,
-            15 if is_patreon else error.retry_after,
+            30 if is_voter_predicate(ctx) else error.cooldown.per,
+            15 if is_patreon else error.cooldown.per,
+            5 if is_patreon_3 else error.cooldown.per,
         ])
 
         if (error.cooldown.per - cooldown_time) > error.retry_after:
@@ -125,7 +124,12 @@ class Information(Cog):
             await ctx.command.invoke(ctx)
             return
         else:
-            await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in `{error.retry_after - (error.cooldown.per - cooldown_time):.1f} seconds`.")
+            cooldown_display = f"{error.cooldown.per:.0f} seconds"
+            time_remaining = error.retry_after
+            if cooldown_time < error.cooldown.per:
+                cooldown_display = f"~~{error.cooldown.per:.0f} seconds~~ {cooldown_time:.0f} seconds"
+                time_remaining = cooldown_time - (error.cooldown.per - error.retry_after)
+            await ctx.send(f"You can only use this command once every {cooldown_display} (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in {time_remaining:.1f} seconds.")
             return
 
 
