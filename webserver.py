@@ -14,7 +14,7 @@ from aiohttp_session import setup as session_setup, SimpleCookieStorage
 from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
 from aiohttp_session.redis_storage import RedisStorage
 from jinja2 import FileSystemLoader
-from ujson import load
+from ujson import load  # TODO replace with toml
 
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.redis import RedisConnection
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     Starts the bot (and webserver if specified) and runs forever
     '''
 
-    loop = app.loop 
+    loop = app.loop
 
     logger.info("Creating bot")
     loop.run_until_complete(app['bot'].login(app['config']['token']))
@@ -109,7 +109,7 @@ if __name__ == '__main__':
             ssl_context.load_cert_chain(**app['config']['ssl_context'])
             ssl_webserver = TCPSite(application, host=args.host, port=args.sslport, ssl_context=ssl_context)
     except Exception as e:
-        ssl_webserver = None 
+        ssl_webserver = None
         logger.exception("Could not make SSL webserver")
 
     # Start servers
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     try:
         logger.info("Running webserver")
         loop.run_forever()
-    except KeyboardInterrupt: 
+    except KeyboardInterrupt:
         pass
     logger.info("Closing webserver")
     loop.run_until_complete(application.cleanup())
