@@ -6,7 +6,7 @@
     [x] cogs.utils.random_text.text_template
     [x] cogs.utils.random_text.propose
     [x] cogs.utils.random_text.makeparent
-    [ ] cogs.utils.random_text.emancipate
+    [x] cogs.utils.random_text.emancipate
     [ ] cogs.utils.random_text.divorce
     [ ] cogs.utils.random_text.disown
     [ ] cogs.utils.random_text.copulate
