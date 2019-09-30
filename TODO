@@ -9,7 +9,7 @@
     [x] cogs.utils.random_text.emancipate
     [x] cogs.utils.random_text.divorce
     [x] cogs.utils.random_text.disown
-    [ ] cogs.utils.random_text.copulate
+    [x] cogs.utils.random_text.copulate
     [ ] cogs.utils.random_text.adopt
 
     [ ] cogs.utils.family_tree.relation_simplifier
