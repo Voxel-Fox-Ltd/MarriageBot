@@ -64,7 +64,9 @@ app.router.add_static('/static', getcwd() + '/website/static')
 app.router.add_static('/trees', config['tree_file_location'])
 app['static_root_url'] = '/static'
 app['database'] = DatabaseConnection
+DatabaseConnection.logger = logger.getChild("db")
 app['redis'] = RedisConnection
+RedisConnection.logger = logger.getChild("redis")
 app['config'] = config
 app['bot'] = Client()
 jinja_setup(app, loader=FileSystemLoader(getcwd() + '/website/templates'))

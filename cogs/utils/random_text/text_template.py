@@ -30,6 +30,8 @@ class TextValidator(object):
 
 
 def get_random_valid_string(func):
+    """Wraps around a random_text output list and picks a random valid output based on the input args"""
+
     def wrapper(*args):
         strings = func(*args)
         provided_arguments = [
