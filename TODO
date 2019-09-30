@@ -7,12 +7,14 @@
     [x] cogs.utils.random_text.propose
     [x] cogs.utils.random_text.makeparent
     [x] cogs.utils.random_text.emancipate
-    [ ] cogs.utils.random_text.divorce
+    [x] cogs.utils.random_text.divorce
     [ ] cogs.utils.random_text.disown
     [ ] cogs.utils.random_text.copulate
     [ ] cogs.utils.random_text.adopt
+
     [ ] cogs.utils.family_tree.relation_simplifier
     [ ] cogs.utils.family_tree.family_tree_member
+
     [ ] cogs.utils.checks.user_block
     [ ] cogs.utils.checks.is_voter
     [ ] cogs.utils.checks.is_server_specific
@@ -21,6 +23,7 @@
     [ ] cogs.utils.checks.channel_is_available
     [ ] cogs.utils.checks.can_send_files
     [ ] cogs.utils.checks.bot_is_ready
+
     [ ] cogs.utils.redis
     [ ] cogs.utils.proposal_cache
     [ ] cogs.utils.database
@@ -31,6 +34,7 @@
     [ ] cogs.utils.converters
     [ ] cogs.utils.colour_dict
     [ ] cogs.utils.acceptance_check
+
     [ ] cogs.user_update_event
     [ ] cogs.simulation
     [ ] cogs.server_specific
@@ -47,7 +51,10 @@
     [ ] cogs.caleb_only
     [ ] cogs.bot_moderator
     [ ] cogs.administrator
+
     [ ] website.frontend
     [ ] website.api
+
     [ ] webserver
+
     [x] bot
