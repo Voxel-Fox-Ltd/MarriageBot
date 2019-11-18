@@ -1,8 +1,9 @@
 from traceback import format_exc
 from asyncio import iscoroutine, wait_for
-from io import StringIO 
+from io import StringIO
 from textwrap import indent
 from contextlib import redirect_stdout
+import copy
 
 import discord
 from discord.ext import commands
@@ -27,7 +28,7 @@ class OwnerOnly(Cog):
             text = f'```py\n{error}```'
             await ctx.send(text)
             raise error
-        
+
         elif isinstance(error, commands.NotOwner):
             await ctx.send("You need to be registered as an owner to run this command.")
             return
@@ -62,7 +63,7 @@ class OwnerOnly(Cog):
         """
         Evaluates some Python code
 
-        Gratefully stolen from Rapptz -> 
+        Gratefully stolen from Rapptz ->
         https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L72-L117
         """
 
@@ -190,7 +191,7 @@ class OwnerOnly(Cog):
 
         # Add some final values before returning to the user
         line = '-' * len(key_string)
-        output = [key_string, line] + output 
+        output = [key_string, line] + output
         string_output = '\n'.join(output)
         await ctx.send('```\n{}```'.format(string_output))
 
@@ -206,7 +207,7 @@ class OwnerOnly(Cog):
 
         if len(username) > 32:
             await ctx.send('That username is too long.')
-            return 
+            return
         await self.bot.user.edit(username=username)
         await ctx.send('Done.')
 
@@ -216,7 +217,7 @@ class OwnerOnly(Cog):
 
         if image_url == None:
             try:
-                image_url = ctx.message.attachments[0].url 
+                image_url = ctx.message.attachments[0].url
             except IndexError:
                 await ctx.send("You need to provide an image.")
                 return
@@ -243,6 +244,16 @@ class OwnerOnly(Cog):
 
         status_o = getattr(discord.Status, status.lower())
         await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_o)
+
+    @commands.command(hidden=True)
+    async def sudo(self, ctx, who:discord.User, *, command: str):
+        """Run a command as another user optionally in another channel."""
+
+        msg = copy.copy(ctx.message)
+        msg.author = ctx.guild.get_member(who.id) or who
+        msg.content = ctx.prefix + command
+        new_ctx = await self.bot.get_context(msg, cls=type(ctx))
+        await self.bot.invoke(new_ctx)
 
 
 def setup(bot:CustomBot):
