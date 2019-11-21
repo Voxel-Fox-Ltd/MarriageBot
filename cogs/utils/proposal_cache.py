@@ -3,14 +3,6 @@ from datetime import datetime as dt, timedelta
 
 import discord
 
-# from cogs.utils.custom_bot import CustomBot
-
-
-def get_id(user:typing.Union[int, discord.User]):
-    """Gets the ID from a user given their user object or ID"""
-
-    return getattr(user, 'id', user)
-
 
 class ProposalCache(dict):
     """A helper class to wrap around a dictionary so I can easily
@@ -38,10 +30,6 @@ class ProposalCache(dict):
         if item in [None, d]:
             return item
 
-        # If it doesn't have a timeout time (legacy)
-        if len(item) == 2:
-            return item
-
         # If it's timed out
         if dt.now() > item[2] and ignore_timeout is False:
             return d
@@ -49,8 +37,7 @@ class ProposalCache(dict):
         # Return as normal
         return item
 
-    async def add(self, instigator:typing.Union[int, discord.User],
-                  target:typing.Union[int, discord.User], cog:str):
+    async def add(self, instigator:typing.Union[int, discord.User], target:typing.Union[int, discord.User], cog:str):
         """Adds two users to the cache with the current time in tow
 
         Params:
@@ -64,8 +51,8 @@ class ProposalCache(dict):
         timeout_time = dt.now() + timedelta(seconds=60)
         async with self.bot.redis() as re:
             await re.publish_json('ProposalCacheAdd', {
-                'instigator': get_id(instigator),
-                'target': get_id(target),
+                'instigator': getattr(instigator, 'id', instigator),
+                'target': getattr(target, 'id', target),
                 'cog': cog,
                 'timeout_time': timeout_time.isoformat()
             })
@@ -76,25 +63,22 @@ class ProposalCache(dict):
 
         # Add to cache
         if isinstance(timeout_time, str):
-            timeout_time = dt.strptime(timeout_time, "%Y-%m-%dT%H:%M:%S.%f")
-        self[get_id(instigator)] = ('INSTIGATOR', cog, timeout_time)
-        self[get_id(target)] = ('TARGET', cog, timeout_time)
+            timeout_time = dt.strptime(timeout_time, "%Y-%m-%dT%H:%M:%S.%f")  # Parse the time from string to DT
+        self[getattr(instigator, 'id', instigator)] = ('INSTIGATOR', cog, timeout_time)
+        self[getattr(target, 'id', target)] = ('TARGET', cog, timeout_time)
 
     async def remove(self, *elements) -> list:
         """Removes some given elements (proably discord.Users or IDs) via redis"""
 
         async with self.bot.redis() as re:
-            await re.publish_json('ProposalCacheRemove', [get_id(i) for i in elements])
+            await re.publish_json('ProposalCacheRemove', [getattr(i, 'id', i) for i in elements])
         return self.raw_remove(*elements)
 
     def raw_remove(self, *elements) -> list:
         """Pops some elements from the cache"""
 
-        x = []
         for i in elements:
-            i = get_id(i)
             try:
-                x.append(self.pop(i))
+                self.pop(getattr(i, 'id', i))
             except KeyError:
                 pass
-        return x

@@ -25,8 +25,8 @@
     [x] cogs.utils.checks.bot_is_ready
 
     [x] cogs.utils.redis
-    [ ] cogs.utils.proposal_cache
-    [ ] cogs.utils.database
+    [x] cogs.utils.proposal_cache
+    [x] cogs.utils.database
     [ ] cogs.utils.custom_context
     [ ] cogs.utils.custom_cog
     [ ] cogs.utils.custom_bot

@@ -12,6 +12,7 @@ class DatabaseConnection(object):
     config: dict = None
     pool: asyncpg.pool.Pool = None
     logger: logging.Logger = None
+    __slots__ = ('conn',)
 
     def __init__(self, connection:asyncpg.Connection=None):
         self.conn = connection
@@ -23,6 +24,7 @@ class DatabaseConnection(object):
         DatabaseConnection.config = config
         DatabaseConnection.pool = await asyncpg.create_pool(**config)
 
+
     @classmethod
     async def get_connection(cls) -> 'DatabaseConnection':
         """Acquires a connection to the database from the pool"""
@@ -33,16 +35,30 @@ class DatabaseConnection(object):
     async def disconnect(self) -> None:
         """Releases a connection from the pool back to the mix"""
 
-        await self.pool.release(self.conn)
+        if isinstance(self.conn, asyncpg.Connection)
+            await self.pool.release(self.conn)
+        elif isinstance(self.conn, asyncpg.transaction.Transaction):
+            await self.conn.commit()
+        else:
+            raise Exception("This is definitely wrong")
         self.conn = None
         del self
+
+    async def get_transaction(self) -> 'DatabaseConnection':
+        """Creates a database object for a transaction"""
+
+        tr = self.__class__(self.conn.transaction())
+        await tr.conn.start()
 
     async def __aenter__(self):
         self.conn = await self.pool.acquire()
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        await self.pool.release(self.conn)
+        if isinstance(self.conn, asyncpg.Connection):
+            await self.pool.release(self.conn)
+        else:
+            raise Exception("This is definitely wrong")
         self.conn = None
         del self
 
@@ -52,7 +68,11 @@ class DatabaseConnection(object):
 
         # Runs the SQL
         self.logger.debug(f"Running SQL: {sql} {args!s}")
-        x = await self.conn.fetch(sql, *args)
+        if 'select' in sql.casefold() or 'returning' in sql.casefold():
+            x = await self.conn.fetch(sql, *args)
+        else:
+            await self.conn.execute(sql, *args)
+            return
 
         # If it got something, return the dict, else None
         if x:
@@ -61,19 +81,23 @@ class DatabaseConnection(object):
             return []
         return None
 
-    async def marry(self, instigator:typing.Union[int, discord.User],
-                    target:typing.Union[int, discord.User], guild_id:int):
+    async def marry(self, instigator:typing.Union[int, discord.User], target:typing.Union[int, discord.User], guild_id:int):
         """Marries two given Discord users together"""
 
         instigator_id = getattr(instigator, 'id', instigator)
         target_id = getattr(target, 'id', target)
 
-        # TODO make this a transaction
-        await self(
-            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
-            instigator_id, target_id, guild_id,
-        )
-        await self(
-            'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($2, $1, $3)',
-            instigator_id, target_id, guild_id,
-        )
+        transaction = await self.get_transaction()
+        try:
+            await transaction(
+                'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
+                instigator_id, target_id, guild_id,
+            )
+            await transaction(
+                'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($2, $1, $3)',
+                instigator_id, target_id, guild_id,
+            )
+        except Exception as e:
+            await transaction.conn.rollback()
+            raise e
+        await transaction.disconnect()
