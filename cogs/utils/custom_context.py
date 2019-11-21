@@ -1,121 +1,132 @@
-from random import randint, choice
+# from random import randint, choice
+import re as regex
+import random
 
-from discord import Embed, TextChannel, Permissions
-from discord.ext.commands import Context
-
-
-class NoOutputContext(Context):
-
-    async def send(self, *args, **kwargs):
-        pass
+# from discord import Embed, TextChannel, Permissions
+import discord
+from discord.ext import commands
+# from discord.ext.commands import Context
 
 
-class CustomContext(Context):
+class CustomContext(commands.Context):
+    """A custom subclass of commands.Context that embeds all content"""
 
+    DEFAULT_FOOTER_TEXT = [{'text': 'MarriageBot'}]
+    DESIRED_PERMISSIONS = discord.Permissions(18432)  # embed links, send messages
+    USER_ID_REGEX = regex.compile(r"<@(\d{15,23})>")
+    # __slots___ would have no effect here, since commands.Context has no slots itself
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.original_author_id = self.author.id
 
-
-    @property 
+    @property
     def family_guild_id(self):
-        '''Returns the guild ID that should be used for family databases in this guild'''
+        """Returns the guild ID that should be used for family databases in this guild"""
 
         if self.bot.is_server_specific:
             return self.guild.id
         return 0
-        # return self.guild.id if self.guild.id in self.bot.server_specific_families else 0
 
+    def _set_footer(self, embed:discord.Embed) -> discord.Embed:
+        """Sets the custom footer for the embed based on the bot config"""
 
-    def _set_footer(self, embed:Embed):
-        '''Sets the custom footer for the embed based on the bot config'''
-
-        # Set footer
+        # Get footer from config
         try:
             possible_footer_objects = [[i] * i.get('amount', 1) for i in self.bot.config['footer']]  # Get from config
-            footer_text_amount = []  # Make list for text 
+            footer_text_amount = []  # Make list for text
             [footer_text_amount.extend(i) for i in possible_footer_objects]  # Flatten list
             footer_text = [{'text': i['text']} for i in footer_text_amount]  # Remove 'amount'
-
-            # Make sure it's not empty
             if len(footer_text) == 0:
-                raise Exception('Make default text')
+                footer_text = self.DEFAULT_FOOTER_TEXT.copy()
         except Exception:
-            footer_text = [{'text': 'MarriageBot'}]
-        footer = choice(footer_text)
+            footer_text = self.DEFAULT_FOOTER_TEXT.copy()
+
+        # Grab random text from list
+        footer = random.choice(footer_text)
         footer.update({'icon_url': self.bot.user.avatar_url})
+
+        # Add and return
         footer['text'] = footer['text'].replace('{prefix}', self.prefix).replace(f"<@!{self.bot.user.id}> ", f"<@{self.bot.user.id}> ").replace(f"<@{self.bot.user.id}> ", f"@{self.bot.user!s} ")
         embed.set_footer(**footer)
         return embed
 
-
     async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True, embed_image:bool=True, ignore_error:bool=False, image_url:str=None):
-        '''
-        A custom version of Context that changes .send to embed things for me
-        '''
+        """A custom version of Context that changes .send to embed things for me"""
 
-        try: x = self.channel.permissions_for(self.guild.me).value & 18432 != 18432
-        except AttributeError: x = False
+        # Check the permissions we have
+        try:
+            channel_permissions: discord.Permissions = self.channel.permissions_for(self.guild.me)
+            missing_permissions = channel_permissions.is_superset(self.DESIRED_PERMISSIONS)
+        except AttributeError:
+            missing_permissions = False
         no_embed = any([
-            x,
+            missing_permissions,
             embeddify is False,
-            not isinstance(self.channel, TextChannel),
+            not isinstance(self.channel, discord.TextChannel),
         ])
+
+        # Can't embed? Just send it normally
         if no_embed:
-            try: 
+            try:
                 return await super().send(
-                    content=content, 
-                    tts=tts, 
-                    embed=embed, 
-                    file=file, 
-                    files=files, 
-                    delete_after=delete_after, 
+                    content=content,
+                    tts=tts,
+                    embed=embed,
+                    file=file,
+                    files=files,
+                    delete_after=delete_after,
                     nonce=nonce,
                 )
             except Exception as e:
-                if not ignore_error: raise e
+                if not ignore_error:
+                    raise e
+                return
 
+        # No current embed, and we _want_ to embed it? Alright!
         if embed is None and embeddify:
             # Set content
-            embed = Embed(description=content, colour=randint(1, 0xffffff))
+            embed = discord.Embed(description=content, colour=random.randint(1, 0xffffff))
             embed = self._set_footer(embed)
             if image_url:
                 embed.set_image(url=image_url)
 
             # Set image
             if file and embed_image:
-                if file.filename.casefold().endswith('.png') or file.filename.casefold().endswith('.jpg') or file.filename.casefold().endswith('.jpeg') or file.filename.casefold().endswith('.gif') or file.filename.casefold().endswith('.webm'):
+                file_is_image = any(
+                    file.filename.casefold().endswith('.png'),
+                    file.filename.casefold().endswith('.jpg'),
+                    file.filename.casefold().endswith('.jpeg'),
+                    file.filename.casefold().endswith('.gif'),
+                    file.filename.casefold().endswith('.webm')
+                )
+                if file_is_image:
                     embed.set_image(url=f"attachment://{file.filename}")
 
             # Reset content
             content = self.bot.config.get("embed_default_text") or None
 
-        elif embed and embeddify:
-            if embed.footer.text:
-                pass 
-            else:
-                embed = self._set_footer(embed)
-
+        # Send off our content
         try:
             return await super().send(
-                content=content, 
-                tts=tts, 
-                embed=embed, 
-                file=file, 
-                files=files, 
-                delete_after=delete_after, 
+                content=content,
+                tts=tts,
+                embed=embed,
+                file=file,
+                files=files,
+                delete_after=delete_after,
                 nonce=nonce,
             )
         except Exception as e:
-            if not ignore_error: raise e
+            if not ignore_error:
+                raise e
+            return
 
     @property
     def clean_prefix(self):
-        '''The prefix used but cleaned up for if it's a mention'''
+        """The prefix used but cleaned up for if it's a mention"""
 
-        v = self.prefix 
-        if '<@' in v:
-            uid = int(v.split('>')[0].split('<@')[0])
-            return f'@{self.bot.get_user(uid)[:5]}'
-        return v
+        return self.USER_ID_REGEX.sub(
+            lambda m: "@" + self.bot.get_member(int(m.group(1))).name,
+            self.prefix
+        )

@@ -27,7 +27,7 @@
     [x] cogs.utils.redis
     [x] cogs.utils.proposal_cache
     [x] cogs.utils.database
-    [ ] cogs.utils.custom_context
+    [x] cogs.utils.custom_context
     [ ] cogs.utils.custom_cog
     [ ] cogs.utils.custom_bot
     [ ] cogs.utils.customised_tree_user

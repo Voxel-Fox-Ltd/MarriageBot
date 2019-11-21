@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from asyncio import iscoroutinefunction, iscoroutine
 
 from cogs.utils.custom_cog import Cog
-from cogs.utils.custom_context import NoOutputContext, CustomContext
+from cogs.utils.custom_context import CustomContext
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
@@ -37,7 +37,7 @@ class RedisHandler(Cog):
             self.channels.remove(channel)
 
     async def channel_handler(self, channel_name:str, function:callable, log:bool=True, *args, **kwargs):
-        """General handler for creating a channel, waiting for an input, and then plugging the 
+        """General handler for creating a channel, waiting for an input, and then plugging the
         data into a function"""
 
         # Subscribe to the given channel
