@@ -4,11 +4,11 @@ import discord
 
 
 class AcceptanceCheck(object):
-    """A general helper to check if a user is saying yes or no to a given
-    proposal"""
+    """A general helper to check if a user is saying yes or no to a given proposal"""
 
-    PROPOSAL_YES = regex.compile(r"(i do)|(yes)|(of course)|(definitely)|(absolutely)|(yeah)|(yea)|(sure)|(accept)", regex.IGNORECASE)
-    PROPOSAL_NO = regex.compile(r"(i don't)|(i dont)|(no)|(to think)|(i'm sorry)|(im sorry)", regex.IGNORECASE)
+    PROPOSAL_YES = regex.compile(r"(?:i do)|(?:yes)|(?:of course)|(?:definitely)|(?:absolutely)|(?:yeah)|(?:yea)|(?:sure)|(?:accept)", regex.IGNORECASE)
+    PROPOSAL_NO = regex.compile(r"(?:i don't)|(?:i dont)|(?:no)|(?:to think)|(?:i'm sorry)|(?:im sorry)", regex.IGNORECASE)
+    __slots__ = ('target_id', 'channel_id')
 
     def __init__(self, target_id:int, channel_id:int=None):
         self.target_id = target_id
