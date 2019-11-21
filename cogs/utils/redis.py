@@ -9,7 +9,7 @@ class RedisConnection(object):
 
     config: dict = None
     pool: aioredis.Redis = None
-    logger: logging.Logger = None
+    logger: logging.Logger = None  # Set as a child of bot.logger
 
     def __init__(self, connection:aioredis.RedisConnection=None):
         self.conn = connection
@@ -19,7 +19,7 @@ class RedisConnection(object):
         """Creates and connects the pool object"""
 
         RedisConnection.config = config
-        address = config.pop('host'), config.pop('port')
+        address = config.get('host'), config.get('port')
         RedisConnection.pool = await aioredis.create_redis_pool(address, **config)
 
     async def __aenter__(self):

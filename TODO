@@ -24,7 +24,7 @@
     [x] cogs.utils.checks.can_send_files
     [x] cogs.utils.checks.bot_is_ready
 
-    [ ] cogs.utils.redis
+    [x] cogs.utils.redis
     [ ] cogs.utils.proposal_cache
     [ ] cogs.utils.database
     [ ] cogs.utils.custom_context
