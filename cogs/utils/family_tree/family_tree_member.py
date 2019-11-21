@@ -404,8 +404,6 @@ class FamilyTreeMember(object):
 
         # Get the generation spanning tree
         root_user = self.get_root(guild=guild)
-        if customised_tree_user == None:
-            customised_tree_user = CustomisedTreeUser.get(self.id)
         gen_span = root_user.generational_span(guild=guild)
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
@@ -416,8 +414,6 @@ class FamilyTreeMember(object):
 
         # Get the generation spanning tree
         root_user = self.get_root()
-        if customised_tree_user == None:
-            customised_tree_user = CustomisedTreeUser.get(self.id)
         gen_span = root_user.generational_span(expand_upwards=True, add_parent=True)
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 

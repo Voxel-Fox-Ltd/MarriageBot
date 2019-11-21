@@ -397,7 +397,8 @@ class Information(Cog):
 
         # Write their treemaker code to a file
         start_time = dt.now()
-        ctu = await CustomisedTreeUser.get(ctx.author.id)
+        async with self.bot.database() as db:
+            ctu = await CustomisedTreeUser.get(ctx.author.id, db)
         async with ctx.channel.typing():
             if stupid_tree:
                 dot_code = await tree.to_full_dot_script(self.bot, ctu)

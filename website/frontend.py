@@ -94,7 +94,7 @@ async def index(request:Request):
     })
     if not session.get('user_id'):
         return {
-            'user_info': None, 
+            'user_info': None,
             'login_url': login_url
         }
     return HTTPFound(location=f"/settings")
@@ -115,11 +115,11 @@ async def reset(request:Request):
     })
     if not session.get('user_id'):
         return {
-            'user_info': None, 
+            'user_info': None,
             'login_url': login_url
         }
     return {
-        'user_info': session['user_info'], 
+        'user_info': session['user_info'],
     }
 
 
@@ -141,7 +141,7 @@ async def login(request:Request):
     # Generate the post data
     data = {
         'grant_type': 'authorization_code',
-        'code': code, 
+        'code': code,
         'scope': OAUTH_SCOPE
     }
     data.update(oauth_data)
@@ -200,7 +200,7 @@ async def settings(request:Request):
 
     # Give them the page
     return {
-        'user_info': session['user_info'], 
+        'user_info': session['user_info'],
     }
 
 
@@ -226,7 +226,7 @@ async def user_settings(request:Request):
             'highlighted_node': request.query.get('highlighted_node'),
             'background': request.query.get('background'),
             'direction': request.query.get('direction', 'TB'),
-        } 
+        }
         colours = {}
         for i, o in colours_raw.items():
             if o == None:
@@ -246,7 +246,7 @@ async def user_settings(request:Request):
     # Give all the data to the page
     return {
         'user_info': session['user_info'],
-        'hex_strings': colours, 
+        'hex_strings': colours,
         'tree_preview_url': tree_preview_url,
     }
 
@@ -257,9 +257,8 @@ async def user_settings_post_handler(request:Request):
 
     try:
         colours_raw = await request.post()
-    except Exception as e: 
-        raise e 
-        pass
+    except Exception as e:
+        raise e
     colours_raw = dict(colours_raw)
     direction = colours_raw.pop("direction")
     colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in colours_raw.items()}
@@ -267,7 +266,7 @@ async def user_settings_post_handler(request:Request):
     session = await get_session(request)
     user_id = session['user_id']
     async with request.app['database']() as db:
-        ctu = await CustomisedTreeUser.get(user_id, db=db)
+        ctu = await CustomisedTreeUser.get(user_id, db)
     for i, o in colours.items():
         setattr(ctu, i, o)
     async with request.app['database']() as db:
@@ -290,7 +289,7 @@ async def tree_preview(request:Request):
         'highlighted_node': request.query.get('highlighted_node'),
         'background': request.query.get('background'),
         'direction': request.query.get('direction'),
-    } 
+    }
     colours = {}
     for i, o in colours_raw.items():
         if o == None or o == 'transparent':
@@ -415,7 +414,7 @@ async def logout(request:Request):
     '''
     Handles logout
     '''
-    
+
     session = await get_session(request)
     session.invalidate()
     return HTTPFound(location='/')

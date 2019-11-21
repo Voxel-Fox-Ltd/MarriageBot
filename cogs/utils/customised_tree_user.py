@@ -16,10 +16,7 @@ class CustomisedTreeUser(object):
         'highlighted_node', 'background', 'direction'
     )
 
-    def __init__(self, user_id:int, *, edge:int=None, node:int=None,
-                 font:int=None, highlighted_font:int=None,
-                 highlighted_node:int=None, background:int=None,
-                 direction:str="TB"):
+    def __init__(self, user_id:int, *, edge:int=None, node:int=None, font:int=None, highlighted_font:int=None, highlighted_node:int=None, background:int=None, direction:str="TB"):
         self.id = user_id
         self.edge = edge
         self.node = node
@@ -31,14 +28,10 @@ class CustomisedTreeUser(object):
         self.all_users[user_id] = self
 
     @classmethod
-    async def get(cls, key, db:DBC=None):
+    async def get(cls, key, database:DBC):
         """Grabs a user's data from the database"""
 
-        if db:
-            data = await db('SELECT * FROM customisation WHERE user_id=$1', key)
-        else:
-            async with cls.bot.database() as db:
-                data = await db('SELECT * FROM customisation WHERE user_id=$1', key)
+        data = await database('SELECT * FROM customisation WHERE user_id=$1', key)
         if data:
             return cls(**data[0])
         return cls(key)
@@ -49,36 +42,45 @@ class CustomisedTreeUser(object):
         that can be passed directly to Graphviz
         Provides deafults"""
 
+        default_hex = self.get_default_hex()
+
+        # Edgs
         if self.edge is not None:
             edge =  f'"#{self.edge:06X}"' if self.edge >= 0 else 'transparent'
         else:
-            edge = self.get_default_hex()['edge']
+            edge = default_hex['edge']
 
+        # Font colour
         if self.font is not None:
             font =  f'"#{self.font:06X}"' if self.font >= 0 else 'transparent'
         else:
-            font = self.get_default_hex()['font']
+            font = default_hex['font']
 
+        # Node background colour
         if self.node is not None:
             node =  f'"#{self.node:06X}"' if self.node >= 0 else 'transparent'
         else:
-            node = self.get_default_hex()['node']
+            node = default_hex['node']
 
+        # Highlighted node font colour
         if self.highlighted_font is not None:
             highlighted_font =  f'"#{self.highlighted_font:06X}"' if self.highlighted_font >= 0 else 'transparent'
         else:
-            highlighted_font = self.get_default_hex()['highlighted_font']
+            highlighted_font = default_hex['highlighted_font']
 
+        # Highlighted node background colour
         if self.highlighted_node is not None:
             highlighted_node =  f'"#{self.highlighted_node:06X}"' if self.highlighted_node >= 0 else 'transparent'
         else:
-            highlighted_node = self.get_default_hex()['highlighted_node']
+            highlighted_node = default_hex['highlighted_node']
 
+        # Background colour
         if self.background is not None:
             background =  f'"#{self.background:06X}"' if self.background >= 0 else 'transparent'
         else:
-            background = self.get_default_hex()['background']
+            background = default_hex['background']
 
+        # Return data
         return {
             'edge': edge,
             'node': node,
@@ -91,8 +93,10 @@ class CustomisedTreeUser(object):
 
     @property
     def unquoted_hex(self):
-        """The same as self.hex, but strips out the quote marks from the items"""
+        """The same as self.hex, but strips out the quote marks from the items
+        Pretty much directly passed into a website's CSS"""
 
+        # Just strip the quote marks from the items
         return {i: o.strip('"') for i, o in self.hex.items()}
 
     @classmethod
@@ -111,10 +115,10 @@ class CustomisedTreeUser(object):
 
     @classmethod
     def get_default_unquoted_hex(cls):
-        """The default hex codes that are used, unquoted"""
+        """The default hex codes that are used, unquoted
+        Pretty much directly passed into a website's CSS"""
 
         return {i: o.strip('"') for i, o in cls.get_default_hex().items()}
-
 
     async def save(self, db:DBC):
         """Saves all this lovely cached data into the database"""
