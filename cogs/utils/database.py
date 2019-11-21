@@ -35,7 +35,7 @@ class DatabaseConnection(object):
     async def disconnect(self) -> None:
         """Releases a connection from the pool back to the mix"""
 
-        if isinstance(self.conn, asyncpg.Connection)
+        if isinstance(self.conn, asyncpg.Connection):
             await self.pool.release(self.conn)
         elif isinstance(self.conn, asyncpg.transaction.Transaction):
             await self.conn.commit()

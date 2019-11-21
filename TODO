@@ -29,7 +29,7 @@
     [x] cogs.utils.database
     [x] cogs.utils.custom_context
     [x] cogs.utils.custom_cog
-    [ ] cogs.utils.custom_bot  # TODO come back to this after all utils
+    [x] cogs.utils.custom_bot
     [x] cogs.utils.customised_tree_user
     [x] cogs.utils.converters
     [x] cogs.utils.colour_dict

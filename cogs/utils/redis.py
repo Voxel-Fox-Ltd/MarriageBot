@@ -22,7 +22,7 @@ class RedisConnection(object):
         address = config.get('host'), config.get('port')
         RedisConnection.pool = await aioredis.create_redis_pool(address, **config)
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> 'cogs.utils.redis.RedisConnection':
         self.conn = self.pool
         return self
 
@@ -30,7 +30,7 @@ class RedisConnection(object):
         pass
 
     @classmethod
-    async def get_connection(cls) -> 'RedisConnection':
+    async def get_connection(cls) -> 'cogs.utils.redis.RedisConnection':
         """Acquires a connection from the connection pool"""
 
         conn = cls.pool

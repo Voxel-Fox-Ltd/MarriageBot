@@ -85,7 +85,7 @@ else:
 if args.shardcount is None and (args.min or args.max):
     logger.critical("You set a min/max shard handler but no shard count")
     exit(1)
-if args.shardcount is not None and not (args.min and args.max):
+if args.shardcount is not None and not (args.min is not None and args.max is not None):
     logger.critical("You set a shardcount but not min/max shards")
     exit(1)
 

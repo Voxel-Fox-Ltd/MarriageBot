@@ -3,14 +3,12 @@ import typing
 import asyncpg
 
 # from cogs.utils.custom_bot import CustomBot
-from cogs.utils.database import DatabaseConnection as DBC
+from cogs.utils.database import DatabaseConnection
 
 
 class CustomisedTreeUser(object):
     """A class to hold the custom tree setup for a given user"""
 
-    all_users: typing.Dict[int, 'CustomisedTreeUser'] = {}
-    bot: 'cogs.utils.custom_bot.CustomBot' = None
     __slots__ = (
         'id', 'edge', 'node', 'font', 'highlighted_font',
         'highlighted_node', 'background', 'direction'
@@ -25,10 +23,9 @@ class CustomisedTreeUser(object):
         self.highlighted_node = highlighted_node
         self.background = background
         self.direction = direction
-        self.all_users[user_id] = self
 
     @classmethod
-    async def get(cls, key, database:DBC):
+    async def get(cls, key, database:DatabaseConnection):
         """Grabs a user's data from the database"""
 
         data = await database('SELECT * FROM customisation WHERE user_id=$1', key)
@@ -120,7 +117,7 @@ class CustomisedTreeUser(object):
 
         return {i: o.strip('"') for i, o in cls.get_default_hex().items()}
 
-    async def save(self, db:DBC):
+    async def save(self, db:DatabaseConnection):
         """Saves all this lovely cached data into the database"""
 
         try:
