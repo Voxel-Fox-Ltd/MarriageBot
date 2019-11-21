@@ -5,7 +5,6 @@ import typing
 
 from discord import User, Guild
 
-# from cogs.utils.custom_bot import CustomBot
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relation_simplifier import Simplifier
 
@@ -18,9 +17,7 @@ class FamilyTreeMember(object):
     """A class representing a member of a family"""
 
     all_users: typing.Dict[typing.Tuple[int, int], 'FamilyTreeMember'] = {}
-    NAME_SUBSTITUTION = regex.compile(r'[^\x00-\x7F\x80-\xFF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]|\"|\(|\)')
     INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
-    bot: 'cogs.utils.custom_bot.CustomBot' = None
     __slots__ = ('id', '_children', '_parent', '_partner', 'tree_id', '_guild_id')
 
     def __init__(self, discord_id:int, children:list=None, parent_id:int=None, partner_id:int=None, guild_id:int=0):
@@ -262,7 +259,7 @@ class FamilyTreeMember(object):
                 if x: return x
         return None
 
-    async def generate_gedcom_script(self) -> str:
+    async def generate_gedcom_script(self, bot) -> str:
         """
         Gives you the INDI and FAM gedcom strings for this family tree
         Includes their spouse, if they have one, and any children
@@ -285,7 +282,7 @@ class FamilyTreeMember(object):
         full_family = self.span(add_parent=True, expand_upwards=True)
 
         for i in full_family:
-            name = await self.bot.get_name(i.id)
+            name = await bot.get_name(i.id)
             working_text = [
                 f'0 @I{i.tree_id}@ INDI',
                 f'\t1 NAME {name}'
@@ -425,17 +422,15 @@ class FamilyTreeMember(object):
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
     async def to_dot_script_from_generational_span(self, bot, gen_span:dict, customised_tree_user:CustomisedTreeUser) -> str:
-        """
-        Generates the DOT script from a given generational span
-        """
+        """Generates the DOT script from a given generational span"""
 
-        ctu = customised_tree_user
-        gen_span: typing.Dict[int, typing.List[self.__class__]] = gen_span  # Wew let's just make VSC happy
+        ctu = customised_tree_user  # Shorten this variable name
+        gen_span: typing.Dict[int, typing.List[self.__class__]] = gen_span  # Just set up some type hinting
 
         # Find my own depth
         my_depth: int = None
-        for depth, l in gen_span.items():
-            if self in l:
+        for depth, depth_list in gen_span.items():
+            if self in depth_list:
                 my_depth = depth
                 break
 
@@ -470,7 +465,7 @@ class FamilyTreeMember(object):
         for generation in gen_span.values():
             for i in generation:
                 all_users.append(i)
-                name = await self.bot.get_name(i.id)
+                name = await bot.get_name(i.id)
                 name = name.replace('"', '\\"')
                 if i == self:
                     all_text += f'{i.id}[label="{name}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];'

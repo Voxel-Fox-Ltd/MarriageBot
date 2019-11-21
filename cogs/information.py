@@ -330,7 +330,7 @@ class Information(Cog):
         if root == None:
             root = ctx.author
         async with ctx.channel.typing():
-            text = await FamilyTreeMember.get(root.id, ctx.family_guild_id).generate_gedcom_script()
+            text = await FamilyTreeMember.get(root.id, ctx.family_guild_id).generate_gedcom_script(self.bot)
         file = BytesIO(text.encode())
         await ctx.send(file=File(file, filename=f'Tree of {root.id}.ged'))
 

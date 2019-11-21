@@ -13,7 +13,7 @@
     [x] cogs.utils.random_text.adopt
 
     [x] cogs.utils.family_tree.relation_simplifier
-    [ ] cogs.utils.family_tree.family_tree_member
+    [x] cogs.utils.family_tree.family_tree_member
 
     [ ] cogs.utils.checks.user_block
     [ ] cogs.utils.checks.is_voter
