@@ -323,6 +323,14 @@ class CustomBot(AutoShardedBot):
 
         return self.config['owners']
 
+    async def fetch_support_guild(self):
+        """Fetches the support guild from the API"""
+
+        guild_id = self.config.get('guild_id')
+        if guild_id in [None, '']:
+            self.logger.warn("No guild ID set in the bot config")
+        guild = await self.fetch_guild(guild_id)
+        self.support_guild = guild
 
     def get_extensions(self) -> list:
         """Grab a list of loadable cogs from the cogs dir using blob"""

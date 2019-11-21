@@ -8,7 +8,7 @@ from discord.ext.commands.cooldowns import BucketType
 
 from cogs.utils.custom_bot import CustomBot
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils.checks.user_block import BlockedUserError, UnblockedMember
+from cogs.utils.converters.user_block import BlockedUserError, UnblockedMember
 from cogs.utils.acceptance_check import AcceptanceCheck
 from cogs.utils.custom_cog import Cog
 from cogs.utils.checks.bot_is_ready import bot_is_ready, BotNotReady

@@ -15,14 +15,14 @@
     [x] cogs.utils.family_tree.relation_simplifier
     [x] cogs.utils.family_tree.family_tree_member
 
-    [ ] cogs.utils.checks.user_block
-    [ ] cogs.utils.checks.is_voter
-    [ ] cogs.utils.checks.is_server_specific
-    [ ] cogs.utils.checks.is_donator
-    [ ] cogs.utils.checks.is_bot_moderator
-    [ ] cogs.utils.checks.channel_is_available
-    [ ] cogs.utils.checks.can_send_files
-    [ ] cogs.utils.checks.bot_is_ready
+    [x] cogs.utils.checks.user_block
+    [x] cogs.utils.checks.is_voter
+    [x] cogs.utils.checks.is_server_specific
+    [x] cogs.utils.checks.is_donator
+    [x] cogs.utils.checks.is_bot_moderator
+    [ ] cogs.utils.checks.channel_is_available  # TODO with website
+    [x] cogs.utils.checks.can_send_files
+    [x] cogs.utils.checks.bot_is_ready
 
     [ ] cogs.utils.redis
     [ ] cogs.utils.proposal_cache

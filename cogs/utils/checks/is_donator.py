@@ -1,43 +1,59 @@
-from discord.ext.commands import CheckFailure, Context, check
+import discord
+from discord.ext import commands
 
 
-class IsNotDonator(CheckFailure):
-    '''Catch-all for not donating errors'''
+class IsNotDonator(commands.CheckFailure):
+    """The base "not donator" error to join PayPal and Patreon"""
+
     pass
 
 
-class IsNotPatreon(IsNotDonator): pass
-class IsNotPaypal(IsNotDonator): pass
+class IsNotPatreon(IsNotDonator):
+    """Thrown when the given user is not a valid Patreon sub"""
+
+    pass
 
 
-async def is_patreon_predicate(bot, user, tier=1):
-    '''Returns True if the user is a Patreon sub'''
+class IsNotPaypal(IsNotDonator):
+    """Thrown when the author is not a valid PayPal donator"""
 
-    # # Make sure both settings are set
-    # if bot.config.get('guild') in [None, ''] or bot.config.get('patreon_roles') in [None, '']:
-    #     return None
+    pass
 
-    # Set the support guild
+
+async def is_patreon_predicate(bot:commands.Bot, user:discord.User, tier:int=1):
+    """Returns True if the user is a Patreon sub
+
+    Params:
+        bot: commands.Bot
+            The bot object
+        user: discord.User
+            The user (or generic snowflake object) that we want to check has the Patreon role
+        tier: int = 1
+            The tier of Patron we're lookin for
+    """
+
+    # Set the support guild if we have to
     if not bot.support_guild:
-        guild_id = bot.config['guild_id']
-        guild = await bot.fetch_guild(guild_id)
-        bot.support_guild = guild
+        try:
+            await bot.fetch_support_guild()
+        except (discord.NotFound, discord.Forbidden, discord.HTTPException):
+            return False
 
     # Get member and look for role
     try:
         member = await bot.support_guild.fetch_member(user.id)
-        if bot.config['patreon_roles'][tier-1] in [i.id for i in member.roles]:
+        if bot.config['patreon_roles'][tier-1] in member._roles:
             return True
-    except Exception:
+    except (discord.NotFound, discord.Forbidden, discord.HTTPException):
         pass
     return False
 
 
 def is_patreon(tier:int=1):
-    '''The check to make sure that a given author is a Patreon sub'''
+    """The check to make sure that a given author is a Patreon sub"""
 
-    async def predicate(ctx:Context):
+    async def predicate(ctx:commands.Context):
         if await is_patreon_predicate(ctx.bot, ctx.author, tier):
-            return True 
+            return True
         raise IsNotPatreon()
-    return check(predicate)
+    return commands.check(predicate)
