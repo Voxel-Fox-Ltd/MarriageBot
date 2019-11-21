@@ -31,8 +31,8 @@
     [x] cogs.utils.custom_cog
     [ ] cogs.utils.custom_bot
     [x] cogs.utils.customised_tree_user
-    [ ] cogs.utils.converters
-    [ ] cogs.utils.colour_dict
+    [x] cogs.utils.converters
+    [x] cogs.utils.colour_dict
     [ ] cogs.utils.acceptance_check
 
     [ ] cogs.user_update_event
