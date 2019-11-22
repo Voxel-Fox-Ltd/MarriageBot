@@ -35,7 +35,7 @@
     [x] cogs.utils.colour_dict
     [x] cogs.utils.acceptance_check
 
-    [ ] cogs.user_update_event
+    [x] cogs.user_update_event
     [ ] cogs.simulation
     [ ] cogs.server_specific
     [ ] cogs.redis_handler
