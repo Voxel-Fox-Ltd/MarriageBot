@@ -143,11 +143,6 @@ class CustomBot(commands.AutoShardedBot):
             self.logger.critical("Couldn't read config file")
             raise e
 
-    def run(self):
-        """Runs the bot wew"""
-
-        super().run(self.config['token'])
-
     async def start(self, token:str=None):
         """Start the bot with the given token, create the startup method task"""
 

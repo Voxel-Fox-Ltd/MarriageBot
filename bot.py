@@ -109,12 +109,13 @@ if __name__ == '__main__':
     # Run the bot
     try:
         logger.info("Running bot")
-        bot.run()
+        loop.run_until_complete(bot.start())
     except KeyboardInterrupt:
-        pass
+        logger.info("Logging out bot")
+        loop.run_until_complete(bot.logout())
 
     # We're now done running the bot, time to clean up and close
     logger.info("Closing database pool")
-    loop.run_until_complete(DatabaseConnection.pool.close())
+    loop.run_until_complete(utils.DatabaseConnection.pool.close())
     logger.info("Closing asyncio loop")
     loop.close()
