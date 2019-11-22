@@ -1,4 +1,4 @@
-from random import randint, choice
+import random
 
 from discord import Embed
 from discord.ext.commands import Context, Group, command
@@ -12,7 +12,7 @@ class Help(utils.Cog):
         super().__init__(bot)
         self.original_help = bot.get_command('help')
         bot.remove_command('help')
-    
+
     def cog_unload(self):
         self.bot.add_comand(self.original_help)
 
@@ -21,9 +21,7 @@ class Help(utils.Cog):
 
     @command(name='help', aliases=['commands'], hidden=True)
     async def newhelp(self, ctx:Context, *, command_name:str=None):
-        '''
-        Gives you the new help command uwu
-        '''
+        """Gives you the new help command uwu"""
 
         # Get all the cogs
         if not command_name:
@@ -49,7 +47,7 @@ class Help(utils.Cog):
             for command in cog:
                 runnable = command.hidden == False and command.enabled == True
                 if runnable:
-                    runnable_cog.append(command) 
+                    runnable_cog.append(command)
             runnable_cog.sort(key=lambda x: x.name.lower())
             if len(runnable_cog) > 0:
                 runnable_commands.append(runnable_cog)
@@ -60,7 +58,7 @@ class Help(utils.Cog):
         # Make an embed
         help_embed = Embed()
         help_embed.set_author(name=self.bot.user, icon_url=self.bot.user.avatar_url)
-        help_embed.colour = randint(1, 0xffffff)
+        help_embed.colour = random.randint(1, 0xffffff)
 
         # Add commands to it
         if command_name:
@@ -71,14 +69,14 @@ class Help(utils.Cog):
                 name=cog_commands[0].cog_name,
                 value=value
             )
-        
+
         # Send it to the user
         try:
             await ctx.author.send(embed=help_embed)
             if ctx.guild:
-                await ctx.send('Sent you a PM!')
+                await ctx.send('Sent you a DM!')
         except Exception:
-            await ctx.send("I couldn't send you a PM :c")
+            await ctx.send("I couldn't send you a DM :c")
 
 
 def setup(bot:utils.CustomBot):

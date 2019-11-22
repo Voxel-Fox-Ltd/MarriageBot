@@ -14,7 +14,6 @@ class Cog(OriginalCog):
         else:
             self.log_handler = bot.logger.getChild(self.get_class_name('cog'))
 
-
     def get_class_name(self, *prefixes, sep:str='.'):
         """Gets the name of the class with any given prefixes, with sep as a seperator"""
         return sep.join(list(prefixes) + [self.__class__.__name__])
