@@ -2,3 +2,4 @@ from discord.ext.commands import Context  # for utils.Context in case I want a c
 
 from cogs.utils.custom_cog import Cog
 from cogs.utils.custom_bot import CustomBot
+from cogs.utils.database import DatabaseConnection
