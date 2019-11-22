@@ -5,7 +5,7 @@ from aiohttp import ClientSession
 from aiohttp.web import RouteTableDef, Request, HTTPFound, static, Response
 from aiohttp_session import new_session, get_session
 from aiohttp_jinja2 import template
-from ujson import dumps
+from json import dumps
 from discord import TextChannel
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
@@ -59,7 +59,7 @@ async def check_authentication(request:Request, requested_user_id:int=None):
         raise AuthenticationError("I'll deal with this later")
 
     # Returns bot and the user
-    return session, bot
+    return session, request.app['bot']
 
 
 def get_avatar(user_info:dict=dict()):
@@ -332,7 +332,7 @@ async def guild_picker(request:Request):
 
 @routes.get('/guild_settings')
 @template('guild_settings.jinja')
-async def guild_settings(request:Request):
+async def guild_settings_get(request:Request):
     '''
     Shows the settings for a particular guild
     '''
@@ -377,7 +377,7 @@ async def guild_settings(request:Request):
 
 @routes.post('/guild_settings')
 @template('guild_settings.jinja')
-async def guild_settings(request:Request):
+async def guild_settings_post(request:Request):
     '''
     Shows the settings for a particular guild
     '''
