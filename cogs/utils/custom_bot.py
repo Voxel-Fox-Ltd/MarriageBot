@@ -4,6 +4,7 @@ import glob
 import logging
 from urllib.parse import urlencode
 import os
+import asyncio
 
 import aiohttp
 import discord
@@ -28,7 +29,7 @@ class CustomBot(commands.AutoShardedBot):
         # Store the config file for later
         self.config = None
         self.config_file = config_file
-        self.logger = logger or logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower()).getChild("bot")
+        self.logger = logger or logging.getLogger("bot")
         self.reload_config()
 
         # Aiohttp session
@@ -44,7 +45,7 @@ class CustomBot(commands.AutoShardedBot):
 
     def get_invite_link(self, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
-        
+
         permissions = discord.Permissions()
         for name, value in kwargs.items():
             setattr(permissions, name, value)
@@ -69,7 +70,7 @@ class CustomBot(commands.AutoShardedBot):
 
         # Close database connection
         await db.disconnect()
-        
+
     def get_uptime(self) -> float:
         """Gets the uptime of the bot in seconds
         Uptime is a bit of a misnomer, since it starts when the instance is created, but
@@ -155,10 +156,11 @@ class CustomBot(commands.AutoShardedBot):
         self.logger.info("Running original D.py start method")
         await super().start(token or self.config['token'])
 
-    async def logout(self):
-        """Log out the bot and kill all of its running processes"""
+    async def close(self, *args, **kwargs):
+        """The original bot close method, but with the addition of closing the
+        aiohttp ClientSession that was opened on bot creation"""
 
-        self.logger.info("Closing aiohttp ClientSession")
-        await self.session.close()
-        self.logger.info("Running original D.py logout method")
-        await super().logout()
+        self.logger.debug("Closing aiohttp ClientSession")
+        await asyncio.wait_for(self.session.close(), timeout=None)
+        self.logger.debug("Running original D.py logout method")
+        await super().close(*args, **kwargs)
