@@ -39,7 +39,7 @@
     [x] cogs.simulation
     [x] cogs.server_specific
     [x] cogs.redis_handler
-    [ ] cogs.parentage
+    [x] cogs.parentage
     [x] cogs.misc
     [ ] cogs.marriage
     [ ] cogs.information

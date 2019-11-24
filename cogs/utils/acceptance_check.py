@@ -1,4 +1,6 @@
+import asyncio
 import re as regex
+import typing
 
 import discord
 
@@ -8,11 +10,13 @@ class AcceptanceCheck(object):
 
     PROPOSAL_YES = regex.compile(r"(?:i do)|(?:yes)|(?:of course)|(?:definitely)|(?:absolutely)|(?:yeah)|(?:yea)|(?:sure)|(?:accept)", regex.IGNORECASE)
     PROPOSAL_NO = regex.compile(r"(?:i don't)|(?:i dont)|(?:no)|(?:to think)|(?:i'm sorry)|(?:im sorry)", regex.IGNORECASE)
-    __slots__ = ('target_id', 'channel_id')
+    TIMEOUT = asyncio.TimeoutError
+    __slots__ = ('target_id', 'channel_id', 'response')
 
-    def __init__(self, target_id:int, channel_id:int=None):
-        self.target_id = target_id
-        self.channel_id = channel_id
+    def __init__(self, target:typing.Union[discord.User, int], channel:typing.Union[discord.User, int]=None):
+        self.target_id = getattr(target, 'id', target)
+        self.channel_id = getattr(channel, 'id', channel)
+        self.response = None
 
     def check(self, message:discord.Message):
         """The check that should be passed to a bot.wait_for method"""
@@ -31,5 +35,16 @@ class AcceptanceCheck(object):
 
         # Return the right stuff
         if any([yes_regex, no_regex]):
-            return 'NO' if no_regex else 'YES' # Both of these are truthy
-        return False
+            self.response = 'NO' if no_regex else 'YES' # Both of these are truthy
+        return self.response
+
+    async def wait_for_response(self, bot):
+        """Runs all the fancy bot.wait_for stuff right here so I can just reuse it elsewhere"""
+
+        try:
+            if bot.get_user(self.target_id).bot:
+                self.response = 'YES'
+            await bot.wait_for('message', check=self.check, timeout=60.0)
+        except self.TIMEOUT as e:
+            raise e
+        return self.response

@@ -16,3 +16,4 @@ from cogs.utils.custom_cog2 import Cog
 from cogs.utils import random_text
 from cogs.utils import errors
 from cogs.utils import checks
+from cogs.utils import converters

@@ -110,6 +110,12 @@ class FamilyTreeMember(object):
             return None
         return Simplifier().simplify(text)
 
+    @property
+    def family_member_count(self) -> int:
+        """Returns the number of people in the family"""
+
+        return len(self.span(add_parent=True, expand_upwards=True))
+
     def span(self, people_list:list=None, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None) -> list:
         """
         Gets a list of every user related to this one
