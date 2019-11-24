@@ -135,7 +135,7 @@ class OwnerOnly(utils.Cog):
             return
 
         # Get columns and widths
-        column_headers = list(x[0].keys())
+        column_headers = list(data[0].keys())
         column_max_lengths = {i:0 for i in column_headers}
         for row in data:
             for header in column_headers:
