@@ -79,6 +79,10 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(error)
 
+        # NSFW channel
+        elif isinstance(error, commands.NSFWChannelRequired):
+            return await ctx.send("This command can't be run in a non-NSFW channel.")
+
         # Disabled command
         elif isinstance(error, commands.DisabledCommand):
             return await ctx.send("This command has been temporarily disabled. Apologies for any inconvenience.")

@@ -4,6 +4,7 @@ from cogs.utils.redis import RedisConnection
 
 from cogs.utils.proposal_cache import ProposalCache
 from cogs.utils.shallow_user import ShallowUser
+from cogs.utils.acceptance_check import AcceptanceCheck
 
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.family_tree.relation_simplifier import Simplifier

@@ -36,7 +36,7 @@
     [x] cogs.utils.acceptance_check
 
     [x] cogs.user_update_event
-    [ ] cogs.simulation
+    [x] cogs.simulation
     [ ] cogs.server_specific
     [ ] cogs.redis_handler
     [ ] cogs.parentage
