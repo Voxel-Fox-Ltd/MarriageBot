@@ -1,11 +1,8 @@
-# from random import randint, choice
 import re as regex
 import random
 
-# from discord import Embed, TextChannel, Permissions
 import discord
 from discord.ext import commands
-# from discord.ext.commands import Context
 
 
 class CustomContext(commands.Context):
