@@ -1,10 +1,10 @@
-from cogs import utils
+from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
 
 
-class CopulateRandomText(utils.random_text.TextTemplate):
+class CopulateRandomText(TextTemplate):
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_accepted(instigator=None, target=None):
         return [
             "{instigator.mention} and {target.mention} got frisky~",
@@ -39,14 +39,14 @@ class CopulateRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_denied(instigator=None, target=None):
         return [
             "Looks like they don't wanna smash, {instigator.mention}!",
             "Guess it's back to the porn mags for you, {instigator.mention}. :/",
             "Sucks to be you, buckaroo!",
             "Guess your dick game isn't strong enough.",
-            "¯\_(ツ)_/¯",
+            "¯\\_(ツ)_/¯",
             "Haters are your motivators~",
             "Bing bong, they don't want your ding dong!",
             "No means no. Sorry!",
@@ -60,7 +60,7 @@ class CopulateRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def proposal_timed_out(instigator=None, target=None):
         return [
             "Looks like the request timed out, {instigator.mention}!",
@@ -69,12 +69,12 @@ class CopulateRandomText(utils.random_text.TextTemplate):
             "If you're really that horny, go and watch some porn(y).",
             "You're all alone with no one to bone.",
             "Sorry {instigator.mention}",
-            "¯\_(ツ)_/¯ {instigator.mention}",
+            "¯\\_(ツ)_/¯ {instigator.mention}",
             "Seems they got cold feet! Sorry buddy!",
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def valid_target(instigator=None, target=None):
         return [
             "Hey, {target.mention}, do you wanna?",
@@ -91,7 +91,7 @@ class CopulateRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def proposing_to_themselves(instigator=None, target=None):
         return [
             "Not on my Christian Minecraft server.",
@@ -103,7 +103,7 @@ class CopulateRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_bot(instigator=None, target=None):
         return [
             "Hey {instigator.mention}, isn't that illegal?",
@@ -113,7 +113,7 @@ class CopulateRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_me(instigator=None, target=None):
         return [
             "I'm a bit out of your league, don't you think?",
@@ -130,7 +130,7 @@ class CopulateRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_relation(instigator=None, target=None):
         return [
             "This ain't the South, partner. Stop.",

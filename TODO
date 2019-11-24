@@ -40,7 +40,7 @@
     [ ] cogs.server_specific
     [ ] cogs.redis_handler
     [ ] cogs.parentage
-    [ ] cogs.misc
+    [x] cogs.misc
     [ ] cogs.marriage
     [ ] cogs.information
     [ ] cogs.help

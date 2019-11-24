@@ -1,10 +1,10 @@
-from cogs import utils
+from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
 
 
-class MakeParentRandomText(utils.random_text.TextTemplate):
+class MakeParentRandomText(TextTemplate):
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def valid_target(instigator=None, target=None):
         return [
             "{instigator.mention} wants to be your child, {target.mention}. Do you accept?",
@@ -16,7 +16,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_family(instigator=None, target=None):
         return [
             "They're already part of the family you're in, {instigator.mention}.",
@@ -26,7 +26,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_me(instigator=None, target=None):
         return [
             "I'm afraid I'll have to decline, but thank you for the offer.",
@@ -38,7 +38,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_bot(instigator=None, target=None):
         return [
             "Bots don't make _terribly_ good parents, but I'll allow it, {instigator.mention}. Have fun with your new family!",
@@ -48,7 +48,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_instigator(instigator=None, target=None):
         return [
             "Hold your horses, {instigator.mention}, you've already made a proposition to someone.",
@@ -59,7 +59,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_instigator(instigator=None, target=None):
         return [
             "They've just proposed to someone. Give it a minute.",
@@ -69,7 +69,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_target(instigator=None, target=None):
         return [
             "Shouldn't you respond to your other question first, {instigator.mention}?",
@@ -79,7 +79,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_target(instigator=None, target=None):
         return [
             "Oops, looks like someone else asked first. Just wait a minute and see what they say.",
@@ -89,7 +89,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_you(instigator=None, target=None):
         return [
             "Oh, ha ha, very funny.",
@@ -100,7 +100,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_unqualified(instigator=None, target=None):
         return [
             "I know it's a strange setup, but you can only pick one of your parents, {instigator.mention}.",
@@ -110,7 +110,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_timeout(instigator=None, target=None):
         return [
             "Sorry, {instigator.mention}, but back to the orphanage with you.",
@@ -123,7 +123,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_accepted(instigator=None, target=None):
         return [
             "{instigator.mention}, meet your new parent, {target.mention}!",
@@ -134,7 +134,7 @@ class MakeParentRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_denied(instigator=None, target=None):
         return [
             "Sorry, {instigator.mention}, but they said no.",

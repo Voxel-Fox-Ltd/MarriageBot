@@ -1,10 +1,10 @@
-from cogs import utils
+from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
 
 
-class ProposeRandomText(utils.random_text.TextTemplate):
+class ProposeRandomText(TextTemplate):
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def valid_target(instigator=None, target=None):
         return [
             "{target.mention}, do you accept {instigator.mention}'s proposal?",
@@ -38,7 +38,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_unqualified(instigator=None, target=None):
         return [
             "I hate to tell you this, {instigator.mention}, but they're already married...",
@@ -54,7 +54,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_unqualified(instigator=None, target=None):
         return [
             "Maybe you should wait until after you're divorced, {instigator.mention}.",
@@ -67,7 +67,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_family(instigator=None, target=None):
         return [
             "That... that's a family member of yours, {instigator.mention}...",
@@ -80,7 +80,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_instigator(instigator=None, target=None):
         return [
             "You've already proposed to someone, {instigator.mention}, just wait for a response.",
@@ -92,7 +92,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_target(instigator=None, target=None):
         return [
             "Sorry but you've gotta answer your current proposal before you can make one of your own.",
@@ -103,7 +103,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_instigator(instigator=None, target=None):
         return [
             "I'm afraid they've already proposed to someone. Give it a minute - see how it goes.",
@@ -114,7 +114,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_target(instigator=None, target=None):
         return [
             "They're a popular choice, I see. Wait to see what they say to the other proposal they have before trying yourself.",
@@ -123,7 +123,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_me(instigator=None, target=None):
         return [
             "I'm flattered, but my heart belongs to another.",
@@ -146,7 +146,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_bot(instigator=None, target=None):
         return [
             "To the best of my knowledge, most robots can't consent.",
@@ -158,7 +158,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_you(instigator=None, target=None):
         return [
             "That is you. You cannot marry the you.",
@@ -171,7 +171,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_accepted(instigator=None, target=None):
         return [
             "{instigator.mention}, {target.mention}, I now pronounce you married.",
@@ -181,7 +181,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_denied(instigator=None, target=None):
         return [
             "That's fair. The marriage has been called off.",
@@ -194,7 +194,7 @@ class ProposeRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_timeout(instigator=None, target=None):
         return [
             "{instigator.mention}, your proposal has timed out. Try again when they're online!",

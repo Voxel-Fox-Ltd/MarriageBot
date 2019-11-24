@@ -1,10 +1,10 @@
-from cogs import utils
+from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
 
 
-class AdoptRandomText(utils.random_text.TextTemplate):
+class AdoptRandomText(TextTemplate):
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def valid_target(instigator=None, target=None):
         return [
             "It looks like {instigator.mention} wants to adopt you, {target.mention}. What do you think?",
@@ -18,7 +18,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_family(instigator=None, target=None):
         return [
             "Sorry but you're already related to them, {instigator.mention}!",
@@ -28,7 +28,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_me(instigator=None, target=None):
         return [
             "I don't think that's appropriate.",
@@ -43,7 +43,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_bot(instigator=None, target=None):
         return [
             "I don't think bots can consent to that.",
@@ -55,7 +55,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_you(instigator=None, target=None):
         return [
             "You can't adopt yourself, as far as I know.",
@@ -66,7 +66,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_instigator(instigator=None, target=None):
         return [
             "Be patient, {instigator.mention}, wait for a response on your other proposal first!",
@@ -79,7 +79,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_target(instigator=None, target=None):
         return [
             "You need to answer your proposal first.",
@@ -89,7 +89,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_instigator(instigator=None, target=None):
 
         return [
@@ -100,7 +100,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_target(instigator=None, target=None):
         return [
             "They're a popular choice, aren't they? Give them a minute to respond to their existing proposal.",
@@ -110,7 +110,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_timeout(instigator=None, target=None):
         return [
             "Looks like you aren't even deemed a response. That's pretty rude. Try again later, {instigator.mention}!",
@@ -120,7 +120,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_accepted(instigator=None, target=None):
         return [
             "They said yes! I'm happy to introduce {instigator.mention} as your new parent, {target.mention}!",
@@ -130,7 +130,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def request_denied(instigator=None, target=None):
         return [
             "Looks like they don't want to be your child, {instigator.mention}.",
@@ -140,7 +140,7 @@ class AdoptRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def target_is_unqualified(instigator=None, target=None):
         return [
             "It looks like they have a parent already.",

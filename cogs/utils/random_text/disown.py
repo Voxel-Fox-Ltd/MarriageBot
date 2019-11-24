@@ -1,10 +1,10 @@
-from cogs import utils
+from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
 
 
-class DisownRandomText(utils.random_text.TextTemplate):
+class DisownRandomText(TextTemplate):
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def valid_target(instigator=None, target=None):
         return [
             "Oof, {target.mention}, {instigator.mention} doesn't seem to want you any more...",
@@ -19,7 +19,7 @@ class DisownRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_unqualified(instigator=None, target=None):
         return [
             "They aren't your child...",

@@ -1,10 +1,10 @@
-from cogs import utils
+from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
 
 
-class DivorceRandomText(utils.random_text.TextTemplate):
+class DivorceRandomText(TextTemplate):
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def valid_target(instigator=None, target=None):
         return [
             "Sorry, {target.mention}, looks like you're single now. Congrats, {instigator.mention}!",
@@ -19,7 +19,7 @@ class DivorceRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_unqualified(instigator=None, target=None):
         return [
             "Crazy idea, but you could try getting married first?",

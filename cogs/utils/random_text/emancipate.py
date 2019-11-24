@@ -1,10 +1,10 @@
-from cogs import utils
+from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
 
 
-class EmancipateRandomText(utils.random_text.TextTemplate):
+class EmancipateRandomText(TextTemplate):
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def valid_target(instigator=None, target=None):
         return [
             "Looks like {instigator.mention} left you, {target.mention}. I'm sorry for your loss.",
@@ -16,7 +16,7 @@ class EmancipateRandomText(utils.random_text.TextTemplate):
         ]
 
     @staticmethod
-    @utils.random_text.get_random_valid_string
+    @get_random_valid_string
     def instigator_is_unqualified(instigator=None, target=None):
         return [
             "You don't actually have a parent. This is awkward.",
