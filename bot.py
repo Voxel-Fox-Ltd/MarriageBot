@@ -4,16 +4,13 @@ import secrets
 import ssl
 import warnings
 import logging
+import asyncio
+import sys
 
-from aiohttp.web import Application, AppRunner, TCPSite
 import discord
-import aiohttp_jinja2 as jinja
-import aiohttp_session as session
-from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
-from jinja2 import FileSystemLoader
 
 from cogs import utils
-import website
+
 
 # Set up a basic logger for us to use for a lil bit
 logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
@@ -119,13 +116,20 @@ bot.database.logger.setLevel(getattr(logging, args.loglevel_redis.upper(), log_l
 bot.redis.logger.setLevel(getattr(logging, args.loglevel_database.upper(), log_level))
 
 # Create website object - this is used for the webhook handler
-app = Application(loop=bot.loop, debug=True)
-app.add_routes(website.api_routes)
-app.router.add_static('/static', os.getcwd() + '/website/static')
-app['bot'] = bot
-app['static_root_url'] = '/static'
-jinja.setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
-session.setup(app, ECS(secrets.token_bytes(32)))
+if args.noserver is False:
+    from aiohttp.web import Application, AppRunner, TCPSite
+    import aiohttp_jinja2 as jinja
+    import aiohttp_session as session
+    from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
+    from jinja2 import FileSystemLoader
+    import website
+    app = Application(loop=bot.loop, debug=True)
+    app.add_routes(website.api_routes)
+    app.router.add_static('/static', os.getcwd() + '/website/static')
+    app['bot'] = bot
+    app['static_root_url'] = '/static'
+    jinja.setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
+    session.setup(app, ECS(secrets.token_bytes(32)))
 
 
 @bot.event
