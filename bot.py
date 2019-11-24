@@ -237,7 +237,7 @@ if __name__ == '__main__':
     loop.run_until_complete(utils.DatabaseConnection.pool.close())
     logger.info("Database pool closed")
     logger.info("Closing redis pool")
-    loop.run_until_complete(utils.RedisConnection.pool.close())
+    utils.RedisConnection.pool.close()
     logger.info("Redis pool closed")
     logger.info("Closing asyncio loop")
     loop.close()

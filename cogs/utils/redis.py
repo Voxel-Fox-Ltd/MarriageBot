@@ -18,8 +18,8 @@ class RedisConnection(object):
     async def create_pool(config:dict):
         """Creates and connects the pool object"""
 
-        RedisConnection.config = config
-        address = config.get('host'), config.get('port')
+        RedisConnection.config = config.copy()
+        address = config.pop('host'), config.pop('port')
         RedisConnection.pool = await aioredis.create_redis_pool(address, **config)
 
     async def __aenter__(self) -> 'cogs.utils.redis.RedisConnection':
