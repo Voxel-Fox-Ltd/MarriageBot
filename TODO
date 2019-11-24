@@ -41,7 +41,7 @@
     [x] cogs.redis_handler
     [x] cogs.parentage
     [x] cogs.misc
-    [ ] cogs.marriage
+    [x] cogs.marriage
     [ ] cogs.information
     [x] cogs.help
     [x] cogs.guild_event

@@ -33,28 +33,24 @@ class Parentage(utils.Cog):
 
         # See if our user already has a parent
         if instigator_tree._parent:
-            await ctx.send(text_processor.instigator_is_unqualified())
-            return
+            return await ctx.send(text_processor.instigator_is_unqualified())
 
         # See if they're already related
         async with ctx.channel.typing():
             relation = instigator_tree.get_relation(target_tree)
         if relation and not self.bot.allows_incest(ctx.guild.id):
-            await ctx.send(text_processor.target_is_family())
-            return
+            return await ctx.send(text_processor.target_is_family())
 
         # Manage children
         children_amount = self.MAX_CHILDREN_AMOUNT[await utils.checks.get_patreon_tier(self.bot, target)]
         if len(target_tree._children) >= children_amount:
-            await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
-            return
+            return await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
 
         # Check the size of their trees
         MAX_FAMILY_MEMBERS = 500
         async with ctx.channel.typing():
             if instigator_tree.family_member_count + target_tree.family_member_count > MAX_FAMILY_MEMBERS:
-                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
-                return
+                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
 
         # Valid request - ask the other person
         if not target.bot:
@@ -104,38 +100,32 @@ class Parentage(utils.Cog):
         text_processor = utils.random_text.AdoptRandomText(self.bot, instigator, target)
         text = text_processor.process()
         if text:
-            await ctx.send(text)
-            return
+            return await ctx.send(text)
 
         # See if our user already has a parent
         if target_tree._parent:
-            await ctx.send(text_processor.target_is_unqualified())
-            return
+            return await ctx.send(text_processor.target_is_unqualified())
 
         # See if the target is a bot
         if target.bot:
-            await ctx.send(text_processor.target_is_bot())
-            return
+            return await ctx.send(text_processor.target_is_bot())
 
         # See if they're already related
         async with ctx.channel.typing():
             relation = instigator_tree.get_relation(target_tree)
         if relation and not self.bot.allows_incest(ctx.guild.id):
-            await ctx.send(text_processor.target_is_family())
-            return
+            return await ctx.send(text_processor.target_is_family())
 
         # Manage children
         children_amount = self.MAX_CHILDREN_AMOUNT[await utils.checks.get_patreon_tier(self.bot, target)]
         if len(instigator_tree._children) >= children_amount:
-            await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
-            return
+            return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
 
         # Check the size of their trees
         MAX_FAMILY_MEMBERS = 500
         async with ctx.channel.typing():
             if instigator_tree.family_member_count + target_tree.family_member_count > MAX_FAMILY_MEMBERS:
-                await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
-                return
+                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
 
         # No parent, send request
         await ctx.send(text_processor.valid_target())
@@ -189,8 +179,7 @@ class Parentage(utils.Cog):
 
         # Make sure they're the child of the instigator
         if not target_tree.id in instigator_tree._children:
-            await ctx.send(text_processor.instigator_is_unqualified())
-            return
+            return await ctx.send(text_processor.instigator_is_unqualified())
 
         # Oh hey they are - remove from database
         async with self.bot.database() as db:
@@ -221,8 +210,7 @@ class Parentage(utils.Cog):
 
         # Make sure they're the child of the instigator
         if not instigator_tree._parent:
-            await ctx.send(text_processor.instigator_is_unqualified())
-            return
+            return await ctx.send(text_processor.instigator_is_unqualified())
 
         # They do have a parent, yes
         target_tree = instigator_tree.parent
@@ -251,8 +239,7 @@ class Parentage(utils.Cog):
         user_tree = utils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
         children = user_tree.children[:]
         if not children:
-            await ctx.send("You don't have any children to disown .-.") # TODO make this text into a template
-            return
+            return await ctx.send("You don't have any children to disown .-.") # TODO make this text into a template
 
         # Disown em
         for child in children:
