@@ -43,7 +43,7 @@
     [x] cogs.misc
     [ ] cogs.marriage
     [ ] cogs.information
-    [ ] cogs.help
+    [x] cogs.help
     [x] cogs.guild_event
     [x] cogs.google_analytics
     [x] cogs.connection_event
