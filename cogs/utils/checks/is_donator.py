@@ -64,7 +64,7 @@ async def get_patreon_tier(bot:commands.Bot, user:discord.User):
         try:
             await bot.fetch_support_guild()
         except (discord.NotFound, discord.Forbidden, discord.HTTPException):
-            return False
+            return 0
 
     # Get member and look for role
     try:

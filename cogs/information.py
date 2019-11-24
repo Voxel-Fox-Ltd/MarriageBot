@@ -128,7 +128,7 @@ class Information(utils.Cog):
             size = user_tree.family_member_count
 
         # Output
-        username = await self.bot.get_name(user.id)
+        username = await self.bot.get_name(user)
         await ctx.send(f"There are `{size}` people in `{username}`'s family tree.")
 
     @commands.command(enabled=False)

@@ -25,7 +25,6 @@ class DatabaseConnection(object):
         DatabaseConnection.config = config
         DatabaseConnection.pool = await asyncpg.create_pool(**config)
 
-
     @classmethod
     async def get_connection(cls) -> 'DatabaseConnection':
         """Acquires a connection to the database from the pool"""
