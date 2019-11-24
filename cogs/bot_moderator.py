@@ -9,7 +9,7 @@ from cogs import utils
 class ModeratorOnly(utils.Cog):
 
     @commands.command()
-    @utils.checks.is_bot_moderator()
+    @utils.checks.is_bot_administrator()
     async def uncache(self, ctx:utils.Context, user:utils.converters.UserID):
         """Removes a user from the propsal cache."""
 
@@ -17,7 +17,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Sent Redis request to remove user from cache.")
 
     @commands.command()
-    @utils.checks.is_bot_moderator()
+    @utils.checks.is_bot_administrator()
     async def recache(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object"""
 
@@ -47,7 +47,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Published update.")
 
     @commands.command()
-    @utils.checks.is_bot_moderator()
+    @utils.checks.is_bot_administrator()
     async def recachefamily(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object, but through their whole family"""
 
@@ -187,7 +187,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Consider it done.")
 
     @commands.command()
-    @utils.checks.is_bot_moderator()
+    @utils.checks.is_bot_administrator()
     async def addvoter(self, ctx:utils.Context, user:utils.converters.UserID):
         """Adds a voter to the database"""
 

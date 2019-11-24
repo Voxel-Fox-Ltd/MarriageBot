@@ -13,7 +13,7 @@ class HelpCommand(utils.Cog):
         commands.BotMissingAnyRole, commands.BotMissingPermissions, commands.BotMissingRole,
         commands.MissingAnyRole, commands.MissingPermissions, commands.MissingRole,
         utils.errors.BotNotReady, utils.errors.CantSendFiles, utils.errors.IsNotDonator,
-        utils.errors.NotServerSpecific, utils.errors.IsNotVoter,
+        utils.errors.IsNotVoter, utils.errors.NotBotModerator, commands.CommandOnCooldown,
     )  # A list of errors that, even if thrown, will still allow a command to be shown
 
     @commands.command(name='help', aliases=['commands'], hidden=True)

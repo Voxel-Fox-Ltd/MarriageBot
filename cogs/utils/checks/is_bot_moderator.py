@@ -4,7 +4,19 @@ from discord.ext import commands
 from cogs.utils.checks.is_server_specific import NotServerSpecific
 
 
-async def is_bot_moderator_predicate(ctx:commands.Context):
+class NotBotModerator(commands.CommandError):
+    """Thrown when the user isn't set as a bot moderator"""
+
+    pass
+
+
+class NotBotAdministrator(NotBotModerator):
+    """Thrown when the user isn't set as a bot administrator"""
+
+    pass
+
+
+async def is_bot_administrator_predicate(ctx:commands.Context):
     """Returns True if the user is on the support guild with the bot moderator role"""
 
     # Make sure both settings are set
@@ -29,13 +41,13 @@ async def is_bot_moderator_predicate(ctx:commands.Context):
     return False
 
 
-def is_bot_moderator(permission:str='MarriageBot support'):
-    """The check for the is_bot_moderator_predicate"""
+def is_bot_administrator():
+    """Checks whether the bot is set as an administrator"""
 
     async def predicate(ctx:commands.Context):
-        if await is_bot_moderator_predicate(ctx):
+        if await is_bot_administrator_predicate(ctx):
             return True
-        raise commands.MissingPermissions([permission])
+        raise NotBotAdministrator()
     return commands.check(predicate)
 
 
@@ -45,9 +57,9 @@ def is_server_specific_bot_moderator():
     async def predicate(ctx:commands.Context):
         if not ctx.bot.config['server_specific']:
             raise NotServerSpecific()  # If it's not server specific
-        if await is_bot_moderator_predicate(ctx):
+        if await is_bot_administrator_predicate(ctx):
             return True  # If they're MB support
         if any([i for i in ctx.author.roles if i.name.casefold() in ('ssf marriagebot moderator', 'marriagebot moderator')]):
             return True  # Ye it's all good
-        raise commands.MissingRole('MarriageBot Moderator')
+        raise NotBotModerator()
     return commands.check(predicate)

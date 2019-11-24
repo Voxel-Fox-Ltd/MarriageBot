@@ -75,6 +75,16 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, utils.errors.NoSetConfig):
             return await ctx.send(f"The bot owner has not set up their config properly for this command to work.")
 
+        # Not a server specific bot moderator
+        elif isinstance(error, utils.errors.NotBotModerator):
+            if self.bot.is_server_specific:
+                return await ctx.send(f"You're missing the `MarriageBot Moderator` role required for this command.")
+            return await ctx.send(f"This instance of the bot is not set to server specific.")
+
+        # Not a bot administrator
+        elif isinstance(error, utils.errors.NotBotAdministrator):
+            return await ctx.send(f"You need to be registered as MarriageBot support to run this command.")
+
         # Argument conversion error
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(error)
