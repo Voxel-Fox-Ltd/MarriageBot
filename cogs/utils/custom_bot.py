@@ -20,7 +20,10 @@ def get_prefix(bot, message:discord.Message):
     """Gives the prefix for the bot for a given guild"""
 
     # Try and get their guild settings from the bot
-    settings = bot.guild_settings.get(message.guild.id, {'prefix': bot.config['prefix']['default_prefix']})
+    try:
+        settings = bot.guild_settings.get(message.guild.id, bot.default_guild_settings)
+    except AttributeError:
+        settings = bot.default_guild_settings
     x = settings['prefix']
 
     # If we don't respect custom prefixes, go back to the default
@@ -47,7 +50,7 @@ class CustomBot(commands.AutoShardedBot):
         self.config: dict = None
         self.config_file: str = config_file
         self.reload_config()
-        default_guild_settings = {'prefix': self.config['prefix']['default_prefix'], 'allow_incest': False}
+        self.default_guild_settings = {'prefix': self.config['prefix']['default_prefix'], 'allow_incest': False}
 
         # Set up arguments that are used in cogs and stuff
         self.bad_argument = regex.compile(r'(User|Member) "(.*)" not found')  # TODO put this into a method
@@ -71,7 +74,7 @@ class CustomBot(commands.AutoShardedBot):
         self.proposal_cache: typing.Dict[int, tuple] = utils.ProposalCache()
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
         self.blocked_users: typing.List[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
-        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: default_guild_settings.copy())
+        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.default_guild_settings.copy())
         self.dbl_votes: typing.Dict[int, dt] = {}
 
         # Put the bot object in some other classes
