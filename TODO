@@ -50,7 +50,7 @@
     [x] cogs.command_event
     [x] cogs.caleb_only
     [x] cogs.bot_moderator
-    [ ] cogs.administrator
+    [x] cogs.administrator
 
     [ ] website.frontend
     [ ] website.api
