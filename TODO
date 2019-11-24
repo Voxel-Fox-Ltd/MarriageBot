@@ -49,7 +49,7 @@
     [x] cogs.connection_event
     [x] cogs.command_event
     [x] cogs.caleb_only
-    [ ] cogs.bot_moderator
+    [x] cogs.bot_moderator
     [ ] cogs.administrator
 
     [ ] website.frontend
