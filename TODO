@@ -48,7 +48,7 @@
     [ ] cogs.google_analytics
     [x] cogs.connection_event
     [x] cogs.command_event
-    [ ] cogs.caleb_only
+    [x] cogs.caleb_only
     [ ] cogs.bot_moderator
     [ ] cogs.administrator
 

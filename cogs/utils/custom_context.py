@@ -17,6 +17,16 @@ class CustomContext(commands.Context):
         super().__init__(*args, **kwargs)
         self.original_author_id = self.author.id
 
+    async def okay(self, *, ignore_error:bool=False):
+        """Adds the okay hand reaction to the message"""
+
+        try:
+            await self.message.add_reaction("\N{OK HAND SIGN}")
+        except discord.Forbidden as e:
+            if ignore_error:
+                return
+            raise e
+
     @property
     def family_guild_id(self):
         """Returns the guild ID that should be used for family databases in this guild"""
