@@ -12,37 +12,6 @@ from cogs import utils
 class Information(utils.Cog):
     """The information cog, handling telling the user what they want to hear"""
 
-    async def tree_timeout_handler(self, ctx:utils.Context, error):
-        """Handles errors for the tree commands"""
-
-        # Get user perks
-        perk_index = utils.checks.get_patreon_tier(self.bot, ctx.author)
-        if utils.checks.is_voter_predicate(ctx) and perk_index <= 0:
-            perk_index = -1
-        if self.bot.is_server_specific:
-            perk_index = -2
-        cooldown_time = {
-            -2: 5,
-            -1: 30,
-            0: error.cooldown.per,
-            1: 15,
-            2: 15,
-            3: 5,
-        }.get(perk_index)  # perk_index = range(-2, 3) = server_specific, donator, none, patron...
-
-        # See if they're able to call the command
-        if (error.cooldown.per - cooldown_time) > error.retry_after:
-            ctx.command.reset_cooldown(ctx)
-            return await ctx.command.invoke(ctx)
-
-        # Make the error message we want to display
-        cooldown_display = f"{error.cooldown.per:.0f} seconds"
-        time_remaining = error.retry_after
-        if cooldown_time < error.cooldown.per:
-            cooldown_display = f"~~{cooldown_display}~~ {cooldown_time:.0f} seconds"
-            time_remaining = cooldown_time - (error.cooldown.per - error.retry_after)
-        await ctx.send(f"You can only use this command once every {cooldown_display} (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in {time_remaining:.1f} seconds.")
-
     @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
@@ -241,9 +210,9 @@ class Information(utils.Cog):
         dot = await asyncio.create_subprocess_exec(*[
             'dot',
             '-Tpng',
-            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz',
+            f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.gz',
             '-o',
-            f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png',
+            f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png',
             '-Gcharset=UTF-8',
             ], loop=self.bot.loop
         )
