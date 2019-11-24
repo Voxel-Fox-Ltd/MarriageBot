@@ -270,7 +270,7 @@ class CustomBot(commands.AutoShardedBot):
         """
 
         user = self.get_user(user_id) or self.shallow_users.get(user_id)
-        if user and isinstance(user, discord.BaseUser):
+        if user and isinstance(user, discord.User):
             return str(user)
         if user is None:
             user = utils.ShallowUser(user_id)

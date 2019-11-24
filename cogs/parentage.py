@@ -175,7 +175,7 @@ class Parentage(utils.Cog):
         # Variables we're gonna need for later
         instigator = ctx.author
         instigator_tree = utils.FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
-        target_tree = utils.FamilyTreeMember.get(target.id, ctx.family_guild_id)
+        target_tree = utils.FamilyTreeMember.get(target, ctx.family_guild_id)
 
         # Make sure they're the child of the instigator
         if not target_tree.id in instigator_tree._children:
