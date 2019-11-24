@@ -46,7 +46,7 @@
     [ ] cogs.help
     [x] cogs.guild_event
     [ ] cogs.google_analytics
-    [ ] cogs.connection_event
+    [x] cogs.connection_event
     [ ] cogs.command_event
     [ ] cogs.caleb_only
     [ ] cogs.bot_moderator
