@@ -1,11 +1,11 @@
-from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
+from cogs.utils.random_text.text_template import TextTemplate, random_string_class_decorator
 
 
+@random_string_class_decorator
 class DivorceRandomText(TextTemplate):
 
     @staticmethod
-    @get_random_valid_string
-    def valid_target(instigator=None, target=None):
+    def valid_target():
         return [
             "Sorry, {target.mention}, looks like you're single now. Congrats, {instigator.mention}!",
             "I hope you figure it out some day, but for now it looks like the two of you are divorced, {instigator.mention}, {target.mention}.",
@@ -19,8 +19,7 @@ class DivorceRandomText(TextTemplate):
         ]
 
     @staticmethod
-    @get_random_valid_string
-    def instigator_is_unqualified(instigator=None, target=None):
+    def instigator_is_unqualified():
         return [
             "Crazy idea, but you could try getting married first?",
             "It may seem like a stretch, but you need to marry someone before you can divorce them.",

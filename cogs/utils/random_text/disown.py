@@ -1,11 +1,11 @@
-from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
+from cogs.utils.random_text.text_template import TextTemplate, random_string_class_decorator
 
 
+@random_string_class_decorator
 class DisownRandomText(TextTemplate):
 
     @staticmethod
-    @get_random_valid_string
-    def valid_target(instigator=None, target=None):
+    def valid_target():
         return [
             "Oof, {target.mention}, {instigator.mention} doesn't seem to want you any more...",
             "Well, {instigator.mention}, say goodbye to {target.mention}.",
@@ -19,8 +19,7 @@ class DisownRandomText(TextTemplate):
         ]
 
     @staticmethod
-    @get_random_valid_string
-    def instigator_is_unqualified(instigator=None, target=None):
+    def instigator_is_unqualified():
         return [
             "They aren't your child...",
             "Have you considered disowning someone who's *actually* your child?",

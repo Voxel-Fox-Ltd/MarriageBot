@@ -1,11 +1,11 @@
-from cogs.utils.random_text.text_template import TextTemplate, get_random_valid_string
+from cogs.utils.random_text.text_template import TextTemplate, random_string_class_decorator
 
 
+@random_string_class_decorator
 class EmancipateRandomText(TextTemplate):
 
     @staticmethod
-    @get_random_valid_string
-    def valid_target(instigator=None, target=None):
+    def valid_target():
         return [
             "Looks like {instigator.mention} left you, {target.mention}. I'm sorry for your loss.",
             "You're free of {target.mention}, {instigator.mention}!",
@@ -16,8 +16,7 @@ class EmancipateRandomText(TextTemplate):
         ]
 
     @staticmethod
-    @get_random_valid_string
-    def instigator_is_unqualified(instigator=None, target=None):
+    def instigator_is_unqualified():
         return [
             "You don't actually have a parent. This is awkward.",
             "You're already an orphan though!",
