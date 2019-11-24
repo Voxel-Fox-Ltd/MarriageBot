@@ -42,7 +42,7 @@
     [x] cogs.parentage
     [x] cogs.misc
     [x] cogs.marriage
-    [ ] cogs.information
+    [x] cogs.information
     [x] cogs.help
     [x] cogs.guild_event
     [x] cogs.google_analytics
