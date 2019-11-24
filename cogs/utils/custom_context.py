@@ -64,13 +64,13 @@ class CustomContext(commands.Context):
         # Check the permissions we have
         try:
             channel_permissions: discord.Permissions = self.channel.permissions_for(self.guild.me)
-            missing_permissions = channel_permissions.is_superset(self.DESIRED_PERMISSIONS)
+            missing_permissions = not self.DESIRED_PERMISSIONS.is_subset(channel_permissions)
         except AttributeError:
             missing_permissions = False
         no_embed = any([
             missing_permissions,
             embeddify is False,
-            not isinstance(self.channel, discord.TextChannel),
+            not isinstance(self.channel, (discord.TextChannel, discord.DMChannel)),
         ])
 
         # Can't embed? Just send it normally
