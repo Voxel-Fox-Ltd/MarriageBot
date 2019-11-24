@@ -12,10 +12,11 @@ class DatabaseConnection(object):
     config: dict = None
     pool: asyncpg.pool.Pool = None
     logger: logging.Logger = None
-    __slots__ = ('conn',)
+    __slots__ = ('conn', 'transaction')
 
-    def __init__(self, connection:asyncpg.Connection=None):
+    def __init__(self, connection:asyncpg.Connection=None, transaction:asyncpg.transaction.Transaction=None):
         self.conn = connection
+        self.transaction = transaction
 
     @staticmethod
     async def create_pool(config:dict) -> None:
@@ -35,30 +36,28 @@ class DatabaseConnection(object):
     async def disconnect(self) -> None:
         """Releases a connection from the pool back to the mix"""
 
-        if isinstance(self.conn, asyncpg.Connection):
-            await self.pool.release(self.conn)
-        elif isinstance(self.conn, asyncpg.transaction.Transaction):
-            await self.conn.commit()
-        else:
-            raise Exception("This is definitely wrong")
+        await self.pool.release(self.conn)
         self.conn = None
         del self
 
-    async def get_transaction(self) -> 'DatabaseConnection':
+    async def start_transaction(self):
         """Creates a database object for a transaction"""
 
-        tr = self.__class__(self.conn.transaction())
-        await tr.conn.start()
+        self.transaction = self.conn.transaction()
+        await self.transaction.start()
+
+    async def commit_transaction(self):
+        """Commits the transaction wew lad"""
+
+        await self.transaction.commit()
+        self.transaction = None
 
     async def __aenter__(self):
         self.conn = await self.pool.acquire()
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        if isinstance(self.conn, asyncpg.Connection):
-            await self.pool.release(self.conn)
-        else:
-            raise Exception("This is definitely wrong")
+        await self.pool.release(self.conn)
         self.conn = None
         del self
 
@@ -87,17 +86,17 @@ class DatabaseConnection(object):
         instigator_id = getattr(instigator, 'id', instigator)
         target_id = getattr(target, 'id', target)
 
-        transaction = await self.get_transaction()
+        await self.start_transaction()
         try:
-            await transaction(
+            await self(
                 'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
                 instigator_id, target_id, guild_id,
             )
-            await transaction(
+            await self(
                 'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($2, $1, $3)',
                 instigator_id, target_id, guild_id,
             )
         except Exception as e:
-            await transaction.conn.rollback()
+            await self.transaction.rollback()
             raise e
-        await transaction.disconnect()
+        await self.commit_transaction()
