@@ -231,11 +231,8 @@ class Information(utils.Cog):
         time_taken = (end_time - start_time).total_seconds()
 
         # Send file and delete cached
-        try:
-            file = discord.File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-            await ctx.send(f"[Click here](https://marriagebot.xyz/) to customise your tree. Generated in `{time_taken:.2f}` seconds from `{len(dot_code)}` bytes of DOT code.", file=file)
-        except Exception as e:
-            pass
+        file = discord.File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
+        await ctx.send(f"[Click here](https://marriagebot.xyz/) to customise your tree. Generated in `{time_taken:.2f}` seconds from `{len(dot_code)}` bytes of DOT code.", file=file)
 
 
 def setup(bot:utils.CustomBot):

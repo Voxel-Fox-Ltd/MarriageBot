@@ -100,13 +100,13 @@ class CustomContext(commands.Context):
 
             # Set image
             if file and embed_image:
-                file_is_image = any(
+                file_is_image = any([
                     file.filename.casefold().endswith('.png'),
                     file.filename.casefold().endswith('.jpg'),
                     file.filename.casefold().endswith('.jpeg'),
                     file.filename.casefold().endswith('.gif'),
                     file.filename.casefold().endswith('.webm')
-                )
+                ])
                 if file_is_image:
                     embed.set_image(url=f"attachment://{file.filename}")
 
