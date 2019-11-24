@@ -37,7 +37,7 @@
 
     [x] cogs.user_update_event
     [x] cogs.simulation
-    [ ] cogs.server_specific
+    [x] cogs.server_specific
     [x] cogs.redis_handler
     [ ] cogs.parentage
     [x] cogs.misc

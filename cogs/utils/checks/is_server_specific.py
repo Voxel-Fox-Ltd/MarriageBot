@@ -7,7 +7,7 @@ class NotServerSpecific(commands.CheckFailure):
     pass
 
 
-def is_server_specific():
+def guild_is_server_specific():
     """A check to make sure that the bot is set to server specific"""
 
     def predicate(ctx):
