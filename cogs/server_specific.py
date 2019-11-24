@@ -51,6 +51,16 @@ class ServerSpecific(Cog):
             await ctx.send(f"You need the `{error.missing_role}` role to run this command.")
             return
 
+    @Cog.listener()
+    async def on_guild_join(self, guild):
+        if self.bot.is_server_specific:
+            async with self.bot.database() as db:
+                data = await db('SELECT guild_id FROM guild_specific_families WHERE guild_id=$1', guild.id)
+                if not data:
+                    self.log_handler.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
+                    await guild.leave()
+                    return
+
     @command()
     @is_server_specific_bot_moderator()
     @is_server_specific()

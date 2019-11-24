@@ -44,7 +44,7 @@
     [ ] cogs.marriage
     [ ] cogs.information
     [ ] cogs.help
-    [ ] cogs.guild_event
+    [x] cogs.guild_event
     [ ] cogs.google_analytics
     [ ] cogs.connection_event
     [ ] cogs.command_event
