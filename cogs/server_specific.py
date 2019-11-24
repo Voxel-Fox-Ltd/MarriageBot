@@ -12,6 +12,8 @@ class ServerSpecific(utils.Cog):
     async def on_guild_join(self, guild:discord.Guild):
         """Looks for when the bot is added to a guild, leaving if it's not whitelisted"""
 
+        if not self.bot.is_server_specific:
+            return
         async with self.bot.database() as db:
             data = await db('SELECT guild_id FROM guild_specific_families WHERE guild_id=$1', guild.id)
             if not data:
