@@ -72,7 +72,7 @@ class GoogleAnalytics(Cog):
 
 
     @Cog.listener()
-    async def on_guild_add(self, guild:Guild):
+    async def on_guild_join(self, guild:Guild):
         '''
         Logs when added to a guild
         '''
