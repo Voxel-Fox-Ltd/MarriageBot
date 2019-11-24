@@ -1,3 +1,4 @@
+import asyncio
 import typing
 import io
 from datetime import datetime as dt
@@ -8,10 +9,10 @@ from discord.ext import commands
 from cogs import utils
 
 
-class Information(Cog):
+class Information(utils.Cog):
     """The information cog, handling telling the user what they want to hear"""
 
-    async def tree_timeout_handler(self, ctx:Context, error):
+    async def tree_timeout_handler(self, ctx:utils.Context, error):
         """Handles errors for the tree commands"""
 
         # Get user perks
@@ -51,7 +52,7 @@ class Information(Cog):
         # Get the user's info
         user = user or ctx.author.id
         user_name = await self.bot.get_name(user)
-        user_info = FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
 
         # Output
         if user_info._partner == None:
@@ -62,7 +63,7 @@ class Information(Cog):
     @commands.command(aliases=['child', 'kids'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
-    async def children(self, ctx:Context, user:typing.Optional[utils.converters.UserID]):
+    async def children(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
         """Tells you who a user's children are"""
 
         # Setup output variable
@@ -71,7 +72,7 @@ class Information(Cog):
         # Get the user's info
         user = user or ctx.author.id
         user_name = await self.bot.get_name(user)
-        user_info = FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
 
         # Get user's children
         if len(user_info._children) == 0:
@@ -79,7 +80,8 @@ class Information(Cog):
         else:
             ren = {False:"ren", True:""}[len(user_info._children)==1]
             output += f"`{user_name}` has `{len(user_info._children)}` child{ren}: "
-            output += ", ".join([f"`{await self.bot.get_name(i)}` (`{i}`)" for i in user_info._children]) + "."
+            children = [(await self.bot.get_name(i), i) for i in user_info._children]
+            output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
 
         # Do they have a partner?
         if user_info._partner is None:
@@ -93,7 +95,8 @@ class Information(Cog):
         else:
             ren = {False:"ren", True:""}[len(user_info._children)==1]
             output += f"\n\nTheir partner, `{user_name}`, has `{len(user_info._children)}` child{ren}: "
-            output += ", ".join([f"`{await self.bot.get_name(i)}` (`{i}`)" for i in user_info._children]) + "."
+            children = [(await self.bot.get_name(i), i) for i in user_info._children]
+            output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
 
         # Return all output
         await ctx.send(output)
@@ -105,7 +108,7 @@ class Information(Cog):
         """Tells you who someone's parent is"""
 
         user = user or ctx.author.id
-        user_info = FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
         user_name = await self.bot.get_name(user)
         if user_info._parent == None:
             await ctx.send(f"`{user_name}` has no parent.")
@@ -127,7 +130,8 @@ class Information(Cog):
         # Get their relation
         if other == None:
             user, other = ctx.author.id, user
-        user_tree, other_tree = FamilyTreeMember.get(user, ctx.family_guild_id), FamilyTreeMember.get(other, ctx.family_guild_id)
+        user_tree = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        other_tree = utils.FamilyTreeMember.get(other, ctx.family_guild_id)
         async with ctx.channel.typing():
             relation = user_tree.get_relation(other_tree)
 
@@ -143,7 +147,7 @@ class Information(Cog):
     @commands.command(aliases=['treesize','fs','ts'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
-    async def familysize(self, ctx:Context, user:typing.Optional[utils.converters.UserID]):
+    async def familysize(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
         """Gives you the size of your family tree"""
 
         # Get user info
@@ -152,7 +156,7 @@ class Information(Cog):
 
         # Get size
         async with ctx.channel.typing():
-            size = user.family_member_count
+            size = user_tree.family_member_count
 
         # Output
         username = await self.bot.get_name(user.id)
@@ -167,7 +171,7 @@ class Information(Cog):
 
         root_user_id = root or ctx.author.id
         async with ctx.channel.typing():
-            text = await FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
+            text = await utils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
         file_bytes = io.BytesIO(text.encode())
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
@@ -175,7 +179,7 @@ class Information(Cog):
     @commands.cooldown(1, 60, commands.BucketType.guild)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
-    async def tree(self, ctx:Context, root:typing.Optional[utils.converters.UserID]):
+    async def tree(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
         """Gets the family tree of a given user"""
 
         try:
@@ -192,7 +196,7 @@ class Information(Cog):
     @utils.checks.is_patreon(tier=2)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
-    async def stupidtree(self, ctx:Context, root:typing.Optional[utils.converters.UserID]):
+    async def stupidtree(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
         """Gets the family tree of a given user"""
 
         try:
@@ -204,12 +208,12 @@ class Information(Cog):
         except Exception as e:
             raise e
 
-    async def treemaker(self, ctx:Context, root_user_id:int, all_guilds:bool=False, stupid_tree:bool=False):
+    async def treemaker(self, ctx:utils.Context, root_user_id:int, all_guilds:bool=False, stupid_tree:bool=False):
         """Handles the generation and sending of the tree to the user"""
 
         # Get their family tree
         root_user_id = root_user_id or ctx.author.id
-        tree = FamilyTreeMember.get(root_user_id, ctx.family_guild_id)
+        tree = utils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id)
 
         # Make sure they have one
         if tree.is_empty:
@@ -219,7 +223,7 @@ class Information(Cog):
         # Write their treemaker code to a file
         start_time = dt.now()
         async with self.bot.database() as db:
-            ctu = await CustomisedTreeUser.get(ctx.author.id, db)
+            ctu = await utils.CustomisedTreeUser.get(ctx.author.id, db)
         async with ctx.channel.typing():
             if stupid_tree:
                 dot_code = await tree.to_full_dot_script(self.bot, ctu)
@@ -234,7 +238,7 @@ class Information(Cog):
             raise e
 
         # Convert to an image
-        dot = await create_subprocess_exec(*[
+        dot = await asyncio.create_subprocess_exec(*[
             'dot',
             '-Tpng',
             f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz',
@@ -243,7 +247,7 @@ class Information(Cog):
             '-Gcharset=UTF-8',
             ], loop=self.bot.loop
         )
-        await wait_for(dot.wait(), 10.0, loop=self.bot.loop)
+        await asyncio.wait_for(dot.wait(), 10.0, loop=self.bot.loop)
 
         # Kill subprocess
         try:
@@ -265,6 +269,6 @@ class Information(Cog):
             pass
 
 
-def setup(bot:CustomBot):
+def setup(bot:utils.CustomBot):
     x = Information(bot)
     bot.add_cog(x)
