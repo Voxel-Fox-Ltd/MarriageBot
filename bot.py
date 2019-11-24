@@ -22,6 +22,11 @@ logger = logging.getLogger(os.getcwd().split(os.sep)[-1].lower())
 # Filter warnings
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
+# Use right event loop
+if sys.platform == 'win32':
+    loop = asyncio.ProactorEventLoop()
+    asyncio.set_event_loop(loop)
+
 # Parse arguments
 def get_program_arguments():
     parser = argparse.ArgumentParser()
