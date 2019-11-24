@@ -31,16 +31,14 @@ class ErrorHandler(utils.Cog):
             return
 
         # Set up some errors that the owners are able to bypass
-        owner_ignored_errors = (
+        owner_reinvoke_errors = (
             utils.errors.IsNotDonator, utils.errors.IsNotPatreon, utils.errors.IsNotPaypal,
             utils.errors.IsNotVoter, commands.MissingAnyRole, commands.MissingPermissions,
             commands.MissingRole, commands.CommandOnCooldown, commands.DisabledCommand,
+            utils.errors.BlockedUserError,
         )
-        if ctx.original_author_id in self.bot.owners and isinstance(error, owner_ignored_errors):
+        if ctx.original_author_id in self.bot.owners and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
-        elif ctx.original_author_id in self.bot.owners:
-            await ctx.send(f'```py\n{error}```')
-            raise error
 
         # Can't send files
         if isinstance(error, utils.errors.CantSendFiles):
@@ -84,7 +82,11 @@ class ErrorHandler(utils.Cog):
 
         # Argument conversion error
         elif isinstance(error, commands.BadArgument):
-            return await ctx.send(error)
+            return await ctx.send(str(error))
+
+        # User is blocked
+        elif isinstance(error, utils.errors.BlockedUserError):
+            return await ctx.send(str(error))
 
         # NSFW channel
         elif isinstance(error, commands.NSFWChannelRequired):
@@ -114,11 +116,16 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.MissingRole):
             return await ctx.send(f"You need to have the `{error.missing_role}` role to run this command.")
 
+        # Can't tell what it is? Ah well.
+        if ctx.original_author_id in self.bot.owners:
+            await ctx.send(f'```py\n{error}```')
+            raise error
+
     async def tree_timeout_handler(self, ctx:utils.Context, error):
         """Handles errors for the tree commands"""
 
         # Get user perks
-        perk_index = utils.checks.get_patreon_tier(self.bot, ctx.author)
+        perk_index = await utils.checks.get_patreon_tier(self.bot, ctx.author)
         if utils.checks.is_voter_predicate(ctx) and perk_index <= 0:
             perk_index = -1
         if self.bot.is_server_specific:

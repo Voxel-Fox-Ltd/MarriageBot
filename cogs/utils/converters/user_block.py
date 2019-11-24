@@ -14,5 +14,5 @@ class UnblockedMember(commands.MemberConverter):
     async def convert(self, ctx:commands.Context, argument:str):
         user = await super().convert(ctx, argument)
         if ctx.author.id in ctx.bot.blocked_users.get(user.id, list()):
-            raise BlockedUserError()
+            raise BlockedUserError(f"You have been blocked by `{user!s}`.")
         return user

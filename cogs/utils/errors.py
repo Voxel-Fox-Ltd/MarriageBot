@@ -5,3 +5,4 @@ from cogs.utils.checks.is_server_specific import NotServerSpecific
 from cogs.utils.checks.is_bot_moderator import NotBotAdministrator, NotBotModerator
 from cogs.utils.checks.is_voter import IsNotVoter
 from cogs.utils.checks.has_set_config import NoSetConfig
+from cogs.utils.converters.user_block import BlockedUserError
