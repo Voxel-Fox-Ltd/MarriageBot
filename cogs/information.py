@@ -145,7 +145,7 @@ class Information(utils.Cog):
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
     @commands.command(aliases=['familytree', 't', 'fulltree', 'ft', 'gt'])
-    @commands.cooldown(1, 60, commands.BucketType.guild)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
     async def tree(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
@@ -161,7 +161,7 @@ class Information(utils.Cog):
             raise e
 
     @commands.command(aliases=['st'])
-    @commands.cooldown(1, 60, commands.BucketType.guild)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     @utils.checks.is_patreon(tier=2)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
