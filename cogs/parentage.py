@@ -117,7 +117,7 @@ class Parentage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Manage children
-        children_amount = self.MAX_CHILDREN_AMOUNT[await utils.checks.get_patreon_tier(self.bot, target)]
+        children_amount = self.MAX_CHILDREN_AMOUNT[await utils.checks.get_patreon_tier(self.bot, ctx.author)]
         if len(instigator_tree._children) >= children_amount:
             return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
 
