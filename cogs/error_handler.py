@@ -116,6 +116,10 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.MissingRole):
             return await ctx.send(f"You need to have the `{error.missing_role}` role to run this command.")
 
+        # Not owner
+        elif isinstance(error, commands.NotOwner):
+            return await ctx.send("You need to be registered as an owner to run this command.")
+
         # Can't tell what it is? Ah well.
         if ctx.original_author_id in self.bot.owners:
             await ctx.send(f'```py\n{error}```')
