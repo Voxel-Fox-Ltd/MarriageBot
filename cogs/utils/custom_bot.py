@@ -272,9 +272,10 @@ class CustomBot(commands.AutoShardedBot):
                 The ID for the user whose name you want to get
         """
 
-        user = self.get_user(user_id) or self.shallow_users.get(user_id)
-        if user and isinstance(user, discord.User):
+        user = self.get_user(user_id)
+        if user:
             return str(user)
+        user = self.shallow_users.get(user_id)
         if user is None:
             user = utils.ShallowUser(user_id)
             self.shallow_users[user_id] = user
