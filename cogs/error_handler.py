@@ -84,6 +84,10 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(str(error))
 
+        # Not set to server specific
+        elif isinstance(error, utils.errors.NotServerSpecific):
+            return await ctx.send(f"You need to be using MarriageBot Gold to run this command - see (`{ctx.clean_prefix}perks`).")
+
         # User is blocked
         elif isinstance(error, utils.errors.BlockedUserError):
             return await ctx.send(str(error))
@@ -121,9 +125,9 @@ class ErrorHandler(utils.Cog):
             return await ctx.send("You need to be registered as an owner to run this command.")
 
         # Can't tell what it is? Ah well.
-        if ctx.original_author_id in self.bot.owners:
-            await ctx.send(f'```py\n{error}```')
-            raise error
+        # if ctx.original_author_id in self.bot.owners:
+        await ctx.send(f'```py\n{error}```')
+        raise error
 
     async def tree_timeout_handler(self, ctx:utils.Context, error):
         """Handles errors for the tree commands"""
