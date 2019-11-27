@@ -12,7 +12,7 @@ class UserID(commands.UserConverter):
         # It could be a user
         try:
             return (await super().convert(ctx, value)).id
-        except commands.BadArgument as e:
+        except commands.BadArgument:
             pass
 
         # It could be an int
@@ -24,5 +24,5 @@ class UserID(commands.UserConverter):
         # Something inbetween?
         match = self._get_id_match(value)
         if match is None:
-            raise e
+            raise commands.BadArgument(f"User \"{value}\" not found")
         return int(match.group(1))
