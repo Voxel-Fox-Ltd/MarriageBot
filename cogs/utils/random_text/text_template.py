@@ -87,29 +87,29 @@ class TextTemplate(object):
         if self.bot.proposal_cache.get(instigator.id):
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR':
-                return self.instigator_is_instigator()
+                return get_random_valid_string(self.instigator_is_instigator, self.instigator, self.target)()
             elif x[0] == 'TARGET':
-                return self.instigator_is_target()
+                return get_random_valid_string(self.instigator_is_target, self.instigator, self.target)()
 
         # Now check for the target
         if self.bot.proposal_cache.get(target.id):
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR':
-                return self.target_is_instigator()
+                return get_random_valid_string(self.target_is_instigator, self.instigator, self.target)()
             elif x[0] == 'TARGET':
-                return self.target_is_target()
+                return get_random_valid_string(self.target_is_target, self.instigator, self.target)()
 
         # Check if they're proposing to the bot
         if target.id == self.bot.user.id:
-            return self.target_is_me()
+            return get_random_valid_string(self.target_is_me, self.instigator, self.target)()
 
         # Check if they're proposing to themselves
         if instigator.id == target.id:
-            return self.target_is_you()
+            return get_random_valid_string(self.target_is_you, self.instigator, self.target)()
 
         # Now check for any other bot
         if target.bot:
-            return self.target_is_bot()
+            return get_random_valid_string(self.target_is_bot, self.instigator, self.target)()
 
     @staticmethod
     def valid_target():
