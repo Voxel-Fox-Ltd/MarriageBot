@@ -88,7 +88,7 @@ class CopulateRandomText(TextTemplate):
         ]
 
     @staticmethod
-    def proposing_to_themselves():
+    def target_is_you():
         return [
             "Not on my Christian Minecraft server.",
             "Not in front of the children!",
