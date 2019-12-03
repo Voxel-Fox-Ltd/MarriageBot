@@ -92,6 +92,16 @@ class Simulation(utils.Cog):
         else:
             await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
 
+    @commands.command(aliases=['borger', 'borg'])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def burger(self, ctx:utils.Context, user:discord.Member):
+        """Gives a burger to a mentioned user"""
+
+        if user == ctx.author:
+            await ctx.send(f"*You give yourself a {ctx.invoked_with}* 🍔")
+        else:
+            await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
+
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def poke(self, ctx:utils.Context, user:discord.Member):
