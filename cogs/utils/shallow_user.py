@@ -15,8 +15,8 @@ class ShallowUser(object):
         name: str
             The name for the user
         age: int
-            How long ago this user's information was pulled from the API
-            Starts at 0, should pull again from the API when set to 10
+            How long ago this user's information was pulled from redis
+            Starts at 0, should pull again when set to 10
     """
 
     LIFETIME_THRESHOLD = 10  # How long the class lasts for before re-fetching
@@ -28,14 +28,10 @@ class ShallowUser(object):
         self.fetch_when_expired = True
 
     async def get_name(self, bot:CustomBot) -> str:
-        """Gets the name of the given user, first locally, then from redis, and then the API if expired"""
+        """Gets the name of the given user, first locally, then from redis if expired"""
 
-        if self.age >= self.LIFETIME_THRESHOLD and self.fetch_when_expired:
-            await self.fetch_from_api(bot)
-            return self.name
-        elif self.age >= self.LIFETIME_THRESHOLD:
-            async with bot.redis() as re:
-                await self.fetch_from_redis(re)
+        if self.age >= self.LIFETIME_THRESHOLD:
+            await self.fetch_from_redis(bot)
             return self.name
         self.age += 1
         return self.name
@@ -57,21 +53,19 @@ class ShallowUser(object):
 
         # Push it to redis
         async with bot.redis() as re:
-            await self.publish(re)
+            await re.set(f"UserName-{self.user_id}", self.name)
 
         # Return data
         return self.name
 
-    async def fetch_from_redis(self, redis:RedisConnection) -> str:
+    async def fetch_from_redis(self, bot:CustomBot) -> str:
         """Fetches information for the given user from the redis cache"""
 
-        self.name = await redis.get(f"UserName-{self.user_id}")
+        async with bot.redis() as re:
+            self.name = await re.get(f"UserName-{self.user_id}")
         self.age = 0
         self.fetch_when_expired = True  # We can't trust redis forever
+        if self.name is None:
+            return await self.fetch_from_api(bot)
         return self.name
-
-    async def publish(self, redis:RedisConnection):
-        """Publishes the user's name and their ID to the redis cache"""
-
-        await redis.set(f"UserName-{self.user_id}", self.name)
 
