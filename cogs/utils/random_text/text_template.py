@@ -43,31 +43,6 @@ def get_random_valid_string(func, instigator, target):
     return wrapper
 
 
-def random_string_class_decorator(cls):
-    """Wraps around a random_text class and applies get_random_valid_string to all methods"""
-
-    class Wrapper(object):
-
-        def __init__(self, *args, **kwargs):
-            self.other = cls(*args, **kwargs)
-
-        def __getattribute__(self, attr):
-
-            # Get current attrs
-            try:
-                return super().__getattribute__(attr)
-            except AttributeError:
-                pass
-
-            # Get wrapped attrs
-            method = self.other.__getattribute__(attr)
-            if type(method) == type(self.__init__):
-                return method
-            return get_random_valid_string(method, self.other.instigator, self.other.target)
-
-    return Wrapper
-
-
 class TextTemplate(object):
 
     __slots__ = ("bot", "instigator", "target")
@@ -194,3 +169,28 @@ class TextTemplate(object):
         """The instigator is invalid for some other reason (eg they already have a parent etc)"""
 
         raise NotImplementedError()
+
+
+def random_string_class_decorator(cls) -> TextTemplate:
+    """Wraps around a random_text class and applies get_random_valid_string to all methods"""
+
+    class Wrapper(object):
+
+        def __init__(self, *args, **kwargs):
+            self.other = cls(*args, **kwargs)
+
+        def __getattribute__(self, attr):
+
+            # Get current attrs
+            try:
+                return super().__getattribute__(attr)
+            except AttributeError:
+                pass
+
+            # Get wrapped attrs
+            method = self.other.__getattribute__(attr)
+            if type(method) == type(self.__init__):
+                return method
+            return get_random_valid_string(method, self.other.instigator, self.other.target)
+
+    return Wrapper
