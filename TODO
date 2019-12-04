@@ -55,6 +55,6 @@
     [ ] website.frontend
     [ ] website.api
 
-    [ ] webserver
+    [x] webserver
 
     [x] bot

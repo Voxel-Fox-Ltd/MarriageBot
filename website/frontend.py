@@ -1,33 +1,29 @@
-from os import getcwd
+import os
 from urllib.parse import urlencode
 
-from aiohttp import ClientSession
+import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, static, Response
-from aiohttp_session import new_session, get_session
+import aiohttp_session
 from aiohttp_jinja2 import template
-from json import dumps
-from discord import TextChannel
+import json
+import discord
 
-from cogs.utils.customised_tree_user import CustomisedTreeUser
+from cogs import utils
 
 
 routes = RouteTableDef()
-OAUTH_SCOPE = 'identify guilds'
+OAUTH_SCOPES = 'identify guilds'
 
 
 class AuthenticationError(Exception):
-    '''Raised to show that they don't have any authentication'''
-    def __init__(self, message:str):
-        super().__init__(message)
+    """Raised to show that they don't have any authentication"""
 
 
 async def check_authentication(request:Request, requested_user_id:int=None):
-    '''
-    Checks if the session user is both logged in and is allowed to get the requested user
-    '''
+    """Checks if the session user is both logged in and is allowed to get the requested user"""
 
     # Get main vairables
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     try:
         requested_user_id = requested_user_id or session['user_id']
         if requested_user_id == None:
@@ -63,7 +59,7 @@ async def check_authentication(request:Request, requested_user_id:int=None):
 
 
 def get_avatar(user_info:dict=dict()):
-    '''Gets the avatar URL for a given user'''
+    """Gets the avatar URL for a given user"""
 
     try:
         return f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}.png"
@@ -78,24 +74,23 @@ def get_avatar(user_info:dict=dict()):
 @routes.get("/")
 @template('index.jinja')
 async def index(request:Request):
-    '''
-    Index of the website
+    """Index of the website
     Has "login with Discord" button
-    If not logged in, all pages should redirect here
-    '''
+    If not logged in, all pages should redirect here"""
 
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     config = request.app['config']
     login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
         'client_id': config['oauth']['client_id'],
         'redirect_uri': config['oauth']['redirect_uri'],
         'response_type': 'code',
-        'scope': OAUTH_SCOPE
+        'scope': OAUTH_SCOPES
     })
     if not session.get('user_id'):
         return {
             'user_info': None,
-            'login_url': login_url
+            'login_url': login_url,
+            'request': request,
         }
     return HTTPFound(location=f"/settings")
 
@@ -103,31 +98,30 @@ async def index(request:Request):
 @routes.get("/reset2019")
 @template('blog.jinja')
 async def reset(request:Request):
-    ''''''
+    """"""
 
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     config = request.app['config']
     login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
         'client_id': config['oauth']['client_id'],
         'redirect_uri': config['oauth']['redirect_uri'],
         'response_type': 'code',
-        'scope': OAUTH_SCOPE
+        'scope': OAUTH_SCOPES
     })
     if not session.get('user_id'):
         return {
             'user_info': None,
-            'login_url': login_url
+            'login_url': login_url,
+            'request': request,
         }
     return {
-        'user_info': session['user_info'],
+        'user_info': session['user_info'], 'request': request,
     }
 
 
 @routes.get('/login')
 async def login(request:Request):
-    '''
-    Page the discord login redirects the user to when successfully logged in with Discord
-    '''
+    """Page the discord login redirects the user to when successfully logged in with Discord"""
 
     # Get the code
     code = request.query.get('code')
@@ -142,7 +136,7 @@ async def login(request:Request):
     data = {
         'grant_type': 'authorization_code',
         'code': code,
-        'scope': OAUTH_SCOPE
+        'scope': OAUTH_SCOPES
     }
     data.update(oauth_data)
     headers = {
@@ -150,7 +144,7 @@ async def login(request:Request):
     }
 
     # Make the request
-    async with ClientSession(loop=request.loop) as session:
+    async with aiohttp.ClientSession(loop=request.loop) as session:
 
         # Get auth
         token_url = f"https://discordapp.com/api/v6/oauth2/token"
@@ -171,7 +165,7 @@ async def login(request:Request):
             guild_info = await r.json()
 
     # Save to session
-    session = await new_session(request)
+    session = await aiohttp_session.new_session(request)
 
     # Update avatar data
     user_info['avatar_link'] = get_avatar(user_info)
@@ -189,30 +183,26 @@ async def login(request:Request):
 @routes.get('/settings')
 @template('settings.jinja')
 async def settings(request:Request):
-    '''
-    Handles the main settings page for the bot
-    '''
+    """Handles the main settings page for the bot"""
 
     # See if they're logged in
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
 
     # Give them the page
     return {
-        'user_info': session['user_info'],
+        'user_info': session['user_info'], 'request': request,
     }
 
 
 @routes.get('/user_settings')
 @template('user_settings.jinja')
 async def user_settings(request:Request):
-    '''
-    Handles the users' individual settings pages
-    '''
+    """Handles the users' individual settings pages"""
 
     # See if they're logged in
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
 
@@ -236,9 +226,9 @@ async def user_settings(request:Request):
         async with request.app['database']() as db:
             data = await db('SELECT * FROM customisation WHERE user_id=$1', session['user_id'])
         try:
-            colours = CustomisedTreeUser(**data[0]).unquoted_hex
+            colours = utils.CustomisedTreeUser(**data[0]).unquoted_hex
         except (IndexError, TypeError):
-            colours = CustomisedTreeUser.get_default_unquoted_hex()
+            colours = utils.CustomisedTreeUser.get_default_unquoted_hex()
 
     # Make a URL for the preview
     tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' if i != 'direction' else f'{i}={o}' for i, o in colours.items()])
@@ -248,12 +238,13 @@ async def user_settings(request:Request):
         'user_info': session['user_info'],
         'hex_strings': colours,
         'tree_preview_url': tree_preview_url,
+        'request': request,
     }
 
 
 @routes.post('/user_settings')
 async def user_settings_post_handler(request:Request):
-    '''Handles when people submit their new colours'''
+    """Handles when people submit their new colours"""
 
     try:
         colours_raw = await request.post()
@@ -263,10 +254,10 @@ async def user_settings_post_handler(request:Request):
     direction = colours_raw.pop("direction")
     colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in colours_raw.items()}
     colours['direction'] = direction
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     user_id = session['user_id']
     async with request.app['database']() as db:
-        ctu = await CustomisedTreeUser.get(user_id, db)
+        ctu = await utils.CustomisedTreeUser.get(user_id, db)
     for i, o in colours.items():
         setattr(ctu, i, o)
     async with request.app['database']() as db:
@@ -277,9 +268,7 @@ async def user_settings_post_handler(request:Request):
 @routes.get('/tree_preview')
 @template('tree_preview.jinja')
 async def tree_preview(request:Request):
-    '''
-    Tree preview for the bot
-    '''
+    """Tree preview for the bot"""
 
     colours_raw = {
         'edge': request.query.get('edge'),
@@ -308,12 +297,10 @@ async def tree_preview(request:Request):
 @routes.get('/guild_picker')
 @template('guild_picker.jinja')
 async def guild_picker(request:Request):
-    '''
-    Shows the guilds that the user has permission to change
-    '''
+    """Shows the guilds that the user has permission to change"""
 
     # See if they're logged in
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
 
@@ -327,18 +314,17 @@ async def guild_picker(request:Request):
     return {
         'user_info': session['user_info'],
         'guilds': guilds,
+        'request': request,
     }
 
 
 @routes.get('/guild_settings')
 @template('guild_settings.jinja')
 async def guild_settings_get(request:Request):
-    '''
-    Shows the settings for a particular guild
-    '''
+    """Shows the settings for a particular guild"""
 
     # See if they're logged in
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
     guild_id = request.query.get('guild_id')
@@ -362,7 +348,7 @@ async def guild_settings_get(request:Request):
     # Get channels
     try:
         guild_object = await request.app['bot'].fetch_guild(int(guild_id))
-        channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, TextChannel)], key=lambda c: c.position)
+        channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
     except Exception:
         channels = []
 
@@ -372,18 +358,17 @@ async def guild_settings_get(request:Request):
         'guild': guild[0],
         'prefix': prefix,
         'channels': channels,
+        'request': request,
     }
 
 
 @routes.post('/guild_settings')
 @template('guild_settings.jinja')
 async def guild_settings_post(request:Request):
-    '''
-    Shows the settings for a particular guild
-    '''
+    """Shows the settings for a particular guild"""
 
     # See if they're logged in
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
     guild_id = request.query.get('guild_id')
@@ -411,10 +396,8 @@ async def guild_settings_post(request:Request):
 
 @routes.get('/logout')
 async def logout(request:Request):
-    '''
-    Handles logout
-    '''
+    """Handles logout"""
 
-    session = await get_session(request)
+    session = await aiohttp_session.get_session(request)
     session.invalidate()
     return HTTPFound(location='/')
