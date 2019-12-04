@@ -1,25 +1,23 @@
-from asyncio import get_event_loop
-from os import getcwd
-from argparse import ArgumentParser
-from secrets import token_bytes
-from ssl import SSLContext
-from warnings import filterwarnings
+import asyncio
+import os
+import argparse
+import secrets
+import ssl
+import warnings
 import logging
 
 from aiohttp.web import Application, AppRunner, TCPSite, middleware, HTTPFound
-from discord import Game, Status, Client
-from discord.ext.commands import when_mentioned_or
+import discord
+from discord.ext import commands
 from aiohttp_jinja2 import template, setup as jinja_setup
 from aiohttp_session import setup as session_setup, SimpleCookieStorage
 from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
 from aiohttp_session.redis_storage import RedisStorage
 from jinja2 import FileSystemLoader
-from ujson import load  # TODO replace with toml
+import toml
 
-from cogs.utils.database import DatabaseConnection
-from cogs.utils.redis import RedisConnection
-from website.api import routes as api_routes
-from website.frontend import routes as frontend_routes
+from cogs import utils
+import website
 
 
 # Set up loggers
@@ -30,11 +28,11 @@ logger.setLevel(logging.DEBUG)
 
 
 # Filter warnings
-filterwarnings('ignore', category=RuntimeWarning)
+warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 
 # Parse arguments
-parser = ArgumentParser()
+parser = argparse.ArgumentParser()
 parser.add_argument("config_file", help="The configuration for the bot.")
 parser.add_argument("--nossl", action="store_true", default=False, help="Starts the bot with no SSL web server.")
 parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to run the webserver on.")
@@ -45,7 +43,7 @@ args = parser.parse_args()
 
 # Read config
 with open(args.config_file) as a:
-    config = load(a)
+    config = toml.load(a)
 
 
 # Make the SSL redirect
@@ -58,40 +56,40 @@ async def ssl_redirect(request, handler):
 
 
 # Create website object - don't start based on argv
-app = Application(loop=get_event_loop(), debug=False, middlewares=[ssl_redirect])
-app.add_routes(frontend_routes)
-app.router.add_static('/static', getcwd() + '/website/static')
+app = Application(loop=asyncio.get_event_loop(), debug=False, middlewares=[ssl_redirect])
+app.add_routes(website.frontend_routes)
+app.router.add_static('/static', os.getcwd() + '/website/static')
 app.router.add_static('/trees', config['tree_file_location'])
 app['static_root_url'] = '/static'
-app['database'] = DatabaseConnection
-DatabaseConnection.logger = logger.getChild("db")
-app['redis'] = RedisConnection
-RedisConnection.logger = logger.getChild("redis")
+app['database'] = utils.DatabaseConnection
+utils.DatabaseConnection.logger = logger.getChild("db")
+app['redis'] = utils.RedisConnection
+utils.RedisConnection.logger = logger.getChild("redis")
 app['config'] = config
-app['bot'] = Client()
-jinja_setup(app, loader=FileSystemLoader(getcwd() + '/website/templates'))
+app['bot'] = discord.Client()
+jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
 
 
 if __name__ == '__main__':
-    '''
-    Starts the bot (and webserver if specified) and runs forever
-    '''
+    """Starts the bot (and webserver if specified) and runs forever"""
 
     loop = app.loop
 
-    logger.info("Creating bot")
+    # Connect the bot
+    logger.info("Logging in bot")
     loop.run_until_complete(app['bot'].login(app['config']['token']))
 
+    # Connect the database
     logger.info("Creating database pool")
-    loop.run_until_complete(DatabaseConnection.create_pool(app['config']['database']))
+    loop.run_until_complete(utils.DatabaseConnection.create_pool(app['config']['database']))
 
     # Connect the redis
     logger.info("Creating redis pool")
-    loop.run_until_complete(RedisConnection.create_pool(app['config']['redis']))
+    loop.run_until_complete(utils.RedisConnection.create_pool(app['config']['redis']))
 
     # Connect redis to middleware
     logger.info("Connecting Redis to app")
-    storage = RedisStorage(RedisConnection.pool)
+    storage = RedisStorage(utils.RedisConnection.pool)
     session_setup(app, storage)
 
     # Start the server unless I said otherwise
@@ -107,7 +105,7 @@ if __name__ == '__main__':
     # SSL server
     try:
         if not args.nossl:
-            ssl_context = SSLContext()
+            ssl_context = ssl.SSLContext()
             ssl_context.load_cert_chain(**app['config']['ssl_context'])
             ssl_webserver = TCPSite(application, host=args.host, port=args.sslport, ssl_context=ssl_context)
     except Exception as e:
@@ -130,7 +128,7 @@ if __name__ == '__main__':
     logger.info("Closing webserver")
     loop.run_until_complete(application.cleanup())
     logger.info("Closing database pool")
-    loop.run_until_complete(DatabaseConnection.pool.close())
+    loop.run_until_complete(utils.DatabaseConnection.pool.close())
     logger.info("Closing bot")
     loop.run_until_complete(app['bot'].close())
     logger.info("Closing asyncio loop")
