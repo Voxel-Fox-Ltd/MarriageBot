@@ -53,7 +53,7 @@
     [x] cogs.administrator
 
     [ ] website.frontend
-    [ ] website.api
+    [x] website.api
 
     [x] webserver
 
