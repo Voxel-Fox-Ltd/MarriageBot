@@ -9,10 +9,16 @@ html {
     --black: 35, 39, 42;
 }
 
+@font-face {
+    font-family: "Whitney-Book";
+    font-weight: normal;
+    src: url(/static/fonts/whitney-book.otf) format("opentype");
+}
+
 body {
     background: rgb(var(--greyple));
     margin: 0;
-    font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-family: "Whitney-Book", Helvetica Neue, Helvetica, Arial, sans-serif;
     min-height: 100vh;
     position: relative;
 }
