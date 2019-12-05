@@ -1,5 +1,6 @@
 import os
 from urllib.parse import urlencode
+import functools
 
 import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, static, Response
@@ -11,55 +12,59 @@ import discord
 from cogs import utils
 
 
+"""
+All pages on this website that implement the base.jinja file should return two things:
+Firstly, the original request itself under the name 'request'.
+Secondly, it should return the user info from the user as gotten from the login under 'user_info'
+This is all handled by a decorator below, but I'm just putting it here as a note
+"""
+
+
 routes = RouteTableDef()
 OAUTH_SCOPES = 'identify guilds'
 
 
-class AuthenticationError(Exception):
-    """Raised to show that they don't have any authentication"""
+def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:str=None):
+    """This function is a wrapper around all routes. It takes the output and
+    adds the user info and request to the returning dictionary
+    It must be applied before the template decorator"""
 
+    def inner_wrapper(func):
+        """An inner wrapper so I can get args at the outer level"""
 
-async def check_authentication(request:Request, requested_user_id:int=None):
-    """Checks if the session user is both logged in and is allowed to get the requested user"""
+        async def wrapper(request:Request):
+            """This is the wrapper that does all the heavy lifting"""
 
-    # Get main vairables
-    session = await aiohttp_session.get_session(request)
-    try:
-        requested_user_id = requested_user_id or session['user_id']
-        if requested_user_id == None:
-            raise KeyError
-    except KeyError:
-        session.invalidate()
-        raise AuthenticationError('No session user ID')
+            # Run function
+            data = await func(request)
 
-    # Check they're authed to get another user if necessary
-    if requested_user_id != session['user_id']:
-        # Get the guild from the invite URL in config
-        # try:
-        #     # TODO get support guild ID
-        # except AttributeError:
-        #     session.invalidate()
-        #     raise AuthenticationError('No support guild URL')
+            # See if we return anything other than data (like redirects)
+            if not isinstance(data, dict):
+                return data
 
-        # # Get the members who are allowed the support role
-        # # TODO get support guild role - check permissions in guild?
-        # if bot_admin_role == None:
-        #     session.invalidate()
-        #     raise AuthenticationError('No valid bot admin role')
+            # Update data with the information
+            if data is None:
+                data = dict()
+            session = await aiohttp_session.get_session(request)
+            try:
+                data.update({'user_info': session['user_info']})
+            except KeyError:
+                data.update({'user_info': None})
+            data.update({'request': request})
 
-        # # Checks the users with the support role
-        # # TODO check for bot admin role on user
-        # if session['user_id'] not in allowed_ids:
-        #     session.invalidate()
-        #     raise AuthenticationError('Not allowed to view page')
-        raise AuthenticationError("I'll deal with this later")
-
-    # Returns bot and the user
-    return session, request.app['bot']
+            # Check return relevant info
+            if redirect_if_logged_out and session.get('user_id') is None:
+                return HTTPFound(location=redirect_if_logged_out)
+            elif redirect_if_logged_in and session.get('user_id') is not None:
+                return HTTPFound(location=redirect_if_logged_in)
+            return data
+        return wrapper
+    return inner_wrapper
 
 
 def get_avatar(user_info:dict=dict()):
-    """Gets the avatar URL for a given user"""
+    """Gets the avatar URL for a user when provided with their user info
+    If no arguments are provided then the default Discord avatar is given"""
 
     try:
         return f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}.png"
@@ -73,12 +78,11 @@ def get_avatar(user_info:dict=dict()):
 
 @routes.get("/")
 @template('index.jinja')
+@add_output_args(redirect_if_logged_in="/settings")
 async def index(request:Request):
-    """Index of the website
-    Has "login with Discord" button
+    """Index of the website, has "login with Discord" button
     If not logged in, all pages should redirect here"""
 
-    session = await aiohttp_session.get_session(request)
     config = request.app['config']
     login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
         'client_id': config['oauth']['client_id'],
@@ -86,21 +90,15 @@ async def index(request:Request):
         'response_type': 'code',
         'scope': OAUTH_SCOPES
     })
-    if not session.get('user_id'):
-        return {
-            'user_info': None,
-            'login_url': login_url,
-            'request': request,
-        }
-    return HTTPFound(location=f"/settings")
+    return {'login_url': login_url}
 
 
 @routes.get("/reset2019")
 @template('blog.jinja')
+@add_output_args()
 async def reset(request:Request):
-    """"""
+    """The lol blog post that was sent out when MB was reset back in July 2019"""
 
-    session = await aiohttp_session.get_session(request)
     config = request.app['config']
     login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
         'client_id': config['oauth']['client_id'],
@@ -108,15 +106,7 @@ async def reset(request:Request):
         'response_type': 'code',
         'scope': OAUTH_SCOPES
     })
-    if not session.get('user_id'):
-        return {
-            'user_info': None,
-            'login_url': login_url,
-            'request': request,
-        }
-    return {
-        'user_info': session['user_info'], 'request': request,
-    }
+    return {'login_url': login_url}
 
 
 @routes.get('/login')
@@ -166,22 +156,18 @@ async def login(request:Request):
 
     # Save to session
     session = await aiohttp_session.new_session(request)
-
-    # Update avatar data
     user_info['avatar_link'] = get_avatar(user_info)
     session['user_info'] = user_info
-
-    # Update guild data
     session['guild_info'] = guild_info
+    session['user_id'] = int(user_info['id'])
 
     # Redirect to settings
-    session['user_id'] = int(user_info['id'])
     return HTTPFound(location=f'/settings')
-    # return HTTPFound(location=f'/user_settings')
 
 
 @routes.get('/settings')
 @template('settings.jinja')
+@add_output_args(redirect_if_logged_out="/")
 async def settings(request:Request):
     """Handles the main settings page for the bot"""
 
@@ -198,6 +184,7 @@ async def settings(request:Request):
 
 @routes.get('/user_settings')
 @template('user_settings.jinja')
+@add_output_args(redirect_if_logged_out="/")
 async def user_settings(request:Request):
     """Handles the users' individual settings pages"""
 
@@ -267,6 +254,7 @@ async def user_settings_post_handler(request:Request):
 
 @routes.get('/tree_preview')
 @template('tree_preview.jinja')
+@add_output_args()
 async def tree_preview(request:Request):
     """Tree preview for the bot"""
 
@@ -291,12 +279,12 @@ async def tree_preview(request:Request):
 
     return {
         'hex_strings': colours,
-        'request': request,
     }
 
 
 @routes.get('/guild_picker')
 @template('guild_picker.jinja')
+@add_output_args(redirect_if_logged_out="/")
 async def guild_picker(request:Request):
     """Shows the guilds that the user has permission to change"""
 
@@ -321,6 +309,7 @@ async def guild_picker(request:Request):
 
 @routes.get('/guild_settings')
 @template('guild_settings.jinja')
+@add_output_args(redirect_if_logged_out="/")
 async def guild_settings_get(request:Request):
     """Shows the settings for a particular guild"""
 

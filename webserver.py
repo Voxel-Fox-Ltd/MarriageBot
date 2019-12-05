@@ -21,10 +21,10 @@ import website
 
 
 # Set up loggers
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
 logger = logging.getLogger('marriagebot.web')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 # Filter warnings
