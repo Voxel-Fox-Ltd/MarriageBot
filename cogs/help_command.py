@@ -32,6 +32,7 @@ class HelpCommand(utils.Cog):
                 command = command.get_command(i)
                 if not command:
                     return await ctx.send(f"The command `{command_name}` could not be found.")
+            base_command = command
             if isinstance(command, commands.Group):
                 cog_commands = [list(set(command.walk_commands()))]
             else:
@@ -68,7 +69,7 @@ class HelpCommand(utils.Cog):
 
         # Add commands to it
         if command_name:
-            help_embed.add_field(name=f"{ctx.prefix}{base_command.qualified_name}", value=f"{base_command.help}")
+            help_embed.add_field(name=f"{ctx.prefix}{base_command.qualified_name} {base_command.signature}", value=f"{base_command.help}")
         for cog_commands in runnable_commands:
             value = '\n'.join([f"{ctx.prefix}{command.qualified_name} - *{command.short_doc}*" for command in cog_commands])
             value = value.replace(" - **", "")
