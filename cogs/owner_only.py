@@ -288,8 +288,8 @@ class OwnerOnly(utils.Cog):
         if content is None:
             return await ctx.send("You can't send no content.")
         async with self.bot.database() as db:
-            await db("INSERT INTO blog_posts VALUES ($1, $2, $3, NOW())", url, title, content)
-        await ctx.send(f"Created blog post: https://marriagebot.xyz/blog/{url}")
+            await db("INSERT INTO blog_posts VALUES ($1, $2, $3, NOW(), $4)", url, title, content, ctx.author.id)
+        await ctx.send(f"Created blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
 
 
 def setup(bot:utils.CustomBot):
