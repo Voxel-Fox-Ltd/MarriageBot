@@ -23,6 +23,7 @@ This is all handled by a decorator below, but I'm just putting it here as a note
 
 routes = RouteTableDef()
 OAUTH_SCOPES = 'identify guilds'
+DISCORD_OAUTH_URL = 'https://discordapp.com/api/oauth2/authorize?'
 
 
 @routes.get("/")
@@ -33,7 +34,7 @@ async def index(request:Request):
     If not logged in, all pages should redirect here"""
 
     config = request.app['config']
-    login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
+    login_url = DISCORD_OAUTH_URL + urlencode({
         'client_id': config['oauth']['client_id'],
         'redirect_uri': config['oauth']['redirect_uri'],
         'response_type': 'code',
@@ -277,6 +278,22 @@ async def guild_settings_get(request:Request):
     guild_id = request.query.get('guild_id')
     if not guild_id:
         return HTTPFound(location='/')
+
+    # See if the bot is in the guild
+    bot = request.app['bot']
+    try:
+        await bot.fetch_guild(int(guild_id))
+    except discord.Forbidden:
+        config = request.app['config']
+        location = DISCORD_OAUTH_URL + urlencode({
+            'client_id': config['oauth']['client_id'],
+            'redirect_uri': config['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
+            'response_type': 'code',
+            'permissions': 52224,
+            'scope': 'bot',
+            'guild_id': guild_id,
+        })
+        return HTTPFound(location=location)
 
     # Get the guilds they're valid to alter
     all_guilds = session['guild_info']
