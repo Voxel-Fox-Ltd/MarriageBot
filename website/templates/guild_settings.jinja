@@ -5,7 +5,7 @@ MarriageBot - Guild Picker
 {% endblock title %}
 
 {% block head %}
-<link rel="stylesheet" type="text/css" href="/static/css/guild_settings.css" /> 
+<link rel="stylesheet" type="text/css" href="/static/css/guild_settings.css" />
 {% endblock head %}
 
 {% block content %}
@@ -15,9 +15,10 @@ MarriageBot - Guild Picker
 </div>
 <form id="prefix">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
-    <p><input name="prefix" value="{{ prefix }}" placeholder="m!" /></p>
+    <p><input name="prefix" value="{{ prefix }}" placeholder="m!" maxlength="30" /></p>
     <p><button type="submit" formmethod="post">Submit</button></p>
 </form> <!-- prefix -->
+{#
 <form id="blacklisted-channels">
     <p>Blacklisted channels - the channels where you don't want the bot to run commands</p>
     <span style="display: flex; flex-wrap: wrap;">
@@ -37,4 +38,5 @@ MarriageBot - Guild Picker
         {% endfor %}
     </span>
 </form>
+#}
 {% endblock content %}
