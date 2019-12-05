@@ -118,3 +118,10 @@ CREATE TABLE shard_logging(
         PRIMARY KEY (shard_id, timestamp)
 );
 -- Simple event counter as logging for shards
+
+
+CREATE TABLE blog_posts(
+    url VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(100),
+    body TEXT
+);

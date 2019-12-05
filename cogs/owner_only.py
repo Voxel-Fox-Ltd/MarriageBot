@@ -281,6 +281,16 @@ class OwnerOnly(utils.Cog):
             await db('INSERT INTO guild_specific_families VALUES ($1)', guild_id)
         await ctx.okay(ignore_error=True)
 
+    @commands.command()
+    async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
+        """Adds a blog post to the database"""
+
+        if content is None:
+            return await ctx.send("You can't send no content.")
+        async with self.bot.database() as db:
+            await db("INSERT INTO blog_posts VALUES ($1, $2, $3)", url, title, content)
+        await ctx.send(f"Created blog post: https://marriagebot.xyz/blog/{url}")
+
 
 def setup(bot:utils.CustomBot):
     x = OwnerOnly(bot)

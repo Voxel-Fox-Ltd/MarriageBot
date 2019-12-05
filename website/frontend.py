@@ -1,3 +1,4 @@
+import re as regex
 import os
 from urllib.parse import urlencode
 import functools
@@ -22,6 +23,19 @@ This is all handled by a decorator below, but I'm just putting it here as a note
 
 routes = RouteTableDef()
 OAUTH_SCOPES = 'identify guilds'
+ITALICS_MATCHER = regex.compile(r"(\*{1,2})(.+?)\*{1,2}")
+LINK_MATCHER = regex.compile(r"\[(.+?)\]\((.+?)\)")
+
+
+def text_to_html(lines:list) -> str:
+    """Builds a HTML output from a block of lines of *basic* markdown"""
+
+    output = []
+    for line in lines:
+        line = ITALICS_MATCHER.sub(lambda m: f"<i>{m.group(2)}</i>" if len(m.group(1)) == 1 else f"<b>{m.group(2)}</b>", line)
+        line = LINK_MATCHER.sub(lambda m: f"<a href=\"{m.group(2)}\">{m.group(1)}</a>", line)
+        output.append(f"<p>{line}</p>")
+    return ''.join(output)
 
 
 def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:str=None):
@@ -57,6 +71,7 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
                 return HTTPFound(location=redirect_if_logged_out)
             elif redirect_if_logged_in and session.get('user_id') is not None:
                 return HTTPFound(location=redirect_if_logged_in)
+
             return data
         return wrapper
     return inner_wrapper
@@ -106,7 +121,29 @@ async def reset(request:Request):
         'response_type': 'code',
         'scope': OAUTH_SCOPES
     })
-    return {'login_url': login_url}
+    text = [
+        r"""I'm considering resetting the trees. We're now at a point where families are in the multiples of thousands and it isn't really helping the bot out all that much. Commands such as `fs`, `adopt`, `marry`, etc all need to check through every family member in order to proceed, and when each family has several thousand members? You can tell it's going to take a while. I understand that there are people very proud of their several thousand person trees, but ultimately I've got to prioritize having this bot run smoothly.""",
+        r"""If I *were* to reset the trees, I'd implement new logic that caps the amount of people in a family, as well as *finally* launching the server-specific trees that I've been working on (I might make it a donator feature - I'm not quite sure yet).""",
+        r"""I'm all ears for any suggestions and feedback that people may have on this - be it "no dont do that u suck", "I can help progress without resetting things", "Caleb you're extremely handsome", "here's how to use 500% less memory", etc (that last one would be v helpful pls [https://github.com/4Kaylum/MarriageBot](https://github.com/4Kaylum/MarriageBot)""",
+        r"""Sorry about this. [https://patreon.com/join/CalebB](https://patreon.com/join/CalebB)""",
+        r"""[Leave your feedback here](https://discord.gg/xk24TvS)""",
+    ]
+    return {'login_url': login_url, 'text': text_to_html(text), 'title': 'July 2019 Reset'}
+
+
+@routes.get("/blog/{code}")
+@template('blog.jinja')
+@add_output_args()
+async def reset(request:Request):
+    """Blog post handler"""
+
+    url_code = request.match_info['code']
+    async with request.app['database']() as db:
+        data = await db("SELECT * FROM blog_posts WHERE url=$1", url_code)
+    if not data:
+        return {'title': 'Post not found'}
+    text = data[0]['body'].split('\n')
+    return {'text': text_to_html(text), 'title': data[0]['title']}
 
 
 @routes.get('/login')

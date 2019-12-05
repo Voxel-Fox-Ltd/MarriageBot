@@ -3,7 +3,8 @@ html {
 }
 
 :root {
-    --greyple: 153, 170, 181;
+    /* --greyple: 153, 170, 181; */
+    --greyple: 105, 156, 189;
     --blurple: 114, 137, 218;
     --notblack: 44, 47, 51;
     --black: 35, 39, 42;
