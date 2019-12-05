@@ -1,4 +1,3 @@
-import re as regex
 import os
 from urllib.parse import urlencode
 import functools
@@ -11,6 +10,7 @@ import json
 import discord
 
 from cogs import utils
+from website import utils as webutils
 
 
 """
@@ -23,77 +23,11 @@ This is all handled by a decorator below, but I'm just putting it here as a note
 
 routes = RouteTableDef()
 OAUTH_SCOPES = 'identify guilds'
-ITALICS_MATCHER = regex.compile(r"([\*_]{1,2})(.+?)[\*_]{1,2}")
-LINK_MATCHER = regex.compile(r"\[(.+?)\]\((.+?)\)")
-
-
-def text_to_html(lines:list) -> str:
-    """Builds a HTML output from a block of lines of *basic* markdown"""
-
-    output = []
-    for line in lines:
-        line = ITALICS_MATCHER.sub(lambda m: f"<i>{m.group(2)}</i>" if len(m.group(1)) == 1 else f"<b>{m.group(2)}</b>", line)
-        line = LINK_MATCHER.sub(lambda m: f"<a href=\"{m.group(2)}\">{m.group(1)}</a>", line)
-        output.append(f"<p>{line}</p>")
-    return ''.join(output)
-
-
-def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:str=None):
-    """This function is a wrapper around all routes. It takes the output and
-    adds the user info and request to the returning dictionary
-    It must be applied before the template decorator"""
-
-    def inner_wrapper(func):
-        """An inner wrapper so I can get args at the outer level"""
-
-        async def wrapper(request:Request):
-            """This is the wrapper that does all the heavy lifting"""
-
-            # Run function
-            data = await func(request)
-
-            # See if we return anything other than data (like redirects)
-            if not isinstance(data, dict):
-                return data
-
-            # Update data with the information
-            if data is None:
-                data = dict()
-            session = await aiohttp_session.get_session(request)
-            try:
-                data.update({'user_info': session['user_info']})
-            except KeyError:
-                data.update({'user_info': None})
-            data.update({'request': request})
-
-            # Check return relevant info
-            if redirect_if_logged_out and session.get('user_id') is None:
-                return HTTPFound(location=redirect_if_logged_out)
-            elif redirect_if_logged_in and session.get('user_id') is not None:
-                return HTTPFound(location=redirect_if_logged_in)
-
-            return data
-        return wrapper
-    return inner_wrapper
-
-
-def get_avatar(user_info:dict=dict()):
-    """Gets the avatar URL for a user when provided with their user info
-    If no arguments are provided then the default Discord avatar is given"""
-
-    try:
-        return f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}.png"
-    except KeyError:
-        try:
-            return f"https://cdn.discordapp.com/embed/avatars/{int(user_info['discriminator']) % 5}.png"
-        except KeyError:
-            pass
-    return "https://cdn.discordapp.com/embed/avatars/0.png"
 
 
 @routes.get("/")
 @template('index.jinja')
-@add_output_args(redirect_if_logged_in="/settings")
+@webutils.add_output_args(redirect_if_logged_in="/settings")
 async def index(request:Request):
     """Index of the website, has "login with Discord" button
     If not logged in, all pages should redirect here"""
@@ -110,7 +44,7 @@ async def index(request:Request):
 
 @routes.get("/reset2019")
 @template('blog.jinja')
-@add_output_args()
+@webutils.add_output_args()
 async def reset(request:Request):
     """The lol blog post that was sent out when MB was reset back in July 2019"""
 
@@ -128,13 +62,13 @@ async def reset(request:Request):
         r"""Sorry about this. [https://patreon.com/join/CalebB](https://patreon.com/join/CalebB)""",
         r"""[Leave your feedback here](https://discord.gg/xk24TvS)""",
     ]
-    return {'login_url': login_url, 'text': text_to_html(text), 'title': 'July 2019 Reset'}
+    return {'login_url': login_url, 'text': webutils.text_to_html(text), 'title': 'July 2019 Reset'}
 
 
 @routes.get("/blog/{code}")
 @template('blog.jinja')
-@add_output_args()
-async def reset(request:Request):
+@webutils.add_output_args()
+async def blog(request:Request):
     """Blog post handler"""
 
     url_code = request.match_info['code']
@@ -143,7 +77,7 @@ async def reset(request:Request):
     if not data:
         return {'title': 'Post not found'}
     text = data[0]['body'].split('\n')
-    return {'text': text_to_html(text), 'title': data[0]['title']}
+    return {'text': webutils.text_to_html(text), 'title': data[0]['title']}
 
 
 @routes.get('/login')
@@ -193,7 +127,7 @@ async def login(request:Request):
 
     # Save to session
     session = await aiohttp_session.new_session(request)
-    user_info['avatar_link'] = get_avatar(user_info)
+    user_info['avatar_link'] = webutils.get_avatar(user_info)
     session['user_info'] = user_info
     session['guild_info'] = guild_info
     session['user_id'] = int(user_info['id'])
@@ -204,7 +138,7 @@ async def login(request:Request):
 
 @routes.get('/settings')
 @template('settings.jinja')
-@add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/")
 async def settings(request:Request):
     """Handles the main settings page for the bot"""
 
@@ -221,7 +155,7 @@ async def settings(request:Request):
 
 @routes.get('/user_settings')
 @template('user_settings.jinja')
-@add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/")
 async def user_settings(request:Request):
     """Handles the users' individual settings pages"""
 
@@ -291,7 +225,7 @@ async def user_settings_post_handler(request:Request):
 
 @routes.get('/tree_preview')
 @template('tree_preview.jinja')
-@add_output_args()
+@webutils.add_output_args()
 async def tree_preview(request:Request):
     """Tree preview for the bot"""
 
@@ -321,7 +255,7 @@ async def tree_preview(request:Request):
 
 @routes.get('/guild_picker')
 @template('guild_picker.jinja')
-@add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/")
 async def guild_picker(request:Request):
     """Shows the guilds that the user has permission to change"""
 
@@ -346,7 +280,7 @@ async def guild_picker(request:Request):
 
 @routes.get('/guild_settings')
 @template('guild_settings.jinja')
-@add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/")
 async def guild_settings_get(request:Request):
     """Shows the settings for a particular guild"""
 
