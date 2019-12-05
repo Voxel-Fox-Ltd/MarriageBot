@@ -46,17 +46,8 @@ with open(args.config_file) as a:
     config = toml.load(a)
 
 
-# Make the SSL redirect
-@middleware
-async def ssl_redirect(request, handler):
-    if request.url.scheme == 'http':
-        url = str(request.url).replace('http://', 'https://', 1)
-        return HTTPFound(location=url)
-    return await handler(request)
-
-
 # Create website object - don't start based on argv
-app = Application(loop=asyncio.get_event_loop(), debug=False, middlewares=[ssl_redirect])
+app = Application(loop=asyncio.get_event_loop(), debug=False)
 app.add_routes(website.frontend_routes)
 app.router.add_static('/static', os.getcwd() + '/website/static')
 app.router.add_static('/trees', config['tree_file_location'])
