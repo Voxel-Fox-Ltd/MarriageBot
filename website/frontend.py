@@ -42,29 +42,6 @@ async def index(request:Request):
     return {'login_url': login_url}
 
 
-@routes.get("/reset2019")
-@template('blog.jinja')
-@webutils.add_output_args()
-async def reset(request:Request):
-    """The lol blog post that was sent out when MB was reset back in July 2019"""
-
-    config = request.app['config']
-    login_url = 'https://discordapp.com/api/oauth2/authorize?' + urlencode({
-        'client_id': config['oauth']['client_id'],
-        'redirect_uri': config['oauth']['redirect_uri'],
-        'response_type': 'code',
-        'scope': OAUTH_SCOPES
-    })
-    text = [
-        r"""I'm considering resetting the trees. We're now at a point where families are in the multiples of thousands and it isn't really helping the bot out all that much. Commands such as `fs`, `adopt`, `marry`, etc all need to check through every family member in order to proceed, and when each family has several thousand members? You can tell it's going to take a while. I understand that there are people very proud of their several thousand person trees, but ultimately I've got to prioritize having this bot run smoothly.""",
-        r"""If I *were* to reset the trees, I'd implement new logic that caps the amount of people in a family, as well as *finally* launching the server-specific trees that I've been working on (I might make it a donator feature - I'm not quite sure yet).""",
-        r"""I'm all ears for any suggestions and feedback that people may have on this - be it "no dont do that u suck", "I can help progress without resetting things", "Caleb you're extremely handsome", "here's how to use 500% less memory", etc (that last one would be v helpful pls [https://github.com/4Kaylum/MarriageBot](https://github.com/4Kaylum/MarriageBot)""",
-        r"""Sorry about this. [https://patreon.com/join/CalebB](https://patreon.com/join/CalebB)""",
-        r"""[Leave your feedback here](https://discord.gg/xk24TvS)""",
-    ]
-    return {'login_url': login_url, 'text': webutils.text_to_html(text), 'title': 'July 2019 Reset'}
-
-
 @routes.get("/blog/{code}")
 @template('blog.jinja')
 @webutils.add_output_args()
@@ -77,7 +54,16 @@ async def blog(request:Request):
     if not data:
         return {'title': 'Post not found'}
     text = data[0]['body'].split('\n')
-    return {'text': webutils.text_to_html(text), 'title': data[0]['title']}
+    return {
+        'text': webutils.text_to_html(text),
+        'title': data[0]['title'],
+        'opengraph': {
+            'article:published_time': data[0]['created_at'].isoformat(),
+            'article:modified_time': data[0]['created_at'].isoformat(),
+            'og:type': 'article',
+            'og:title': f"MarriageBot - {data[0]['title']}"
+        }
+    }
 
 
 @routes.get('/login')

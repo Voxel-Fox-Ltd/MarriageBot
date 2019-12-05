@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -10,11 +10,9 @@
     <link rel="stylesheet" type="text/css" href="/static/css/content.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/footer.css" />
 
-    <meta property="og:title" content="MarriageBot - A marriage-based Discord bot" />
-    <meta property="og:description" content="MarriageBot is a Discord bot used for simulations of your family, be it that you want b1nzy as your mom, or Jake as your nephew, MarriageBot can handle it all." />
-    <meta property="og:image" content="https://marriagebot.xyz/static/images/MarriageBotCircle.150.png" />
+    {% for i, o in opengraph.items() %}
+    <meta property="{{ i }}" content="{{ o }}">{% endfor %}
     <meta property="og:url" content="{{ request.url.human_repr() }}" />
-    <meta property="og:type" content="website" />
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123512689-2"></script>
