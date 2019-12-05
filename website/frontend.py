@@ -291,6 +291,7 @@ async def tree_preview(request:Request):
 
     return {
         'hex_strings': colours,
+        'request': request,
     }
 
 
