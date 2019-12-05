@@ -62,7 +62,8 @@ async def blog(request:Request):
             'article:published_time': data[0]['created_at'].isoformat(),
             'article:modified_time': data[0]['created_at'].isoformat(),
             'og:type': 'article',
-            'og:title': f"MarriageBot - {data[0]['title']}"
+            'og:title': f"MarriageBot - {data[0]['title']}",
+            'og:description': text[0],
         }
     }
 
