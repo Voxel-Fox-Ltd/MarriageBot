@@ -23,7 +23,7 @@ This is all handled by a decorator below, but I'm just putting it here as a note
 
 routes = RouteTableDef()
 OAUTH_SCOPES = 'identify guilds'
-ITALICS_MATCHER = regex.compile(r"(\*{1,2})(.+?)\*{1,2}")
+ITALICS_MATCHER = regex.compile(r"([\*_]{1,2})(.+?)[\*_]{1,2}")
 LINK_MATCHER = regex.compile(r"\[(.+?)\]\((.+?)\)")
 
 
