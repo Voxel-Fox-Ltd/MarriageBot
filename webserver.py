@@ -105,7 +105,7 @@ if __name__ == '__main__':
     # SSL server
     try:
         if not args.nossl:
-            ssl_context = ssl.SSLContext()
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             ssl_context.load_cert_chain(**app['config']['ssl_context'])
             ssl_webserver = TCPSite(application, host=args.host, port=args.sslport, ssl_context=ssl_context)
     except Exception as e:
