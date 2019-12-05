@@ -199,6 +199,17 @@ class ModeratorOnly(utils.Cog):
                 await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user, self.bot.dbl_votes[user])
         await ctx.send("Consider it done.")
 
+    @commands.command()
+    @utils.checks.is_bot_administrator()
+    async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
+        """Adds a blog post to the database"""
+
+        if content is None:
+            return await ctx.send("You can't send no content.")
+        async with self.bot.database() as db:
+            await db("INSERT INTO blog_posts VALUES ($1, $2, $3, NOW(), $4)", url, title, content, ctx.author.id)
+        await ctx.send(f"Created blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
+
 
 def setup(bot:utils.CustomBot):
     x = ModeratorOnly(bot)
