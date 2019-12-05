@@ -288,7 +288,7 @@ class OwnerOnly(utils.Cog):
         if content is None:
             return await ctx.send("You can't send no content.")
         async with self.bot.database() as db:
-            await db("INSERT INTO blog_posts VALUES ($1, $2, $3)", url, title, content)
+            await db("INSERT INTO blog_posts VALUES ($1, $2, $3, NOW())", url, title, content)
         await ctx.send(f"Created blog post: https://marriagebot.xyz/blog/{url}")
 
 

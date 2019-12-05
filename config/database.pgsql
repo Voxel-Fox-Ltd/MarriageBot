@@ -122,6 +122,7 @@ CREATE TABLE shard_logging(
 
 CREATE TABLE blog_posts(
     url VARCHAR(50) PRIMARY KEY,
-    title VARCHAR(100),
-    body TEXT
+    title VARCHAR(100) NOT NULL,
+    body TEXT NOT NULL,
+    created_at TIMESTAMP
 );
