@@ -380,8 +380,11 @@ async def buy_gold(request:Request):
         "success_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
         "cancel_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
         "line_items[0][name]": 'MarriageBot Gold',
-        "line_items[0][description]": f'Access to the Discord bot \'MarriageBot Gold\' for guild ID {guild_id}',
-        "line_items[0][amount]": 2000,
+        "line_items[0][description]": f"Access to the Discord bot 'MarriageBot Gold' for guild ID {guild_id}" + {
+            True: f"(Discounted by £{request.app['config']['stripe']['discount_gpb']/100:.2f})",
+            False: ""
+        }[request.app['config']['stripe']['discount_gpb'] > 0],
+        "line_items[0][amount]": 2000 - request.app['config']['stripe']['discount_gpb'],
         "line_items[0][currency]": 'gbp',
         "line_items[0][quantity]": 1,
     }
@@ -391,7 +394,6 @@ async def buy_gold(request:Request):
     async with aiohttp.ClientSession(loop=request.app.loop) as requests:
         async with requests.post(url, data=data, auth=aiohttp.BasicAuth(request.app['config']['stripe']['secret_key'])) as r:
             stripe_session = await r.json()
-    print(stripe_session)
 
     # Store data
     async with request.app['database']() as db:

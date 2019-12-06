@@ -91,6 +91,7 @@ redirect_uri = "https://marriagebot.xyz/login"
 secret_key = ""
 public_key = ""
 signing_key = ""
+discount_gpb = 0
 
 
 # This is where we store the SSL files for the webserver
