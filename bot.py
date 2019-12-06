@@ -112,8 +112,8 @@ if log_level is None:
     exit(1)
 logger.setLevel(log_level)
 logging.getLogger('discord').setLevel(getattr(logging, args.loglevel_discord.upper(), log_level))
-bot.database.logger.setLevel(getattr(logging, args.loglevel_redis.upper(), log_level))
-bot.redis.logger.setLevel(getattr(logging, args.loglevel_database.upper(), log_level))
+bot.redis.logger.setLevel(getattr(logging, args.loglevel_redis.upper(), log_level))
+bot.database.logger.setLevel(getattr(logging, args.loglevel_database.upper(), log_level))
 
 # Create website object - this is used for the webhook handler
 if args.noserver is False:

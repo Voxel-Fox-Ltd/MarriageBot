@@ -40,7 +40,7 @@ class OwnerOnly(utils.Cog):
         # Remove inline backticks `foo`
         return content.strip('` \n')
 
-    @commands.command()
+    @commands.command(aliases=['evall'])
     async def ev(self, ctx:utils.Context, *, content:str):
         """Evaluates some Python code
 
@@ -61,12 +61,12 @@ class OwnerOnly(utils.Cog):
 
         # Make code and output string
         content = self._cleanup_code(content)
-        stdout = io.StringIO()
-        to_compile = f'async def func():\n{textwrap.indent(content, "  ")}'
+        code = f'async def func():\n{textwrap.indent(content, "  ")}'
 
         # Make the function into existence
+        stdout = io.StringIO()
         try:
-            exec(to_compile, env)
+            exec(code, env)
         except Exception as e:
             return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
 
@@ -96,10 +96,20 @@ class OwnerOnly(utils.Cog):
             # If the function did return a value
             else:
                 self._last_result = ret
-                text = f'```py\n{value}{ret}\n```'
+                text = f'Run by shards {self.bot.shard_ids}```py\n{value}{ret}\n```'
                 if len(text) > 2000:
-                    return await ctx.send(file=discord.File(io.StringIO(value), filename='ev.txt'))
-                await ctx.send(text)
+                    await ctx.send(f'Run by shards {self.bot.shard_ids}', file=discord.File(io.StringIO(value), filename='ev.txt'))
+                else:
+                    await ctx.send(text)
+
+        if ctx.invoked_with == "evall":
+            async with self.bot.redis() as re:
+                await re.publish_json('EvalAll', {
+                    'content': content,
+                    'channel_id': ctx.channel.id,
+                    'message_id': ctx.message.id,
+                    'exempt': self.bot.shard_ids,
+                })
 
     @commands.command(aliases=['rld'])
     async def reload(self, ctx:utils.Context, *cog_name:str):
