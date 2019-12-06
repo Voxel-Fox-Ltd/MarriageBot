@@ -14,7 +14,7 @@ MarriageBot - Guild Picker
     <h2>{{ guild.name }}</h2>
 </div>
 <div id="guild-data">
-    {% if gold %}<h2>This guild has MarriageBot Gold</h2>{% endif %}
+    {% if gold %}<h2>This guild has <a href="{{ gold_invite_url }}">MarriageBot Gold</a></h2>{% elif user_info.id == '141231597155385344' %}<h2><a href="/gold?guild_id={{ guild.id }}">Buy MarriageBot Gold for this guild</a></h2>{% endif %}
 </div>
 <form id="prefix">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>

@@ -34,6 +34,7 @@ warnings.filterwarnings('ignore', category=RuntimeWarning)
 # Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("config_file", help="The configuration for the bot.")
+parser.add_argument("gold_config_file", help="The configuration for the Gold version of the bot.")
 parser.add_argument("--nossl", action="store_true", default=False, help="Starts the bot with no SSL web server.")
 parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to run the webserver on.")
 parser.add_argument("--port", type=int, default=8080, help="The port to run the webserver on.")
@@ -44,6 +45,8 @@ args = parser.parse_args()
 # Read config
 with open(args.config_file) as a:
     config = toml.load(a)
+with open(args.gold_config_file) as a:
+    gold_config = toml.load(a)
 
 
 # Create website object - don't start based on argv
@@ -57,6 +60,7 @@ utils.DatabaseConnection.logger = logger.getChild("db")
 app['redis'] = utils.RedisConnection
 utils.RedisConnection.logger = logger.getChild("redis")
 app['config'] = config
+app['gold_config'] = gold_config
 app['bot'] = discord.Client()
 jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
 

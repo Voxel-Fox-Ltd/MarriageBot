@@ -304,15 +304,25 @@ async def guild_settings_get(request:Request):
 
     # Get current prefix
     async with request.app['database']() as db:
-        prefix = await db('SELECT prefix FROM guild_settings WHERE guild_id=$1', int(guild_id))
+        guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
         mbg = await db('SELECT * FROM guild_specific_families WHERE guild_id=$1', int(guild_id))
     try:
-        prefix = prefix[0]['prefix']
+        prefix = guild_settings[0]['prefix']
     except IndexError:
         prefix = request.app['config']['prefix']['default_prefix']
 
     # Get channels
     channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
+
+    # Get the gold invite url
+    gold_invite_url = DISCORD_OAUTH_URL + urlencode({
+        'client_id': request.app['gold_config']['oauth']['client_id'],
+        'redirect_uri': request.app['gold_config']['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
+        'response_type': 'code',
+        'permissions': 52224,
+        'scope': 'bot',
+        'guild_id': guild_id,
+    })
 
     # Return info to the page
     return {
@@ -320,6 +330,7 @@ async def guild_settings_get(request:Request):
         'prefix': prefix,
         'channels': channels,
         'gold': bool(mbg),
+        'gold_invite_url': gold_invite_url,
     }
 
 
