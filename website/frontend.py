@@ -434,11 +434,15 @@ async def purchase_complete(request:Request):
         return Response(status=200)  # no transaction ID in DB
 
     # Update db with data
-    await db("UPDATE stripe_purchases SET customer_id=$1 WHERE id=$2", stripe_data['data']['object']['customer'], stripe_data['data']['object']['id'])
+    await db(
+        "UPDATE stripe_purchases SET customer_id=$1, completed=true, checkout_complete_timestamp=NOW() WHERE id=$2",
+        stripe_data['data']['object']['customer'], stripe_data['data']['object']['id']
+    )
     try:
         await db("INSERT INTO guild_specific_families VALUES ($1)", database_data[0]['guild_id'])
     except asyncpg.UniqueViolationError:
         pass
+    await db.disconnect()
 
     # Let the user get redirected
     return Response(status=200)

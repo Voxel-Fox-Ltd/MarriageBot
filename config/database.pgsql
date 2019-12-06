@@ -136,5 +136,7 @@ CREATE TABLE stripe_purchases(
     payment_amount INTEGER NOT NULL,
     discord_id BIGINT NOT NULL,
     guild_id BIGINT NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    checkout_complete_timestamp TIMESTAMP,
     PRIMARY KEY (id, name)
 );
