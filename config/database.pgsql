@@ -127,3 +127,14 @@ CREATE TABLE blog_posts(
     created_at TIMESTAMP,
     author_id BIGINT
 );
+
+
+CREATE TABLE stripe_purchases(
+    id VARCHAR(64) NOT NULL,
+    name VARCHAR(64) NOT NULL,
+    customer_id VARCHAR(18),
+    payment_amount INTEGER NOT NULL,
+    discord_id BIGINT NOT NULL,
+    guild_id BIGINT NOT NULL,
+    PRIMARY KEY (id, name)
+);

@@ -85,6 +85,14 @@ client_secret = ""
 redirect_uri = "https://marriagebot.xyz/login"
 
 
+# Here's the Stripe data! You should probably leave it blank. I use it on the website for MarriageBot Gold
+# purchases
+[stripe]
+secret_key = ""
+public_key = ""
+signing_key = ""
+
+
 # This is where we store the SSL files for the webserver
 # Probably don't lose them
 [ssl_context]
