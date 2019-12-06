@@ -12,7 +12,7 @@ header {
     height: 60px;
 }
 
-header li { 
+header li {
     /*! display: inline-block; */
     height: 100%;
     padding: 0;
@@ -38,7 +38,7 @@ header .mb-logo {
     border-radius: 50%;
     width: 120px;
     height: 120px;
-    border: 3px solid rgb(var(--greyple));
+    border: 6px solid rgb(var(--greyple));
 }
 
 header .mb-title {
@@ -95,7 +95,7 @@ header a, header a:visited {
     header .user-avatar {
         display: none;
     }
-    
+
     header .header-button {
         margin-right: 50px;
     }

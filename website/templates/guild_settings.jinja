@@ -16,7 +16,7 @@ MarriageBot - Guild Picker
 <form id="prefix">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
     <p><input name="prefix" value="{{ prefix }}" placeholder="m!" maxlength="30" /></p>
-    <p><button type="submit" formmethod="post">Submit</button></p>
+    <p><button type="submit" formmethod="post">Submit Prefix Change</button></p>
 </form> <!-- prefix -->
 {#
 <form id="blacklisted-channels">
@@ -33,6 +33,7 @@ MarriageBot - Guild Picker
             }
         }
         </style>
+
         {% for channel in channels %}
         <p class="col" style="margin: 6px 0;"><input type="checkbox" name="blacklisted-channel" value="{{ channel.id }}">#{{ channel.name }}</p>
         {% endfor %}

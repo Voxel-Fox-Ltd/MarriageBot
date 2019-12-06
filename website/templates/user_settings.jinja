@@ -40,7 +40,7 @@ function updatePreview(submitButton) {
         <label for="font">Font: </label>
         <input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this.parentNode);" />
     </div>
-    
+
     <div class="colour-choice">
         <label for="background">Background: </label>
         <input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this.parentNode);" />
@@ -72,7 +72,7 @@ function updatePreview(submitButton) {
         $("#highlighted_font").spectrum({ color: "{{ hex_strings.highlighted_font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
         $("#highlighted_node").spectrum({ color: "{{ hex_strings.highlighted_node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
     </script>
-    <button type="submit" formmethod="POST">Submit Changes</button>
+    <button type="submit" formmethod="POST">Submit Tree Changes</button>
 </form>
 
 <iframe id="preview-iframe" src="{{ tree_preview_url|safe }}" scrolling="no" frameborder="0" onload="javascript:this.style.height = this.contentWindow.document.body.scrollHeight + 'px';"></iframe>
