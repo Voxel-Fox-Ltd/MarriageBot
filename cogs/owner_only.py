@@ -223,9 +223,21 @@ class OwnerOnly(utils.Cog):
 
         msg = copy.copy(ctx.message)
         msg.author = self.bot.get_user(who) or await self.bot.fetch_user(who)
-        msg.content = ctx.prefix + command
-        new_ctx = await self.bot.get_context(msg, cls=type(ctx))
+        msg.content = self.bot.config['prefix']['default_prefix'] + command
+        new_ctx = await self.bot.get_context(msg, cls=utils.Context)
         await self.bot.invoke(new_ctx)
+
+    @commands.command()
+    async def runall(self, ctx, *, command: str):
+        """Run a command across all instances of the bot"""
+
+        async with self.bot.redis() as re:
+            await re.publish_json('EvalAll', {
+                'content': f"await ctx.invoke(self.bot.get_command('sudo'), '{ctx.author.id}', command='{command}')",
+                'channel_id': ctx.channel.id,
+                'message_id': ctx.message.id,
+                'exempt': [],
+            })
 
     @commands.command()
     async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
