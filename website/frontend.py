@@ -283,7 +283,7 @@ async def guild_settings_get(request:Request):
     # See if the bot is in the guild
     bot = request.app['bot']
     try:
-        await bot.fetch_guild(int(guild_id))
+        guild_object = await bot.fetch_guild(int(guild_id))
     except discord.Forbidden:
         config = request.app['config']
         location = DISCORD_OAUTH_URL + urlencode({
@@ -298,32 +298,28 @@ async def guild_settings_get(request:Request):
 
     # Get the guilds they're valid to alter
     all_guilds = session['guild_info']
-    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
-    if not guild:
+    oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not oauth_guild_data:
         return HTTPFound(location='/')
 
     # Get current prefix
     async with request.app['database']() as db:
         prefix = await db('SELECT prefix FROM guild_settings WHERE guild_id=$1', int(guild_id))
+        mbg = await db('SELECT * FROM guild_specific_families WHERE guild_id=$1', int(guild_id))
     try:
         prefix = prefix[0]['prefix']
     except IndexError:
         prefix = request.app['config']['prefix']['default_prefix']
 
     # Get channels
-    try:
-        guild_object = await request.app['bot'].fetch_guild(int(guild_id))
-        channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
-    except Exception:
-        channels = []
+    channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
 
     # Return info to the page
     return {
-        'user_info': session['user_info'],
-        'guild': guild[0],
+        'guild': guild_object,
         'prefix': prefix,
         'channels': channels,
-        'request': request,
+        'gold': bool(mbg),
     }
 
 

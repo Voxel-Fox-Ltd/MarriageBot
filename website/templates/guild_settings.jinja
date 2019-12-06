@@ -10,8 +10,11 @@ MarriageBot - Guild Picker
 
 {% block content %}
 <div id="guild-data">
-    {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% endif %}
+    {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% else %}<img alt="The default guild icon" src="/static/images/GuildDefaultImage.png" />{% endif %}
     <h2>{{ guild.name }}</h2>
+</div>
+<div id="guild-data">
+    {% if gold %}<h2>This guild has MarriageBot Gold</h2>{% endif %}
 </div>
 <form id="prefix">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
