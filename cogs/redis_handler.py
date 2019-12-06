@@ -69,13 +69,15 @@ class RedisHandler(utils.Cog):
             return
 
         # Get message
-        channel: discord.TextChannel = self.bot.get_channel(data['channel_id']) or await self.bot.fetch_channel(data['channel_id'])
+        channel: discord.TextChannel = self.bot.get_channel(data['channel_id'])
+        if channel is None:
+            channel: discord.TextChannel = await self.bot.fetch_channel(data['channel_id'])
+            channel.guild = await self.bot.fetch_guild(channel.guild.id)
         message: discord.Message = await channel.fetch_message(data['message_id'])
         content = f"{self.bot.config['prefix']['default_prefix']}ev {data.get('content', self.DEFAULT_EV_MESSAGE)}"
         message._handle_content(content)
 
         # Invoke command
-        self.log_handler.info(7)
         ctx: utils.Context = await self.bot.get_context(message, cls=utils.Context)
         ctx.invoked_with = 'ev'
         self.log_handler.info(f"Invoking evall - {content}")
