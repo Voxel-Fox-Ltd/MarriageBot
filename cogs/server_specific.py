@@ -64,7 +64,7 @@ class ServerSpecific(utils.Cog):
     async def serverspecificfamilies(self, ctx:utils.Context):
         """Gives you the information about server specific families and MarriageBot gold"""
 
-        await ctx.send(f"MarriageBot Gold (the server specific version of MarriageBot) is a one time payment of £20 GBP (~$25 USD, price may adjust over time). It's a new bot you add to your server (MarriageBot Gold) that has a non configurable prefix of `m.`. When you add the bot, any user on your server with a role named \"MarriageBot Moderator\" is able to run the force commands (ie `forceadopt`, `forceeman`, `forcedivorce`, `forcemarry`). The 500 person limit still applies. The children limits still apply (though this may change in future, and become configurable also). The tree command cooldown is reduced to 5 seconds for all users. You're also able to allow incestuous relationships on your server via the `allowincest` and `disallowincest` commands. Since it's a separate bot, you can have both bots on your server at once, if it's something you want to do.\n\nIf you'd like to know more, contact `Caleb` at `{ctx.clean_prefix}support`.")
+        await ctx.send(f"[See here](https://marriagebot.xyz/blog/gold) for a rundown of everything, or `{ctx.clean_prefix}perks` for an overview. Ask any questions you have at `{ctx.clean_prefix}support`.")
 
 
 def setup(bot:utils.CustomBot):
