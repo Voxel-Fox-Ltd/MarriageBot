@@ -125,8 +125,10 @@ class ErrorHandler(utils.Cog):
             return await ctx.send("You need to be registered as an owner to run this command.")
 
         # Can't tell what it is? Ah well.
-        # if ctx.original_author_id in self.bot.owners:
-        await ctx.send(f'```py\n{error}```')
+        try:
+            await ctx.send(f'```py\n{error}```')
+        except (discord.Forbidden, discord.NotFound):
+            pass
         raise error
 
     async def tree_timeout_handler(self, ctx:utils.Context, error):
