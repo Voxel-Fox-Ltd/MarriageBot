@@ -94,7 +94,8 @@ class CustomBot(commands.AutoShardedBot):
         self._invite_link = 'https://discordapp.com/oauth2/authorize?' + urlencode({
             'client_id': self.config['oauth']['client_id'],
             'scope': 'bot',
-            'permissions': permissions.value
+            'permissions': permissions.value,
+            'redirect_uri': self.config['oauth']['join_server_redirect_uri'],
         })
         return self._invite_link
 
