@@ -73,7 +73,7 @@ class CustomBot(commands.AutoShardedBot):
         self.server_specific_families: typing.List[int] = []  # List of whitelisted guild IDs
         self.proposal_cache: typing.Dict[int, tuple] = utils.ProposalCache()
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
-        self.blocked_users: typing.List[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
+        self.blocked_users: typing.Dict[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
         self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.default_guild_settings.copy())
         self.dbl_votes: typing.Dict[int, dt] = {}
 

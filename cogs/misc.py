@@ -185,13 +185,13 @@ class Misc(utils.Cog):
             return
 
         # Add to list
-        current_blocks.append(user_id)
-        self.bot.blocked_users[ctx.author.id] = current_blocks
         async with self.bot.database() as db:
             await db(
                 'INSERT INTO blocked_user (user_id, blocked_user_id) VALUES ($1, $2)',
                 ctx.author.id, user_id
             )
+        async with self.bot.redis() as redis:
+            await redis.publish_json("BlockedUserAdd", {"user_id": ctx.author.id, "blocked_user_id": user_id})
 
         # Tell user
         await ctx.send("That user is now blocked.")
@@ -207,13 +207,13 @@ class Misc(utils.Cog):
             return
 
         # Remove from list
-        current_blocks.remove(user)
-        self.bot.blocked_users[ctx.author.id] = current_blocks
         async with self.bot.database() as db:
             await db(
                 'DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2',
                 ctx.author.id, user
             )
+        async with self.bot.redis() as redis:
+            await redis.publish_json("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user_id
 
         # Tell user
         await ctx.send("That user is now unblocked.")

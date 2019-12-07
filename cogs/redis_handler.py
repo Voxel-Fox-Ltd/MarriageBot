@@ -22,6 +22,8 @@ class RedisHandler(utils.Cog):
             task(self.channel_handler('DBLVote', lambda data: bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f")))),
             task(self.channel_handler('ProposalCacheAdd', lambda data: bot.proposal_cache.raw_add(**data))),
             task(self.channel_handler('ProposalCacheRemove', lambda data: bot.proposal_cache.raw_remove(*data))),
+            task(self.channel_handler('BlockedUserAdd', lambda data: bot.blocked_users[data['user_id'].append(data['blocked_user_id'])])),
+            task(self.channel_handler('BlockedUserRemove', lambda data: bot.blocked_users[data['user_id'].remove(data['blocked_user_id'])])),
             task(self.channel_handler('EvalAll', self.eval_all)),
         ]
         # if not self.bot.is_server_specific:
@@ -55,10 +57,13 @@ class RedisHandler(utils.Cog):
         while (await channel.wait_message()):
             data = await channel.get_json()
             self.bot.redis.logger.debug(f"Received JSON at channel {channel_name}:{json.dumps(data)}")
-            if asyncio.iscoroutine(function) or asyncio.iscoroutinefunction(function):
-                await function(data, *args, **kwargs)
-            else:
-                function(data, *args, **kwargs)
+            try:
+                if asyncio.iscoroutine(function) or asyncio.iscoroutinefunction(function):
+                    await function(data, *args, **kwargs)
+                else:
+                    function(data, *args, **kwargs)
+            except Exception as e:
+                self.log_handler.error(e)
 
     async def eval_all(self, data:dict):
         """Creates a context object to go through and be invoked under the .ev command"""
