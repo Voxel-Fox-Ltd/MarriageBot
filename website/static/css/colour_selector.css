@@ -1,7 +1,7 @@
 #colour-selector-content {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-evenly;
 }
 
 #colour-selector-content #colour-selector, #colour-selector-content #preview-iframe {

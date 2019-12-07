@@ -9,16 +9,6 @@ MarriageBot - User Settings
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
-<script>
-function updatePreview(submitButton) {
-    var form_id = submitButton.parentNode.id;
-    var form = $(`#${form_id}`);
-    var data = form.serialize();
-    var iframe = document.getElementById('preview-iframe');
-    iframe.src = "/tree_preview?" + data;
-    return false;
-}
-</script>
 {% endblock head %}
 
 {% block content %}
@@ -27,62 +17,64 @@ function updatePreview(submitButton) {
     <h2>{{ user_info.username }}#{{ user_info.discriminator }}</h2>
 </div>
 
-<div class="boxed">
+<form id="colour-selector" action="/colour_settings" class="boxed">
     <h2>Colour Selector</h2>
     <p>Here you'll be able to interactively set values for your tree's colour. When you're done, just press submit and it'll all be transferred over to the bot!</p>
     <div id="colour-selector-content">
-        <form id="colour-selector" action="/colour_settings">
-            <div class="colour-choice">
-                <label for="edge">Edge: </label>
-                <input name="edge" id="edge" value="{{ hex_strings.edge }}" onchange="updatePreview(this.parentNode);" />
-            </div>
-
-            <div class="colour-choice">
-                <label for="node">Node: </label>
-                <input name="node" value="{{ hex_strings.node }}" id="node" onchange="updatePreview(this.parentNode);" />
-            </div>
-
-            <div class="colour-choice">
-                <label for="font">Font: </label>
-                <input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this.parentNode);" />
-            </div>
-
-            <div class="colour-choice">
-                <label for="background">Background: </label>
-                <input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this.parentNode);" />
-            </div>
-
-            <div class="colour-choice">
-                <label for="highlighted_font">Highlighted Font: </label>
-                <input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font" onchange="updatePreview(this.parentNode);" />
-            </div>
-
-            <div class="colour-choice">
-                <label for="highlighted_node">Highlighted Node: </label>
-                <input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node" onchange="updatePreview(this.parentNode);" />
-            </div>
-
-            <div class="colour-choice">
-                <label for="direction">Tree Direction: </label>
-                <select name="direction" id="direction" onchange="updatePreview(this.parentNode);">
+        <table>
+            <tr class="colour-choice">
+                <td>Edge</td>
+                <td><input name="edge" id="edge" value="{{ hex_strings.edge }}" onchange="updatePreview(this);" /></td>
+            </tr>
+            <tr class="colour-choice">
+                <td>Node</td>
+                <td><input name="node" value="{{ hex_strings.node }}" id="node" onchange="updatePreview(this);" /></td>
+            </tr>
+            <tr class="colour-choice">
+                <td>Font</td>
+                <td><input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this);" /></td>
+            </tr>
+            <tr class="colour-choice">
+                <td>Background</td>
+                <td><input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this);" /></td>
+            </tr>
+            <tr class="colour-choice">
+                <td>Highlighted Font</td>
+                <td><input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font" onchange="updatePreview(this);" /></td>
+            </tr>
+            <tr class="colour-choice">
+                <td>Highlighted Node</td>
+                <td><input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node" onchange="updatePreview(this);" /></td>
+            </tr>
+            <tr class="colour-choice">
+                <td for="direction">Tree Direction: </td>
+                <td><select name="direction" id="direction" onchange="updatePreview(this);">
                     <option {% if hex_strings.direction == "TB" %}selected="TRUE" {% endif %}value="TB" >TB</option>
                     <option {% if hex_strings.direction == "LR" %}selected="TRUE" {% endif %}value="LR" >LR</option>
-                </select>
-            </div>
-
-            <script>
-                $("#edge").spectrum({ color: "{{ hex_strings.edge }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
-                $("#node").spectrum({ color: "{{ hex_strings.node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
-                $("#font").spectrum({ color: "{{ hex_strings.font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
-                $("#background").spectrum({ color: "{{ hex_strings.background }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
-                $("#highlighted_font").spectrum({ color: "{{ hex_strings.highlighted_font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
-                $("#highlighted_node").spectrum({ color: "{{ hex_strings.highlighted_node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
-            </script>
-            <button type="submit" formmethod="POST">Submit Tree Changes</button>
-        </form>
+                </select></td>
+            </tr>
+        </table>
+        <script>
+            $("#edge").spectrum({ color: "{{ hex_strings.edge }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+            $("#node").spectrum({ color: "{{ hex_strings.node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+            $("#font").spectrum({ color: "{{ hex_strings.font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+            $("#background").spectrum({ color: "{{ hex_strings.background }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+            $("#highlighted_font").spectrum({ color: "{{ hex_strings.highlighted_font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+            $("#highlighted_node").spectrum({ color: "{{ hex_strings.highlighted_node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
+            function updatePreview(input) {
+                var form = $(`#colour-selector`);
+                var data = form.serialize();
+                var iframe = document.getElementById('preview-iframe');
+                iframe.src = "/tree_preview?" + data;
+                return false;
+            }
+        </script>
         <iframe id="preview-iframe" src="{{ tree_preview_url|safe }}" scrolling="no" frameborder="0" onload="javascript:this.style.height = this.contentWindow.document.body.scrollHeight + 'px';"></iframe>
     </div> <!-- colour-selector-content -->
-</div> <!-- boxed -->
+    <div class="content-header-data">
+        <button type="submit" formmethod="POST">Submit Tree Changes</button>
+    </div>
+</form> <!-- boxed -->
 
 <div class="boxed">
     <h2>Blocked Users</h2>
