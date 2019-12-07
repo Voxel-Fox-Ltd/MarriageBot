@@ -17,6 +17,12 @@ class Misc(utils.Cog):
 
         await ctx.send(f"<{self.bot.config.get('guild_invite')}>")
 
+    @commands.command()
+    async def invite(self, ctx:utils.Context):
+        """Gives you the bot's invite link"""
+
+        await ctx.send(f"<{self.bot.get_invite_link()}>")
+
 
 def setup(bot:utils.CustomBot):
     x = Misc(bot)
