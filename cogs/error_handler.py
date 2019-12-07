@@ -35,7 +35,7 @@ class ErrorHandler(utils.Cog):
             commands.MissingAnyRole, commands.MissingPermissions,
             commands.MissingRole, commands.CommandOnCooldown, commands.DisabledCommand,
         )
-        if ctx.original_author_id in self.bot.owners and isinstance(error, owner_reinvoke_errors):
+        if ctx.author.id in self.bot.owners and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
 
         # Missing argument

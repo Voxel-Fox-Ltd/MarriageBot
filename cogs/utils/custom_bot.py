@@ -55,6 +55,12 @@ class CustomBot(commands.AutoShardedBot):
             'permissions': permissions.value
         })
 
+    @property
+    def owners(self) -> list:
+        """Gives you a list of the owner IDs"""
+
+        return self.config['owners']
+
     async def startup(self):
         """Clears all the bot's caches and fills them from a DB read"""
 
