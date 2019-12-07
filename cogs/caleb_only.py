@@ -14,20 +14,6 @@ from cogs import utils
 class OwnerOnly(utils.Cog):
     """Handles commands that only the owner should be able to run"""
 
-    async def cog_command_error(self, ctx:utils.Context, error:commands.CheckFailure):
-        """Local error handling - pretty much just "raise error" and "you
-        shouldn't be here" tbh"""
-
-        # Throw errors properly for me
-        if ctx.author.id in self.bot.config['owners']:
-            text = f'```py\n{error}```'
-            await ctx.send(text)
-            raise error
-
-        elif isinstance(error, commands.NotOwner):
-            await ctx.send("You need to be registered as an owner to run this command.")
-            return
-
     async def cog_check(self, ctx:utils.Context):
         """Local check for the cog - make sure the person running the command is an owner"""
 
