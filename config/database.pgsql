@@ -36,6 +36,7 @@ CREATE TABLE guild_specific_families(
 CREATE TABLE guild_settings(
     guild_id BIGINT NOT NULL,
     prefix VARCHAR(30) DEFAULT 'm!',
+    gold_prefix VARCHAR(30) DEFAULT 'm.',
     allow_incest BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (guild_id)
 );

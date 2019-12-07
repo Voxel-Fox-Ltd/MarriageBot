@@ -176,6 +176,8 @@ class CustomBot(commands.AutoShardedBot):
         for items in all_settings:
             current_settings = self.guild_settings[items]  # Get current (which should include defaults)
             current_settings.update(**dict(items))  # Update from db
+            if self.is_server_specific:
+                current_settings['prefix'] = current_settings['gold_prefix']
             self.guild_settings[items['guild_id']] = current_settings  # Cache
 
         # Grab the last vote times of each user

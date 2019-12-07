@@ -25,6 +25,7 @@ class RedisHandler(utils.Cog):
             task(self.channel_handler('BlockedUserAdd', lambda data: bot.blocked_users[data['user_id'].append(data['blocked_user_id'])])),
             task(self.channel_handler('BlockedUserRemove', lambda data: bot.blocked_users[data['user_id'].remove(data['blocked_user_id'])])),
             task(self.channel_handler('EvalAll', self.eval_all)),
+            task(self.channel_handler('UpdateGuildPrefix', self.update_guild_prefix)),
         ]
         # if not self.bot.is_server_specific:
         self.handlers.extend([
@@ -87,6 +88,18 @@ class RedisHandler(utils.Cog):
         ctx.invoked_with = 'ev'
         self.log_handler.info(f"Invoking evall - {content}")
         await ctx.command.invoke(ctx)
+
+    def update_guild_prefix(self, data):
+        """Updates the prefix for the guild"""
+
+        if self.bot.is_server_specific:
+            key = "gold_prefix"
+        else:
+            key = "prefix"
+        prefix = data.get(key)
+        if prefix is None:
+            return
+        self.bot.guild_settings['prefix'] = prefix
 
 
 def setup(bot:utils.CustomBot):

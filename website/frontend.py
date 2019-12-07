@@ -346,28 +346,72 @@ async def guild_settings_get(request:Request):
     # Get channels
     channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
 
-    # Get the gold invite url
-    gold_invite_url = DISCORD_OAUTH_URL + urlencode({
-        'client_id': request.app['gold_config']['oauth']['client_id'],
-        'redirect_uri': request.app['gold_config']['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
-        'response_type': 'code',
-        'permissions': 52224,
-        'scope': 'bot',
-        'guild_id': guild_id,
-    })
-
     # Return info to the page
     return {
         'guild': guild_object,
         'prefix': prefix,
         'channels': channels,
         'gold': bool(mbg),
-        'gold_invite_url': gold_invite_url,
+    }
+
+
+@routes.get('/guild_gold_settings')
+@template('guild_settings.jinja')
+@webutils.add_output_args(redirect_if_logged_out="/")
+async def guild_gold_settings_get(request:Request):
+    """Shows the settings for a particular guild"""
+
+    # See if they're logged in
+    session = await aiohttp_session.get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = request.query.get('guild_id')
+    if not guild_id:
+        return HTTPFound(location='/')
+
+    # See if the bot is in the guild
+    bot = request.app['gold_bot']
+    try:
+        guild_object = await bot.fetch_guild(int(guild_id))
+    except discord.Forbidden:
+        config = request.app['gold_config']
+        location = DISCORD_OAUTH_URL + urlencode({
+            'client_id': config['oauth']['client_id'],
+            'redirect_uri': config['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
+            'response_type': 'code',
+            'permissions': 52224,
+            'scope': 'bot',
+            'guild_id': guild_id,
+        })
+        return HTTPFound(location=location)
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not oauth_guild_data:
+        return HTTPFound(location='/')
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
+    try:
+        prefix = guild_settings[0]['gold_prefix']
+    except IndexError:
+        prefix = request.app['gold_config']['prefix']['default_prefix']
+
+    # Get channels
+    channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
+
+    # Return info to the page
+    return {
+        'guild': guild_object,
+        'prefix': prefix,
+        'channels': channels,
+        'gold': None,
     }
 
 
 @routes.post('/guild_settings')
-@template('guild_settings.jinja')
 async def guild_settings_post(request:Request):
     """Shows the settings for a particular guild"""
 
@@ -396,6 +440,37 @@ async def guild_settings_post(request:Request):
             'prefix': prefix,
         })
     return HTTPFound(location=f'/guild_settings?guild_id={guild_id}')
+
+
+@routes.post('/gold_guild_settings')
+async def gold_guild_settings_post(request:Request):
+    """Shows the settings for a particular guild"""
+
+    # See if they're logged in
+    session = await aiohttp_session.get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = request.query.get('guild_id')
+    if not guild_id:
+        return HTTPFound(location='/')
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not guild:
+        return HTTPFound(location='/')
+    data = await request.post()
+    prefix = data['prefix'][0:30]
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db('UPDATE guild_settings SET gold_prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
+    async with request.app['redis']() as re:
+        await re.publish_json('UpdateGuildPrefix', {
+            'guild_id': int(guild_id),
+            'gold_prefix': prefix,
+        })
+    return HTTPFound(location=f'/gold_guild_settings?guild_id={guild_id}')
 
 
 @routes.get('/buy_gold')

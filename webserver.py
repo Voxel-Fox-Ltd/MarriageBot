@@ -55,14 +55,21 @@ app.add_routes(website.frontend_routes)
 app.router.add_static('/static', os.getcwd() + '/website/static')
 app.router.add_static('/trees', config['tree_file_location'])
 app['static_root_url'] = '/static'
+jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
+
+# Add our connections
 app['database'] = utils.DatabaseConnection
 utils.DatabaseConnection.logger = logger.getChild("db")
 app['redis'] = utils.RedisConnection
 utils.RedisConnection.logger = logger.getChild("redis")
+
+# Add our configs
 app['config'] = config
 app['gold_config'] = gold_config
+
+# Add our bots
 app['bot'] = utils.CustomBot(config_file=args.config_file, logger=logger.getChild("bot"))
-jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
+app['gold_bot'] = utils.CustomBot(config_file=args.gold_config_file, logger=logger.getChild("goldbot"))
 
 
 if __name__ == '__main__':
@@ -73,6 +80,8 @@ if __name__ == '__main__':
     # Connect the bot
     logger.info("Logging in bot")
     loop.run_until_complete(app['bot'].login(app['config']['token']))
+    logger.info("Logging in gold")
+    loop.run_until_complete(app['gold_bot'].login(app['gold_config']['token']))
 
     # Connect the database
     logger.info("Creating database pool")

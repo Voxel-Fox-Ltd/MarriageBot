@@ -11,11 +11,12 @@ MarriageBot - Guild Picker
 {% block content %}
 <div class="content-header-data">
     {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% else %}<img alt="The default guild icon" src="/static/images/GuildDefaultImage.png" />{% endif %}
-    <h2>{{ guild.name }}</h2>
+    <h2>{{ guild.name }} - {% if gold is none %}Gold Settings{% else %}Settings{% endif %}</h2>
 </div>
+{% if gold is not none %}
 <div class="content-header-data">
-    {% if gold %}<h2>This guild has <a href="{{ gold_invite_url }}">MarriageBot Gold</a></h2>{% else %}<h2><a href="/buy_gold?guild_id={{ guild.id }}">Click here</a> to buy <a href="/blog/gold">MarriageBot Gold</a> for this guild</h2>{% endif %}
-</div>
+    {% if gold %}<h2>This guild has <a href="/guild_gold_settings?guild_id={{ guild.id }}">MarriageBot Gold</a> - click for settings</h2>{% else %}<h2><a href="/buy_gold?guild_id={{ guild.id }}">Click here</a> to buy <a href="/blog/gold">MarriageBot Gold</a> for this guild</h2>{% endif %}
+</div>{% endif %}
 <form id="prefix" class="boxed">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
     <p><input name="prefix" value="{{ prefix }}" placeholder="m!" maxlength="30" /></p>
