@@ -1,6 +1,8 @@
 token = "BOT TOKEN HERE"
 owners = [ 141231597155385344, ]
 default_prefix = "!"  # The prefix for the bot's commands
+guild_invite = ""
+github = ""
 
 [database]  # All this data is passed over to asyncpg
 user = "DATABSE USERNAME"

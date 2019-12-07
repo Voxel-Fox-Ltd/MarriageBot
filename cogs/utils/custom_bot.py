@@ -143,6 +143,11 @@ class CustomBot(commands.AutoShardedBot):
             self.logger.critical("Couldn't read config file")
             raise e
 
+    async def login(self, token:str=None):
+        """The original login method with optional token"""
+
+        await super().login(token or self.config['token'])
+
     async def start(self, token:str=None):
         """Start the bot with the given token, create the startup method task"""
 
