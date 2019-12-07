@@ -6,7 +6,7 @@
 
 #colour-selector-content #colour-selector, #colour-selector-content #preview-iframe {
     width: 50%;
-    min-width: 400px;
+    /* min-width: 400px; */
 }
 
 @media screen and (max-width: 576px) {

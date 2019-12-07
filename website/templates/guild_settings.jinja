@@ -9,14 +9,14 @@ MarriageBot - Guild Picker
 {% endblock head %}
 
 {% block content %}
-<div id="guild-data">
+<div class="content-header-data">
     {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% else %}<img alt="The default guild icon" src="/static/images/GuildDefaultImage.png" />{% endif %}
     <h2>{{ guild.name }}</h2>
 </div>
-<div id="guild-data">
+<div class="content-header-data">
     {% if gold %}<h2>This guild has <a href="{{ gold_invite_url }}">MarriageBot Gold</a></h2>{% else %}<h2><a href="/buy_gold?guild_id={{ guild.id }}">Click here</a> to buy <a href="/blog/gold">MarriageBot Gold</a> for this guild</h2>{% endif %}
 </div>
-<form id="prefix">
+<form id="prefix" class="boxed">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
     <p><input name="prefix" value="{{ prefix }}" placeholder="m!" maxlength="30" /></p>
     <p><button type="submit" formmethod="post">Submit Prefix Change</button></p>

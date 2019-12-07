@@ -2,6 +2,10 @@
 
 {% block body %}
 <style>
+body {
+    background: rgb(var(--blurple));
+}
+
 #preview .node polygon, #preview .edge path, #preview .node ellipse {
     fill: {% if hex_strings.node == 'transparent' or hex_strings.node == None or hex_strings.node|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.node }}{% endif %};
     stroke: {% if hex_strings.edge == 'transparent' or hex_strings.edge == None or hex_strings.edge|length == 1 %}rgba(0, 0, 0, 0){% else %}{{ hex_strings.edge }}{% endif %};
@@ -24,7 +28,7 @@
 }
 
 #preview {
-    -webkit-user-select: none; /* Safari */        
+    -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
