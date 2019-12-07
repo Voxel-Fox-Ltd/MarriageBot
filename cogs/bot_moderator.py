@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+import typing
 
 import asyncpg
 from discord.ext import commands
@@ -209,6 +210,15 @@ class ModeratorOnly(utils.Cog):
         async with self.bot.database() as db:
             await db("INSERT INTO blog_posts VALUES ($1, $2, $3, NOW(), $4)", url, title, content, ctx.author.id)
         await ctx.send(f"Created blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
+
+    @commands.command()
+    @utils.checks.is_bot_administrator()
+    async def createredirect(self, ctx:utils.Context, code:str, redirect:str):
+        """Adds a redirect to the database"""
+
+        async with self.bot.database() as db:
+            await db("INSERT INTO redirects VALUES ($1, $2)", code, redirect)
+        await ctx.send(f"Created redirect: https://marriagebot.xyz/r/{code}", embeddify=False)
 
 
 def setup(bot:utils.CustomBot):
