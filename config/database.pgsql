@@ -141,3 +141,9 @@ CREATE TABLE stripe_purchases(
     checkout_complete_timestamp TIMESTAMP,
     PRIMARY KEY (id, name)
 );
+
+
+CREATE TABLE redirects(
+    code VARCHAR(50) PRIMARY KEY,
+    location VARCHAR(2000)
+);

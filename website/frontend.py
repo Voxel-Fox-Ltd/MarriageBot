@@ -71,6 +71,18 @@ async def blog(request:Request):
     }
 
 
+@routes.get("/r/{code}")
+async def redirect(request:Request):
+    """Handles redirects using codes stored in the db"""
+
+    code = request.match_info['code']
+    async with request.app['database']() as db:
+        data = await db("SELECT location FROM redirects WHERE code=$1", code)
+    if not data:
+        return HTTPFound(location='/')
+    return HTTPFound(location=data[0]['location'])
+
+
 @routes.get('/login')
 async def login(request:Request):
     """Page the discord login redirects the user to when successfully logged in with Discord"""
@@ -442,8 +454,8 @@ async def guild_settings_post(request:Request):
     return HTTPFound(location=f'/guild_settings?guild_id={guild_id}')
 
 
-@routes.post('/gold_guild_settings')
-async def gold_guild_settings_post(request:Request):
+@routes.post('/guild_gold_settings')
+async def guild_gold_settings_post(request:Request):
     """Shows the settings for a particular guild"""
 
     # See if they're logged in
@@ -470,7 +482,7 @@ async def gold_guild_settings_post(request:Request):
             'guild_id': int(guild_id),
             'gold_prefix': prefix,
         })
-    return HTTPFound(location=f'/gold_guild_settings?guild_id={guild_id}')
+    return HTTPFound(location=f'/guild_gold_settings?guild_id={guild_id}')
 
 
 @routes.get('/buy_gold')
