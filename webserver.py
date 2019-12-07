@@ -61,7 +61,7 @@ app['redis'] = utils.RedisConnection
 utils.RedisConnection.logger = logger.getChild("redis")
 app['config'] = config
 app['gold_config'] = gold_config
-app['bot'] = discord.Client()
+app['bot'] = utils.CustomBot(config_file=args.config_file, logger=logger.getChild("bot"))
 jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
 
 

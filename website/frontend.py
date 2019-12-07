@@ -154,6 +154,7 @@ async def user_settings(request:Request):
         return HTTPFound(location='/')
 
     # Get the colours they're using
+    db = await request.app['database'].get_connection()
     if len(request.query) > 0:
         colours_raw = {
             'edge': request.query.get('edge'),
@@ -170,8 +171,7 @@ async def user_settings(request:Request):
                 o = 'transparent'
             colours[i] = o
     else:
-        async with request.app['database']() as db:
-            data = await db('SELECT * FROM customisation WHERE user_id=$1', session['user_id'])
+        data = await db('SELECT * FROM customisation WHERE user_id=$1', session['user_id'])
         try:
             colours = utils.CustomisedTreeUser(**data[0]).unquoted_hex
         except (IndexError, TypeError):
@@ -180,15 +180,21 @@ async def user_settings(request:Request):
     # Make a URL for the preview
     tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' if i != 'direction' else f'{i}={o}' for i, o in colours.items()])
 
+    # Get their blocked users
+    blocked_users_db = await db("SELECT blocked_user_id FROM blocked_user WHERE user_id=$1", session['user_id'])
+    blocked_users = {i['blocked_user_id']: await request.app['bot'].get_name(i['blocked_user_id']) for i in blocked_users_db}
+
     # Give all the data to the page
+    await db.disconnect()
     return {
         'hex_strings': colours,
         'tree_preview_url': tree_preview_url,
+        'blocked_users': blocked_users,
     }
 
 
-@routes.post('/user_settings')
-async def user_settings_post_handler(request:Request):
+@routes.post('/colour_settings')
+async def colour_settings_post_handler(request:Request):
     """Handles when people submit their new colours"""
 
     try:
@@ -207,6 +213,37 @@ async def user_settings_post_handler(request:Request):
         setattr(ctu, i, o)
     async with request.app['database']() as db:
         await ctu.save(db)
+    return HTTPFound(location='/user_settings')
+
+
+@routes.post('/unblock_user')
+async def unblock_user_post_handler(request:Request):
+    """Handles when people submit their new colours"""
+
+    # Get data
+    try:
+        post_data_raw = await request.post()
+    except Exception as e:
+        raise e
+
+    # Get blocked user
+    try:
+        blocked_user = int(post_data_raw['user_id'])
+    except ValueError:
+        return HTTPFound(location='/user_settings')
+
+    # Get logged in user
+    session = await aiohttp_session.get_session(request)
+    logged_in_user = session['user_id']
+
+    # Remove data
+    async with request.app['database']() as db:
+        await db(
+            "DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2",
+            logged_in_user, blocked_user
+        )
+    async with request.app['redis']() as re:
+        await re.publish_json("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
     return HTTPFound(location='/user_settings')
 
 

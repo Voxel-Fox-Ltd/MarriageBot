@@ -190,8 +190,8 @@ class Misc(utils.Cog):
                 'INSERT INTO blocked_user (user_id, blocked_user_id) VALUES ($1, $2)',
                 ctx.author.id, user_id
             )
-        async with self.bot.redis() as redis:
-            await redis.publish_json("BlockedUserAdd", {"user_id": ctx.author.id, "blocked_user_id": user_id})
+        async with self.bot.redis() as re:
+            await re.publish_json("BlockedUserAdd", {"user_id": ctx.author.id, "blocked_user_id": user_id})
 
         # Tell user
         await ctx.send("That user is now blocked.")
@@ -212,8 +212,8 @@ class Misc(utils.Cog):
                 'DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2',
                 ctx.author.id, user
             )
-        async with self.bot.redis() as redis:
-            await redis.publish_json("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user_id
+        async with self.bot.redis() as re:
+            await re.publish_json("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user_id
 
         # Tell user
         await ctx.send("That user is now unblocked.")

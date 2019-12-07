@@ -385,6 +385,9 @@ class CustomBot(commands.AutoShardedBot):
         with open(self.config_file) as a:
             self.config = toml.load(a)
 
+    async def login(self, token:str=None, *args, **kwargs):
+        await super().login(token or self.config['token'], *args, **kwargs)
+
     async def start(self, token:str=None, *args, **kwargs):
         """The original start method from the bot, using the token from the config
         and running the bot startup method with it"""
