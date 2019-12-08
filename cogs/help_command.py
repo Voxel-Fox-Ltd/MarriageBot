@@ -62,7 +62,7 @@ class Help(utils.Cog):
 
         # Add commands to it
         if command_name:
-            help_embed.add_field(name=f"{ctx.prefix}{base_command.qualified_name}", value=f"{base_command.help}")
+            help_embed.add_field(name=f"{ctx.prefix}{base_command.qualified_name} {base_command.signature}", value=f"{base_command.help}")
         for cog_commands in runnable_commands:
             value = '\n'.join([f"{ctx.prefix}{command.qualified_name} - *{command.short_doc}*" for command in cog_commands])
             help_embed.add_field(
