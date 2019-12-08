@@ -18,7 +18,7 @@ class Marriage(utils.Cog):
         target_tree = utils.FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
         # Manage output strings
-        text_processor = utils.random_text.ProposeRandomText(self.bot, instigator, target)
+        text_processor = utils.random_text.RandomText('propose', instigator, target)
         text = text_processor.process()
         if text:
             return await ctx.send(text)
@@ -87,7 +87,7 @@ class Marriage(utils.Cog):
         instigator_tree = utils.FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
 
         # Manage output strings
-        text_processor = utils.random_text.DivorceRandomText(self.bot, instigator, self.bot.get_user(instigator_tree._partner))
+        text_processor = utils.random_text.RandomText('divorce', instigator, self.bot.get_user(instigator_tree._partner))
 
         # See if they have a partner to divorce
         if instigator_tree._partner == None:

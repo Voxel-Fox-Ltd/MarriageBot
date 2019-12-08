@@ -26,7 +26,7 @@ class Parentage(utils.Cog):
         target_tree = utils.FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
         # Manage output strings
-        text_processor = utils.random_text.MakeParentRandomText(self.bot, instigator, target)
+        text_processor = utils.random_text.RandomText('makeparent', instigator, target)
         text = text_processor.process()
         if text:
             return await ctx.send(text)
@@ -97,7 +97,7 @@ class Parentage(utils.Cog):
         target_tree = utils.FamilyTreeMember.get(target.id, ctx.family_guild_id)
 
         # Manage output strings
-        text_processor = utils.random_text.AdoptRandomText(self.bot, instigator, target)
+        text_processor = utils.random_text.RandomText('adopt', instigator, target)
         text = text_processor.process()
         if text:
             return await ctx.send(text)
@@ -170,7 +170,7 @@ class Parentage(utils.Cog):
         """Lets you remove a user from being your child"""
 
         # Manage output strings
-        text_processor = utils.random_text.DisownRandomText(self.bot, ctx.author, self.bot.get_user(target))
+        text_processor = utils.random_text.RandomText('disown', ctx.author, self.bot.get_user(target))
 
         # Variables we're gonna need for later
         instigator = ctx.author
@@ -206,7 +206,7 @@ class Parentage(utils.Cog):
         instigator_tree = utils.FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
 
         # Manage output strings
-        text_processor = utils.random_text.EmancipateRandomText(self.bot, ctx.author, self.bot.get_user(instigator_tree._parent))
+        text_processor = utils.random_text.RandomText('emancipate', ctx.author, self.bot.get_user(instigator_tree._parent))
 
         # Make sure they're the child of the instigator
         if not instigator_tree._parent:

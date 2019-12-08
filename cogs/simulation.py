@@ -175,10 +175,10 @@ class Simulation(utils.Cog):
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
     async def copulate(self, ctx:utils.Context, user:discord.Member):
-        """Let's you... um... heck someone"""
+        """Lets you... um... heck someone"""
 
         # Check for the most common catches
-        text_processor = utils.random_text.CopulateRandomText(self.bot, ctx.author, user)
+        text_processor = utils.random_text.RandomText('copulate', ctx.author, user)
         text = text_processor.process()
         if text:
             return await ctx.send(text)
@@ -193,7 +193,7 @@ class Simulation(utils.Cog):
         elif not self.bot.allows_incest(ctx.guild.id):
             pass
         else:
-            await ctx.send(text_processor.target_is_relation())
+            await ctx.send(text_processor.target_is_family())
             return
 
         # Ping out a message for them
@@ -205,7 +205,7 @@ class Simulation(utils.Cog):
             m = await self.bot.wait_for('message', check=check, timeout=60.0)
             response = check(m)
         except asyncio.TimeoutError:
-            return await ctx.send(text_processor.proposal_timed_out(), ignore_error=True)
+            return await ctx.send(text_processor.request_timeout(), ignore_error=True)
 
         # Process response
         if response == "NO":

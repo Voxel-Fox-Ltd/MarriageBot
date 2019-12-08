@@ -79,6 +79,7 @@ class CustomBot(commands.AutoShardedBot):
 
         # Put the bot object in some other classes
         utils.ProposalCache.bot = self
+        utils.random_text.RandomText.original.bot = self
 
     @property
     def invite_link(self):
@@ -143,15 +144,27 @@ class CustomBot(commands.AutoShardedBot):
         self.dbl_votes.clear()
         self.logger.debug("Clearing blocked users cache")
         self.blocked_users.clear()
+        self.logger.debug("Clearing random text cache")
+        utils.random_text.RandomText.original.all_random_text.clear()
 
         # Grab a database connection
         db: utils.DatabaseConnection = await self.database.get_connection()
+
+        # Load in all of the random text
+        try:
+            random_text = await db('SELECT * FROM random_text')
+        except Exception as e:
+            self.logger.critical(f"Ran into an errorr selecting random text: {e}")
+            exit(1)
+        self.logger.debug(f"Caching {len(random_text)} lines of random text")
+        for row in random_text:
+            utils.random_text.RandomText.original.all_random_text[row['command_name']][row['event_name']].append(row['string'])
 
         # Pick up the blacklisted guilds from the db
         try:
             blacklisted = await db('SELECT * FROM blacklisted_guilds')
         except Exception as e:
-            self.logger.critical(f"Ran into an erorr selecting blacklisted guilds: {e}")
+            self.logger.critical(f"Ran into an error selecting blacklisted guilds: {e}")
             exit(1)
         self.logger.debug(f"Caching {len(blacklisted)} blacklisted guilds")
         self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
