@@ -52,8 +52,9 @@ with open(args.gold_config_file) as a:
 # Create website object - don't start based on argv
 app = Application(loop=asyncio.get_event_loop(), debug=False)
 app.add_routes(website.frontend_routes)
-app.router.add_static('/static', os.getcwd() + '/website/static')
-app.router.add_static('/trees', config['tree_file_location'])
+app.add_routes(website.backend_routes)
+app.router.add_static('/static', os.getcwd() + '/website/static', append_version=True)
+app.router.add_static('/trees', config['tree_file_location'], append_version=True)
 app['static_root_url'] = '/static'
 jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
 
