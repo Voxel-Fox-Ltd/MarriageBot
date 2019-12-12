@@ -165,6 +165,7 @@ class Misc(utils.Cog):
             await ctx.send("I tried to send an embed, but I couldn't.")
 
     @commands.command(aliases=['clean'])
+    @commands.guild_only()
     async def clear(self, ctx:utils.Context):
         """Clears the bot's commands from chat"""
 
@@ -219,6 +220,7 @@ class Misc(utils.Cog):
         await ctx.send("That user is now unblocked.")
 
     @commands.command()
+    @commands.guild_only()
     async def shard(self, ctx:utils.Context):
         """Gives you the shard that your server is running on"""
 
