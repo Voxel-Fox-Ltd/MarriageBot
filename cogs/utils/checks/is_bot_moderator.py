@@ -55,10 +55,10 @@ def is_server_specific_bot_moderator():
     """Check to see if the user has a role either called 'MarriageBot Moderator' or 'SSF MarriageBot Moderator'"""
 
     async def predicate(ctx:commands.Context):
-        if not ctx.bot.config['server_specific']:
-            raise NotServerSpecific()  # If it's not server specific
         if await is_bot_administrator_predicate(ctx):
             return True  # If they're MB support
+        if not ctx.bot.config['server_specific']:
+            raise NotServerSpecific()  # If it's not server specific
         if any([i for i in ctx.author.roles if i.name.casefold() in ('ssf marriagebot moderator', 'marriagebot moderator')]):
             return True  # Ye it's all good
         raise NotBotModerator()
