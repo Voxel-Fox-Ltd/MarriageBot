@@ -8,7 +8,6 @@ from discord.ext import commands
 class CustomContext(commands.Context):
     """A custom subclass of commands.Context that embeds all content"""
 
-    DEFAULT_FOOTER_TEXT = [{'text': 'MarriageBot'}]
     DESIRED_PERMISSIONS = discord.Permissions(18432)  # embed links, send messages
     USER_ID_REGEX = regex.compile(r"<@(\d{15,23})>")
     # __slots___ would have no effect here, since commands.Context has no slots itself
@@ -40,14 +39,18 @@ class CustomContext(commands.Context):
 
         # Get footer from config
         try:
-            possible_footer_objects = [[i] * i.get('amount', 1) for i in self.bot.config['footer']]  # Get from config
+            possible_footer_objects = [[i] * i.get('amount', 1) for i in self.bot.config['embed']['footer']]  # Get from config
             footer_text_amount = []  # Make list for text
             [footer_text_amount.extend(i) for i in possible_footer_objects]  # Flatten list
             footer_text = [{'text': i['text']} for i in footer_text_amount]  # Remove 'amount'
             if len(footer_text) == 0:
-                footer_text = self.DEFAULT_FOOTER_TEXT.copy()
+                footer_text = None
         except Exception:
-            footer_text = self.DEFAULT_FOOTER_TEXT.copy()
+            footer_text = None
+
+        # Don't add a footer if there isn't any
+        if footer_text is None:
+            return embed
 
         # Grab random text from list
         footer = random.choice(footer_text)
@@ -111,7 +114,17 @@ class CustomContext(commands.Context):
                     embed.set_image(url=f"attachment://{file.filename}")
 
             # Reset content
-            content = self.bot.config.get("embed_default_text") or None
+            content = self.bot.config.get("embed", dict()).get("content") or None
+
+            # Set author
+            author_data = self.bot.config.get("embed", dict()).get("author") or None
+            if author_data:
+                author_name = author_data.get("name") or None
+                author_url = author_data.get("url") or None
+                if author_name and author_url:
+                    embed.set_author(name=author_name, url=author_url, icon_url=self.bot.user.avatar_url)
+                elif author_name:
+                    embed.set_author(name=author_name, icon_url=self.bot.user.avatar_url)
 
         # Send off our content
         try:

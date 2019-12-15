@@ -12,30 +12,35 @@ paypal = ""  # The link that s output when 'donate' is called
 guild_invite = ""  # An invite link to the support guild for the bot
 guild_id = 1  # The ID for the support guild - used to find the bot admin and Patreon roles
 server_specific = false  # Bool flag for whether the bot uses global or server specific trees
-embed_default_text = ""  # The content of messages the bot outputs by default with the embeds
 
+[embed]
+content = ""  # The content of messages the bot outputs by default with the embeds
+
+[embed.author]
+name = ""  # The name of the author put into embeds
+url = ""  # The url of the author put into embeds
 
 # A list of footer texts for the embeds
 # 'text' is the text for the footer
 # 'amount' is the amount of that text to be put into the shuffle
 # The actual footer is picked at random from the mix
 # Text can include '{prefix}' to be formatted into the bot's command prefix
-[[footer]]
+[[embed.footer]]
 text = "MarriageBot"
 amount = 1
-[[footer]]
+[[embed.footer]]
 text = "MarriageBot - Made by Caleb#2831"
 amount = 3
-[[footer]]
+[[embed.footer]]
 text = "MarriageBot - Add a vote on Discord Bot List! ({prefix}vote)"
 amount = 3
-[[footer]]
+[[embed.footer]]
 text = "MarriageBot - Support me on Patreon! ({prefix}donate)"
 amount = 3
-[[footer]]
+[[embed.footer]]
 text = "MarriageBot - Please help keep me alive ({prefix}donate)"
 amount = 10
-[[footer]]
+[[embed.footer]]
 text = "MarriageBot - Join the official Discord server! ({prefix}server)"
 amount = 3
 
