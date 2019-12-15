@@ -67,7 +67,7 @@ async def blog(request:Request):
 
 @routes.get('/settings')
 @template('settings.jinja')
-@webutils.add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def settings(request:Request):
     """Handles the main settings page for the bot"""
 
@@ -82,7 +82,7 @@ async def settings(request:Request):
 
 @routes.get('/user_settings')
 @template('user_settings.jinja')
-@webutils.add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def user_settings(request:Request):
     """Handles the users' individual settings pages"""
 
@@ -163,7 +163,7 @@ async def tree_preview(request:Request):
 
 @routes.get('/guild_picker')
 @template('guild_picker.jinja')
-@webutils.add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def guild_picker(request:Request):
     """Shows the guilds that the user has permission to change"""
 
@@ -184,7 +184,7 @@ async def guild_picker(request:Request):
 
 @routes.get('/guild_settings')
 @template('guild_settings.jinja')
-@webutils.add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def guild_settings_get(request:Request):
     """Shows the settings for a particular guild"""
 
@@ -236,12 +236,13 @@ async def guild_settings_get(request:Request):
         'prefix': prefix,
         'channels': channels,
         'gold': bool(mbg),
+        'normal': None,
     }
 
 
 @routes.get('/guild_gold_settings')
 @template('guild_settings.jinja')
-@webutils.add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def guild_gold_settings_get(request:Request):
     """Shows the settings for a particular guild"""
 
@@ -258,6 +259,15 @@ async def guild_gold_settings_get(request:Request):
     try:
         guild_object = await bot.fetch_guild(int(guild_id))
     except discord.Forbidden:
+
+        # See if non-gold is in the guild
+        non_gold_bot = request.app['bot']
+        try:
+            guild_object = await non_gold_bot.fetch_guild(int(guild_id))
+            return HTTPFound(location=f'/guild_settings?guild_id={guild_id}')  # it is
+        except discord.Forbidden:
+            pass  # it isn't
+
         config = request.app['gold_config']
         location = DISCORD_OAUTH_URL + urlencode({
             'client_id': config['oauth']['client_id'],
@@ -268,6 +278,14 @@ async def guild_gold_settings_get(request:Request):
             'guild_id': guild_id,
         })
         return HTTPFound(location=location)
+
+    # See if non-gold is in the guild
+    non_gold_bot = request.app['bot']
+    try:
+        guild_object = await non_gold_bot.fetch_guild(int(guild_id))
+        non_gold_in_guild = True
+    except discord.Forbidden:
+        non_gold_in_guild = False
 
     # Get the guilds they're valid to alter
     all_guilds = session['guild_info']
@@ -292,12 +310,13 @@ async def guild_gold_settings_get(request:Request):
         'prefix': prefix,
         'channels': channels,
         'gold': None,
+        'normal': non_gold_in_guild,
     }
 
 
 @routes.get('/buy_gold')
 @template('buy_gold.jinja')
-@webutils.add_output_args(redirect_if_logged_out="/")
+@webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def buy_gold(request:Request):
     """Shows the guilds that the user has permission to change"""
 

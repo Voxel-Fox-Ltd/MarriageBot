@@ -1,7 +1,7 @@
 {% extends "base.jinja" %}
 
 {% block title %}
-MarriageBot - Guild Picker
+MarriageBot - {{ guild.name }} Settings
 {% endblock title %}
 
 {% block head %}
@@ -13,10 +13,10 @@ MarriageBot - Guild Picker
     {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% else %}<img alt="The default guild icon" src="/static/images/GuildDefaultImage.png" />{% endif %}
     <h2>{{ guild.name }} - {% if gold is none %}Gold Settings{% else %}Settings{% endif %}</h2>
 </div>
-{% if gold is not none %}
 <div class="content-header-data">
-    {% if gold %}<h2>This guild has <a href="/guild_gold_settings?guild_id={{ guild.id }}">MarriageBot Gold</a> - click for settings</h2>{% else %}<h2><a href="/buy_gold?guild_id={{ guild.id }}">Click here</a> to buy <a href="/blog/gold">MarriageBot Gold</a> for this guild</h2>{% endif %}
-</div>{% endif %}
+    {% if normal == true %}<h2>This guild has <a href="/guild_settings?guild_id={{ guild.id }}">MarriageBot</a> - click for settings</h2>{% elif normal == false %}<h2><a href="/r/invite">Click here</a> to invite normal MarriageBot for this guild</h2>{% endif %}
+    {% if gold == true %}<h2>This guild has <a href="/guild_gold_settings?guild_id={{ guild.id }}">MarriageBot Gold</a> - click for settings</h2>{% elif gold == false %}<h2><a href="/buy_gold?guild_id={{ guild.id }}">Click here</a> to buy <a href="/blog/gold">MarriageBot Gold</a> for this guild</h2>{% endif %}
+</div>
 <form id="prefix" class="boxed">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
     <p><input name="prefix" value="{{ prefix }}" placeholder="m!" maxlength="30" /></p>
