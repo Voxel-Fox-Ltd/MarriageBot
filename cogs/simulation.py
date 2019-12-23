@@ -1,5 +1,6 @@
 import random
 import asyncio
+import json
 
 import discord
 from discord.ext import commands
@@ -102,6 +103,26 @@ class Simulation(utils.Cog):
         else:
             await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
 
+    @commands.command(aliases=['dumpster'], hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def garbage(self, ctx:utils.Context, user:discord.Member):
+        """Throws a user in the garbage"""
+
+        if user == ctx.author:
+            await ctx.send(f"*You climb right into the trash can, where you belong*")
+        else:
+            await ctx.send(f"*Throws {user.mention} into the dumpster*")
+
+    @commands.command(hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def insult(self, ctx:utils.Context, user:discord.Member):
+        """Sends an insult into the chat"""
+
+        async with self.bot.session.get("https://insult.mattbas.org/api/insult.json") as r:
+            text = await r.text()
+        data = json.loads(text)
+        await ctx.send(data['insult'])
+
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def poke(self, ctx:utils.Context, user:discord.Member):
@@ -170,7 +191,7 @@ class Simulation(utils.Cog):
                        "with your hands bound. A man says \"Hey, you. You're finally "
                        "awake. You were trying to cross the border, right?\"")
 
-    @commands.command(aliases=['intercourse', 'fuck', 'smash'])
+    @commands.command(aliases=['intercourse', 'fuck', 'smash', 'heck'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
