@@ -261,6 +261,17 @@ class CustomBot(commands.AutoShardedBot):
     async def on_message(self, message:discord.Message):
         """Overriding the default on_message event to push my own context"""
 
+        await self._handle_command(message)
+
+    async def on_message_edit(self, before:discord.Message, after:discord.Message):
+        """Message edit listener so you can re-run/invoke commands by editing."""
+        
+        if before.content != after.content:
+            await self._handle_command(after)
+
+    async def _handle_command(self, message:discord.Message):
+        """Handle command so less code when receiving a message with a command or someone edits a command"""
+
         # Be mean to bots
         if message.author.bot:
             return
