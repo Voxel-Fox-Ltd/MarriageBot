@@ -214,7 +214,7 @@ class Misc(utils.Cog):
                 ctx.author.id, user
             )
         async with self.bot.redis() as re:
-            await re.publish_json("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user_id})
+            await re.publish_json("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user})
 
         # Tell user
         await ctx.send("That user is now unblocked.")
