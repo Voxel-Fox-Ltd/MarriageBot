@@ -271,15 +271,6 @@ async def guild_gold_settings_get(request:Request):
     try:
         guild_object = await bot.fetch_guild(int(guild_id))
     except discord.Forbidden:
-
-        # See if non-gold is in the guild
-        non_gold_bot = request.app['bot']
-        try:
-            guild_object = await non_gold_bot.fetch_guild(int(guild_id))
-            return HTTPFound(location=f'/guild_settings?guild_id={guild_id}')  # it is
-        except discord.Forbidden:
-            pass  # it isn't
-
         config = request.app['gold_config']
         location = DISCORD_OAUTH_URL + urlencode({
             'client_id': config['oauth']['client_id'],
