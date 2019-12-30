@@ -179,6 +179,18 @@ async def guild_picker(request:Request):
     except TypeError:
         # No guilds provided - did they remove the scope? who knows
         guilds = []
+
+    # Get the guilds that have gold
+    guild_ids = [int(i['id']) for i in guilds]
+    async with request.app['database']() as db:
+        gold_guild_data = await db("SELECT * FROM guild_specific_families WHERE guild_id=ANY($1::BIGINT[])", guild_ids)
+    gold_guild_ids = [str(i['guild_id']) for i in gold_guild_data]
+    for i in guilds:
+        if i['id'] in gold_guild_ids:
+            i['gold'] = True
+        else:
+            i['gold'] = False
+
     return {'guilds': guilds}
 
 
