@@ -6,6 +6,7 @@ from website.utils.get_avatar import get_avatar
 
 
 OAUTH_SCOPES = 'identify guilds'
+DISCORD_OAUTH_URL = 'https://discordapp.com/api/oauth2/authorize?'
 
 
 async def process_discord_login(request:Request):
@@ -39,6 +40,7 @@ async def process_discord_login(request:Request):
         token_url = f"https://discordapp.com/api/v6/oauth2/token"
         async with session.post(token_url, data=data, headers=headers) as r:
             token_info = await r.json()
+        print(token_info)
 
         # Get user
         headers.update({

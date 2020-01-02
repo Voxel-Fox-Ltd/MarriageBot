@@ -20,7 +20,6 @@ This is all handled by a decorator below, but I'm just putting it here as a note
 
 
 routes = RouteTableDef()
-DISCORD_OAUTH_URL = 'https://discordapp.com/api/oauth2/authorize?'
 
 
 @routes.get("/r/{code}")
