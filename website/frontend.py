@@ -333,7 +333,7 @@ async def buy_gold(request:Request):
     # Generate params
     data = {
         "payment_method_types[0]": "card",
-        "success_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
+        "success_url": f"https://marriagebot.xyz/guild_gold_settings?guild_id={guild_id}",
         "cancel_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
         "line_items[0][name]": 'MarriageBot Gold',
         "line_items[0][description]": f"Access to the Discord bot 'MarriageBot Gold' for guild ID {guild_id}" + {
