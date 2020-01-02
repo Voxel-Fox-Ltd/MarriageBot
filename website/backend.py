@@ -1,5 +1,6 @@
 import hmac
 import hashlib
+from urllib.parse import urlencode
 
 import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
@@ -43,8 +44,12 @@ async def art_contest(request:Request):
     session = await aiohttp_session.get_session(request)
     if not session.get('user_id'):
         return HTTPFound(location='/')
-    url = "https://docs.google.com/forms/d/e/1FAIpQLSdZtfEp7wvzhxy1FpFNxeOhew1zKPTkHMQ7oQ_mla50TRHCrg/viewform?usp=pp_url&entry.1362434111={user_id}"
-    return HTTPFound(location=url.format(user_id=session.get('user_id')))
+    url = "https://docs.google.com/forms/d/e/1FAIpQLSdZtfEp7wvzhxy1FpFNxeOhew1zKPTkHMQ7oQ_mla50TRHCrg/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
+    return HTTPFound(location=url + urlencode({
+        'usp': 'pp_url',
+        'entry.865916339': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
+        'entry.1362434111': session['user_id'],
+    }))
 
 
 @routes.get('/login')
