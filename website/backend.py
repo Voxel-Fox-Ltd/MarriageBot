@@ -20,7 +20,6 @@ This is all handled by a decorator below, but I'm just putting it here as a note
 
 
 routes = RouteTableDef()
-OAUTH_SCOPES = 'identify guilds'
 DISCORD_OAUTH_URL = 'https://discordapp.com/api/oauth2/authorize?'
 
 
@@ -36,57 +35,24 @@ async def redirect(request:Request):
     return HTTPFound(location=data[0]['location'])
 
 
+@routes.get("/login/art_contest")
+async def art_contest(request:Request):
+    """Handles redirects using codes stored in the db"""
+
+    # See if they're logged in
+    await webutils.process_discord_login(request)
+    session = await aiohttp_session.get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    url = "https://docs.google.com/forms/d/e/1FAIpQLSdZtfEp7wvzhxy1FpFNxeOhew1zKPTkHMQ7oQ_mla50TRHCrg/viewform?usp=pp_url&entry.1362434111={user_id}"
+    return HTTPFound(location=url.format(user_id=session.get('user_id')))
+
+
 @routes.get('/login')
 async def login(request:Request):
     """Page the discord login redirects the user to when successfully logged in with Discord"""
 
-    # Get the code
-    code = request.query.get('code')
-    if not code:
-        return HTTPFound(location='/')
-
-    # Get the bot
-    config = request.app['config']
-    oauth_data = config['oauth']
-
-    # Generate the post data
-    data = {
-        'grant_type': 'authorization_code',
-        'code': code,
-        'scope': OAUTH_SCOPES
-    }
-    data.update(oauth_data)
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-
-    # Make the request
-    async with aiohttp.ClientSession(loop=request.loop) as session:
-
-        # Get auth
-        token_url = f"https://discordapp.com/api/v6/oauth2/token"
-        async with session.post(token_url, data=data, headers=headers) as r:
-            token_info = await r.json()
-
-        # Get user
-        headers.update({
-            "Authorization": f"{token_info['token_type']} {token_info['access_token']}"
-        })
-        user_url = f"https://discordapp.com/api/v6/users/@me"
-        async with session.get(user_url, headers=headers) as r:
-            user_info = await r.json()
-
-        # Get guilds
-        guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
-        async with session.get(guilds_url, headers=headers) as r:
-            guild_info = await r.json()
-
-    # Save to session
-    session = await aiohttp_session.new_session(request)
-    user_info['avatar_link'] = webutils.get_avatar(user_info)
-    session['user_info'] = user_info
-    session['guild_info'] = guild_info
-    session['user_id'] = int(user_info['id'])
+    await webutils.process_discord_login(request)
 
     # Redirect to settings
     return HTTPFound(location=f'/settings')
