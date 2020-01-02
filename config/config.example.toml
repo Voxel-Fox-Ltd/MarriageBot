@@ -87,7 +87,8 @@ document_host = ""
 [oauth]
 client_id = ""
 client_secret = ""
-redirect_uri = "https://marriagebot.xyz/login"
+redirect_uri = "https://marriagebot.xyz/login"  # The redirect for the login
+join_server_redirect_uri = "https://marriagebot.xyz/guild_settings"  # The redirect for when the bot is added
 
 
 # Here's the Stripe data! You should probably leave it blank. I use it on the website for MarriageBot Gold
