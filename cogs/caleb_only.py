@@ -21,7 +21,7 @@ class OwnerOnly(utils.Cog):
             return True
         raise commands.NotOwner
 
-    @commands.command(aliases=['pm', 'dm'], hidden=True)
+    @commands.command(aliases=['pm', 'dm'])
     async def message(self, ctx:utils.Context, user:discord.User, *, content:str):
         """PMs a user the given content"""
 
@@ -39,7 +39,7 @@ class OwnerOnly(utils.Cog):
         # remove `foo`
         return content.strip('` \n')
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def ev(self, ctx:utils.Context, *, content:str):
         """
         Evaluates some Python code
@@ -104,7 +104,7 @@ class OwnerOnly(utils.Cog):
                     return await ctx.send(file=discord.File(StringIO('\n'.join(text.split('\n')[1:-1])), filename='ev.txt'))
                 await ctx.send(text)
 
-    @commands.command(aliases=['rld'], hidden=True)
+    @commands.command(aliases=['rld'])
     async def reload(self, ctx:utils.Context, *cog_name:str):
         """Unloads and reloads a cog from the bot"""
 
@@ -124,7 +124,7 @@ class OwnerOnly(utils.Cog):
             return
         await ctx.send('Cog reloaded.')
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def runsql(self, ctx:utils.Context, *, content:str):
         """Throws some SQL into the database handler"""
 
@@ -174,13 +174,13 @@ class OwnerOnly(utils.Cog):
         string_output = '\n'.join(output)
         await ctx.send('```\n{}```'.format(string_output))
 
-    @commands.group(hidden=True)
+    @commands.group()
     async def profile(self, ctx:utils.Context):
         """A parent command for the profile section"""
 
         pass
 
-    @profile.command(aliases=['username'], hidden=True)
+    @profile.command(aliases=['username'])
     async def name(self, ctx:utils.Context, *, username:str):
         """Lets you set the username for the bot account"""
 
@@ -190,7 +190,7 @@ class OwnerOnly(utils.Cog):
         await self.bot.user.edit(username=username)
         await ctx.send('Done.')
 
-    @profile.command(aliases=['photo', 'image', 'avatar'], hidden=True)
+    @profile.command(aliases=['photo', 'image', 'avatar'])
     async def picture(self, ctx:utils.Context, *, image_url:str=None):
         """Lets you set the profile picture of the bot"""
 
@@ -206,7 +206,7 @@ class OwnerOnly(utils.Cog):
         await self.bot.user.edit(avatar=image_content)
         await ctx.send('Done.')
 
-    @profile.command(aliases=['game'], hidden=True)
+    @profile.command(aliases=['game'])
     async def activity(self, ctx:utils.Context, activity_type:str, *, name:str=None):
         """Changes the activity of the bot"""
 
@@ -217,14 +217,14 @@ class OwnerOnly(utils.Cog):
             return
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
-    @profile.command(hidden=True)
+    @profile.command()
     async def status(self, ctx:utils.Context, status:str):
         """Changes the online status of the bot"""
 
         status_o = getattr(discord.Status, status.lower())
         await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_o)
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def sudo(self, ctx, who:discord.User, *, command: str):
         """Run a command as another user optionally in another channel."""
 
