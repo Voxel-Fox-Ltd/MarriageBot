@@ -15,6 +15,7 @@ server_specific = false  # Bool flag for whether the bot uses global or server s
 
 [embed]
 content = ""  # The content of messages the bot outputs by default with the embeds
+add_footer = true  # Whether or not to add the custom footer
 
 [embed.author]
 name = ""  # The name of the author put into embeds

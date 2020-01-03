@@ -45,6 +45,8 @@ class CustomContext(commands.Context):
             footer_text = [{'text': i['text']} for i in footer_text_amount]  # Remove 'amount'
             if len(footer_text) == 0:
                 footer_text = None
+            if self.bot.config['embed']['add_footer'] is False:
+                footer_text = None
         except Exception:
             footer_text = None
 
