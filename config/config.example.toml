@@ -19,3 +19,8 @@ status = "online"  # Should be one of 'online', 'invisible', 'idle', 'dnd'
 [oauth]
 client_id = ""
 client_secret = ""
+
+[opengraph]
+title = ""
+description = ""
+image = ""

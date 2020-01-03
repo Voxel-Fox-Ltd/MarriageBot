@@ -4,7 +4,11 @@
     <title>WEBSITENAME - {{ page.title|safe }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {# TODO add OpenGraph tags #}
+
+    {% for i, o in opengraph.items() %}
+    <meta property="{{ i }}" content="{{ o }}" />{% endfor %}
+    <meta property="og:url" content="{{ request.url.human_repr() }}" />
+
 </head>
 <body class="bg-light">
 

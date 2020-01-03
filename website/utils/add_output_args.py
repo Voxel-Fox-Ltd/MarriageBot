@@ -37,14 +37,18 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
                 data.update({'request': request})
 
             # Update OpenGraph information
+            config = request.app['config'].get('opengraph', {})
             if 'opengraph' not in data:
                 data.update({'opengraph': dict()})
             og_data = data['opengraph'].copy()
-            og_data['og:title'] = og_data.get('og:title', 'MarriageBot - A marriage-based Discord bot')
-            og_data['og:description'] = og_data.get('og:description', 'MarriageBot is a Discord bot used for simulations of your family, be it that you want b1nzy as your mom, or Jake as your nephew, MarriageBot can handle it all.')
+            og_data['og:title'] = og_data.get('og:title', config.get('title'))
+            og_data['og:description'] = og_data.get('og:description', config.get('description'))
             og_data['og:type'] = og_data.get('og:type', 'website')
-            og_data['og:image'] = og_data.get('og:image', 'https://marriagebot.xyz/static/images/MarriageBotCircle.150.png')
+            og_data['og:image'] = og_data.get('og:image', config.get('image'))
             og_data['og:locale'] = og_data.get('og:locale', 'en_GB')
+            for i, o in og_data.copy().items():
+                if not o:
+                    del og_data[i]
             data['opengraph'] = og_data
 
             # Check return relevant info
