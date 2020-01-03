@@ -149,18 +149,18 @@ class CustomBot(commands.AutoShardedBot):
             self.logger.critical("Couldn't read config file")
             raise e
 
-    async def login(self, token:str=None):
+    async def login(self, token:str=None, *args, **kwargs):
         """The original login method with optional token"""
 
-        await super().login(token or self.config['token'])
+        await super().login(token or self.config['token'], *args, **kwargs)
 
-    async def start(self, token:str=None):
+    async def start(self, token:str=None, *args, **kwargs):
         """Start the bot with the given token, create the startup method task"""
 
         self.logger.info("Running startup method")
         self.startup_method = self.loop.create_task(self.startup())
         self.logger.info("Running original D.py start method")
-        await super().start(token or self.config['token'])
+        await super().start(token or self.config['token'], *args, **kwargs)
 
     async def close(self, *args, **kwargs):
         """The original bot close method, but with the addition of closing the
