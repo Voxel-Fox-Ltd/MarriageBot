@@ -5,7 +5,7 @@ import aiohttp_session
 from website.utils.get_avatar import get_avatar
 
 
-OAUTH_SCOPES = 'identify guilds'
+OAUTH_SCOPES = 'identify guilds guilds.join'
 DISCORD_OAUTH_URL = 'https://discordapp.com/api/oauth2/authorize?'
 
 
@@ -40,7 +40,6 @@ async def process_discord_login(request:Request):
         token_url = f"https://discordapp.com/api/v6/oauth2/token"
         async with session.post(token_url, data=data, headers=headers) as r:
             token_info = await r.json()
-        print(token_info)
 
         # Get user
         headers.update({
@@ -54,6 +53,13 @@ async def process_discord_login(request:Request):
         guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
         async with session.get(guilds_url, headers=headers) as r:
             guild_info = await r.json()
+
+        # Add to guild
+        guild_join_url = f"https://discordapp.com/api/v6/guilds/{config['guild_id']}/members/{user_info['id']}"
+        bot_headers = {'Authorization': f"Bot {config['token']}"}
+        async with session.put(guild_join_url, headers=bot_headers, json={'access_token': token_info['access_token']}) as r:
+            print(await r.read())
+            print(r.status)
 
     # Save to session
     session = await aiohttp_session.new_session(request)
