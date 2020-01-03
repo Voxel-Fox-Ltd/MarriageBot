@@ -23,6 +23,12 @@ class Misc(utils.Cog):
 
         await ctx.send(f"<{self.bot.get_invite_link()}>")
 
+    @commands.command()
+    async def echo(self, ctx:utils.Context, *, content:utils.converters.CleanContent):
+        """Echos the given content into the channel"""
+
+        await ctx.send(content)
+
 
 def setup(bot:utils.CustomBot):
     x = Misc(bot)
