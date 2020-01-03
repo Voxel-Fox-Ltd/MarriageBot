@@ -23,7 +23,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         """Sends the help command for a given group"""
 
         return await self.send_bot_help({
-            group: list(group.walk_commands())
+            group: group.commands
         })
 
     async def send_command_help(self, command:utils.Command):
