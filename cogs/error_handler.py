@@ -17,6 +17,8 @@ class ErrorHandler(utils.Cog):
                 await ctx.author.send(author_text or text)
             except discord.Forbidden:
                 pass
+        except discord.NotFound:
+            pass
         return
 
     @utils.Cog.listener()

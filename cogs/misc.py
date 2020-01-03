@@ -5,25 +5,25 @@ from cogs import utils
 
 class Misc(utils.Cog):
 
-    @commands.command(aliases=['git', 'code'])
+    @commands.command(aliases=['git', 'code'], cls=utils.Command)
     async def github(self, ctx:utils.Context):
         """Sends the GitHub Repository link"""
 
         await ctx.send(f"<{self.bot.config.get('github')}>")
 
-    @commands.command(aliases=['support', 'guild'])
+    @commands.command(aliases=['support', 'guild'], cls=utils.Command)
     async def server(self, ctx:utils.Context):
         """Gives the invite to the support server"""
 
         await ctx.send(f"<{self.bot.config.get('guild_invite')}>")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     async def invite(self, ctx:utils.Context):
         """Gives you the bot's invite link"""
 
         await ctx.send(f"<{self.bot.get_invite_link()}>")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     async def echo(self, ctx:utils.Context, *, content:utils.converters.CleanContent):
         """Echos the given content into the channel"""
 
