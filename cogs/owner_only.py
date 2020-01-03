@@ -1,5 +1,4 @@
 from traceback import format_exc
-from asyncio import iscoroutine, wait_for
 from io import StringIO
 from textwrap import indent
 from contextlib import redirect_stdout
@@ -154,8 +153,6 @@ class OwnerOnly(utils.Cog):
                 column_length[row_header] = max([column_length[row_header], len(data), len(row_header)])
                 column_data[row_header].append(row_data)
 
-        print(column_data)
-
         # Build our output
         output_lines = ['|'.join([format(i, f"<{column_length[i]}") for i in column_headers])]  # Set up headers
         output_lines.append('|'.join([column_length[i] * '-' for i in column_headers]))  # Set up header divider
@@ -184,8 +181,7 @@ class OwnerOnly(utils.Cog):
         """Lets you set the username for the bot account"""
 
         if len(username) > 32:
-            await ctx.send('That username is too long.')
-            return
+            return await ctx.send('That username is too long.')
         await self.bot.user.edit(username=username)
         await ctx.send('Done.')
 
@@ -197,8 +193,7 @@ class OwnerOnly(utils.Cog):
             try:
                 image_url = ctx.message.attachments[0].url
             except IndexError:
-                await ctx.send("You need to provide an image.")
-                return
+                return await ctx.send("You need to provide an image.")
 
         async with self.bot.session.get(image_url) as r:
             image_content = await r.read()
@@ -212,8 +207,7 @@ class OwnerOnly(utils.Cog):
         if name:
             activity = discord.Activity(name=name, type=getattr(discord.ActivityType, activity_type.lower()))
         else:
-            await self.bot.set_default_presence()
-            return
+            return await self.bot.set_default_presence()
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
     @profile.command()
