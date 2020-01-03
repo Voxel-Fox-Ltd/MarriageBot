@@ -5,7 +5,7 @@ from discord.ext.commands import Cog as OriginalCog
 from cogs.utils.custom_bot import CustomBot
 
 
-class Cog(OriginalCog):
+class CustomCog(OriginalCog):
     """A simple lil wrapper around the original discord Cog class that just adds a
     logger for me to use"""
 
@@ -20,6 +20,6 @@ class Cog(OriginalCog):
         """Gets the name of the class with any given prefixes, with sep as a seperator"""
         return sep.join(['cog'] + list(prefixes) + [self.__class__.__name__])
 
-    def get_cog_name(self) -> str:
+    def get_name(self) -> str:
         """Gets the name of the class as a nice ol' space-seperated thingmie"""
         return regex.sub(r"([A-Z])(([a-z])+|[A-Z]+$|[A-Z]+(?=[A-Z]))?", "\\g<0> ", self.__class__.__name__).strip()
