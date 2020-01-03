@@ -59,7 +59,7 @@ async def blog(request:Request):
             'article:modified_time': data[0]['created_at'].isoformat(),
             'og:type': 'article',
             'og:title': f"MarriageBot - {data[0]['title']}",
-            'og:description': text[0],
+            'og:description': text.split('\n')[0],
         }
     }
 
