@@ -5,6 +5,7 @@ from aiohttp.web import RouteTableDef, Request, HTTPFound
 import aiohttp_session
 from aiohttp_jinja2 import template
 import discord
+import markdown2
 
 from cogs import utils
 from website import utils as webutils
@@ -49,9 +50,9 @@ async def blog(request:Request):
         data = await db("SELECT * FROM blog_posts WHERE url=$1", url_code)
     if not data:
         return {'title': 'Post not found'}
-    text = data[0]['body'].split('\n')
+    text = data[0]['body']
     return {
-        'text': webutils.text_to_html(text),
+        'text': markdown2.markdown(text),
         'title': data[0]['title'],
         'opengraph': {
             'article:published_time': data[0]['created_at'].isoformat(),
