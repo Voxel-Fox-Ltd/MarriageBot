@@ -4,6 +4,7 @@ from io import StringIO
 from textwrap import indent
 from contextlib import redirect_stdout
 import copy
+import collections
 
 import discord
 from discord.ext import commands
@@ -114,12 +115,13 @@ class OwnerOnly(utils.Cog):
             self.bot.load_extension(cog_name)
         except commands.ExtensionAlreadyLoaded:
             try:
-                self.bot.unload_extension(cog_name)
-                self.bot.load_extension(cog_name)
-            except Exception as e:
+                # self.bot.unload_extension(cog_name)
+                # self.bot.load_extension(cog_name)
+                self.bot.reload_extension(cog_name)
+            except Exception:
                 await ctx.send('```py\n' + format_exc() + '```')
                 return
-        except Exception as e:
+        except Exception:
             await ctx.send('```py\n' + format_exc() + '```')
             return
         await ctx.send('Cog reloaded.')
@@ -128,51 +130,48 @@ class OwnerOnly(utils.Cog):
     async def runsql(self, ctx:utils.Context, *, content:str):
         """Throws some SQL into the database handler"""
 
+        # Run SQL
         async with self.bot.database() as db:
-            x = await db(content) or 'No content.'
-        if type(x) in [str, type(None)]:
-            await ctx.send(x)
+            data = await db(content)
+
+        # Give reaction just to show that it ran
+        try:
+            await ctx.message.add_reaction('\u2705')
+        except:
+            if data is None:
+                return await ctx.send("No content.")
+        if data is None:
             return
 
-        # Get the results into groups
-        column_headers = list(x[0].keys())
-        grouped_outputs = {}
-        for i in column_headers:
-            grouped_outputs[i] = []
-        for guild_data in x:
-            for i, o in guild_data.items():
-                grouped_outputs[i].append(str(o))
+        # Set up our column groups
+        column_headers = list(data[0].keys())
+        column_length = collections.defaultdict(int)
+        column_data = collections.defaultdict(list)
 
-        # Everything is now grouped super nicely
-        # Now to get the maximum length of each column and add it as the last item
-        for key, item_list in grouped_outputs.items():
-            max_len = max([len(i) for i in item_list + [key]])
-            grouped_outputs[key].append(max_len)
+        # Work out what goes in our columns
+        for row in data:
+            for row_header, row_data in row.items():
+                column_length[row_header] = max([column_length[row_header], len(data), len(row_header)])
+                column_data[row_header].append(row_data)
 
-        # Format the outputs and add to a list
-        key_headers = []
-        temp_output = []
-        for key, value in grouped_outputs.items():
-            # value is a list of unformatted strings
-            key_headers.append(format(key, '<' + str(value[-1])))
-            formatted_values = [format(i, '<' + str(value[-1])) for i in value[:-1]]
-            # string_value = '|'.join(formatted_values)
-            temp_output.append(formatted_values)
-        key_string = '|'.join(key_headers)
+        print(column_data)
 
-        # Rotate the list because apparently I need to
-        output = []
-        for i in range(len(temp_output[0])):
-            temp = []
-            for o in temp_output:
-                temp.append(o[i])
-            output.append('|'.join(temp))
+        # Build our output
+        output_lines = ['|'.join([format(i, f"<{column_length[i]}") for i in column_headers])]  # Set up headers
+        output_lines.append('|'.join([column_length[i] * '-' for i in column_headers]))  # Set up header divider
+        for index in range(len(column_data[column_headers[0]])):
+            line_builder = []
+            for header in column_headers:
+                line = column_data[header][index]
+                line_builder.append(format(line, f"<{column_length[header]}"))
+            output_lines.append('|'.join(line_builder))
 
-        # Add some final values before returning to the user
-        line = '-' * len(key_string)
-        output = [key_string, line] + output
-        string_output = '\n'.join(output)
-        await ctx.send('```\n{}```'.format(string_output))
+        # Send to user
+        value = '\n'.join(output_lines)
+        text = f'```py\n{value}\n```'
+        if len(text) > 2000:
+            return await ctx.send(file=discord.File(StringIO(value), filename='runsql.txt'))
+        await ctx.send(text)
 
     @commands.group()
     async def profile(self, ctx:utils.Context):
