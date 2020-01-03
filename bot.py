@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from warnings import filterwarnings
 import logging
 import os
+import asyncio
 
 import discord
 
@@ -83,23 +84,17 @@ if __name__ == '__main__':
     # Grab the event loop
     loop = bot.loop
 
-    # Connect the database
+    # Connect the database connection
     logger.info("Creating database pool")
     try:
-        db_connect = utils.DatabaseConnection.create_pool(bot.config['database'])
-        loop.run_until_complete(db_connect)
+        db_connect_task = asyncio.ensure_future(utils.DatabaseConnection.create_pool(bot.config['database']))
+        loop.run_until_complete(db_connect_task)
     except KeyError as e:
-        logger.critical("KeyError creating database pool - "
-                        "is there a 'database' object in the config?")
-        raise e
+        raise Exception("KeyError creating database pool - is there a 'database' object in the config?")
     except ConnectionRefusedError as e:
-        logger.critical("ConnectionRefusedError creating database pool - "
-                        "did you set the right information in the config, "
-                        "and is the database running?")
-        raise e
+        raise Exception("ConnectionRefusedError creating database pool - did you set the right information in the config, and is the database running?")
     except Exception as e:
-        logger.critical("Error creating database pool")
-        raise e
+        raise Exception("Error creating database pool")
     logger.info("Created database pool successfully")
 
     # Load the bot's extensions
