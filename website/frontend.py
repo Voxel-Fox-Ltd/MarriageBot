@@ -27,6 +27,7 @@ async def index(request:Request):
             with container.new_row() as row:
                 row.new_column(text=htmlbuilder.Node("p", "Woah what the fuck"))
                 row.new_column(text=htmlbuilder.Node("p", "Haha nice"))
+                row.new_column(text=htmlbuilder.Node("a", "Test", href=webutils.get_discord_login_url(request, "http://localhost:8080/login")))
 
     # Wew whatever
     return {
