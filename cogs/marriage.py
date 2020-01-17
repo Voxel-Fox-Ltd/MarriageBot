@@ -38,10 +38,10 @@ class Marriage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Check the size of their trees
-        MAX_FAMILY_MEMBERS = 500
+        max_family_members = self.bot.config['max_family_members']
         async with ctx.channel.typing():
-            if instigator_tree.family_member_count + target_tree.family_member_count > MAX_FAMILY_MEMBERS:
-                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
+            if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
+                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
 
         # Neither are married, set up the proposal
         await ctx.send(text_processor.valid_target())

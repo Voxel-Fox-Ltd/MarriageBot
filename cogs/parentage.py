@@ -7,13 +7,6 @@ from cogs import utils
 class Parentage(utils.Cog):
     """The parentage cog, handling the adoption of children"""
 
-    MAX_CHILDREN_AMOUNT = {
-        0: 5,
-        1: 10,
-        2: 15,
-        3: 20
-    }  # PatreonTier: ChildCount
-
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
@@ -42,15 +35,15 @@ class Parentage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Manage children
-        children_amount = self.MAX_CHILDREN_AMOUNT[await utils.checks.get_patreon_tier(self.bot, target)]
+        children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, target)]
         if len(target_tree._children) >= children_amount:
             return await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
 
         # Check the size of their trees
-        MAX_FAMILY_MEMBERS = 500
+        max_family_members = self.bot.config['max_family_members']
         async with ctx.channel.typing():
-            if instigator_tree.family_member_count + target_tree.family_member_count > MAX_FAMILY_MEMBERS:
-                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
+            if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
+                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
 
         # Valid request - ask the other person
         if not target.bot:
@@ -117,15 +110,15 @@ class Parentage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Manage children
-        children_amount = self.MAX_CHILDREN_AMOUNT[await utils.checks.get_patreon_tier(self.bot, ctx.author)]
+        children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, ctx.author)]
         if len(instigator_tree._children) >= children_amount:
             return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
 
         # Check the size of their trees
-        MAX_FAMILY_MEMBERS = 500
+        max_family_members = self.bot.config['max_family_members']
         async with ctx.channel.typing():
-            if instigator_tree.family_member_count + target_tree.family_member_count > MAX_FAMILY_MEMBERS:
-                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {MAX_FAMILY_MEMBERS} in your family, so I can't allow you to do that. Sorry!")
+            if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
+                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
 
         # No parent, send request
         await ctx.send(text_processor.valid_target())
