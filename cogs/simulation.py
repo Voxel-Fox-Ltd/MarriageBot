@@ -191,7 +191,7 @@ class Simulation(utils.Cog):
                        "with your hands bound. A man says \"Hey, you. You're finally "
                        "awake. You were trying to cross the border, right?\"")
 
-    @commands.command()
+    @commands.command(enabled=False)
     async def present(self, ctx:utils.Context, user:discord.Member):
         """Gives a present to the user"""
 
