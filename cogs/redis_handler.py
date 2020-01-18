@@ -105,6 +105,10 @@ class RedisHandler(utils.Cog):
     async def send_user_message(self, data):
         """Sends a message to a given user"""
 
+        if self.bot.shards is None or 0 in self.bot.shard_ids:
+            pass
+        else:
+            return
         try:
             user = await self.bot.fetch_user(data['user_id'])
             await user.send(data['content'])
