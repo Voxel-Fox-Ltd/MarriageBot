@@ -143,6 +143,17 @@ CREATE TABLE stripe_purchases(
 );
 
 
+CREATE TABLE paypal_purchases(
+    id VARCHAR(64) NOT NULL PRIMARY KEY,
+    customer_id VARCHAR(18),
+    payment_amount INTEGER NOT NULL,
+    discord_id BIGINT NOT NULL,
+    guild_id BIGINT NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT FALSE,
+    checkout_complete_timestamp TIMESTAMP
+);
+
+
 CREATE TABLE redirects(
     code VARCHAR(50) PRIMARY KEY,
     location VARCHAR(2000)

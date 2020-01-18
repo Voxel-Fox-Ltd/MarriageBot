@@ -99,7 +99,7 @@ join_server_redirect_uri = "https://marriagebot.xyz/guild_settings"  # The redir
 # This is all the data to do with purchasing MBG
 [payment_info]
 original_price = 2000
-discount_gpb = 0
+discount_gbp = 0
 
 
 # Here's the Stripe data! You should probably leave it blank. I use it on the website for MarriageBot Gold
@@ -108,6 +108,11 @@ discount_gpb = 0
 secret_key = ""
 public_key = ""
 signing_key = ""
+
+
+[paypal_pdt]
+receiver_email = ""  # The email that the PayPal account is set up with
+identity_token = ""
 
 
 # This is where we store the SSL files for the webserver

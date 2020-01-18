@@ -193,10 +193,68 @@ async def guild_picker(request:Request):
     return {'guilds': guilds}
 
 
-@routes.get('/guild_settings')
-@template('guild_settings.jinja')
+@routes.get('/guild_settings_stripe')
+@template('guild_settings_stripe.jinja')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
-async def guild_settings_get(request:Request):
+async def guild_settings_get_stripe(request:Request):
+    """Shows the settings for a particular guild"""
+
+    # See if they're logged in
+    session = await aiohttp_session.get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = request.query.get('guild_id')
+    if not guild_id:
+        return HTTPFound(location='/')
+
+    # See if the bot is in the guild
+    bot = request.app['bot']
+    try:
+        guild_object = await bot.fetch_guild(int(guild_id))
+    except discord.Forbidden:
+        config = request.app['config']
+        location = webutils.DISCORD_OAUTH_URL + urlencode({
+            'client_id': config['oauth']['client_id'],
+            'redirect_uri': config['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
+            'response_type': 'code',
+            'permissions': 52224,
+            'scope': 'bot',
+            'guild_id': guild_id,
+        })
+        return HTTPFound(location=location)
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not oauth_guild_data:
+        return HTTPFound(location='/')
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
+        mbg = await db('SELECT * FROM guild_specific_families WHERE guild_id=$1', int(guild_id))
+    try:
+        prefix = guild_settings[0]['prefix']
+    except IndexError:
+        prefix = request.app['config']['prefix']['default_prefix']
+
+    # Get channels
+    channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
+
+    # Return info to the page
+    return {
+        'guild': guild_object,
+        'prefix': prefix,
+        'channels': channels,
+        'gold': bool(mbg),
+        'normal': None,
+    }
+
+
+@routes.get('/guild_settings')
+@template('guild_settings_paypal.jinja')
+@webutils.add_output_args(redirect_if_logged_out="/r/login")
+async def guild_settings_get_paypal(request:Request):
     """Shows the settings for a particular guild"""
 
     # See if they're logged in
@@ -336,10 +394,10 @@ async def buy_gold(request:Request):
         "cancel_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
         "line_items[0][name]": 'MarriageBot Gold',
         "line_items[0][description]": f"Access to the Discord bot 'MarriageBot Gold' for guild ID {guild_id}" + {
-            True: f"(Discounted by £{request.app['config']['payment_info']['discount_gpb']/100:.2f})",
+            True: f"(Discounted by £{request.app['config']['payment_info']['discount_gbp']/100:.2f})",
             False: ""
-        }[request.app['config']['payment_info']['discount_gpb'] > 0],
-        "line_items[0][amount]": request.app['config']['payment_info']['original_price'] - request.app['config']['payment_info']['discount_gpb'],
+        }[request.app['config']['payment_info']['discount_gbp'] > 0],
+        "line_items[0][amount]": request.app['config']['payment_info']['original_price'] - request.app['config']['payment_info']['discount_gbp'],
         "line_items[0][currency]": 'gbp',
         "line_items[0][quantity]": 1,
     }
