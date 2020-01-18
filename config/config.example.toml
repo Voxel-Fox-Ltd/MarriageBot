@@ -95,13 +95,19 @@ redirect_uri = "https://marriagebot.xyz/login"  # The redirect for the login
 join_server_redirect_uri = "https://marriagebot.xyz/guild_settings"  # The redirect for when the bot is added
 
 
+# Woah it's the payment info
+# This is all the data to do with purchasing MBG
+[payment_info]
+original_price = 2000
+discount_gpb = 0
+
+
 # Here's the Stripe data! You should probably leave it blank. I use it on the website for MarriageBot Gold
 # purchases
 [stripe]
 secret_key = ""
 public_key = ""
 signing_key = ""
-discount_gpb = 0
 
 
 # This is where we store the SSL files for the webserver

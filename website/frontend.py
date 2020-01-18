@@ -336,10 +336,10 @@ async def buy_gold(request:Request):
         "cancel_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
         "line_items[0][name]": 'MarriageBot Gold',
         "line_items[0][description]": f"Access to the Discord bot 'MarriageBot Gold' for guild ID {guild_id}" + {
-            True: f"(Discounted by £{request.app['config']['stripe']['discount_gpb']/100:.2f})",
+            True: f"(Discounted by £{request.app['config']['payment_info']['discount_gpb']/100:.2f})",
             False: ""
-        }[request.app['config']['stripe']['discount_gpb'] > 0],
-        "line_items[0][amount]": 2000 - request.app['config']['stripe']['discount_gpb'],
+        }[request.app['config']['payment_info']['discount_gpb'] > 0],
+        "line_items[0][amount]": request.app['config']['payment_info']['original_price'] - request.app['config']['payment_info']['discount_gpb'],
         "line_items[0][currency]": 'gbp',
         "line_items[0][quantity]": 1,
     }
