@@ -220,7 +220,7 @@ async def purchase_complete(request:Request):
     return Response(status=200)
 
 
-@routes.post('/webhook/dbl')
+@routes.post('/webhooks/dbl/vote_added')
 async def webhook_handler(request:Request):
     """Sends a PM to the user with the webhook attached if user in owners"""
 
