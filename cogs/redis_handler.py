@@ -112,6 +112,7 @@ class RedisHandler(utils.Cog):
         try:
             user = await self.bot.fetch_user(data['user_id'])
             await user.send(data['content'])
+            self.log_handler.info(f"Sent a DM to user ID {data['user_id']}")
         except (discord.NotFound, discord.Forbidden, AttributeError):
             pass
 

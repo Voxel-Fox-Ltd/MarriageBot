@@ -1,6 +1,7 @@
 token = ""  # The token of the bot
 dbl_token = ""  # The API token for discordbots.org - probably best left blank
 bot_admin_role = 1  # The role ID for bot admins
+bot_id = 468281173072805889  # The ID of the bot
 patreon_roles = [ 1,]  # A list of role IDs for Patreon subscribers
 max_children = [ 5, 10, 15, 20, ]  # Default, *PatreonTier
 max_family_members = 500  # The maximum amount of people you can have in a family

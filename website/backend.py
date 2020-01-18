@@ -224,12 +224,9 @@ async def purchase_complete(request:Request):
 async def webhook_handler(request:Request):
     """Sends a PM to the user with the webhook attached if user in owners"""
 
-    # Get our data
-    bot = request.app['bot']
-
     # Set up our responses
     success = Response(text=json.dumps({"success": True}), content_type="application/json")
-    failure = lambda x: Response(text=json.dumps({"success": False, **x}), content_type="application/json")
+    failure = lambda x: Response(text=json.dumps({"success": False, **x}), content_type="application/json", status=400)
 
     # See if we can get it
     try:
@@ -239,12 +236,12 @@ async def webhook_handler(request:Request):
 
     # See if it's all valid
     keys = set(['bot', 'user', 'type'])
-    if set(x.keys()) != keys:
+    if not set(x.keys()).issuperset(keys):
         return failure({'reason': 'Invalid request params'})
 
     # Check the bot's ID
     try:
-        if int(x['bot']) != bot.user.id:
+        if int(x['bot']) != request.app['config']['bot_id']:
             return failure({'reason': 'Invalid bot ID'})  # wrong bot
     except ValueError:
         return failure({'reason': 'Invalid bot ID'})  # not an int
@@ -263,7 +260,7 @@ async def webhook_handler(request:Request):
     if x['type'] == 'upvote':
         text = "Thank you for upvoting MarriageBot!"
     elif x['type'] == 'test':
-        text = "Thanks for the text ping boss."
+        text = "Thanks for the test ping boss."
     else:
         text = "Invalid webhook type from DBL"
     time = dt.now()
