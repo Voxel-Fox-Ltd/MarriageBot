@@ -26,6 +26,7 @@ class RedisHandler(utils.Cog):
             task(self.channel_handler('BlockedUserRemove', lambda data: bot.blocked_users[data['user_id']].remove(data['blocked_user_id']))),
             task(self.channel_handler('EvalAll', self.eval_all)),
             task(self.channel_handler('UpdateGuildPrefix', self.update_guild_prefix)),
+            task(self.channel_handler('SendUserMessage', self.send_user_message)),
         ]
         # if not self.bot.is_server_specific:
         self.handlers.extend([
@@ -100,6 +101,15 @@ class RedisHandler(utils.Cog):
         if prefix is None:
             return
         self.bot.guild_settings['prefix'] = prefix
+
+    async def send_user_message(self, data):
+        """Sends a message to a given user"""
+
+        try:
+            user = await self.bot.fetch_user(data['user_id'])
+            await user.send(data['content'])
+        except (discord.NotFound, discord.Forbidden, AttributeError):
+            pass
 
 
 def setup(bot:utils.CustomBot):

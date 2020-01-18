@@ -1,7 +1,5 @@
 import os
 import argparse
-import secrets
-import ssl
 import warnings
 import logging
 import asyncio
@@ -39,26 +37,6 @@ def get_program_arguments():
     parser.add_argument(
         "--shardcount", type=int, default=None,
         help="The amount of shards that the bot should be using"
-    )
-    parser.add_argument(
-        "--noserver", action="store_true", default=False,
-        help="Starts the bot with no web server"
-    )
-    parser.add_argument(
-        "--nossl", action="store_true", default=False,
-        help="Starts the bot with no SSL web server"
-    )
-    parser.add_argument(
-        "--host", type=str, default='0.0.0.0',
-        help="The host IP to run the webserver on"
-    )
-    parser.add_argument(
-        "--port", type=int, default=8080,
-        help="The port to run the webserver on"
-    )
-    parser.add_argument(
-        "--sslport", type=int, default=8443,
-        help="The port to run the SSL webserver on"
     )
     parser.add_argument(
         "--loglevel", default="INFO",
@@ -115,22 +93,6 @@ logging.getLogger('discord').setLevel(getattr(logging, args.loglevel_discord.upp
 bot.redis.logger.setLevel(getattr(logging, args.loglevel_redis.upper(), log_level))
 bot.database.logger.setLevel(getattr(logging, args.loglevel_database.upper(), log_level))
 
-# Create website object - this is used for the webhook handler
-if args.noserver is False:
-    from aiohttp.web import Application, AppRunner, TCPSite
-    import aiohttp_jinja2 as jinja
-    import aiohttp_session as session
-    from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
-    from jinja2 import FileSystemLoader
-    import website
-    app = Application(loop=bot.loop, debug=True)
-    app.add_routes(website.api_routes)
-    app.router.add_static('/static', os.getcwd() + '/website/static')
-    app['bot'] = bot
-    app['static_root_url'] = '/static'
-    jinja.setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
-    session.setup(app, ECS(secrets.token_bytes(32)))
-
 
 @bot.event
 async def on_shard_connect(shard_id:int):
@@ -149,7 +111,7 @@ if __name__ == '__main__':
     # Connect the database
     logger.info("Creating database pool")
     try:
-        db_connect = utils.DatabaseConnection.create_pool(bot.config['database'])  # pylint: disable=assignment-from-no-return
+        db_connect = loop.create_task(utils.DatabaseConnection.create_pool(bot.config['database']))
         loop.run_until_complete(db_connect)
     except KeyError as e:
         logger.critical("KeyError creating database pool - is there a 'database' object in the config?")
@@ -171,7 +133,7 @@ if __name__ == '__main__':
     # Connect the redis
     logger.info("Creating redis pool")  # TODO make redis optional
     try:
-        re_connect = utils.RedisConnection.create_pool(bot.config['redis'])  # pylint: disable=assignment-from-no-return
+        re_connect = loop.create_task(utils.RedisConnection.create_pool(bot.config['redis']))
         loop.run_until_complete(re_connect)
     except KeyError as e:
         logger.critical("KeyError creating redis pool - is there a 'redis' object in the config?")
@@ -194,41 +156,6 @@ if __name__ == '__main__':
     logger.info('Loading extensions')
     bot.load_all_extensions()
 
-    # Start the webserver(s)
-    webserver = None
-    ssl_webserver = None
-    if args.noserver is False:
-
-        # HTTP server
-        logger.info("Creating webserver")
-        application = AppRunner(app)
-        loop.run_until_complete(application.setup())
-        webserver = TCPSite(application, host=args.host, port=args.port)
-        logger.info("Created webserver successfully")
-
-        # SSL server
-        try:
-            if not args.nossl:
-                logger.info("Creating SSL webserver")
-                ssl_context = ssl.SSLContext()
-                ssl_context.load_cert_chain(**bot.config['ssl_context'])
-                ssl_webserver = TCPSite(application, host=args.host, port=args.sslport, ssl_context=ssl_context)
-                logger.info("Created SSL webserver successfully")
-        except Exception as e:
-            ssl_webserver = None
-            logger.critical("Could not make SSL webserver")
-            if logger.level > logging.DEBUG:
-                exit(1)
-            else:
-                raise e
-
-        # Start servers
-        loop.run_until_complete(webserver.start())
-        logger.info(f"Server started - http://{args.host}:{args.port}/")
-        if ssl_webserver:
-            loop.run_until_complete(ssl_webserver.start())
-            logger.info(f"Server started - http://{args.host}:{args.sslport}/")
-
     # Run the bot
     try:
         logger.info("Running bot")
@@ -238,10 +165,6 @@ if __name__ == '__main__':
         loop.run_until_complete(bot.logout())
 
     # We're now done running the bot, time to clean up and close
-    if webserver:
-        logger.info("Closing webserver")
-        loop.run_until_complete(application.cleanup())
-        logger.info("Webserver closed")
     logger.info("Closing database pool")
     loop.run_until_complete(utils.DatabaseConnection.pool.close())
     logger.info("Database pool closed")

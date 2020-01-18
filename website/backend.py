@@ -1,12 +1,14 @@
 import hmac
 import hashlib
 from urllib.parse import urlencode
+from datetime import datetime as dt
 
 import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 import aiohttp_session
 import json
 import asyncpg
+import discord
 
 from cogs import utils
 from website import utils as webutils
@@ -216,3 +218,66 @@ async def purchase_complete(request:Request):
 
     # Let the user get redirected
     return Response(status=200)
+
+
+@routes.post('/webhook/dbl')
+async def webhook_handler(request:Request):
+    """Sends a PM to the user with the webhook attached if user in owners"""
+
+    # Get our data
+    bot = request.app['bot']
+
+    # Set up our responses
+    success = Response(text=json.dumps({"success": True}), content_type="application/json")
+    failure = lambda x: Response(text=json.dumps({"success": False, **x}), content_type="application/json")
+
+    # See if we can get it
+    try:
+        x = await request.json()
+    except Exception:
+        return failure({'reason': 'No JSON response'})
+
+    # See if it's all valid
+    keys = set(['bot', 'user', 'type'])
+    if set(x.keys()) != keys:
+        return failure({'reason': 'Invalid request params'})
+
+    # Check the bot's ID
+    try:
+        if int(x['bot']) != bot.user.id:
+            return failure({'reason': 'Invalid bot ID'})  # wrong bot
+    except ValueError:
+        return failure({'reason': 'Invalid bot ID'})  # not an int
+
+    # Check user's ID
+    try:
+        user_id = int(x['user'])
+    except ValueError:
+        return failure({'reason': 'Invalid user ID'})  # uid wasn't int
+
+    # Check type
+    if x['type'] not in ['upvote', 'test']:
+        return failure({'reason': 'Invalid request type'})
+
+    # Send proper thanks to the user
+    if x['type'] == 'upvote':
+        text = "Thank you for upvoting MarriageBot!"
+    elif x['type'] == 'test':
+        text = "Thanks for the text ping boss."
+    else:
+        text = "Invalid webhook type from DBL"
+    time = dt.now()
+
+    # Redis thanks to user
+    async with request.app['redis']() as re:
+        await re.publish_json("SendUserMessage", {"user_id": user_id, "content": text})
+        await re.publish_json('DBLVote', {'user_id': user_id, 'datetime': time.isoformat()})
+
+    # DB vote
+    async with request.app['database']() as db:
+        try:
+            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user_id, time)
+        except asyncpg.UniqueViolationError:
+            await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user_id, time)
+    return success
+

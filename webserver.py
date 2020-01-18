@@ -35,10 +35,8 @@ warnings.filterwarnings('ignore', category=RuntimeWarning)
 parser = argparse.ArgumentParser()
 parser.add_argument("config_file", help="The configuration for the bot.")
 parser.add_argument("gold_config_file", help="The configuration for the Gold version of the bot.")
-parser.add_argument("--nossl", action="store_true", default=False, help="Starts the bot with no SSL web server.")
 parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to run the webserver on.")
 parser.add_argument("--port", type=int, default=8080, help="The port to run the webserver on.")
-parser.add_argument("--sslport", type=int, default=8443, help="The port to run the SSL webserver on.")
 args = parser.parse_args()
 
 
@@ -99,7 +97,6 @@ if __name__ == '__main__':
 
     # Start the server unless I said otherwise
     webserver = None
-    ssl_webserver = None
 
     # HTTP server
     logger.info("Creating webserver...")
@@ -107,22 +104,9 @@ if __name__ == '__main__':
     loop.run_until_complete(application.setup())
     webserver = TCPSite(application, host=args.host, port=args.port)
 
-    # SSL server
-    try:
-        if not args.nossl:
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            ssl_context.load_cert_chain(**app['config']['ssl_context'])
-            ssl_webserver = TCPSite(application, host=args.host, port=args.sslport, ssl_context=ssl_context)
-    except Exception as e:
-        ssl_webserver = None
-        logger.exception("Could not make SSL webserver")
-
     # Start servers
     loop.run_until_complete(webserver.start())
     logger.info(f"Server started - http://{args.host}:{args.port}/")
-    if ssl_webserver:
-        loop.run_until_complete(ssl_webserver.start())
-        logger.info(f"Server started - https://{args.host}:{args.sslport}/")
 
     # This is the forever loop
     try:
