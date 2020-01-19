@@ -59,9 +59,10 @@ args = get_program_arguments()
 
 # Make sure the sharding info provided is correctish
 if args.shardcount is None:
-    shard_ids = None
-else:
-    shard_ids = list(range(args.min, args.max+1))
+    args.shardcount = 1
+    args.min = 0
+    args.max = 0
+shard_ids = list(range(args.min, args.max+1))
 if args.shardcount is None and (args.min or args.max):
     logger.critical("You set a min/max shard handler but no shard count")
     exit(1)
@@ -79,8 +80,7 @@ bot = utils.CustomBot(
     shard_ids=shard_ids,
     shard_id=args.min,
     max_messages=100,  # The lowest amount that we can actually cache
-    # fetch_offline_members=False,
-    logger=logger.getChild('bot')
+    logger=logger.getChild('bot'),
 )
 
 # Set up out loggers
