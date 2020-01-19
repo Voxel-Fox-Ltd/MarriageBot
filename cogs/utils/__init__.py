@@ -11,7 +11,7 @@ from cogs.utils.family_tree.relation_simplifier import Simplifier
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.custom_context import CustomContext as Context
-from cogs.utils.custom_cog2 import Cog
+from cogs.utils.custom_cog import Cog
 
 from cogs.utils import random_text
 from cogs.utils import errors
