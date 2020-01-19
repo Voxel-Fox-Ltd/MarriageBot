@@ -137,26 +137,26 @@ class OwnerOnly(utils.Cog):
 
         # Grab data
         async with self.bot.database() as db:
-            data = await db(content) or 'No content.'
+            database_data = await db(content) or 'No content.'
 
         # Single line output
-        if type(data) in [str, type(None)]:
-            await ctx.send(data)
+        if type(database_data) in [str, type(None)]:
+            await ctx.send(database_data)
             return
 
         # Get columns and widths
-        column_headers = list(data[0].keys())
+        column_headers = list(database_data[0].keys())
         column_max_lengths = {i:0 for i in column_headers}
-        for row in data:
+        for row in database_data:
             for header in column_headers:
-                column_max_lengths[header] = max(column_max_lengths[header], len(row[header]))
+                column_max_lengths[header] = max(column_max_lengths[header], len(str(row[header])))
 
         # Sort our output
         output = []  # List of lines
         current_line = ""
-        for row in [{i:i for i in column_headers}] + list(data):
+        for row in [{i:i for i in column_headers}] + list(database_data):
             for header in column_headers:
-                current_line += format(row[header], f"<{column_max_lengths[header]}") + '|'
+                current_line += format(str(row[header]), f"<{column_max_lengths[header]}") + '|'
             output.append(current_line.strip('| '))
 
         # Send it to user
