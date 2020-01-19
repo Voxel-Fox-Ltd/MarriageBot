@@ -21,9 +21,9 @@ def get_prefix(bot, message:discord.Message):
 
     # Try and get their guild settings from the bot
     try:
-        settings = bot.guild_settings.get(message.guild.id, bot.default_guild_settings)
+        settings = bot.guild_settings.get(message.guild.id, bot.DEFAULT_GUILD_SETTINGS)
     except AttributeError:
-        settings = bot.default_guild_settings
+        settings = bot.DEFAULT_GUILD_SETTINGS
     x = settings['prefix']
 
     # If we don't respect custom prefixes, go back to the default
@@ -60,7 +60,6 @@ class CustomBot(commands.AutoShardedBot):
         self.DEFAULT_GUILD_SETTINGS['prefix'] = self.config['prefix']['default_prefix']
 
         # Set up arguments that are used in cogs and stuff
-        self.bad_argument = regex.compile(r'(User|Member) "(.*)" not found')  # TODO put this into a method
         self._invite_link = None  # populated by 'invite' property
         self.support_guild = None  # populated by Patreon or bot mod check
 
