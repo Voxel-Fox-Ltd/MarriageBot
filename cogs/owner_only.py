@@ -240,6 +240,18 @@ class OwnerOnly(utils.Cog):
             })
 
     @commands.command()
+    async def rldall(self, ctx, *cog_name:str):
+        """Reloads all of a given cog"""
+
+        async with self.bot.redis() as re:
+            await re.publish_json('EvalAll', {
+                'content': f"await ctx.invoke(self.bot.get_command('rld'), *{str(cog_name)})",
+                'channel_id': ctx.channel.id,
+                'message_id': ctx.message.id,
+                'exempt': [],
+            })
+
+    @commands.command()
     async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
