@@ -183,8 +183,12 @@ async def set_max_family_members(request:Request):
     # Get the maximum members
     try:
         max_members = int(post_data['amount'])
+        assert max_members >= 50
     except ValueError:
         max_members = request.app['config']['max_family_members']
+    except AssertionError:
+        max_members = 50
+    max_members = min([max_members, 2000])
 
     # Get current prefix
     async with request.app['database']() as db:
