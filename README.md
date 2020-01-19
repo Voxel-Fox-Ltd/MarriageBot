@@ -14,11 +14,7 @@ I'm `Caleb#2831`. Feel free to ask for help at any time. If you like what I do, 
 
 Thanks to all of you on the Landfall Games server for helping with the testing, especially Danny who I agreed I would give a specific shoutout too.
 
-Thank you to [Adrien Vergé for familytreemaker.py](https://github.com/adrienverge/familytreemaker), which I used for a long while before I came up with my own code for the same thing.
-
 Thanks to Graphwiz for being a free piece of software that I can use at my leisure.
-
-A thank you to @Binasaurus-Hex for making the external website for me while I worked on other stuff.
 
 # Commands
 
@@ -78,6 +74,6 @@ For when `m!` isn't good enough (you must have the `manage_guild` permission to 
 
 # Self-Hosting
 
-To host this bot yourself, you will need to install Python 3.6 or above, as well as the Discord.py rewrite (listed in `requirements.txt`). The database that *I* use is Postgres, and the SQL to generate the database and all relevant tables is included in the `config` folder, though you will have to edit and rename the `config/config.json` file to work properly for your database setup.
+To host this bot yourself, you will need to install Python 3.6 or above, as well as the Discord.py rewrite (listed in `requirements.txt`). The database that *I* use is Postgres, and the SQL to generate the database and all relevant tables is included in the `config` folder, though you will have to edit and rename the `config/config.toml` file to work properly for your database setup.
 
 After you set up *the database*,  *redis*, and *Graphviz*, install the requirements (which are listed in `requirements.txt`) and you're good to go.
