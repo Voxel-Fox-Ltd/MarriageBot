@@ -1,5 +1,6 @@
 import typing
 import logging
+from datetime import datetime as dt
 
 import discord
 import asyncpg
@@ -86,14 +87,15 @@ class DatabaseConnection(object):
         target_id = getattr(target, 'id', target)
 
         await self.start_transaction()
+        timestamp = dt.utcnow()
         try:
             await self(
-                'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3)',
-                instigator_id, target_id, guild_id,
+                'INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)',
+                instigator_id, target_id, guild_id, timestamp,
             )
             await self(
-                'INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($2, $1, $3)',
-                instigator_id, target_id, guild_id,
+                'INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($2, $1, $3, $4)',
+                instigator_id, target_id, guild_id, timestamp,
             )
         except Exception as e:
             await self.transaction.rollback()

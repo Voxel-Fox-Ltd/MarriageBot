@@ -152,7 +152,7 @@ class ModeratorOnly(utils.Cog):
 
         # Update database
         async with self.bot.database() as db:
-            await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', parent, child, ctx.family_guild_id)
+            await db('INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', parent, child, ctx.family_guild_id, dt.utcnow())
 
         # Update cache
         me = utils.FamilyTreeMember.get(parent, ctx.family_guild_id)

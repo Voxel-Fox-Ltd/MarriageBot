@@ -27,7 +27,13 @@ class Information(utils.Cog):
         if user_info._partner == None:
             return await ctx.send(f"`{user_name}` is not currently married.")
         partner_name = await self.bot.get_name(user_info._partner)
-        await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`).")
+        async with self.bot.database() as db:
+            data = await db("SELECT * FROM marriages WHERE user_id=$1", ctx.author.id)
+        timestamp = data[0]['timestamp']
+        if timestamp:
+            await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`). They've been married since {timestamp.strftime('%B %d %Y')}.")
+        else:
+            await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`).")
 
     @commands.command(aliases=['child', 'kids'])
     @commands.cooldown(1, 5, commands.BucketType.user)

@@ -2,6 +2,7 @@ CREATE TABLE marriages(
     user_id BIGINT NOT NULL,
     partner_id BIGINT NOT NULL,
     guild_id BIGINT NOT NULL DEFAULT 0,
+    timestamp TIMESTAMP,
     PRIMARY KEY (user_id, guild_id)
 );
 -- This table will hold marraiges both in date and divorced pairs
@@ -13,6 +14,7 @@ CREATE TABLE parents(
     child_id BIGINT NOT NULL,
     parent_id BIGINT NOT NULL,
     guild_id BIGINT NOT NULL DEFAULT 0,
+    timestamp TIMESTAMP,
     PRIMARY KEY (child_id, guild_id)
 );
 -- Since a child will only appear once, you can set child_id to the primary key

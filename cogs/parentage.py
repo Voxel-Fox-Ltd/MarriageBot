@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 import discord
 from discord.ext import commands
 
@@ -62,7 +64,7 @@ class Parentage(utils.Cog):
 
         # They said yes
         async with self.bot.database() as db:
-            await db('INSERT INTO parents (child_id, parent_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.family_guild_id)
+            await db('INSERT INTO parents (child_id, parent_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
         # Cache
@@ -138,7 +140,7 @@ class Parentage(utils.Cog):
 
         # Database it up
         async with self.bot.database() as db:
-            await db('INSERT INTO parents (parent_id, child_id, guild_id) VALUES ($1, $2, $3)', instigator.id, target.id, ctx.family_guild_id)
+            await db('INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
 
         # Add family caching
         instigator_tree._children.append(target.id)
