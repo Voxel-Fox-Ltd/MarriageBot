@@ -118,15 +118,16 @@ async def unblock_user_post_handler(request:Request):
     return HTTPFound(location='/user_settings')
 
 
-@routes.post('/guild_settings')
-async def guild_settings_post(request:Request):
-    """Shows the settings for a particular guild"""
+@routes.post('/set_prefix')
+async def set_prefix(request:Request):
+    """Sets the prefix for a given guild"""
 
     # See if they're logged in
     session = await aiohttp_session.get_session(request)
+    post_data = await request.post()
     if not session.get('user_id'):
         return HTTPFound(location='/')
-    guild_id = request.query.get('guild_id')
+    guild_id = post_data['guild_id']
     if not guild_id:
         return HTTPFound(location='/')
 
@@ -135,49 +136,22 @@ async def guild_settings_post(request:Request):
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
-    data = await request.post()
-    prefix = data['prefix'][0:30]
+    prefix = post_data['prefix'][0:30]
 
     # Get current prefix
     async with request.app['database']() as db:
-        await db('UPDATE guild_settings SET prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
+        if post_data['gold']:
+            await db('UPDATE guild_settings SET gold_prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
+        else:
+            await db('UPDATE guild_settings SET prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
     async with request.app['redis']() as re:
-        await re.publish_json('UpdateGuildPrefix', {
-            'guild_id': int(guild_id),
-            'prefix': prefix,
-        })
-    return HTTPFound(location=f'/guild_settings?guild_id={guild_id}')
+        redis_data = {'guild_id': int(guild_id)}
+        redis_data[{True: 'gold_prefix', False: 'prefix'}[post_data['gold']]] = prefix
+        await re.publish_json('UpdateGuildPrefix', redis_data)
 
-
-@routes.post('/guild_gold_settings')
-async def guild_gold_settings_post(request:Request):
-    """Shows the settings for a particular guild"""
-
-    # See if they're logged in
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
-    guild_id = request.query.get('guild_id')
-    if not guild_id:
-        return HTTPFound(location='/')
-
-    # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
-    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
-    if not guild:
-        return HTTPFound(location='/')
-    data = await request.post()
-    prefix = data['prefix'][0:30]
-
-    # Get current prefix
-    async with request.app['database']() as db:
-        await db('UPDATE guild_settings SET gold_prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
-    async with request.app['redis']() as re:
-        await re.publish_json('UpdateGuildPrefix', {
-            'guild_id': int(guild_id),
-            'gold_prefix': prefix,
-        })
-    return HTTPFound(location=f'/guild_gold_settings?guild_id={guild_id}')
+    # Redirect to page
+    location = f'/guild_gold_settings?guild_id={guild_id}' if post_data['gold'] else f'/guild_settings?guild_id={guild_id}'
+    return HTTPFound(location=location)
 
 
 @routes.post('/webhooks/stripe/purchase_complete')
