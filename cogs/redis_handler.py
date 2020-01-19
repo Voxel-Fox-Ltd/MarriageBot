@@ -27,6 +27,7 @@ class RedisHandler(utils.Cog):
             task(self.channel_handler('EvalAll', self.eval_all)),
             task(self.channel_handler('UpdateGuildPrefix', self.update_guild_prefix)),
             task(self.channel_handler('UpdateFamilyMaxMembers', self.update_max_family_members)),
+            task(self.channel_handler('UpdateIncestAllowed', self.update_incest_alllowed)),
             task(self.channel_handler('SendUserMessage', self.send_user_message)),
         ]
         # if not self.bot.is_server_specific:
@@ -110,6 +111,14 @@ class RedisHandler(utils.Cog):
         if prefix is None:
             return
         self.bot.guild_settings[data['guild_id']]['max_family_members'] = prefix
+
+    def update_incest_alllowed(self, data):
+        """Updates whether incest is allowed on guild"""
+
+        prefix = data.get('allow_incest')
+        if prefix is None:
+            return
+        self.bot.guild_settings[data['guild_id']]['allow_incest'] = prefix
 
     async def send_user_message(self, data):
         """Sends a message to a given user"""

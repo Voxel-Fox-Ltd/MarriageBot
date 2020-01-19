@@ -199,6 +199,44 @@ async def set_max_family_members(request:Request):
     return HTTPFound(location=f'/guild_gold_settings?guild_id={guild_id}')
 
 
+@routes.post('/set_incest_enabled')
+async def set_incest_enabled(request:Request):
+    """Sets the whether or not incest is enabled for a given guild"""
+
+    # See if they're logged in
+    session = await aiohttp_session.get_session(request)
+    post_data = await request.post()
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = post_data['guild_id']
+    if not guild_id:
+        return HTTPFound(location='/')
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not guild:
+        return HTTPFound(location='/')
+
+    # Get the maximum members
+    try:
+        enabled = bool(post_data['allowed'])
+    except (ValueError, KeyError):
+        enabled = False
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db('UPDATE guild_settings SET allow_incest=$1 WHERE guild_id=$2', enabled, int(guild_id))
+    async with request.app['redis']() as re:
+        await re.publish_json('UpdateIncestAllowed', {
+            'guild_id': int(guild_id),
+            'allow_incest': enabled,
+        })
+
+    # Redirect to page
+    return HTTPFound(location=f'/guild_gold_settings?guild_id={guild_id}')
+
+
 @routes.post('/webhooks/stripe/purchase_complete')
 async def stripe_purchase_complete(request:Request):
     """Handles Stripe throwing data my way"""
