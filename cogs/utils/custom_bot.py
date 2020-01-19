@@ -40,6 +40,11 @@ class CustomBot(commands.AutoShardedBot):
     for my stuff, but ultimately it's the same ol' AutoShardedBot that the
     library provides to start with"""
 
+    DEFAULT_GUILD_SETTINGS = {
+        'prefix': None,  # Set in init
+        'allow_incest': False
+    }
+
     def __init__(self, *args, config_file:str, logger:logging.Logger=None, **kwargs):
         super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
@@ -50,7 +55,9 @@ class CustomBot(commands.AutoShardedBot):
         self.config: dict = None
         self.config_file: str = config_file
         self.reload_config()
-        self.default_guild_settings = {'prefix': self.config['prefix']['default_prefix'], 'allow_incest': False}
+
+        # Update our default guild settings using the config
+        self.DEFAULT_GUILD_SETTINGS['prefix'] = self.config['prefix']['default_prefix']
 
         # Set up arguments that are used in cogs and stuff
         self.bad_argument = regex.compile(r'(User|Member) "(.*)" not found')  # TODO put this into a method
@@ -74,7 +81,7 @@ class CustomBot(commands.AutoShardedBot):
         self.proposal_cache: typing.Dict[int, tuple] = utils.ProposalCache()
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
         self.blocked_users: typing.Dict[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
-        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.default_guild_settings.copy())
+        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.DEFAULT_GUILD_SETTINGS.copy())
         self.dbl_votes: typing.Dict[int, dt] = {}
 
         # Put the bot object in some other classes
