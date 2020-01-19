@@ -310,7 +310,7 @@ async def guild_settings_get_paypal(request:Request):
 
 
 @routes.get('/guild_gold_settings')
-@template('guild_settings.jinja')
+@template('guild_settings_paypal.jinja')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def guild_gold_settings_get(request:Request):
     """Shows the settings for a particular guild"""
