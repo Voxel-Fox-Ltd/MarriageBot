@@ -16,7 +16,7 @@ MarriageBot - Guild Picker
     {% for guild in guilds %}
     <div class="guild-block">
         {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% else %}<img alt="The default guild icon" src="/static/images/GuildDefaultImage.png" />{% endif %}
-        <h3><a href="/guild_settings?guild_id={{ guild.id }}" alt="The settings page for {{ guild.name}}">{{ guild.name }}</a>{% if guild.gold %}<br /><a href="/guild_gold_settings?guild_id={{ guild.id }}" alt="The gold settings page for {{ guild.name}}">(Gold Settings)</a>{% else %}<br /><a href="/guild_settings?guild_id={{ guild.id }}" not_href="/buy_gold?guild_id={{ guild.id }}" alt="The gold settings page for {{ guild.name}}">(Buy Gold)</a>{% endif %}</h3>
+        <h3><a href="/guild_settings?guild_id={{ guild.id }}" alt="The settings page for {{ guild.name}}">{{ guild.name }}</a>{% if guild.gold %}<br /><a href="/guild_settings?guild_id={{ guild.id }}&gold=1" alt="The gold settings page for {{ guild.name}}">(Gold Settings)</a>{% else %}<br /><a href="/guild_settings?guild_id={{ guild.id }}" not_href="/buy_gold?guild_id={{ guild.id }}" alt="The gold settings page for {{ guild.name}}">(Buy Gold)</a>{% endif %}</h3>
     </div> <!-- guild-block -->
     {% endfor %}
 </div>

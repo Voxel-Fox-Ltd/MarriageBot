@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
 
 import aiohttp
-from aiohttp.web import RouteTableDef, Request, HTTPFound
+from aiohttp.web import RouteTableDef, Request, HTTPFound, json_response
 import aiohttp_session
 from aiohttp_jinja2 import template
 import discord
@@ -262,15 +262,23 @@ async def guild_settings_get_paypal(request:Request):
     if not session.get('user_id'):
         return HTTPFound(location='/')
     guild_id = request.query.get('guild_id')
+    gold_param = request.query.get('gold', '0') == '1'
     if not guild_id:
         return HTTPFound(location='/')
 
+    # Get the bot object
+    if gold_param:
+        bot = request.app['gold_bot']
+    else:
+        bot = request.app['bot']
+
     # See if the bot is in the guild
-    bot = request.app['bot']
     try:
         guild_object = await bot.fetch_guild(int(guild_id))
     except discord.Forbidden:
-        config = request.app['config']
+        # We get here? Bot's not in the server
+        config_type = 'gold_config' if gold_param else 'config'
+        config = request.app[config_type]
         location = webutils.DISCORD_OAUTH_URL + urlencode({
             'client_id': config['oauth']['client_id'],
             'redirect_uri': config['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
@@ -287,109 +295,62 @@ async def guild_settings_get_paypal(request:Request):
     if not oauth_guild_data:
         return HTTPFound(location='/')
 
-    # Get current prefix
+    # Get the current guild data from the database
     async with request.app['database']() as db:
+
+        # Get guild settings
         guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
         if not guild_settings:
             guild_settings = [request.app['bot'].DEFAULT_GUILD_SETTINGS.copy()]
-        mbg = await db('SELECT * FROM guild_specific_families WHERE guild_id=$1', int(guild_id))
+
+        # Get gold allowance
+        if not gold_param:
+            gold_settings = await db('SELECT * FROM guild_specific_families WHERE guild_id=$1', int(guild_id))
+
+        # Get disabled commands
         disabled_commands = {i: False for i in request.app['config']['disableable_commands']}
         disable_data = await db('SELECT * FROM disabled_commands WHERE guild_id=$1', int(guild_id))
         for row in disable_data:
             disabled_commands[row['command_name']] = row['disabled']
-    try:
-        prefix = guild_settings[0]['prefix']
-    except IndexError:
-        prefix = request.app['config']['prefix']['default_prefix']
 
-    # Get channels
+    # Get prefix
+    try:
+        prefix = guild_settings[0]['gold_prefix' if gold_param else 'prefix']
+    except IndexError:
+        prefix = request.app['gold_config' if gold_param else 'config']['prefix']['default_prefix']
+
+    # Get channel objects from the guild
     channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
 
-    # Return info to the page
-    return {
-        'guild': guild_object,
-        'prefix': prefix,
-        'channels': channels,
-        'gold': bool(mbg),
-        'normal': None,
-        'max_family_members': guild_settings[0]['max_family_members'],
-        'allow_incest': guild_settings[0]['allow_incest'],
-        'disabled_commands': disabled_commands,
-    }
+    # Get the normal bot data
+    if gold_param:
+        non_gold_bot = request.app['bot']
+        try:
+            guild_object = await non_gold_bot.fetch_guild(int(guild_id))
+            normal_bot_data = True
+        except discord.Forbidden:
+            normal_bot_data = False
+    else:
+        normal_bot_data = None
 
-
-@routes.get('/guild_gold_settings')
-@template('guild_settings_paypal.jinja')
-@webutils.add_output_args(redirect_if_logged_out="/r/login")
-async def guild_gold_settings_get(request:Request):
-    """Shows the settings for a particular guild"""
-
-    # See if they're logged in
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
-    guild_id = request.query.get('guild_id')
-    if not guild_id:
-        return HTTPFound(location='/')
-
-    # See if the bot is in the guild
-    bot = request.app['gold_bot']
-    try:
-        guild_object = await bot.fetch_guild(int(guild_id))
-    except discord.Forbidden:
-        config = request.app['gold_config']
-        location = webutils.DISCORD_OAUTH_URL + urlencode({
-            'client_id': config['oauth']['client_id'],
-            'redirect_uri': config['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
-            'response_type': 'code',
-            'permissions': 52224,
-            'scope': 'bot',
-            'guild_id': guild_id,
-        })
-        return HTTPFound(location=location)
-
-    # See if non-gold is in the guild
-    non_gold_bot = request.app['bot']
-    try:
-        guild_object = await non_gold_bot.fetch_guild(int(guild_id))
-        non_gold_in_guild = True
-    except discord.Forbidden:
-        non_gold_in_guild = False
-
-    # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
-    oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
-    if not oauth_guild_data:
-        return HTTPFound(location='/')
-
-    # Get current prefix
-    async with request.app['database']() as db:
-        guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
-        if not guild_settings:
-            guild_settings = [request.app['bot'].DEFAULT_GUILD_SETTINGS.copy()]
-        disabled_commands = {i: False for i in request.app['config']['disableable_commands']}
-        disable_data = await db('SELECT * FROM disabled_commands WHERE guild_id=$1', int(guild_id))
-        for row in disable_data:
-            disabled_commands[row['command_name']] = row['disabled']
-    try:
-        prefix = guild_settings[0]['gold_prefix']
-    except IndexError:
-        prefix = request.app['gold_config']['prefix']['default_prefix']
-
-    # Get channels
-    channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
+    # Get the gold bot data
+    if gold_param:
+        gold_bot_data = None
+    else:
+        gold_bot_data = bool(gold_settings)
 
     # Return info to the page
-    return {
-        'guild': guild_object,
-        'prefix': prefix,
-        'channels': channels,
-        'gold': None,
-        'normal': non_gold_in_guild,
-        'max_family_members': guild_settings[0]['max_family_members'],
-        'allow_incest': guild_settings[0]['allow_incest'],
-        'disabled_commands': disabled_commands,
+    page_data = {
+        'guild': guild_object,  # The guild object as we know it
+        'prefix': prefix,  # The prefix for the bot
+        'channels': channels,  # The channels in the guild
+        'gold': gold_bot_data,  # Whether the guild has gold or not - 'None' for showing the gold page
+        'normal': normal_bot_data,  # Whether the guild has the normal bot or not - 'None' for showing the normal page
+        'max_family_members': guild_settings[0]['max_family_members'],  # Maximum amount of family members
+        'allow_incest': guild_settings[0]['allow_incest'],  # Whether incest is allowed or not
+        'disabled_commands': disabled_commands,  # The commands that are disabled
     }
+    return page_data
 
 
 @routes.get('/buy_gold')
@@ -408,7 +369,7 @@ async def buy_gold(request:Request):
     # Generate params
     data = {
         "payment_method_types[0]": "card",
-        "success_url": f"https://marriagebot.xyz/guild_gold_settings?guild_id={guild_id}",
+        "success_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}&gold=1",
         "cancel_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
         "line_items[0][name]": 'MarriageBot Gold',
         "line_items[0][description]": f"Access to the Discord bot 'MarriageBot Gold' for guild ID {guild_id}" + {
@@ -439,6 +400,14 @@ async def buy_gold(request:Request):
         'stripe_publishable_key': request.app['config']['stripe']['public_key'],
         'checkout_session_id': stripe_session['id'],
     }
+
+
+@routes.get('/get_session')
+async def get_session(request:Request):
+    """Gets your session data and throws it in your face"""
+
+    session = await aiohttp_session.get_session(request)
+    return json_response(dict(session))
 
 
 @routes.get('/logout')

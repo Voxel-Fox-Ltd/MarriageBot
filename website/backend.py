@@ -157,7 +157,7 @@ async def set_prefix(request:Request):
         await re.publish_json('UpdateGuildPrefix', redis_data)
 
     # Redirect to page
-    location = f'/guild_gold_settings?guild_id={guild_id}' if post_data['gold'] else f'/guild_settings?guild_id={guild_id}'
+    location = f'/guild_settings?guild_id={guild_id}&gold=1' if post_data['gold'] else f'/guild_settings?guild_id={guild_id}'
     return HTTPFound(location=location)
 
 
@@ -200,7 +200,7 @@ async def set_max_family_members(request:Request):
         })
 
     # Redirect to page
-    return HTTPFound(location=f'/guild_gold_settings?guild_id={guild_id}')
+    return HTTPFound(location=f'/guild_settings?guild_id={guild_id}&gold=1')
 
 
 @routes.post('/set_incest_enabled')
@@ -238,7 +238,7 @@ async def set_incest_enabled(request:Request):
         })
 
     # Redirect to page
-    return HTTPFound(location=f'/guild_gold_settings?guild_id={guild_id}')
+    return HTTPFound(location=f'/guild_settings?guild_id={guild_id}&gold=1')
 
 
 @routes.post('/webhooks/stripe/purchase_complete')
