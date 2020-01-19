@@ -50,8 +50,8 @@ MarriageBot - {{ guild.name }} Settings
         <input disabled id="disable_command_checkbox_{{ command }}" name="{{ command }}"{# {% if disabled %} checked{% endif %} #} type="checkbox" /><label for="disable_command_checkbox_{{ command }}">{{ command }}</label><br />
     {% endfor %}
     </div>
-    <p>{% if gold is none %}<button type="submit" formmethod="post" formaction="/set_disabled_commands">Disabled for testing<!-- Submit Disabled Commands --></button>
-    {%- else %}<button type="submit" formmethod="post" disabled>Disabled for testing<!-- Disabled for non-Gold bot --></button>{%- endif %}</p>
+    <p>{% if gold is none %}<button type="submit" disabled formmethod="post" formaction="/set_disabled_commands">Disabled for testing<!-- Submit Disabled Commands --></button>
+    {%- else %}<button type="submit" disabled formmethod="post" disabled>Disabled for testing<!-- Disabled for non-Gold bot --></button>{%- endif %}</p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form> <!-- disabled-commands -->
