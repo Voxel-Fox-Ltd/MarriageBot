@@ -2,6 +2,7 @@ import typing
 import string
 import random
 import collections
+import functools
 
 import discord
 
@@ -36,6 +37,7 @@ def get_random_valid_string(func):
     instigator = func.__self__.instigator
     target = func.__self__.target
 
+    @functools.wraps(func)
     def wrapper():
         strings = func()
         provided_arguments = [
@@ -50,6 +52,7 @@ def get_random_valid_string(func):
 def random_string_class_decorator(cls) -> 'TextTemplate':
     """Wraps around a random_text class and applies get_random_valid_string to all methods"""
 
+    @functools.wraps(cls)
     class Wrapper(object):
 
         original = cls
