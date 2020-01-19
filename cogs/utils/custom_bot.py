@@ -42,7 +42,9 @@ class CustomBot(commands.AutoShardedBot):
 
     DEFAULT_GUILD_SETTINGS = {
         'prefix': None,  # Set in init
-        'allow_incest': False
+        'allow_incest': False,  # Only used in gold
+        'max_family_members': None,  # Set in init; only used in gold
+        'max_children': {},  # RoleID: ChildAmount; only used in gold
     }
 
     def __init__(self, *args, config_file:str, logger:logging.Logger=None, **kwargs):
@@ -58,6 +60,7 @@ class CustomBot(commands.AutoShardedBot):
 
         # Update our default guild settings using the config
         self.DEFAULT_GUILD_SETTINGS['prefix'] = self.config['prefix']['default_prefix']
+        self.DEFAULT_GUILD_SETTINGS['max_family_members'] = self.config['max_family_members']
 
         # Set up arguments that are used in cogs and stuff
         self._invite_link = None  # populated by 'invite' property
@@ -187,7 +190,7 @@ class CustomBot(commands.AutoShardedBot):
 
         # Grab the command prefixes per guild
         try:
-            all_settings = await db('SELECT * FROM guild_settings')
+            all_settings = await db('SELECT * FROM guild_settings WHERE (guild_id >> 22) % $1=ANY($2::INTEGER[])', self.shard_count, self.shard_ids)
         except Exception as e:
             self.logger.critical(f"Ran into an error selecting guild settings: {e}")
             exit(1)
