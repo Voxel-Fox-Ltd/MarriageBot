@@ -96,9 +96,10 @@ class OwnerOnly(utils.Cog):
             # If the function did return a value
             else:
                 self._last_result = ret
-                text = f'Run by shards {self.bot.shard_ids}```py\n{value}{ret}\n```'
+                result = str(ret or value)
+                text = f'Run by shards {self.bot.shard_ids}```py\n{result}\n```'
                 if len(text) > 2000:
-                    await ctx.send(f'Run by shards {self.bot.shard_ids}', file=discord.File(io.StringIO(value), filename='ev.txt'))
+                    await ctx.send(f'Run by shards {self.bot.shard_ids}', file=discord.File(io.StringIO(result), filename='ev.txt'))
                 else:
                     await ctx.send(text)
 
