@@ -35,7 +35,7 @@ MarriageBot - {{ guild.name }} Settings
 </form> <!-- incest-allowed -->
 
 <form id="max-family-members" class="boxed">
-    <p>Maximum family memebrs - sets the maximum amount of members you can have in your family.</p>
+    <p>Maximum family members - sets the maximum amount of members you can have in your family.</p>
     <p><input name="amount" value="{{ max_family_members }}" placeholder="Maximum Family Members" max="2000" min="50" type="number"{% if not gold is none %} disabled{% endif %} />
     {% if gold is none %}<button type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button></p>
     {%- else %}<button type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button></p>{%- endif %}
