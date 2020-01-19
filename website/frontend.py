@@ -313,6 +313,10 @@ async def guild_settings_get_paypal(request:Request):
         for row in disable_data:
             disabled_commands[row['command_name']] = row['disabled']
 
+        # Get children amount
+        max_children_data = await db('SELECT * FROM max_children_amount WHERE guild_id=$1', int(guild_id))
+        max_children_amount = {i['role_id']: i['amount'] for i in max_children_data}
+
     # Get prefix
     try:
         prefix = guild_settings[0]['gold_prefix' if gold_param else 'prefix']
@@ -321,6 +325,7 @@ async def guild_settings_get_paypal(request:Request):
 
     # Get channel objects from the guild
     channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
+    roles = sorted([i for i in await guild_object.fetch_roles()], key=lambda c: c.position, reverse=True)
 
     # Get the normal bot data
     if gold_param:
@@ -343,12 +348,14 @@ async def guild_settings_get_paypal(request:Request):
     page_data = {
         'guild': guild_object,  # The guild object as we know it
         'prefix': prefix,  # The prefix for the bot
-        'channels': channels,  # The channels in the guild
+        'channels': channels,  # The channel objects for the guild
         'gold': gold_bot_data,  # Whether the guild has gold or not - 'None' for showing the gold page
         'normal': normal_bot_data,  # Whether the guild has the normal bot or not - 'None' for showing the normal page
         'max_family_members': guild_settings[0]['max_family_members'],  # Maximum amount of family members
         'allow_incest': guild_settings[0]['allow_incest'],  # Whether incest is allowed or not
         'disabled_commands': disabled_commands,  # The commands that are disabled
+        'roles': roles,  # The role objects for the guild
+        'max_children_amount': max_children_amount,  # Children amounts for this guild
     }
     return page_data
 

@@ -178,3 +178,11 @@ CREATE TABLE disabled_commands(
     disabled BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (command_name, guild_id)
 );
+
+
+CREATE TABLE max_children_amount(
+    guild_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    amount INTEGER DEFAULT 5,
+    PRIMARY KEY (guild_id, role_id)
+);

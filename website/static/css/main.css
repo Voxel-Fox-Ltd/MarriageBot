@@ -32,3 +32,7 @@ body {
     font-family: monospace;
     font-weight: bold;
 }
+
+label {
+    margin-left: 10px;
+}

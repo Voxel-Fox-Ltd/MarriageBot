@@ -56,13 +56,17 @@ MarriageBot - {{ guild.name }} Settings
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form> <!-- disabled-commands -->
 
-{# <form id="max-allowed-children" class="boxed">
-    <p>Maximum allowed children - the amount of children that people with a given role are allowed to have.</p>
-    <p><input name="amount" value="{{ max_family_members }}" placeholder="Maximum Family Members" max="2000" min="50" type="number"{% if not gold is none %} disabled{% endif %} />
-    {% if gold is none %}<button type="submit" formmethod="post" formaction="/set_max_allowed_children">Submit Prefix Change</button></p>
-    {%- else %}<button type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button></p>{%- endif %}
+<form id="max-allowed-children" class="boxed">
+    <p>Maximum allowed children - the amount of children that people with a given role are allowed to have. If a user has multiple of these roles, the one with the higest number will be used.</p>
+    <div>
+    {% for role in roles %}
+        <input id="role_max_children_{{ role.id }}" disabled name="{{ role.id }}" type="number" min="0" max="30" value="{{ max_children_amount.get(role.id, 5) }}" placeholder="Default - 5" /><label for="role_max_children_{{ role.id }}">{{ role.name }}</label><br />
+    {% endfor %}
+    </div>
+    <p>{% if gold is none %}<button disabled type="submit" formmethod="post" formaction="/set_max_allowed_children">Disabled for testing<!-- Submit Prefix Change --></button>
+    {%- else %}<button type="submit" formmethod="post" disabled>Disabled for testing<!-- Disabled for non-Gold bot --></button>{%- endif %}</p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
-</form> <!-- max-allowed-children --> #}
+</form> <!-- max-allowed-children -->
 
 {% endblock content %}
