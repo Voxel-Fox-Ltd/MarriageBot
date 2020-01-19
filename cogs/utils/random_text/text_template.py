@@ -52,7 +52,6 @@ def get_random_valid_string(func):
 def random_string_class_decorator(cls) -> 'TextTemplate':
     """Wraps around a random_text class and applies get_random_valid_string to all methods"""
 
-    @functools.wraps(cls)
     class Wrapper(object):
 
         original = cls
