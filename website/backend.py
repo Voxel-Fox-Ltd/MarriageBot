@@ -241,6 +241,46 @@ async def set_incest_enabled(request:Request):
     return HTTPFound(location=f'/guild_settings?guild_id={guild_id}&gold=1')
 
 
+@routes.post('/set_max_allowed_children')
+async def set_max_allowed_children(request:Request):
+    """Sets the max children for the guild"""
+
+    # See if they're logged in
+    session = await aiohttp_session.get_session(request)
+    post_data = await request.post()
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = post_data['guild_id']
+    if not guild_id:
+        return HTTPFound(location='/')
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not guild:
+        return HTTPFound(location='/')
+
+    # Get the maximum members
+    max_children_data = {int(i): min([max([int(o), 0]), request.app['config']['max_children'][-1]]) for i, o in post_data.items() if i.isdigit() and len(o) > 0}
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db('DELETE FROM max_children_amount WHERE guild_id=$1', int(guild_id))
+        for role_id, amount in max_children_data.items():
+            await db(
+                'INSERT INTO max_children_amount (guild_id, role_id, amount) VALUES ($1, $2, $3)',
+                int(guild_id), role_id, amount,
+            )
+    async with request.app['redis']() as re:
+        await re.publish_json('UpdateMaxChildren', {
+            'guild_id': int(guild_id),
+            'max_children': max_children_data,
+        })
+
+    # Redirect to page
+    return HTTPFound(location=f'/guild_settings?guild_id={guild_id}&gold=1')
+
+
 @routes.post('/webhooks/stripe/purchase_complete')
 async def stripe_purchase_complete(request:Request):
     """Handles Stripe throwing data my way"""

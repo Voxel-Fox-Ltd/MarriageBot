@@ -21,9 +21,9 @@ def get_prefix(bot, message:discord.Message):
 
     # Try and get their guild settings from the bot
     try:
-        settings = bot.guild_settings.get(message.guild.id, bot.DEFAULT_GUILD_SETTINGS)
+        settings = bot.guild_settings.get(message.guild.id, bot.DEFAULT_GUILD_SETTINGS.copy())
     except AttributeError:
-        settings = bot.DEFAULT_GUILD_SETTINGS
+        settings = bot.DEFAULT_GUILD_SETTINGS.copy()
     x = settings['prefix']
 
     # If we don't respect custom prefixes, go back to the default
@@ -196,11 +196,24 @@ class CustomBot(commands.AutoShardedBot):
             exit(1)
         self.logger.debug(f"Caching {len(all_settings)} guild settings")
         for items in all_settings:
-            current_settings = self.guild_settings[items]  # Get current (which should include defaults)
+            current_settings = self.guild_settings[items['guild_id']]  # Get current (which should include defaults)
             current_settings.update(**dict(items))  # Update from db
             if self.is_server_specific:
                 current_settings['prefix'] = current_settings['gold_prefix']
             self.guild_settings[items['guild_id']] = current_settings  # Cache
+
+        # Grab the max children amount
+        if self.is_server_specific:
+            try:
+                max_children_data = await db('SELECT * FROM max_children_amount WHERE (guild_id >> 22) % $1=ANY($2::INTEGER[])', self.shard_count, self.shard_ids)
+            except Exception as e:
+                self.logger.critical(f"Ran into an error selecting guild settings: {e}")
+                exit(1)
+            self.logger.debug(f"Caching {len(max_children_data)} max children settings")
+            for row in max_children_data:
+                current_settings = self.guild_settings[row['guild_id']]  # Get current (which should include defaults)
+                current_settings['max_children'][row['role_id']] = row['amount']
+                self.guild_settings[row['guild_id']] = current_settings  # Cache
 
         # Grab the last vote times of each user
         try:

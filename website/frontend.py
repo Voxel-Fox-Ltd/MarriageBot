@@ -356,6 +356,7 @@ async def guild_settings_get_paypal(request:Request):
         'disabled_commands': disabled_commands,  # The commands that are disabled
         'roles': roles,  # The role objects for the guild
         'max_children_amount': max_children_amount,  # Children amounts for this guild
+        'max_children_hard_cap': request.app['config']['max_children'][-1]  # Hard cap on children for all users
     }
     return page_data
 
