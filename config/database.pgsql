@@ -170,3 +170,11 @@ CREATE TABLE random_text(
     language_code VARCHAR(2),
     PRIMARY KEY (command_name, event_name, string, language_code)
 );
+
+
+CREATE TABLE disabled_commands(
+    command_name VARCHAR(50) NOT NULL,
+    guild_id BIGINT NOT NULL,
+    disabled BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (command_name, guild_id)
+);

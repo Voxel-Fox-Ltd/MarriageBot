@@ -4,6 +4,7 @@ bot_admin_role = 1  # The role ID for bot admins
 bot_id = 468281173072805889  # The ID of the bot
 patreon_roles = [ 1,]  # A list of role IDs for Patreon subscribers
 max_children = [ 5, 10, 15, 20, ]  # Default, *PatreonTier
+disableable_commands = ["hug", "kiss", "slap", "punch", "cookie", "nugget", "burger", "poke", "stab", "copulate"]
 max_family_members = 500  # The maximum amount of people you can have in a family
 owners = [ 141231597155385344,]  # A list of user IDs for owners
 presence_text = "m!help"  # The presence text used by default when the bot is ready
