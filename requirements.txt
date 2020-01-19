@@ -1,2 +1,7 @@
 discord.py[voice]
 toml
+asyncpg
+aiohttp
+aiohttp_jinja2
+aiohttp_session
+jinja2
