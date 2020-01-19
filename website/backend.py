@@ -136,9 +136,16 @@ async def set_prefix(request:Request):
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
-    prefix = post_data['prefix'][0:30]
 
-    # Get current prefix
+    # Grab the prefix they gave
+    prefix = post_data['prefix'][0:30]
+    if len(prefix) == 0:
+        if post_data['gold']:
+            prefix = request.app['gold_config']['prefix']['default_prefix']
+        else:
+            prefix = request.app['config']['prefix']['default_prefix']
+
+    # Update prefix in DB
     async with request.app['database']() as db:
         if post_data['gold']:
             await db('UPDATE guild_settings SET gold_prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
