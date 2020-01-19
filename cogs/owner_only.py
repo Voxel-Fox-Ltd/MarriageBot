@@ -3,6 +3,7 @@ import io
 import textwrap
 import contextlib
 import copy
+import json
 
 import discord
 from discord.ext import commands
@@ -96,10 +97,19 @@ class OwnerOnly(utils.Cog):
             # If the function did return a value
             else:
                 self._last_result = ret
-                result = str(ret or value)
-                text = f'Run by shards {self.bot.shard_ids}```py\n{result}\n```'
+                result_raw = ret or value
+                result = str(result_raw)
+                if type(result_raw) == dict:
+                    try:
+                        result = json.dumps(result_raw, indent=4)
+                    except Exception:
+                        pass
+                if type(result_raw) == dict and type(result) == str:
+                    text = f'Run by shards {self.bot.shard_ids}```json\n{result}\n```'
+                else:
+                    text = f'Run by shards {self.bot.shard_ids}```py\n{result_raw}\n```'
                 if len(text) > 2000:
-                    await ctx.send(f'Run by shards {self.bot.shard_ids}', file=discord.File(io.StringIO(result), filename='ev.txt'))
+                    await ctx.send(f'Run by shards {self.bot.shard_ids}', file=discord.File(io.StringIO(result_raw), filename='ev.txt'))
                 else:
                     await ctx.send(text)
 
