@@ -19,29 +19,20 @@ MarriageBot - {{ guild.name }} Settings
 </div>
 <form id="prefix" class="boxed">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
-    <p><input name="prefix" value="{{ prefix }}" placeholder="m!" maxlength="30" /></p>
-    <p><button type="submit" formmethod="post">Submit Prefix Change</button></p>
+    <p><input name="prefix" value="{{ prefix }}" placeholder="MarriageBot Prefix" maxlength="30" /></p>
+    <p><button type="submit" formmethod="post" formaction="/set_prefix">Submit Prefix Change</button></p>
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+    <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form> <!-- prefix -->
-{#
-<form id="blacklisted-channels">
-    <p>Blacklisted channels - the channels where you don't want the bot to run commands</p>
-    <span style="display: flex; flex-wrap: wrap;">
-        <style>
-        #blacklisted-channels .col {
-            width: 32%;
-        }
 
-        @media screen and (max-width: 576px) {
-            #blacklisted-channels .col {
-                width: 49%;
-            }
-        }
-        </style>
-
-        {% for channel in channels %}
-        <p class="col" style="margin: 6px 0;"><input type="checkbox" name="blacklisted-channel" value="{{ channel.id }}">#{{ channel.name }}</p>
-        {% endfor %}
-    </span>
+{% if gold is none %}
+<form id="max-family-members" class="boxed">
+    <p>Maximum family memebrs - sets the maximum amount of members you can have in your family.</p>
+    <p><input name="amount" value="{{ prefix }}" placeholder="Maximum Family Members" max="2000" min="50" type="number" /></p>
+    <p><button type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button></p>
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+    <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form>
-#}
+{% endif %}
+
 {% endblock content %}
