@@ -25,14 +25,13 @@ MarriageBot - {{ guild.name }} Settings
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form> <!-- prefix -->
 
-{% if gold is none %}
 <form id="max-family-members" class="boxed">
     <p>Maximum family memebrs - sets the maximum amount of members you can have in your family.</p>
-    <p><input name="amount" value="{{ prefix }}" placeholder="Maximum Family Members" max="2000" min="50" type="number" /></p>
-    <p><button type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button></p>
+    <p><input name="amount" value="{{ max_family_members }}" placeholder="Maximum Family Members" max="2000" min="50" type="number"{% if not gold is none %} disabled{% endif %} /></p>
+    {% if gold is none %}<p><button type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button></p>
+    {%- else %}<p><button type="submit" formmethod="post" formaction="/set_max_family_members" disabled>Disabled for non-Gold bot</button></p>{%- endif %}
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form>
-{% endif %}
 
 {% endblock content %}

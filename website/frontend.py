@@ -306,6 +306,7 @@ async def guild_settings_get_paypal(request:Request):
         'channels': channels,
         'gold': bool(mbg),
         'normal': None,
+        'max_family_members': guild_settings[0]['max_family_members'],
     }
 
 
@@ -371,6 +372,7 @@ async def guild_gold_settings_get(request:Request):
         'channels': channels,
         'gold': None,
         'normal': non_gold_in_guild,
+        'max_family_members': guild_settings[0]['max_family_members'],
     }
 
 

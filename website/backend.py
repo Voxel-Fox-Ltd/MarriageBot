@@ -161,6 +161,44 @@ async def set_prefix(request:Request):
     return HTTPFound(location=location)
 
 
+@routes.post('/set_max_family_members')
+async def set_max_family_members(request:Request):
+    """Sets the maximum family members for a given guild"""
+
+    # See if they're logged in
+    session = await aiohttp_session.get_session(request)
+    post_data = await request.post()
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    guild_id = post_data['guild_id']
+    if not guild_id:
+        return HTTPFound(location='/')
+
+    # Get the guilds they're valid to alter
+    all_guilds = session['guild_info']
+    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not guild:
+        return HTTPFound(location='/')
+
+    # Get the maximum members
+    try:
+        max_members = int(post_data['amount'])
+    except ValueError:
+        max_members = request.app['config']['max_family_members']
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db('UPDATE guild_settings SET max_family_members=$1 WHERE guild_id=$2', max_members, int(guild_id))
+    async with request.app['redis']() as re:
+        await re.publish_json('UpdateGuildMaxMembers', {
+            'guild_id': int(guild_id),
+            'max_family_members': max_members,
+        })
+
+    # Redirect to page
+    return HTTPFound(location=f'/guild_gold_settings?guild_id={guild_id}')
+
+
 @routes.post('/webhooks/stripe/purchase_complete')
 async def stripe_purchase_complete(request:Request):
     """Handles Stripe throwing data my way"""

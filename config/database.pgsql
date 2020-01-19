@@ -38,6 +38,7 @@ CREATE TABLE guild_settings(
     prefix VARCHAR(30) DEFAULT 'm!',
     gold_prefix VARCHAR(30) DEFAULT 'm.',
     allow_incest BOOLEAN DEFAULT FALSE,
+    max_family_members INTEGER DEFAULT 500,
     PRIMARY KEY (guild_id)
 );
 -- A config for a guild to change their prefix or other bot settings
