@@ -290,6 +290,8 @@ async def guild_settings_get_paypal(request:Request):
     # Get current prefix
     async with request.app['database']() as db:
         guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
+        if not guild_settings:
+            guild_settings = [request.app['bot'].DEFAULT_GUILD_SETTINGS.copy()]
         mbg = await db('SELECT * FROM guild_specific_families WHERE guild_id=$1', int(guild_id))
     try:
         prefix = guild_settings[0]['prefix']
@@ -307,6 +309,7 @@ async def guild_settings_get_paypal(request:Request):
         'gold': bool(mbg),
         'normal': None,
         'max_family_members': guild_settings[0]['max_family_members'],
+        'allow_incest': guild_settings[0]['allow_incest'],
     }
 
 
@@ -357,6 +360,8 @@ async def guild_gold_settings_get(request:Request):
     # Get current prefix
     async with request.app['database']() as db:
         guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
+        if not guild_settings:
+            guild_settings = [request.app['bot'].DEFAULT_GUILD_SETTINGS.copy()]
     try:
         prefix = guild_settings[0]['gold_prefix']
     except IndexError:
@@ -373,6 +378,7 @@ async def guild_gold_settings_get(request:Request):
         'gold': None,
         'normal': non_gold_in_guild,
         'max_family_members': guild_settings[0]['max_family_members'],
+        'allow_incest': guild_settings[0]['allow_incest'],
     }
 
 

@@ -19,19 +19,28 @@ MarriageBot - {{ guild.name }} Settings
 </div>
 <form id="prefix" class="boxed">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
-    <p><input name="prefix" value="{{ prefix }}" placeholder="MarriageBot Prefix" maxlength="30" /></p>
-    <p><button type="submit" formmethod="post" formaction="/set_prefix">Submit Prefix Change</button></p>
+    <p><input name="prefix" value="{{ prefix }}" placeholder="MarriageBot Prefix" maxlength="30" />
+    <button type="submit" formmethod="post" formaction="/set_prefix">Submit Prefix Change</button></p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form> <!-- prefix -->
 
-<form id="max-family-members" class="boxed">
-    <p>Maximum family memebrs - sets the maximum amount of members you can have in your family.</p>
-    <p><input name="amount" value="{{ max_family_members }}" placeholder="Maximum Family Members" max="2000" min="50" type="number"{% if not gold is none %} disabled{% endif %} /></p>
-    {% if gold is none %}<p><button type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button></p>
-    {%- else %}<p><button type="submit" formmethod="post" formaction="/set_max_family_members" disabled>Disabled for non-Gold bot</button></p>{%- endif %}
+<form id="incest-allowed" class="boxed">
+    <p>Incest - sets whether incest is allowed on your server.</p>
+    <p><input name="allowed"{% if allow_incest %} checked{% endif %} type="checkbox"{% if not gold is none %} disabled{% endif %} />
+    {% if gold is none %}<button type="submit" formmethod="post" formaction="/set_incest_enabled">Submit Incest Change</button></p>
+    {%- else %}<button type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button></p>{%- endif %}
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
-</form>
+</form> <!-- incest-allowed -->
+
+<form id="max-family-members" class="boxed">
+    <p>Maximum family memebrs - sets the maximum amount of members you can have in your family.</p>
+    <p><input name="amount" value="{{ max_family_members }}" placeholder="Maximum Family Members" max="2000" min="50" type="number"{% if not gold is none %} disabled{% endif %} />
+    {% if gold is none %}<button type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button></p>
+    {%- else %}<button type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button></p>{%- endif %}
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+    <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
+</form> <!-- max-family-members -->
 
 {% endblock content %}
