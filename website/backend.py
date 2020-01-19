@@ -146,7 +146,7 @@ async def set_prefix(request:Request):
             await db('UPDATE guild_settings SET prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
     async with request.app['redis']() as re:
         redis_data = {'guild_id': int(guild_id)}
-        redis_data[{True: 'gold_prefix', False: 'prefix'}[post_data['gold']]] = prefix
+        redis_data[{True: 'gold_prefix', False: 'prefix'}[bool(post_data['gold'])]] = prefix
         await re.publish_json('UpdateGuildPrefix', redis_data)
 
     # Redirect to page
