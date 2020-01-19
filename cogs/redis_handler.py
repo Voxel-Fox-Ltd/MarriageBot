@@ -26,6 +26,7 @@ class RedisHandler(utils.Cog):
             task(self.channel_handler('BlockedUserRemove', lambda data: bot.blocked_users[data['user_id']].remove(data['blocked_user_id']))),
             task(self.channel_handler('EvalAll', self.eval_all)),
             task(self.channel_handler('UpdateGuildPrefix', self.update_guild_prefix)),
+            task(self.channel_handler('UpdateFamilyMaxMembers', self.update_max_family_members)),
             task(self.channel_handler('SendUserMessage', self.send_user_message)),
         ]
         # if not self.bot.is_server_specific:
@@ -100,7 +101,15 @@ class RedisHandler(utils.Cog):
         prefix = data.get(key)
         if prefix is None:
             return
-        self.bot.guild_settings['prefix'] = prefix
+        self.bot.guild_settings[data['guild_id']]['prefix'] = prefix
+
+    def update_max_family_members(self, data):
+        """Updates the max number of family members for the guild"""
+
+        prefix = data.get('max_family_members')
+        if prefix is None:
+            return
+        self.bot.guild_settings[data['guild_id']]['max_family_members'] = prefix
 
     async def send_user_message(self, data):
         """Sends a message to a given user"""

@@ -190,7 +190,7 @@ async def set_max_family_members(request:Request):
     async with request.app['database']() as db:
         await db('UPDATE guild_settings SET max_family_members=$1 WHERE guild_id=$2', max_members, int(guild_id))
     async with request.app['redis']() as re:
-        await re.publish_json('UpdateGuildMaxMembers', {
+        await re.publish_json('UpdateFamilyMaxMembers', {
             'guild_id': int(guild_id),
             'max_family_members': max_members,
         })

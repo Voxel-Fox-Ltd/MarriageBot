@@ -40,7 +40,7 @@ class Parentage(utils.Cog):
             return await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
 
         # Check the size of their trees
-        max_family_members = self.bot.config['max_family_members']
+        max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members']
         async with ctx.channel.typing():
             if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
                 return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
@@ -115,7 +115,7 @@ class Parentage(utils.Cog):
             return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
 
         # Check the size of their trees
-        max_family_members = self.bot.config['max_family_members']
+        max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members']
         async with ctx.channel.typing():
             if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
                 return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
