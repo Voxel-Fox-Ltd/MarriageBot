@@ -96,6 +96,16 @@ class CustomBot(commands.AutoShardedBot):
 
         return (dt.now() - self.startup_time).total_seconds()
 
+    async def get_context(self, message, *, cls=commands.Context):
+        """Gently insert a new original_author field into the context"""
+
+        ctx = await super().get_context(message, cls=cls)
+        if ctx.guild:
+            ctx.original_author = ctx.guild.get_member(message.author.id)
+        else:
+            ctx.original_author = self.get_user(message.author.id)
+        return ctx
+
     def get_extensions(self) -> list:
         """Gets a list of filenames of all the loadable cogs"""
 
