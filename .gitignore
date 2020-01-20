@@ -3,3 +3,4 @@ config/config.toml
 _*.py
 !__*.py
 *.code-*
+.vscode

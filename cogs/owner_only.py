@@ -1,9 +1,10 @@
-from traceback import format_exc
-from io import StringIO
-from textwrap import indent
-from contextlib import redirect_stdout
+import traceback
+import io
+import textwrap
+import contextlib
 import copy
 import collections
+import json
 
 import discord
 from discord.ext import commands
@@ -27,7 +28,7 @@ class OwnerOnly(utils.Cog):
 
         await user.send(content)
 
-    def cleanup_code(self, content):
+    def _cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
 
         # remove ```py\n```
@@ -39,14 +40,12 @@ class OwnerOnly(utils.Cog):
         # remove `foo`
         return content.strip('` \n')
 
-    @commands.command(cls=utils.Command)
+    @commands.command(aliases=['evall'])
     async def ev(self, ctx:utils.Context, *, content:str):
-        """
-        Evaluates some Python code
+        """Evaluates some Python code
 
-        Gratefully stolen from Rapptz ->
-        https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L72-L117
-        """
+        Gracefully stolen from Rapptz ->
+        https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/admin.py#L72-L117"""
 
         # Make the environment
         env = {
@@ -61,13 +60,13 @@ class OwnerOnly(utils.Cog):
         env.update(globals())
 
         # Make code and output string
-        content = self.cleanup_code(content)
-        stdout = StringIO()
-        to_compile = f'async def func():\n{indent(content, "  ")}'
+        content = self._cleanup_code(content)
+        code = f'async def func():\n{textwrap.indent(content, "  ")}'
 
         # Make the function into existence
+        stdout = io.StringIO()
         try:
-            exec(to_compile, env)
+            exec(code, env)
         except Exception as e:
             return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
 
@@ -75,21 +74,18 @@ class OwnerOnly(utils.Cog):
         func = env['func']
         try:
             # Shove stdout into StringIO
-            with redirect_stdout(stdout):
+            with contextlib.redirect_stdout(stdout):
                 ret = await func()
         except Exception as e:
             # Oh no it caused an error
             value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{format_exc()}\n```')
+            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
             # Oh no it didn't cause an error
             value = stdout.getvalue()
 
             # Give reaction just to show that it ran
-            try:
-                await ctx.message.add_reaction('\u2705')
-            except:
-                pass
+            await ctx.message.add_reaction("\N{OK HAND SIGN}")
 
             # If the function returned nothing
             if ret is None:
@@ -99,10 +95,22 @@ class OwnerOnly(utils.Cog):
 
             # If the function did return a value
             else:
-                text = f'```py\n{value}{ret}\n```'
+                self._last_result = ret
+                result_raw = ret or value
+                result = str(result_raw)
+                if type(result_raw) == dict:
+                    try:
+                        result = json.dumps(result_raw, indent=4)
+                    except Exception:
+                        pass
+                if type(result_raw) == dict and type(result) == str:
+                    text = f'```json\n{result}\n```'
+                else:
+                    text = f'```py\n{result_raw}\n```'
                 if len(text) > 2000:
-                    return await ctx.send(file=discord.File(StringIO('\n'.join(text.split('\n')[1:-1])), filename='ev.txt'))
-                await ctx.send(text)
+                    await ctx.send(file=discord.File(io.StringIO(result_raw), filename='ev.txt'))
+                else:
+                    await ctx.send(text)
 
     @commands.command(aliases=['rld'], cls=utils.Command)
     async def reload(self, ctx:utils.Context, *cog_name:str):
@@ -118,57 +126,44 @@ class OwnerOnly(utils.Cog):
                 # self.bot.load_extension(cog_name)
                 self.bot.reload_extension(cog_name)
             except Exception:
-                await ctx.send('```py\n' + format_exc() + '```')
+                await ctx.send('```py\n' + traceback.format_exc() + '```')
                 return
         except Exception:
-            await ctx.send('```py\n' + format_exc() + '```')
+            await ctx.send('```py\n' + traceback.format_exc() + '```')
             return
         await ctx.send('Cog reloaded.')
 
-    @commands.command(cls=utils.Command)
+    @commands.command()
     async def runsql(self, ctx:utils.Context, *, content:str):
-        """Throws some SQL into the database handler"""
+        """Runs a line of SQL into the sparcli database"""
 
-        # Run SQL
+        # Grab data
         async with self.bot.database() as db:
-            data = await db(content)
+            database_data = await db(content) or 'No content.'
 
-        # Give reaction just to show that it ran
-        try:
-            await ctx.message.add_reaction('\u2705')
-        except:
-            if data is None:
-                return await ctx.send("No content.")
-        if data is None:
+        # Single line output
+        if type(database_data) in [str, type(None)]:
+            await ctx.send(database_data)
             return
 
-        # Set up our column groups
-        column_headers = list(data[0].keys())
-        column_length = collections.defaultdict(int)
-        column_data = collections.defaultdict(list)
-
-        # Work out what goes in our columns
-        for row in data:
-            for row_header, row_data in row.items():
-                column_length[row_header] = max([column_length[row_header], len(data), len(row_header)])
-                column_data[row_header].append(row_data)
-
-        # Build our output
-        output_lines = ['|'.join([format(i, f"<{column_length[i]}") for i in column_headers])]  # Set up headers
-        output_lines.append('|'.join([column_length[i] * '-' for i in column_headers]))  # Set up header divider
-        for index in range(len(column_data[column_headers[0]])):
-            line_builder = []
+        # Get columns and widths
+        column_headers = list(database_data[0].keys())
+        column_max_lengths = {i:0 for i in column_headers}
+        for row in database_data:
             for header in column_headers:
-                line = column_data[header][index]
-                line_builder.append(format(line, f"<{column_length[header]}"))
-            output_lines.append('|'.join(line_builder))
+                column_max_lengths[header] = max(column_max_lengths[header], len(str(row[header])))
 
-        # Send to user
-        value = '\n'.join(output_lines)
-        text = f'```py\n{value}\n```'
-        if len(text) > 2000:
-            return await ctx.send(file=discord.File(StringIO(value), filename='runsql.txt'))
-        await ctx.send(text)
+        # Sort our output
+        output = []  # List of lines
+        current_line = ""
+        for row in [{i:i for i in column_headers}] + list(database_data):
+            for header in column_headers:
+                current_line += format(str(row[header]), f"<{column_max_lengths[header]}") + '|'
+            output.append(current_line.strip('| '))
+
+        # Send it to user
+        string_output = '\n'.join(output)
+        await ctx.send('```\n{}```'.format(string_output))
 
     @commands.group(cls=utils.Group)
     async def profile(self, ctx:utils.Context):
