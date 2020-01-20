@@ -72,6 +72,14 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.MissingRole):
             return await ctx.send(f"You need to have the `{error.missing_role}` role to run this command.")
 
+        # Guild only
+        elif isinstance(error, commands.NoPrivateMessage):
+            return await ctx.send(f"This command can't be run in DMs.")
+
+        # DMs only
+        elif isinstance(error, commands.PrivateMessageOnly):
+            return await ctx.send(f"This command can only be run in DMs.")
+
         # Not owner
         elif isinstance(error, commands.NotOwner):
             return await ctx.send("You need to be registered as an owner to run this command.")

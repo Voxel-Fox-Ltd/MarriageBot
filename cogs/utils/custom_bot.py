@@ -5,6 +5,7 @@ import logging
 from urllib.parse import urlencode
 import os
 import asyncio
+import collections
 
 import aiohttp
 import discord
@@ -16,7 +17,10 @@ from cogs.utils.database import DatabaseConnection
 def get_prefix(bot, message:discord.Message):
     """Gives the prefix for the bot - override this to make guild-specific prefixes"""
 
-    return commands.when_mentioned_or(bot.config['default_prefix'])(bot, message)
+    if message.guild is None:
+        return commands.when_mentioned_or(bot.config['default_prefix'])(bot, message)
+    prefix = bot.guild_settings[message.guild.id]['prefix'] or bot.config['default_prefix']
+    return commands.when_mentioned_or(prefix)(bot, message)
 
 
 class CustomBot(commands.AutoShardedBot):
@@ -32,6 +36,11 @@ class CustomBot(commands.AutoShardedBot):
         self.logger = logger or logging.getLogger("bot")
         self.reload_config()
 
+        # Set up our default guild settings
+        self.DEFAULT_GUILD_SETTINGS = {
+            'prefix': self.config['default_prefix'],
+        }
+
         # Aiohttp session
         self.session = aiohttp.ClientSession(loop=self.loop)
 
@@ -42,6 +51,9 @@ class CustomBot(commands.AutoShardedBot):
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
         self.startup_method = None
+
+        # Here's the storage for cached stuff
+        self.guild_settings = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
 
     def get_invite_link(self, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
