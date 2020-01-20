@@ -22,9 +22,9 @@
             </li> #}
         </ul>
         <form class="form-inline">
-            {%- if session.username -%}
+            {%- if session.user_id -%}
                 <div class="form-group">
-                    <img src="{{ session.user_info.avatar_url }}" alt="Your Discord avatar" />
+                    <img class="discord-avatar mr-2" src="{{ session.user_info.avatar_url }}" alt="Your Discord avatar" />
                 </div>
                 {{ button("/logout", "Logout") }}
             {%- else -%}
