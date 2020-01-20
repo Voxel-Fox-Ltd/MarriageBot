@@ -74,6 +74,7 @@ async def process_discord_login(request:Request, oauth_scopes:list=None):
             user_info['avatar_url'] = get_avatar(user_info)
             session_storage['user_info'] = user_info
             session_storage['user_id'] = int(user_info['id'])
+            session_storage['logged_in'] = True
 
         # Get guilds
         # if "guilds" in oauth_scopes:
