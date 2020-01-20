@@ -21,10 +21,8 @@ logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
 logger = logging.getLogger('website')
 logger.setLevel(logging.INFO)
 
-
 # Filter warnings
 warnings.filterwarnings('ignore', category=RuntimeWarning)
-
 
 # Parse arguments
 parser = argparse.ArgumentParser()
@@ -33,11 +31,9 @@ parser.add_argument("--host", type=str, default='0.0.0.0', help="The host IP to 
 parser.add_argument("--port", type=int, default=8080, help="The port to run the webserver on.")
 args = parser.parse_args()
 
-
 # Read config
 with open(args.config_file) as a:
     config = toml.load(a)
-
 
 # Create website object - don't start based on argv
 app = Application(loop=asyncio.get_event_loop())
