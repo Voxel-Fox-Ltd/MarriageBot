@@ -1,5 +1,11 @@
 {% extends "layout/html.j2" %}
 
+{% macro button(action, text) -%}
+    <button class="btn btn-outline-success" type="submit" formaction="{{ action }}">
+        {{ text }}
+    </button>
+{%- endmacro %}
+
 {%- block navbar -%}
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
 
@@ -18,14 +24,11 @@
         <form class="form-inline">
             {%- if session.username -%}
                 <div class="form-group">
+                    <img src="{{ session.user_info.avatar_url }}" alt="Your Discord avatar" />
                 </div>
-                <button class="btn btn-outline-success" type="submit" formaction="/logout">
-                    Logout
-                </button>
+                {{ button("/logout", "Logout") }}
             {%- else -%}
-                <button class="btn btn-outline-success" type="submit" formaction="/discord_oauth_login">
-                    Login
-                </button>
+                {{ button("/discord_oauth_login", "Login") }}
             {%- endif -%}
         </form>
     </div>

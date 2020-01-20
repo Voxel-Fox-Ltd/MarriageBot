@@ -50,7 +50,7 @@ async def process_discord_login(request:Request, oauth_scopes:list=None):
     }
 
     # Make session so we can do stuff with it
-    session_storage = await aiohttp_session.new_session(request)
+    session_storage = await aiohttp_session.get_session(request)
 
     # Make the request
     async with aiohttp.ClientSession(loop=request.loop) as session:
@@ -64,19 +64,46 @@ async def process_discord_login(request:Request, oauth_scopes:list=None):
         headers.update({
             "Authorization": f"{token_info['token_type']} {token_info['access_token']}"
         })
+        session_storage['token_info'] = token_info
 
         # Get user
         if "identify" in oauth_scopes:
             user_url = f"https://discordapp.com/api/v6/users/@me"
             async with session.get(user_url, headers=headers) as r:
                 user_info = await r.json()
-            user_info['avatar_link'] = get_avatar(user_info)
+            user_info['avatar_url'] = get_avatar(user_info)
             session_storage['user_info'] = user_info
             session_storage['user_id'] = int(user_info['id'])
 
         # Get guilds
-        if "guilds" in oauth_scopes:
-            guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
-            async with session.get(guilds_url, headers=headers) as r:
-                guild_info = await r.json()
-            session_storage['guild_info'] = guild_info
+        # if "guilds" in oauth_scopes:
+        #     guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
+        #     async with session.get(guilds_url, headers=headers) as r:
+        #         guild_info = await r.json()
+        #     session_storage['guild_info'] = [
+        #         {o: i[o] for o in ['id', 'name', 'icon', 'permissions', 'owner']} for i in guild_info
+        #     ]
+
+async def get_user_guilds(request:Request):
+    """Process the login from Discord and store relevant data in the session"""
+
+    # Get auth
+    session_storage = await aiohttp_session.get_session(request)
+    token_info = session_storage['token_info']
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': f'{token_info["token_type"]} {token_info["access_token"]}'
+    }
+
+    # Make the request
+    async with aiohttp.ClientSession(loop=request.loop) as session:
+
+        # Get guilds
+        guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
+        async with session.get(guilds_url, headers=headers) as r:
+            guild_info = await r.json()
+
+    return guild_info
+    # session_storage['guild_info'] = [
+    #     {o: i[o] for o in ['id', 'name', 'icon', 'permissions', 'owner']} for i in guild_info
+    # ]

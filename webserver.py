@@ -6,7 +6,7 @@ import logging
 
 from aiohttp.web import Application, AppRunner, TCPSite
 from aiohttp_jinja2 import setup as jinja_setup
-from aiohttp_session import setup as session_setup
+from aiohttp_session import setup as session_setup, SimpleCookieStorage
 from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
 from jinja2 import FileSystemLoader
 import toml
@@ -37,12 +37,13 @@ with open(args.config_file) as a:
 
 # Create website object - don't start based on argv
 app = Application(loop=asyncio.get_event_loop())
-app.add_routes(website.frontend_routes)
-app.add_routes(website.backend_routes)
-app.router.add_static('/static', os.getcwd() + '/website/static', append_version=True)
 app['static_root_url'] = '/static'
+session_setup(app, ECS(os.urandom(32), max_age=1000000))  # Encrypted cookies
+# session_setup(app, SimpleCookieStorage(max_age=1000000))  # Simple cookies DEBUG ONLY
 jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
-session_setup(app, ECS(os.urandom(32)))
+app.router.add_routes(website.frontend_routes)
+app.router.add_routes(website.backend_routes)
+app.router.add_static('/static', os.getcwd() + '/website/static', append_version=True)
 
 # Add our connections
 app['database'] = utils.DatabaseConnection
