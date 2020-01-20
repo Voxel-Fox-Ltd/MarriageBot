@@ -10,11 +10,12 @@ from website.utils.get_avatar import get_avatar
 DISCORD_OAUTH_URL = 'https://discordapp.com/api/oauth2/authorize?'
 
 
-def get_discord_login_url(request:Request, redirect_uri:str, oauth_scopes:list=list(["identify", "guilds"])):
+def get_discord_login_url(request:Request, redirect_uri:str, oauth_scopes:list=None):
     """Get a valid URL for a user to use to login to the website"""
 
     config = request.app['config']
     oauth_data = config['oauth']
+    oauth_scopes = oauth_scopes or ["identify", "guilds"]
     return DISCORD_OAUTH_URL + urlencode({
         'redirect_uri': redirect_uri,
         'scope': ' '.join(oauth_scopes),
@@ -23,7 +24,7 @@ def get_discord_login_url(request:Request, redirect_uri:str, oauth_scopes:list=l
     })
 
 
-async def process_discord_login(request:Request, oauth_scopes:list=list(["identify", "guilds"])):
+async def process_discord_login(request:Request, oauth_scopes:list=None):
     """Process the login from Discord and store relevant data in the session"""
 
     # Get the code
@@ -36,6 +37,7 @@ async def process_discord_login(request:Request, oauth_scopes:list=list(["identi
     oauth_data = config['oauth']
 
     # Generate the post data
+    oauth_scopes = oauth_scopes or ["identify", "guilds"]
     data = {
         'grant_type': 'authorization_code',
         'code': code,
