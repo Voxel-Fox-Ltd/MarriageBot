@@ -1,6 +1,7 @@
 __pycache__
-config/config.toml
-_*.py
-!__*.py
+*.toml
+!*.example*
+_*
+!__
 *.code-*
 .vscode

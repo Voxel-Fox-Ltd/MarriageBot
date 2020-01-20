@@ -60,10 +60,12 @@ async def process_discord_login(request:Request, oauth_scopes:list=None):
         async with session.post(token_url, data=data, headers=headers) as r:
             token_info = await r.json()
 
-        # Get user
+        # Update headers
         headers.update({
             "Authorization": f"{token_info['token_type']} {token_info['access_token']}"
         })
+
+        # Get user
         if "identify" in oauth_scopes:
             user_url = f"https://discordapp.com/api/v6/users/@me"
             async with session.get(user_url, headers=headers) as r:
