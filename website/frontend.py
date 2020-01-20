@@ -8,7 +8,7 @@ routes = RouteTableDef()
 
 
 @routes.get("/")
-@template('index.jinja')
+@template('index.j2')
 @webutils.add_output_args()
 async def index(request:Request):
     """Index of the website"""

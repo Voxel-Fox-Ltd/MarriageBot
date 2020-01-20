@@ -1,4 +1,4 @@
-{% extends "html.jinja" %}
+{% extends "html.j2" %}
 
 {%- block navbar -%}
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
@@ -17,8 +17,10 @@
         </ul>
         <form class="form-inline">
             {%- if session.username -%}
+                <div class="form-group">
+                </div>
                 <button class="btn btn-outline-success" type="submit" formaction="/logout">
-                    {{ session.username }} - Logout
+                    Logout
                 </button>
             {%- else -%}
                 <button class="btn btn-outline-success" type="submit" formaction="/discord_oauth_login">
