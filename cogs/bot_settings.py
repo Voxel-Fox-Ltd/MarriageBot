@@ -12,8 +12,11 @@ class BotSettings(utils.Cog):
     async def prefix(self, ctx:utils.Context, *, new_prefix:str):
         """Changes the prefix that the bot uses"""
 
+        # Validate prefix
         if len(new_prefix) > 30:
             return await ctx.send(f"The maximum length a prefix can be is 30 characters.")
+
+        # Store setting
         self.bot.guild_settings[ctx.guild.id]['prefix'] = new_prefix
         async with self.bot.database() as db:
             try:

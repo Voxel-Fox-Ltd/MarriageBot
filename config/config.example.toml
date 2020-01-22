@@ -1,6 +1,8 @@
 token = "BOT TOKEN HERE"
 owners = [ 141231597155385344, ]
 default_prefix = "!"  # The prefix for the bot's commands
+
+[command_data]
 guild_invite = ""
 github = ""
 

@@ -55,17 +55,22 @@ class CustomBot(commands.AutoShardedBot):
         # Here's the storage for cached stuff
         self.guild_settings = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
 
-    def get_invite_link(self, **kwargs):
+    def get_invite_link(self, *, join_server_redirect_uri:str=None, guild_id:int=None, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
 
         permissions = discord.Permissions()
         for name, value in kwargs.items():
             setattr(permissions, name, value)
-        return 'https://discordapp.com/oauth2/authorize?' + urlencode({
-            'client_id': self.user.id,
+        data = {
+            'client_id': self.config.get('oauth', {}).get('client_id', None) or self.user.id,
             'scope': 'bot',
             'permissions': permissions.value
-        })
+        }
+        if join_server_redirect_uri:
+            data['redirect_uri'] = join_server_redirect_uri
+        if guild_id:
+            data['guild_id'] = guild_id
+        return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)
 
     @property
     def owner_ids(self) -> list:
