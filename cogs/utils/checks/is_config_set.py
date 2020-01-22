@@ -12,8 +12,11 @@ def is_config_set(*config_keys):
 
     def predicate(ctx:commands.Context):
         working_config = ctx.bot.config
-        for key in config_keys:
-            working_config = working_config[key]
+        try:
+            for key in config_keys:
+                working_config = working_config[key]
+        except KeyError:
+            raise ConfigNotSet()
         if working_config in [None, ""]:
             ctx.bot.logger.warning(f"No config is set for {'.'.join(config_keys)}")
             raise ConfigNotSet
