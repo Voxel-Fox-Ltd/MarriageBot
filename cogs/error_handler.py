@@ -92,6 +92,6 @@ class ErrorHandler(utils.Cog):
         raise error
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = ErrorHandler(bot)
     bot.add_cog(x)

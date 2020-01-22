@@ -3,7 +3,7 @@ from cogs import utils
 
 class EmbedMaker(utils.Cog):
 
-    def __init__(self, bot:utils.CustomBot):
+    def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self.load_last_created_embed = {}
 
@@ -223,6 +223,6 @@ class EmbedMaker(utils.Cog):
         return last_data['content'], last_data['embed']
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = EmbedMaker(bot)
     bot.add_cog(x)

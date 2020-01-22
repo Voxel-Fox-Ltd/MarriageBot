@@ -32,6 +32,6 @@ class Misc(utils.Cog):
         await ctx.send(content)
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = Misc(bot)
     bot.add_cog(x)

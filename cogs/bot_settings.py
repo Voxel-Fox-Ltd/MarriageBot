@@ -26,7 +26,7 @@ class BotSettings(utils.Cog):
         await ctx.send(f"My prefix has been updated to `{new_prefix}`.")
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = BotSettings(bot)
     bot.add_cog(x)
 

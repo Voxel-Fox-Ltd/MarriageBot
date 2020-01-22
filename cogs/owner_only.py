@@ -234,6 +234,6 @@ class OwnerOnly(utils.Cog):
         await ctx.message.add_reaction("\N{OK HAND SIGN}")
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = OwnerOnly(bot)
     bot.add_cog(x)

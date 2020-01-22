@@ -91,7 +91,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
 
 class Help(utils.Cog):
 
-    def __init__(self, bot:utils.CustomBot):
+    def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self._original_help_command = bot.help_command
         bot.help_command = CustomHelpCommand()
@@ -101,6 +101,6 @@ class Help(utils.Cog):
         self.bot.help_command = self._original_help_command
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = Help(bot)
     bot.add_cog(x)

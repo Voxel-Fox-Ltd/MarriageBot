@@ -67,7 +67,7 @@ if args.shardcount is not None and not (args.min is not None and args.max is not
     exit(1)
 
 # Okay cool make the bot object
-bot = utils.CustomBot(
+bot = utils.Bot(
     config_file=args.config_file,
     activity=discord.Game(name="Reconnecting..."),
     status=discord.Status.dnd,

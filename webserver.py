@@ -53,7 +53,7 @@ utils.DatabaseConnection.logger = logger.getChild("db")
 app['config'] = config
 
 # Add our bots
-app['bot'] = utils.CustomBot(config_file=args.config_file, logger=logger.getChild("bot"))
+app['bot'] = utils.Bot(config_file=args.config_file, logger=logger.getChild("bot"))
 
 
 if __name__ == '__main__':
