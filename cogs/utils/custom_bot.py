@@ -68,7 +68,7 @@ class CustomBot(commands.AutoShardedBot):
         })
 
     @property
-    def owners(self) -> list:
+    def owner_ids(self) -> list:
         """Gives you a list of the owner IDs"""
 
         return self.config['owners']
