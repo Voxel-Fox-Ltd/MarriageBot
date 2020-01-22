@@ -34,7 +34,7 @@ class OwnerOnly(utils.Cog):
         # remove `foo`
         return content.strip('` \n')
 
-    @commands.command(aliases=['evall'])
+    @commands.command(aliases=['evall'], cls=utils.Command)
     @commands.is_owner()
     async def ev(self, ctx:utils.Context, *, content:str):
         """Evaluates some Python code
@@ -129,7 +129,7 @@ class OwnerOnly(utils.Cog):
             return
         await ctx.send('Cog reloaded.')
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @commands.is_owner()
     async def runsql(self, ctx:utils.Context, *, content:str):
         """Runs a line of SQL into the sparcli database"""
