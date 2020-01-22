@@ -42,7 +42,7 @@ class ErrorHandler(utils.Cog):
 
         # Missing argument
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await ctx.send("You need to specify a person for this command to work properly.")
+            return await ctx.send(f"You're missing the argument `{error.param.name}` which is required for this command to work properly.")
 
         # Argument conversion error
         elif isinstance(error, commands.BadArgument):
