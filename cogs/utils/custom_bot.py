@@ -28,13 +28,17 @@ class CustomBot(commands.AutoShardedBot):
     doing my own stuff"""
 
     def __init__(self, config_file:str='config/config.toml', logger:logging.Logger=None, *args, **kwargs):
-        super().__init__(command_prefix=get_prefix, *args, **kwargs)
+        """The initialiser for the bot object
+        Note that we load the config before running the original method"""
 
         # Store the config file for later
         self.config = None
         self.config_file = config_file
         self.logger = logger or logging.getLogger("bot")
         self.reload_config()
+
+        # Run original
+        super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
         # Set up our default guild settings
         self.DEFAULT_GUILD_SETTINGS = {
@@ -77,6 +81,12 @@ class CustomBot(commands.AutoShardedBot):
         """Gives you a list of the owner IDs"""
 
         return self.config['owners']
+
+    @owner_ids.setter
+    def owner_ids(self, value):
+        """A setter method so that the original bot object doesn't complain"""
+
+        pass
 
     async def startup(self):
         """Clears all the bot's caches and fills them from a DB read"""
