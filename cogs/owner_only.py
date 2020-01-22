@@ -225,6 +225,14 @@ class OwnerOnly(utils.Cog):
         new_ctx = await self.bot.get_context(msg, cls=type(ctx))
         await self.bot.invoke(new_ctx)
 
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
+    async def addreaction(self, ctx, message:discord.Message, reaction:str):
+        """Adds a reaction to a message"""
+
+        await message.add_reaction(reaction)
+        await ctx.message.add_reaction("\N{OK HAND SIGN}")
+
 
 def setup(bot:utils.CustomBot):
     x = OwnerOnly(bot)
