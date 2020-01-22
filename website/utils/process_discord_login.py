@@ -76,14 +76,6 @@ async def process_discord_login(request:Request, oauth_scopes:list=None):
             session_storage['user_id'] = int(user_info['id'])
             session_storage['logged_in'] = True
 
-        # Get guilds
-        # if "guilds" in oauth_scopes:
-        #     guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
-        #     async with session.get(guilds_url, headers=headers) as r:
-        #         guild_info = await r.json()
-        #     session_storage['guild_info'] = [
-        #         {o: i[o] for o in ['id', 'name', 'icon', 'permissions', 'owner']} for i in guild_info
-        #     ]
 
 async def get_user_guilds(request:Request):
     """Process the login from Discord and store relevant data in the session"""
@@ -105,6 +97,3 @@ async def get_user_guilds(request:Request):
             guild_info = await r.json()
 
     return guild_info
-    # session_storage['guild_info'] = [
-    #     {o: i[o] for o in ['id', 'name', 'icon', 'permissions', 'owner']} for i in guild_info
-    # ]
