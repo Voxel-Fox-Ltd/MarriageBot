@@ -76,8 +76,7 @@ class Cooldown(commands.Cooldown):
     default_cooldown_error = commands.CommandOnCooldown
     __slots__ = ('rate', 'per', 'type', 'error', '_window', '_tokens', '_last')
 
-    def __init__(self, rate, per, type, *, error=None):
-        super().__init__(rate, per, type)
+    def __init__(self, error=None):
         self.error = error or commands.CommandOnCooldown
 
     def predicate(self, message:discord.Message) -> bool:
@@ -138,7 +137,7 @@ class Cooldown(commands.Cooldown):
         return self
 
 
-def cooldown(rate, per, type=commands.BucketType.default, *, cls:commands.Cooldown=Cooldown, mapping:commands.CooldownMapping=None):
+def cooldown(rate, per, type=commands.BucketType.default, *, cls:commands.Cooldown=None, mapping:commands.CooldownMapping=None):
     """A decorator that adds a cooldown to a :class:`.Command`
     or its subclasses.
 
@@ -169,6 +168,9 @@ def cooldown(rate, per, type=commands.BucketType.default, *, cls:commands.Cooldo
     type: ``BucketType``
         The type of cooldown to have.
     """
+
+    if cls is None:
+        cls = Cooldown()
 
     def decorator(func):
         if isinstance(func, commands.Command):
