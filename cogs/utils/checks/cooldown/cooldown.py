@@ -120,6 +120,11 @@ class Cooldown(commands.Cooldown):
     def __call__(self, rate:float, per:int, type:commands.BucketType) -> None:
         """Runs the __init__ method so that you can pass an initiated class straight into @cooldown"""
 
+        try:
+            if self.type:
+                type = self.type
+        except AttributeError:
+            pass
         super().__init__(rate, per, type)
         return self
 
