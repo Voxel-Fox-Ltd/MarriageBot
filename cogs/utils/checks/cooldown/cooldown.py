@@ -14,6 +14,8 @@ class Cooldown(commands.Cooldown):
             How many times the command can be called (rate) in a given amount of time (per) before being applied
         type : discord.ext.commands.BucketType
             How the cooldown should be applied
+        error : discord.ext.commands.CommandOnCooldown
+            The error that should be raised when the cooldown is triggered
 
     Attrs:
         _window : float
@@ -24,11 +26,12 @@ class Cooldown(commands.Cooldown):
             The time (time.time(), Unix timestamp) that the command was last sucessfully called at
     """
 
-    __slots__ = ('rate', 'per', 'type', '_window', '_tokens', '_last')
+    __slots__ = ('rate', 'per', 'type', 'error', '_window', '_tokens', '_last')
 
 
-    def __init__(self, rate:int, per:float, type:commands.BucketType):
+    def __init__(self, rate:int, per:float, type:commands.BucketType, *, error:commands.CommandOnCooldown=None):
         super().__init__(rate, per, type)
+        self.error = error or commands.CommandOnCooldown
 
     def get_tokens(self, current:float=None) -> int:
         """Gets the number of command calls that can still be made before hitting the rate limit

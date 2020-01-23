@@ -12,12 +12,21 @@ class CustomCommand(commands.Command):
 
         if self.ignore_checks_in_help:
             return True
+        return await super().can_run(ctx)
+        # try:
+        #     return await super().can_run(ctx)
+        # except commands.CommandOnCooldown:
+        #     return True
+        # except commands.CommandError as e:
+        #     raise e
+
+    def _prepare_cooldowns(self, ctx:commands.Context):
+        """Prepares all the cooldowns for the command to be called"""
+
         try:
-            return await super().can_run(ctx)
-        except commands.CommandOnCooldown:
-            return True
-        except commands.CommandError as e:
-            raise e
+            super()._prepare_cooldowns(ctx)
+        except commands.CommandOnCooldown as e:
+            raise getattr(e.cooldown, error(e.cooldown, e.retry_after), e)
 
 
 class CustomGroup(commands.Group):
