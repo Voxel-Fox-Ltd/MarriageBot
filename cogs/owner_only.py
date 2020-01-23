@@ -101,9 +101,9 @@ class OwnerOnly(utils.Cog):
                 if type(result_raw) == dict and type(result) == str:
                     text = f'```json\n{result}\n```'
                 else:
-                    text = f'```py\n{result_raw}\n```'
+                    text = f'```py\n{result}\n```'
                 if len(text) > 2000:
-                    await ctx.send(file=discord.File(io.StringIO(result_raw), filename='ev.txt'))
+                    await ctx.send(file=discord.File(io.StringIO(result), filename='ev.txt'))
                 else:
                     await ctx.send(text)
 
