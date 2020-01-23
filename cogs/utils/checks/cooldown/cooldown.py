@@ -129,7 +129,7 @@ class Cooldown(commands.Cooldown):
         return self
 
 
-def cooldown(rate, per, type=commands.BucketType.default, *, cls=commands.Cooldown):
+def cooldown(rate, per, type=commands.BucketType.default, *, cls:commands.Cooldown=Cooldown, mapping:commands.CooldownMapping=None):
     """A decorator that adds a cooldown to a :class:`.Command`
     or its subclasses.
 
@@ -163,11 +163,9 @@ def cooldown(rate, per, type=commands.BucketType.default, *, cls=commands.Cooldo
 
     def decorator(func):
         if isinstance(func, commands.Command):
-            func._buckets = cls.mapping(cls(rate, per, type))
+            mapping = mapping or cls.mapping
+            func._buckets = mapping(cls(rate, per, type))
         else:
-            print('added')
             func.__commands_cooldown__ = cls(rate, per, type)
-            print('still added')
-            print(func.__commands_cooldown__)
         return func
     return decorator
