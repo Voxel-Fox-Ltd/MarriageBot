@@ -9,9 +9,18 @@ class CustomCommand(commands.Command):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, cooldown_after_parsing=kwargs.pop('cooldown_after_parsing', True), **kwargs)
         self.ignore_checks_in_help = kwargs.get('ignore_checks_in_help', False)
-        mapping = getattr(self._buckets._cooldown.__class__, 'mapping', None)
-        if mapping:
-            self._buckets = self._buckets._cooldown.__class__.mapping(self._buckets._cooldown)
+
+        # Fix cooldown to be our custom type
+        cooldown = self._buckets._cooldown
+        if cooldown is None:
+            mapping = commands.CooldownMapping  # No mapping
+        elif getattr(cooldown, 'mapping', None) is not None:
+            mapping = cooldown.mapping  # There's a mapping in the instance
+        elif getattr(cooldown, 'default_mapping_class') is not None:
+            mapping = cooldown.default_mapping_class()  # Get the default mapping from the object
+        else:
+            raise ValueError("No mapping found for cooldown")
+        self._buckets = mapping(cooldown)  # Wrap the cooldown in the mapping
 
     async def can_run(self, ctx:commands.Context):
         """The normal Command.can_run but it ignores cooldowns"""
