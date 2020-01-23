@@ -139,6 +139,14 @@ class Cooldown(commands.Cooldown):
 
         return super().update_rate_limit(current)
 
+    def get_remaining_cooldown(self, current:float=None) -> typing.Optional[float]:
+        """Gets the remaining rate limit for the command"""
+
+        current = current or time.time()
+        if self.get_tokens() == 0:
+            return self.per - (current - self._window)
+        return None
+
     def reset(self) -> None:
         """Resets the cooldown for the given command"""
 

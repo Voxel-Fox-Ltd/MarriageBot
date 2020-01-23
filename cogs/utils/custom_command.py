@@ -19,6 +19,12 @@ class CustomCommand(commands.Command):
             return True
         return await super().can_run(ctx)
 
+    def get_remaining_cooldown(self, ctx:commands.Context, current:float=None) -> typing.Optional[float]:
+        """Gets the remaining cooldown for a given command"""
+
+        bucket = self._buckets.get_bucket(ctx.message)
+        return bucket.get_remaining_cooldown()
+
     def _prepare_cooldowns(self, ctx:commands.Context):
         """Prepares all the cooldowns for the command to be called"""
 
