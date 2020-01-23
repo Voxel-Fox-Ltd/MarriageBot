@@ -12,6 +12,7 @@ import discord
 from discord.ext import commands
 
 from cogs.utils.database import DatabaseConnection
+from cogs.utils.custom_context import CustomContext
 
 
 def get_prefix(bot, message:discord.Message):
@@ -76,6 +77,32 @@ class CustomBot(commands.AutoShardedBot):
             data['guild_id'] = guild_id
         return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)
 
+    async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, timeout=60.0):
+        """Adds a delete button to the given message"""
+
+        # Add reaction
+        await message.add_reaction("\N{WASTEBASKET}")
+
+        # Wait for response
+        check = lambda r, u: all([
+            r.message.id == message.id,
+            u.id in [user.id for user in valid_users],
+            str(r.emoji) == "\N{WASTEBASKET}"
+        ])
+        try:
+            await self.wait_for("reaction_add", check=check, timeout=timeout)
+        except asyncio.TimeoutError:
+            try:
+                return await message.remove_reaction("\N{WASTEBASKET}", self.user)
+            except Exception:
+                return
+
+        # We got a response
+        try:
+            await message.delete()
+        except (discord.Forbidden, discord.NotFound):
+            return  # Ah well
+
     @property
     def owner_ids(self) -> list:
         """Gives you a list of the owner IDs"""
@@ -114,7 +141,7 @@ class CustomBot(commands.AutoShardedBot):
     async def get_context(self, message, *, cls=commands.Context):
         """Gently insert a new original_author field into the context"""
 
-        ctx = await super().get_context(message, cls=cls)
+        ctx = await super().get_context(message, cls=CustomContext)
         if ctx.guild:
             ctx.original_author = ctx.guild.get_member(message.author.id)
         else:
