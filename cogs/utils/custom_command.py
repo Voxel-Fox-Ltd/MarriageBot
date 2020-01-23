@@ -6,7 +6,7 @@ from discord.ext import commands
 class CustomCommand(commands.Command):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, cooldown_after_parsing=kwargs.get('cooldown_after_parsing', True), **kwargs)
+        super().__init__(*args, cooldown_after_parsing=kwargs.pop('cooldown_after_parsing', True), **kwargs)
         self.ignore_checks_in_help = kwargs.get('ignore_checks_in_help', False)
         mapping = getattr(self._buckets._cooldown.__class__, 'mapping', None)
         if mapping:

@@ -15,8 +15,8 @@ class CooldownMapping(commands.CooldownMapping):
             The cache for the individual and the applied cooldown
     """
 
-    def __init__(self, original:commands.Cooldown):
-        super().__init__(original)
+    def __init__(self):
+        pass
 
     def copy(self) -> commands.CooldownMapping:
         """Retuns a copy of the mapping, including a copy of its current cache"""
@@ -50,19 +50,45 @@ class CooldownMapping(commands.CooldownMapping):
 
         return super().update_rate_limit(message, current)
 
+    def __call__(self, original:commands.Cooldown):
+        super().__init__(original)
+        self._cooldown.mapping = self
+        return self
+
+
+grouped_cooldown_mapping_cache = collections.defaultdict(dict)
+class GroupedCooldownMapping(CooldownMapping):
+
+    grouped_cache = grouped_cooldown_mapping_cache
+
+    def __init__(self, key:str):
+        self.group_cache_key = key
+
+    @property
+    def _cache(self):
+        return grouped_cooldown_mapping_cache[self.group_cache_key]
+
+    @_cache.setter
+    def _cache(self, value):
+        grouped_cooldown_mapping_cache[self.group_cache_key] = value
+
+    def __call__(self, original:commands.Cooldown):
+        self._cooldown = original
+        self._cooldown.mapping = self
+        return self
+
 
 class Cooldown(commands.Cooldown):
     """A class handling the cooldown for an individual user
 
     Params:
-        rate : int
-            How many times the command can be called (rate) in a given amount of time (per) before being applied
-        per : float
-            How many times the command can be called (rate) in a given amount of time (per) before being applied
-        type : discord.ext.commands.BucketType
-            How the cooldown should be applied
         error : discord.ext.commands.CommandOnCooldown
             The error that should be raised when the cooldown is triggered
+            Defaults to discord.ext.commands.CommandOnCooldown
+        mapping: CooldownMapping
+            An _instance_ of a cooldown mapping
+            Will not accept the raw class object
+            Defaults to cls.default_mapping_class
     Attrs:
         _window : float
             The start time (time.time(), Unix timestamp) for the cooldown
@@ -72,12 +98,15 @@ class Cooldown(commands.Cooldown):
             The time (time.time(), Unix timestamp) that the command was last sucessfully called at
     """
 
-    mapping = CooldownMapping
     default_cooldown_error = commands.CommandOnCooldown
-    __slots__ = ('rate', 'per', 'type', 'error', '_window', '_tokens', '_last')
+    default_mapping_class = CooldownMapping
 
-    def __init__(self, error=None):
+    _copy_kwargs = ()  # The attrs that are passed into kwargs when copied; error and mapping are always copied
+    __slots__ = ('rate', 'per', 'type', 'error', 'mapping', '_window', '_tokens', '_last')
+
+    def __init__(self, *, error=None, mapping:CooldownMapping=None):
         self.error = error or commands.CommandOnCooldown
+        self.mapping = mapping
 
     def predicate(self, message:discord.Message) -> bool:
         """Returns whether or not the cooldown should be checked to be applied or not"""
@@ -114,19 +143,25 @@ class Cooldown(commands.Cooldown):
 
         return super().reset()
 
-    def copy(self, *args, **kwargs) -> commands.Cooldown:
+    def copy(self) -> commands.Cooldown:
         """Returns a copy of the cooldown"""
 
-        v = self.__class__(*args, **kwargs)
-        v = v(rate=self.rate, per=self.per, type=self.type)
-        try:
-            v.error = self.error
-        except AttributeError:
-            v.error = self.default_cooldown_error
+        kwargs = {i: getattr(getattr(self, attr, None), 'copy', lambda x: x).copy() for attr in _copy_kwargs}
+        cooldown = self.__class__(error=self.error, mapping=self.mapping, **kwargs)
+        cooldown = v(rate=self.rate, per=self.per, type=self.type)
         return v
 
     def __call__(self, rate:float, per:int, type:commands.BucketType) -> None:
-        """Runs the __init__ method so that you can pass an initiated class straight into @cooldown"""
+        """Runs the original init method
+
+        Params:
+            rate : int
+                How many times the command can be called (rate) in a given amount of time (per) before being applied
+            per : float
+                How many times the command can be called (rate) in a given amount of time (per) before being applied
+            type : discord.ext.commands.BucketType
+                How the cooldown should be applied
+        """
 
         try:
             if self.type:
@@ -137,7 +172,7 @@ class Cooldown(commands.Cooldown):
         return self
 
 
-def cooldown(rate, per, type=commands.BucketType.default, *, cls:commands.Cooldown=None, mapping:commands.CooldownMapping=None):
+def cooldown(rate, per, type=commands.BucketType.default, *, cls:commands.Cooldown=None):
     """A decorator that adds a cooldown to a :class:`.Command`
     or its subclasses.
 
@@ -174,7 +209,7 @@ def cooldown(rate, per, type=commands.BucketType.default, *, cls:commands.Cooldo
 
     def decorator(func):
         if isinstance(func, commands.Command):
-            mapping = mapping or cls.mapping
+            mapping = cls.mapping or cls.default_mapping_class()
             func._buckets = mapping(cls(rate, per, type))
         else:
             func.__commands_cooldown__ = cls(rate, per, type)
