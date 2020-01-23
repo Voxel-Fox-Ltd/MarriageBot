@@ -4,83 +4,12 @@ import discord
 from discord.ext import commands
 
 
-class Cooldown(commands.Cooldown):
-    """A class handling the cooldown for an individual user
-
-    Params:
-        rate : int
-            How many times the command can be called (rate) in a given amount of time (per) before being applied
-        per : float
-            How many times the command can be called (rate) in a given amount of time (per) before being applied
-        type : discord.ext.commands.BucketType
-            How the cooldown should be applied
-        error : discord.ext.commands.CommandOnCooldown
-            The error that should be raised when the cooldown is triggered
-
-    Attrs:
-        _window : float
-            The start time (time.time(), Unix timestamp) for the cooldown
-        _tokens : int
-            How many more times the given command can be called in the timeframe
-        _last : float
-            The time (time.time(), Unix timestamp) that the command was last sucessfully called at
-    """
-
-    __slots__ = ('rate', 'per', 'type', 'error', '_window', '_tokens', '_last')
-
-
-    def __init__(self, rate:int, per:float, type:commands.BucketType, *, error:commands.CommandOnCooldown=None):
-        super().__init__(rate, per, type)
-        self.error = error or commands.CommandOnCooldown
-
-    def get_tokens(self, current:float=None) -> int:
-        """Gets the number of command calls that can still be made before hitting the rate limit
-
-        Params:
-            current : float = None
-                The current time, or now (via time.time())
-                Is _not_ used to update self._last, since the command may not have actually been called
-        Returns:
-            How many more times the comman can be called before hitting the rate limit
-        """
-
-        return super().get_tokens(current)
-
-    def update_rate_limit(self, current:float=None) -> typing.Optional[int]:
-        """Updates the rate limit for the command, as it has now been called
-
-        Params:
-            current : float = None
-                The current time, or now (via time.time())
-        Returns:
-            The amount of time left on the cooldown if there is any, else None
-        """
-
-        return super().update_rate_limit(current)
-
-    def reset(self) -> None:
-        """Resets the cooldown for the given command"""
-
-        return super().reset()
-
-    def copy(self) -> commands.Cooldown:
-        """Returns a copy of the cooldown"""
-
-        return self.__class__(self.rate, self.per, self.type)
-
-    def __call__(self, *args, **kwargs) -> None:
-        """Runs the __init__ method so that you can pass an initiated class straight into @cooldown"""
-
-        super().__init__(*args, **kwargs)
-
-
 class CooldownMapping(commands.CooldownMapping):
     """A mapping of cooldowns and who's run them, so we can keep track of individuals' rate limits
 
     Params:
         original : commands.Cooldown
             The original cooldown that this mapping refers to
-
     Attrs:
         _cache : typing.Dict[int, commands.Cooldown]
             The cache for the individual and the applied cooldown
@@ -122,7 +51,80 @@ class CooldownMapping(commands.CooldownMapping):
         return super().update_rate_limit(message, current)
 
 
-def cooldown(rate, per, type=commands.BucketType.default, *, mapping=commands.CooldownMapping, cls=commands.Cooldown):
+class Cooldown(commands.Cooldown):
+    """A class handling the cooldown for an individual user
+
+    Params:
+        rate : int
+            How many times the command can be called (rate) in a given amount of time (per) before being applied
+        per : float
+            How many times the command can be called (rate) in a given amount of time (per) before being applied
+        type : discord.ext.commands.BucketType
+            How the cooldown should be applied
+        error : discord.ext.commands.CommandOnCooldown
+            The error that should be raised when the cooldown is triggered
+    Attrs:
+        _window : float
+            The start time (time.time(), Unix timestamp) for the cooldown
+        _tokens : int
+            How many more times the given command can be called in the timeframe
+        _last : float
+            The time (time.time(), Unix timestamp) that the command was last sucessfully called at
+    """
+
+    mapping = CooldownMapping
+    error = commands.CommandOnCooldown
+    __slots__ = ('rate', 'per', 'type', '_window', '_tokens', '_last')
+
+    def predicate(self, message:discord.Message) -> bool:
+        """Returns whether or not the cooldown should be checked to be applied or not"""
+
+        return True
+
+    def get_tokens(self, current:float=None) -> int:
+        """Gets the number of command calls that can still be made before hitting the rate limit
+
+        Params:
+            current : float = None
+                The current time, or now (via time.time())
+                Is _not_ used to update self._last, since the command may not have actually been called
+        Returns:
+            How many more times the comman can be called before hitting the rate limit
+        """
+
+        return super().get_tokens(current)
+
+    def update_rate_limit(self, current:float=None) -> typing.Optional[int]:
+        """Updates the rate limit for the command, as it has now been called
+
+        Params:
+            current : float = None
+                The current time, or now (via time.time())
+        Returns:
+            The amount of time left on the cooldown if there is any, else None
+        """
+
+        return super().update_rate_limit(current)
+
+    def reset(self) -> None:
+        """Resets the cooldown for the given command"""
+
+        return super().reset()
+
+    def copy(self, *args, **kwargs) -> commands.Cooldown:
+        """Returns a copy of the cooldown"""
+
+        v = self.__class__(*args, **kwargs)
+        return v(rate=self.rate, per=self.per, type=self.type)
+
+    def __call__(self, rate:float, per:int, type:commands.BucketType) -> None:
+        """Runs the __init__ method so that you can pass an initiated class straight into @cooldown"""
+
+        super().__init__(rate, per, type)
+        return self
+
+
+def cooldown(rate, per, type=commands.BucketType.default, *, cls=commands.Cooldown):
     """A decorator that adds a cooldown to a :class:`.Command`
     or its subclasses.
 
@@ -155,9 +157,12 @@ def cooldown(rate, per, type=commands.BucketType.default, *, mapping=commands.Co
     """
 
     def decorator(func):
-        if isinstance(func, Command):
-            func._buckets = mapping(cls(rate, per, type))
+        if isinstance(func, commands.Command):
+            func._buckets = cls.mapping(cls(rate, per, type))
         else:
+            print('added')
             func.__commands_cooldown__ = cls(rate, per, type)
+            print('still added')
+            print(func.__commands_cooldown__)
         return func
     return decorator
