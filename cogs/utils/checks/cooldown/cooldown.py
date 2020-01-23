@@ -1,4 +1,5 @@
 import typing
+import collections
 
 import discord
 from discord.ext import commands
@@ -7,9 +8,6 @@ from discord.ext import commands
 class CooldownMapping(commands.CooldownMapping):
     """A mapping of cooldowns and who's run them, so we can keep track of individuals' rate limits
 
-    Params:
-        original : commands.Cooldown
-            The original cooldown that this mapping refers to
     Attrs:
         _cache : typing.Dict[int, commands.Cooldown]
             The cache for the individual and the applied cooldown
@@ -51,8 +49,16 @@ class CooldownMapping(commands.CooldownMapping):
         return super().update_rate_limit(message, current)
 
     def __call__(self, original:commands.Cooldown):
-        super().__init__(original)
+        """Runs the original init method
+
+        Params:
+            original : commands.Cooldown
+                The original cooldown that this mapping refers to
+        """
+
+        self._cooldown = original
         self._cooldown.mapping = self
+        self._cache = {}
         return self
 
 
@@ -71,11 +77,6 @@ class GroupedCooldownMapping(CooldownMapping):
     @_cache.setter
     def _cache(self, value):
         grouped_cooldown_mapping_cache[self.group_cache_key] = value
-
-    def __call__(self, original:commands.Cooldown):
-        self._cooldown = original
-        self._cooldown.mapping = self
-        return self
 
 
 class Cooldown(commands.Cooldown):
@@ -146,10 +147,10 @@ class Cooldown(commands.Cooldown):
     def copy(self) -> commands.Cooldown:
         """Returns a copy of the cooldown"""
 
-        kwargs = {i: getattr(getattr(self, attr, None), 'copy', lambda x: x).copy() for attr in _copy_kwargs}
+        kwargs = {i: getattr(getattr(self, attr, None), 'copy', lambda x: x).copy() for attr in self._copy_kwargs}
         cooldown = self.__class__(error=self.error, mapping=self.mapping, **kwargs)
-        cooldown = v(rate=self.rate, per=self.per, type=self.type)
-        return v
+        cooldown = cooldown(rate=self.rate, per=self.per, type=self.type)
+        return cooldown
 
     def __call__(self, rate:float, per:int, type:commands.BucketType) -> None:
         """Runs the original init method
