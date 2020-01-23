@@ -73,8 +73,12 @@ class Cooldown(commands.Cooldown):
     """
 
     mapping = CooldownMapping
-    error = commands.CommandOnCooldown
-    __slots__ = ('rate', 'per', 'type', '_window', '_tokens', '_last')
+    default_cooldown_error = commands.CommandOnCooldown
+    __slots__ = ('rate', 'per', 'type', 'error', '_window', '_tokens', '_last')
+
+    def __init__(self, rate, per, type, *, error=None):
+        super().__init__(rate, per, type)
+        self.error = error or commands.CommandOnCooldown
 
     def predicate(self, message:discord.Message) -> bool:
         """Returns whether or not the cooldown should be checked to be applied or not"""
@@ -115,7 +119,12 @@ class Cooldown(commands.Cooldown):
         """Returns a copy of the cooldown"""
 
         v = self.__class__(*args, **kwargs)
-        return v(rate=self.rate, per=self.per, type=self.type)
+        v = v(rate=self.rate, per=self.per, type=self.type)
+        try:
+            v.error = self.error
+        except AttributeError:
+            v.error = self.default_cooldown_error
+        return v
 
     def __call__(self, rate:float, per:int, type:commands.BucketType) -> None:
         """Runs the __init__ method so that you can pass an initiated class straight into @cooldown"""

@@ -30,9 +30,13 @@ class CustomCommand(commands.Command):
                     return
             except AttributeError:
                 ctx.bot.logger.critical(f"Invalid cooldown set on command {ctx.invoked_with}")
+                raise commands.CheckFailure("Invalid cooldown set for this command")
             retry_after = bucket.update_rate_limit(current)
             if retry_after:
-                error = bucket.error
+                try:
+                    error = bucket.error
+                except AttributeError:
+                    error = bucket.default_cooldown_error
                 raise error(bucket, retry_after)
 
 
