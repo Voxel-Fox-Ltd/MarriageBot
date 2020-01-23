@@ -43,12 +43,14 @@ class Cooldown(commands.Cooldown):
 
         return super().get_tokens(current)
 
-    def update_rate_limit(self, current:float=None) -> None:
+    def update_rate_limit(self, current:float=None) -> typing.Optional[int]:
         """Updates the rate limit for the command, as it has now been called
 
         Params:
             current : float = None
                 The current time, or now (via time.time())
+        Returns:
+            The amount of time left on the cooldown if there is any, else None
         """
 
         return super().update_rate_limit(current)
@@ -62,6 +64,11 @@ class Cooldown(commands.Cooldown):
         """Returns a copy of the cooldown"""
 
         return self.__class__(self.rate, self.per, self.type)
+
+    def __call__(self, *args, **kwargs) -> None:
+        """Runs the __init__ method so that you can pass an initiated class straight into @cooldown"""
+
+        super().__init__(*args, **kwargs)
 
 
 class CooldownMapping(commands.CooldownMapping):
@@ -143,7 +150,7 @@ def cooldown(rate, per, type=commands.BucketType.default, *, mapping=commands.Co
     type: ``BucketType``
         The type of cooldown to have.
     """
-    
+
     def decorator(func):
         if isinstance(func, Command):
             func._buckets = mapping(cls(rate, per, type))
