@@ -8,3 +8,4 @@ from cogs.utils.database import DatabaseConnection
 
 from cogs.utils import checks
 from cogs.utils import converters
+from cogs.utils.checks import cooldown
