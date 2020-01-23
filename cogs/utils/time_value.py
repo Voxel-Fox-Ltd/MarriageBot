@@ -42,7 +42,7 @@ class TimeValue(object):
         return f"<{self.__class__.__name__} {self.clean} ({self.duration})>"
 
     @classmethod
-    async def convert(cls, ctx:commands.Context, value:str) -> TimeValue:
+    async def convert(cls, ctx:commands.Context, value:str) -> 'TimeValue':
         """Takes a value (1h/30m/10s/2d etc) and returns a TimeValue instance with the duration"""
 
         match = cls.time_value_regex.search(value)
