@@ -36,7 +36,6 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
             # Update jinja params
             if data is None:
                 data = dict()
-            session = await aiohttp_session.get_session(request)
             data.update({'session': session})
             if 'user_info' not in data:
                 try:
