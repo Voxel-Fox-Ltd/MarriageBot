@@ -78,7 +78,7 @@ class CustomBot(commands.AutoShardedBot):
             data['guild_id'] = guild_id
         return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)
 
-    async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, timeout=60.0):
+    async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, delete:typing.List[discord.Message]=None, timeout=60.0):
         """Adds a delete button to the given message"""
 
         # Add reaction
@@ -99,10 +99,13 @@ class CustomBot(commands.AutoShardedBot):
                 return
 
         # We got a response
-        try:
-            await message.delete()
-        except (discord.Forbidden, discord.NotFound):
-            return  # Ah well
+        if delete is None:
+            delete = [message]
+        for i in delete:
+            try:
+                await i.delete()
+            except (discord.Forbidden, discord.NotFound):
+                return  # Ah well
 
     @property
     def owner_ids(self) -> list:
