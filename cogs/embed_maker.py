@@ -199,14 +199,17 @@ class EmbedMaker(utils.Cog):
         self.last_made_embed[user.id] = {'content': content, 'embed': embed}
 
         # Find the destination
-        await user.send("Where do you want to send this embed?")
+        await user.send("Where do you want to send this embed (or `skip`)?")
         message = await self.bot.wait_for("message", check=lambda m: m.channel == user.dm_channel and not m.author.bot)
+        channel = None
         try:
             channel = await commands.TextChannelConverter().convert(ctx, message.content)
         except commands.CommandError as e:
-            return await user.send(f"Found an error sending that. Sorry about that. Cancelled.")
-        if message.content.lower() != 'skip':
+            if message.content.lower() != 'skip':
+                return await user.send("Alright, skpping.")
             return await user.send("I can't work out where you want to send that. Sorry about that. Cancelled.")
+        if channel is None:
+            return await user.send(f"Found an error sending that. Sorry about that. Cancelled.")
 
         # Send it out
         if embed:
