@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 import os
 import asyncio
 import collections
+import typing
 
 import aiohttp
 import discord

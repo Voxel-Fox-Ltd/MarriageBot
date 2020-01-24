@@ -1,4 +1,4 @@
-from cogs.utils.custom_command import CustomContext as Context
+from cogs.utils.custom_context import CustomContext as Context
 from cogs.utils.custom_cog import CustomCog as Cog
 from cogs.utils.custom_bot import CustomBot as Bot
 from cogs.utils.context_embed import ContextEmbed as Embed
