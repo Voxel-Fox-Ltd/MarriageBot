@@ -62,6 +62,8 @@ async def process_discord_login(request:Request, oauth_scopes:list=None):
         token_url = f"https://discordapp.com/api/v6/oauth2/token"
         async with session.post(token_url, data=data, headers=headers) as r:
             token_info = await r.json()
+        if token_info.get('error'):
+            return  # Error getting the token, just ignore it
 
         # Update headers
         headers.update({
