@@ -64,7 +64,7 @@ class Misc(utils.Cog):
 
         await ctx.send(self.bot.config['guild_invite'], embeddify=False)
 
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, enabled=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def echo(self, ctx:utils.Context, *, content:str):
         """Echos a saying"""
