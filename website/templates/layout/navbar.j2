@@ -6,6 +6,12 @@
     </button>
 {%- endmacro %}
 
+{% macro navitem(location, text, disabled=false) -%}
+    <li class="nav-item">
+        <a class="nav-link{% if disabled %} disabled{% endif %}" href="{{ location }}">{{ text }}</a>
+    </li>
+{%- endmacro %}
+
 {%- block navbar -%}
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
 
@@ -17,9 +23,7 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            {# <li class="nav-item">
-                <a class="nav-link" href="/">Index</a>
-            </li> #}
+            {# Put your navitem()s here #}
         </ul>
         <form class="form-inline">
             {%- if session.user_id -%}
