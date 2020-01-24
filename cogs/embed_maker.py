@@ -25,6 +25,7 @@ class EmbedMaker(utils.Cog):
         content = None
         embed = {"fields": []}
         show_keys = False
+        await ctx.okay()
 
         # These are our instructions
         INSTRUCTIONS = [
@@ -101,7 +102,7 @@ class EmbedMaker(utils.Cog):
         value_message = await self.bot.wait_for("message", check=lambda m: m.channel == user.dm_channel and not m.author.bot)
         await user.send("Do you want to set this field as **inline** (yes/no)?")
         inline_message = await self.bot.wait_for("message", check=lambda m: m.channel == user.dm_channel and not m.author.bot)
-        embed.fields.append({
+        embed['fields'].append({
             "name": name_message.content,
             "value": value_message.content,
             "inline": inline_message.content.lower() == "yes",
