@@ -8,7 +8,7 @@ class EmbedMaker(utils.Cog):
 
     def __init__(self, bot:utils.Bot):
         super().__init__(bot)
-        self.load_last_created_embed = {}
+        self.last_made_embed = {}
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
