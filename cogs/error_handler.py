@@ -58,7 +58,7 @@ class ErrorHandler(utils.Cog):
 
         # User is missing a role
         elif isinstance(error, commands.MissingAnyRole):
-            return await ctx.send(f"You need to have the `{error.missing_roles[0]}` role to run this command.")
+            return await ctx.send(f"You need to have one of the {', '.join(['`' + i + '`' for i in error.missing_roles])} roles to run this command.")
 
         # Bot is missing a given permission
         elif isinstance(error, commands.BotMissingPermissions):
