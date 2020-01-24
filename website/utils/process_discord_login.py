@@ -44,7 +44,10 @@ async def process_discord_login(request:Request, oauth_scopes:list=None):
         'scope': ' '.join(oauth_scopes),
         **oauth_data,
     }
-    data['redirect_uri'] = "{0.scheme}://{0.host}:{0.port}{0.path}".format(request.url)
+    if request.url.explicit_port:
+        data['redirect_uri'] = "http://{0.host}:{0.port}{0.path}".format(request.url)
+    else:
+        data['redirect_uri'] = "https://{0.host}{0.path}".format(request.url)
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
