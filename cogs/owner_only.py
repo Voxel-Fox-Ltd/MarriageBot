@@ -164,12 +164,12 @@ class OwnerOnly(utils.Cog):
 
     @commands.group(cls=utils.Group)
     @commands.is_owner()
-    async def profile(self, ctx:utils.Context):
-        """A parent command for the profile section"""
+    async def botuser(self, ctx:utils.Context):
+        """A parent command for the bot user configuration section"""
 
         pass
 
-    @profile.command(aliases=['username'], cls=utils.Command)
+    @botuser.command(aliases=['username'], cls=utils.Command)
     @commands.is_owner()
     async def name(self, ctx:utils.Context, *, username:str):
         """Lets you set the username for the bot account"""
@@ -179,7 +179,7 @@ class OwnerOnly(utils.Cog):
         await self.bot.user.edit(username=username)
         await ctx.send('Done.')
 
-    @profile.command(aliases=['photo', 'image', 'avatar'], cls=utils.Command)
+    @botuser.command(aliases=['photo', 'image', 'avatar'], cls=utils.Command)
     @commands.is_owner()
     async def picture(self, ctx:utils.Context, *, image_url:str=None):
         """Lets you set the profile picture of the bot"""
@@ -195,7 +195,7 @@ class OwnerOnly(utils.Cog):
         await self.bot.user.edit(avatar=image_content)
         await ctx.send('Done.')
 
-    @profile.command(aliases=['game'], cls=utils.Command)
+    @botuser.command(aliases=['game'], cls=utils.Command)
     @commands.is_owner()
     async def activity(self, ctx:utils.Context, activity_type:str, *, name:str=None):
         """Changes the activity of the bot"""
@@ -206,7 +206,7 @@ class OwnerOnly(utils.Cog):
             return await self.bot.set_default_presence()
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
-    @profile.command(cls=utils.Command)
+    @botuser.command(cls=utils.Command)
     @commands.is_owner()
     async def status(self, ctx:utils.Context, status:str):
         """Changes the online status of the bot"""
