@@ -61,7 +61,10 @@ class EmbedMaker(utils.Cog):
             for e in METHOD_EMOJI.keys():
                 await instruction_message.add_reaction(e)
             check = lambda r, u: r.message.channel == instruction_message.channel and u.id == ctx.author.id
-            reaction, _ = await self.bot.wait_for("reaction_add", check=check)
+            try:
+                reaction, _ = await self.bot.wait_for("reaction_add", check=check, timeout=120)
+            except asyncio.TimeoutError:
+                return await user.send("Timed out. Cancelling embed creation.")
             emoji = str(reaction)
 
             # Find which method to run
