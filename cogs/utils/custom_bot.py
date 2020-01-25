@@ -89,6 +89,10 @@ class CustomBot(commands.AutoShardedBot):
         # Add reaction
         await message.add_reaction("\N{WASTEBASKET}")
 
+        # Fix up arguments
+        if not isinstance(valid_users, list):
+            valid_users = [valid_users]
+
         # Wait for response
         check = lambda r, u: all([
             r.message.id == message.id,
@@ -106,10 +110,15 @@ class CustomBot(commands.AutoShardedBot):
         # We got a response
         if delete is None:
             delete = [message]
-        for i in delete:
+
+        # Try and bulk delete
+        bulk = False
+        if message.guild:
+            permissions: discord.Permissions = message.channel.permissions_for(message.guild.me)
+            bulk = permissions.manage_message and permissions.read_message_history
         try:
-                await i.delete()
-            except (discord.Forbidden, discord.NotFound):
+            await message.channel.purge(check=lambda m: m.id in [i.id for i in delete], bulk=bulk)
+        except Exception:
             return  # Ah well
 
     @property
