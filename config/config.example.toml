@@ -3,29 +3,34 @@ owners = [ 141231597155385344, ]
 default_prefix = "!"  # The prefix for the bot's commands
 guild_id = 1  # The ID of the main/support guild
 
-[command_data]  # Data that's copied directly over to a command without processing
-guild_invite = ""
-github = ""
+# Data that's copied directly over to a command without processing
+[command_data]
+    guild_invite = ""
+    github = ""
 
-[database]  # This data is passed directly over to asyncpg
-user = "database_username"
-password = "DatabasePassword"
-database = "database_name"
-host = "127.0.0.1"
-port = 5432
-enabled = false
+# This data is passed directly over to asyncpg
+[database]
+    user = "database_username"
+    password = "DatabasePassword"
+    database = "database_name"
+    host = "127.0.0.1"
+    port = 5432
+    enabled = false
 
-[redis]  # This data is passed directly over to aioredis
-enabled = false
-host = "127.0.0.1"
-port = 6379
-db = 0
+# This data is passed directly over to aioredis
+[redis]
+    host = "127.0.0.1"
+    port = 6379
+    db = 0
+    enabled = false
 
+# What the bot is playing
 [presence]
-activity_type = "playing"  # Should be one of 'playing', 'listening', 'watching'
-text = "Game playing text"
-status = "online"  # Should be one of 'online', 'invisible', 'idle', 'dnd'
+    activity_type = "playing"  # Should be one of 'playing', 'listening', 'watching'
+    text = "Game playing text"
+    status = "online"  # Should be one of 'online', 'invisible', 'idle', 'dnd'
 
+# Used to generate the invite link - client ID only necessary for webserver
 [oauth]
-client_id = ""
-client_secret = ""
+    client_id = ""
+    client_secret = ""
