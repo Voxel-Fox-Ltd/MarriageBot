@@ -14,7 +14,7 @@ routes = RouteTableDef()
 
 
 @routes.get("/")
-@template('index.jinja')
+@template('index.j2')
 @webutils.add_output_args(redirect_if_logged_in="/settings")
 async def index(request:Request):
     """Index of the website, has "login with Discord" button
@@ -31,7 +31,7 @@ async def index(request:Request):
 
 
 @routes.get("/blog/{code}")
-@template('blog.jinja')
+@template('blog.j2')
 @webutils.add_output_args()
 async def blog(request:Request):
     """Blog post handler"""
@@ -56,7 +56,7 @@ async def blog(request:Request):
 
 
 @routes.get('/settings')
-@template('settings.jinja')
+@template('settings.j2')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def settings(request:Request):
     """Handles the main settings page for the bot"""
@@ -71,7 +71,7 @@ async def settings(request:Request):
 
 
 @routes.get('/user_settings')
-@template('user_settings.jinja')
+@template('user_settings.j2')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def user_settings(request:Request):
     """Handles the users' individual settings pages"""
@@ -122,7 +122,7 @@ async def user_settings(request:Request):
 
 
 @routes.get('/tree_preview')
-@template('tree_preview.jinja')
+@template('tree_preview.j2')
 @webutils.add_output_args()
 async def tree_preview(request:Request):
     """Tree preview for the bot"""
@@ -152,7 +152,7 @@ async def tree_preview(request:Request):
 
 
 @routes.get('/guild_picker')
-@template('guild_picker.jinja')
+@template('guild_picker.j2')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def guild_picker(request:Request):
     """Shows the guilds that the user has permission to change"""
@@ -185,7 +185,7 @@ async def guild_picker(request:Request):
 
 
 @routes.get('/guild_settings_stripe')
-@template('guild_settings_stripe.jinja')
+@template('guild_settings_stripe.j2')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def guild_settings_get_stripe(request:Request):
     """Shows the settings for a particular guild"""
@@ -243,7 +243,7 @@ async def guild_settings_get_stripe(request:Request):
 
 
 @routes.get('/guild_settings')
-@template('guild_settings_paypal.jinja')
+@template('guild_settings_paypal.j2')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def guild_settings_get_paypal(request:Request):
     """Shows the settings for a particular guild"""
@@ -354,7 +354,7 @@ async def guild_settings_get_paypal(request:Request):
 
 
 @routes.get('/buy_gold')
-@template('buy_gold.jinja')
+@template('buy_gold.j2')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
 async def buy_gold(request:Request):
     """Shows the guilds that the user has permission to change"""

@@ -13,7 +13,7 @@ from cogs import utils
 from website import utils as webutils
 
 """
-All pages on this website that implement the base.jinja file should return two things:
+All pages on this website that implement the base.j2 file should return two things:
 Firstly, the original request itself under the name 'request'.
 Secondly, it should return the user info from the user as gotten from the login under 'user_info'
 This is all handled by a decorator below, but I'm just putting it here as a note
