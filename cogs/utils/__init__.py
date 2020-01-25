@@ -1,5 +1,5 @@
 # flake8: noqa
-from cogs.utils import checks, converters
+from cogs.utils import checks, converters, errors
 from cogs.utils.checks import cooldown
 from cogs.utils.context_embed import ContextEmbed as Embed
 from cogs.utils.custom_bot import CustomBot as Bot

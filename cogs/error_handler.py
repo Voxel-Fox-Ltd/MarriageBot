@@ -40,6 +40,10 @@ class ErrorHandler(utils.Cog):
         if ctx.original_author.id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
 
+        # Missing argument (string)
+        elif isinstance(error, utils.errors.MissingRequiredArgumentString):
+            return await ctx.send(f"You're missing the `{error.param}` argument, which is required for this command to work properly.")
+
         # Missing argument
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"You're missing the `{error.param.name}` argument, which is required for this command to work properly.")
