@@ -9,8 +9,6 @@ disableable_commands = ["hug", "kiss", "slap", "punch", "cookie", "nugget", "bur
 max_family_members = 500  # The maximum amount of people you can have in a family
 tree_file_location = "./trees"  # The location where the tree files are to be output
 dbl_vainity = ""  # The vainity link that goes on the 'vote' command
-patreon = ""  # The link that is output when 'donate' is called
-paypal = ""  # The link that s output when 'donate' is called
 guild_id = 1  # The ID for the support guild - used to find the bot admin and Patreon roles
 server_specific = false  # Bool flag for whether the bot uses global or server specific trees
 
@@ -18,6 +16,7 @@ server_specific = false  # Bool flag for whether the bot uses global or server s
 [command_data]
     guild_invite = ""
     github = ""
+    patreon = ""  # The link that is output when 'donate' is called
 
 # This data is passed directly over to asyncpg
 [database]

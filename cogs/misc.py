@@ -28,7 +28,7 @@ class Misc(utils.Cog):
 
     @commands.command(aliases=['git', 'code'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.has_set_config('github')
+    @utils.checks.is_config_set('command_data', 'github')
     async def github(self, ctx:utils.Context):
         """Gives you a link to the bot's code repository"""
 
@@ -36,7 +36,7 @@ class Misc(utils.Cog):
 
     @commands.command(aliases=['patreon'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.has_set_config('patreon')
+    @utils.checks.is_config_set('command_data', 'patreon')
     async def donate(self, ctx:utils.Context):
         """Gives you the creator's donation links"""
 
@@ -51,7 +51,7 @@ class Misc(utils.Cog):
 
     @commands.command(aliases=['guild', 'support'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.has_set_config('guild_invite')
+    @utils.checks.is_config_set('command_data', 'guild_invite')
     async def server(self, ctx:utils.Context):
         """Gives you a server invite link"""
 

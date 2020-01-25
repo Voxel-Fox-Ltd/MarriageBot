@@ -3,6 +3,7 @@ import typing
 from datetime import datetime as dt
 
 import asyncpg
+import discord
 
 
 class DatabaseConnection(object):

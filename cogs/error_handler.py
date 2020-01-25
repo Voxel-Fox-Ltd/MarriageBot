@@ -41,7 +41,6 @@ class ErrorHandler(utils.Cog):
         )
         if ctx.original_author.id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
-        raise error
 
         # Can't send files
         if isinstance(error, utils.errors.CantSendFiles):
@@ -64,10 +63,6 @@ class ErrorHandler(utils.Cog):
         # Donator
         elif isinstance(error, utils.errors.IsNotDonator):
             return await ctx.send(f"You need to be a Patreon subscriber (`m!perks`) to be able to run this command.")
-
-        # No item in config set
-        elif isinstance(error, utils.errors.NoSetConfig):
-            return await ctx.send(f"The bot owner has not set up their config properly for this command to work.")
 
         # Not a server specific bot moderator
         elif isinstance(error, utils.errors.NotBotModerator):
