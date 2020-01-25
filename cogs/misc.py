@@ -10,14 +10,14 @@ class Misc(utils.Cog):
     async def github(self, ctx:utils.Context):
         """Sends the GitHub Repository link"""
 
-        await ctx.send(f"<{self.bot.config.get('github')}>")
+        await ctx.send(f"<{self.bot.config['command_data']['github']}>")
 
     @commands.command(aliases=['support', 'guild'], cls=utils.Command)
     @commands.check(utils.checks.is_config_set('guild_invite'))
     async def server(self, ctx:utils.Context):
         """Gives the invite to the support server"""
 
-        await ctx.send(f"<{self.bot.config.get('guild_invite')}>")
+        await ctx.send(f"<{self.bot.config['command_data']['guild_invite']}>")
 
     @commands.command(cls=utils.Command)
     async def invite(self, ctx:utils.Context):
