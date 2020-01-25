@@ -6,5 +6,4 @@ from cogs.utils.checks.is_bot_moderator import NotBotAdministrator, NotBotModera
 from cogs.utils.checks.is_voter import IsNotVoter
 from cogs.utils.checks.has_set_config import NoSetConfig
 from cogs.utils.converters.user_block import BlockedUserError
-from cogs.utils.checks.is_config_set import ConfigNotSet
 from cogs.utils.time_value import InvalidTimeDuration

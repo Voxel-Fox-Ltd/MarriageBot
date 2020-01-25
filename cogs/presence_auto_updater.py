@@ -17,7 +17,7 @@ class PresenceAutoUpdater(utils.Cog):
     async def on_shard_ready(self, shard_id:int):
         """Update the presence when the shard becomes ready"""
 
-        self.log_handler.info(f"`on_shard_ready` called for shard ID `{shard_id}`.")
+        self.logger.info(f"`on_shard_ready` called for shard ID `{shard_id}`.")
         await self.bot.set_default_presence(shard_id=shard_id)
 
     @tasks.loop(minutes=1)

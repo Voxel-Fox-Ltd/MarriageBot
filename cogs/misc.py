@@ -24,7 +24,7 @@ class Misc(utils.Cog):
             url = f"https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote"
         else:
             url = f"https://discordbots.org/bot/{self.bot.user.id}/vote"
-        await ctx.send(f"[Add a DBL vote]({url})!\nSee `{ctx.clean_prefix}perks` for more information.")
+        await ctx.send(f"[Add a DBL vote]({url})!\nSee `m!perks` for more information.")
 
     @commands.command(aliases=['git', 'code'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -53,7 +53,7 @@ class Misc(utils.Cog):
     async def invite(self, ctx:utils.Context):
         """Gives you an invite link for the bot"""
 
-        await ctx.send(f"<{self.bot.invite_link}>", embeddify=False)
+        await ctx.send(f"<{self.bot.get_invite_link(embed_links=True, attach_files=True)}>", embeddify=False)
 
     @commands.command(aliases=['guild', 'support'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -119,11 +119,11 @@ class Misc(utils.Cog):
         ]
         e = discord.Embed()
         e.add_field(name=f'Normal Users', value=f"Gives you access to:\n* " + '\n* '.join(normal_users), inline=False)
-        e.add_field(name=f'Voting ({ctx.clean_prefix}vote)', value=f"Gives you access to:\n* " + '\n* '.join(voting_perks), inline=False)
-        e.add_field(name=f'T1 Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
-        e.add_field(name=f'T2 Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
-        e.add_field(name=f'T3 Patreon Donation ({ctx.clean_prefix}donate)', value=f"Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
-        e.add_field(name=f'MarriageBot Gold ({ctx.clean_prefix}ssf)', value=f"Gvies you access to:\n* " + '\n* '.join(gold_perks), inline=False)
+        e.add_field(name=f'Voting (m!vote)', value=f"Gives you access to:\n* " + '\n* '.join(voting_perks), inline=False)
+        e.add_field(name=f'T1 Patreon Donation (m!donate)', value=f"Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
+        e.add_field(name=f'T2 Patreon Donation (m!donate)', value=f"Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
+        e.add_field(name=f'T3 Patreon Donation (m!donate)', value=f"Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
+        e.add_field(name=f'MarriageBot Gold (m!ssf)', value=f"Gvies you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
     @commands.command(aliases=['status'])

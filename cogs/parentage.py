@@ -37,7 +37,7 @@ class Parentage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Manage children
-        if bot.is_server_specific:
+        if self.bot.is_server_specific:
             guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
             gold_children_amount = max([
                 amount if role_id in target._roles else 0 for role_id, amount in guild_max_children.items()
@@ -47,7 +47,7 @@ class Parentage(utils.Cog):
         normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, target)]
         children_amount = min([max([gold_children_amount, normal_children_amount, 0]), self.bot.config['max_children'][-1]])
         if len(target_tree._children) >= children_amount:
-            return await ctx.send(f"They're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
+            return await ctx.send(f"They're currently at the maximum amount of children you can have - see `m!perks` for more information.")
 
         # Check the size of their trees
         max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members']
@@ -120,17 +120,17 @@ class Parentage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Manage children
-        if bot.is_server_specific:
-            guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children'][await util
+        if self.bot.is_server_specific:
+            guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children'][await utils.checks.get_patreon_tier(ctx.bot, target)]
             gold_children_amount = max([
                 amount if role_id in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
             ])
         else:
             gold_children_amount = 0
         normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, ctx.author)]
-        children_amount = maxmin([([gold_children_amount, normal_children_amount, self.bot.config['max_children'][0]]), self.bot.config['max_children'][-1]])
+        children_amount = min([max([gold_children_amount, normal_children_amount, self.bot.config['max_children'][0]]), self.bot.config['max_children'][-1]])
         if len(instigator_tree._children) >= children_amount:
-            return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.clean_prefix}perks` for more information.")
+            return await ctx.send(f"You're currently at the maximum amount of children you can have - see `m!perks` for more information.")
 
         # Check the size of their trees
         max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members']

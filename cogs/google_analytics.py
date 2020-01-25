@@ -80,6 +80,6 @@ class GoogleAnalytics(utils.Cog):
 def setup(bot:utils.Bot):
     x = GoogleAnalytics(bot)
     if '' in list(bot.config['google_analytics'].values()):
-        x.log_handler.error("Google Analytics authorization not set in config - not loading cog.")
+        x.logger.error("Google Analytics authorization not set in config - not loading cog.")
     else:
         bot.add_cog(x)

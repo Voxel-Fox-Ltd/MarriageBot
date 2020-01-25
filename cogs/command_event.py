@@ -27,9 +27,9 @@ class CommandEvent(utils.Cog):
 
         cog = self.bot.get_cog(ctx.command.cog_name)
         if not cog:
-            logger = self.log_handler
+            logger = self.logger
         else:
-            logger = cog.log_handler
+            logger = cog.logger
         if ctx.guild:
             logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on {ctx.guild.id}/{ctx.channel.id}")
         else:

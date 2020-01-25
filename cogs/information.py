@@ -212,7 +212,7 @@ class Information(utils.Cog):
             with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:
                 a.write(dot_code)
         except Exception as e:
-            self.log_handler.error(f"Could not write to {self.bot.config['tree_file_location']}/{ctx.author.id}.gz")
+            self.logger.error(f"Could not write to {self.bot.config['tree_file_location']}/{ctx.author.id}.gz")
             raise e
 
         # Convert to an image

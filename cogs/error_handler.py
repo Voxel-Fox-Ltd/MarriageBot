@@ -41,6 +41,7 @@ class ErrorHandler(utils.Cog):
         )
         if ctx.original_author.id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
+        raise error
 
         # Can't send files
         if isinstance(error, utils.errors.CantSendFiles):
@@ -58,11 +59,11 @@ class ErrorHandler(utils.Cog):
 
         # Voter
         elif isinstance(error, utils.errors.IsNotVoter):
-            return await ctx.send(f"You need to vote on DBL (`{ctx.clean_prefix}vote`) to be able to run this command.")
+            return await ctx.send(f"You need to vote on DBL (`m!vote`) to be able to run this command.")
 
         # Donator
         elif isinstance(error, utils.errors.IsNotDonator):
-            return await ctx.send(f"You need to be a Patreon subscriber (`{ctx.clean_prefix}perks`) to be able to run this command.")
+            return await ctx.send(f"You need to be a Patreon subscriber (`m!perks`) to be able to run this command.")
 
         # No item in config set
         elif isinstance(error, utils.errors.NoSetConfig):
@@ -80,7 +81,7 @@ class ErrorHandler(utils.Cog):
 
         # Not set to server specific
         elif isinstance(error, utils.errors.NotServerSpecific):
-            return await ctx.send(f"You need to be using MarriageBot Gold to run this command - see (`{ctx.clean_prefix}perks`).")
+            return await ctx.send(f"You need to be using MarriageBot Gold to run this command - see (`m!perks`).")
 
         # User is blocked
         elif isinstance(error, utils.errors.BlockedUserError):
@@ -170,7 +171,7 @@ class ErrorHandler(utils.Cog):
         if cooldown_time < error.cooldown.per:
             cooldown_display = f"~~{cooldown_display}~~ {cooldown_time:.0f} seconds"
             time_remaining = cooldown_time - (error.cooldown.per - error.retry_after)
-        await ctx.send(f"You can only use this command once every {cooldown_display} (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in {time_remaining:.1f} seconds.")
+        await ctx.send(f"You can only use this command once every {cooldown_display} (see `m!perks` for more information) per server. You may use this again in {time_remaining:.1f} seconds.")
 
 
 def setup(bot:utils.Bot):

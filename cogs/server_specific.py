@@ -17,7 +17,7 @@ class ServerSpecific(utils.Cog):
         async with self.bot.database() as db:
             data = await db('SELECT guild_id FROM guild_specific_families WHERE guild_id=$1', guild.id)
             if not data:
-                self.log_handler.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
+                self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
                 await guild.leave()
 
     @commands.command()
@@ -64,7 +64,7 @@ class ServerSpecific(utils.Cog):
     async def serverspecificfamilies(self, ctx:utils.Context):
         """Gives you the information about server specific families and MarriageBot gold"""
 
-        await ctx.send(f"[See here](https://marriagebot.xyz/blog/gold) for a rundown of everything, or `{ctx.clean_prefix}perks` for an overview. Ask any questions you have at `{ctx.clean_prefix}support`.")
+        await ctx.send(f"[See here](https://marriagebot.xyz/blog/gold) for a rundown of everything, or `m!perks` for an overview. Ask any questions you have at `m!support`.")
 
 
 def setup(bot:utils.Bot):

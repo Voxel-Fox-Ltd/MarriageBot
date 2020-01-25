@@ -10,24 +10,29 @@ class BotSettings(utils.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True)
     @commands.has_permissions(manage_guild=True)
-    async def prefix(self, ctx:utils.Context, *, new_prefix:str):
+    async def prefix(self, ctx:utils.Context, *, new_prefix:str=None):
         """Changes the prefix that the bot uses"""
 
-        # Validate prefix
-        if len(new_prefix) > 30:
-            return await ctx.send(f"The maximum length a prefix can be is 30 characters.")
+        # Fix up prefix
+        if not new_prefix:
+            prefix = self.bot.config['prefix']['default_prefix']
+        if len(prefix) > 30:
+            await ctx.send("Your prefix can't be longer than 30 characters.")
+            return
 
-        # Store setting
-        self.bot.guild_settings[ctx.guild.id]['prefix'] = new_prefix
+        # Update db
+        prefix_key = 'gold_prefix' if self.bot.is_server_specific else 'prefix'
         async with self.bot.database() as db:
             try:
-                await db("INSERT INTO guild_settings (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id, new_prefix)
+                await db(f'INSERT INTO guild_settings (guild_id, {prefix_key}) VALUES ($1, $2)', ctx.guild.id, prefix)
             except asyncpg.UniqueViolationError:
-                await db("UPDATE guild_settings SET prefix=$2 WHERE guild_id=$1", ctx.guild.id, new_prefix)
-        await ctx.send(f"My prefix has been updated to `{new_prefix}`.")
+                await db(f'UPDATE guild_settings SET {prefix_key}=$1 WHERE guild_id=$2', prefix, ctx.guild.id)
+
+        # Update cache
+        self.bot.guild_settings[ctx.guild.id]['prefix'] = prefix
+        await ctx.send(f"Your guild's prefix has been updated to `{prefix}`.")
 
 
 def setup(bot:utils.Bot):
     x = BotSettings(bot)
     bot.add_cog(x)
-

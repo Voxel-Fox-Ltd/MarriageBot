@@ -96,7 +96,7 @@ INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention
 INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention} and {instigator.mention} went to town, if you know what I mean.', 'en');
 INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention} and {instigator.mention} got it on. I sure hope Jesus consented, too…', 'en');
 INSERT INTO random_text VALUES ('copulate', 'request_accepted', 'JESUS CONSENTS, GOD WILLS IT.', 'en');
-INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention} and {instigator.mention} are getting freaky, looks like they aren’t afraid to show the pie.', 'en');
+INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention} and {instigator.mention} are getting freaky, looks like they aren''t afraid to show the pie.', 'en');
 INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention} and {instigator.mention} are fucking like rabbits, looks like they broke the bed. A new bed will be needed.', 'en');
 INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention} bends over {instigator.mention} and fucks them raw. ', 'en');
 INSERT INTO random_text VALUES ('copulate', 'request_accepted', '{target.mention} pushes {instigator.mention} against the wall, choking them and fucking them silly.', 'en');

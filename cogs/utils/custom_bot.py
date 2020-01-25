@@ -62,6 +62,10 @@ class CustomBot(commands.AutoShardedBot):
         self.logger = logger or logging.getLogger("bot")
         self.reload_config()
 
+        # Set up config
+        self.DEFAULT_GUILD_SETTINGS['prefix'] = self.config['prefix']['default_prefix']
+        self.DEFAULT_GUILD_SETTINGS['max_family_members'] = self.config['max_family_members']
+
         # Run original
         super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
@@ -149,6 +153,11 @@ class CustomBot(commands.AutoShardedBot):
         except Exception:
             return  # Ah well
 
+    async def fetch_support_guild(self):
+        """Gets and stores the support guild defined in the bot settings"""
+
+        self.support_guild = self.get_guild(self.config['guild_id']) or await self.fetch_guild(self.config['guild_id'])
+
     @property
     def is_server_specific(self) -> bool:
         """Whether or not the BOT is running the server specific version"""
@@ -196,7 +205,7 @@ class CustomBot(commands.AutoShardedBot):
             exit(1)
         self.logger.debug(f"Caching {len(text_lines)} lines of random text")
         for row in text_lines:
-            text_lines.RandomText.original.all_random_text[row['command_name']][row['event_name']].append(row['string'])
+            random_text.RandomText.original.all_random_text[row['command_name']][row['event_name']].append(row['string'])
 
         # Pick up the blacklisted guilds from the db
         try:
@@ -396,14 +405,18 @@ class CustomBot(commands.AutoShardedBot):
                 raise e
             self.logger.debug(f" * {i} :: success")
 
-    async def set_default_presence(self):
+    async def set_default_presence(self, shard_id:int=None):
         """Sets the default presence for the bot as appears in the config file"""
 
         # Update presence
         self.logger.info("Setting default bot presence")
         presence = self.config['presence']
         if self.shard_count > 1:
-            for i in range(self.shard_count):
+            if shard_id:
+                min, max = shard_id, shard_id + 1
+            else:
+                min, max = 0, self.shard_count
+            for i in range(min, max):
                 activity = discord.Activity(
                     name=f"{presence['text']} (shard {i})",
                     type=getattr(discord.ActivityType, presence['activity_type'].lower())

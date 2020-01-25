@@ -1,8 +1,4 @@
 import discord
-from discord.ext import commands
-
-from cogs.utils.custom_bot import CustomBot
-from cogs.utils.redis import RedisConnection
 
 
 class ShallowUser(object):
@@ -27,7 +23,7 @@ class ShallowUser(object):
         self.age = age if age is not None else self.LIFETIME_THRESHOLD
         self.fetch_when_expired = True
 
-    async def get_name(self, bot:CustomBot) -> str:
+    async def get_name(self, bot) -> str:
         """Gets the name of the given user, first locally, then from redis if expired"""
 
         if self.age >= self.LIFETIME_THRESHOLD:
@@ -36,7 +32,7 @@ class ShallowUser(object):
         self.age += 1
         return self.name
 
-    async def fetch_from_api(self, bot:CustomBot) -> str:
+    async def fetch_from_api(self, bot) -> str:
         """Fetches information for the given user from the Discord API"""
 
         # Grab user data
@@ -58,7 +54,7 @@ class ShallowUser(object):
         # Return data
         return self.name
 
-    async def fetch_from_redis(self, bot:CustomBot) -> str:
+    async def fetch_from_redis(self, bot) -> str:
         """Fetches information for the given user from the redis cache"""
 
         async with bot.redis() as re:

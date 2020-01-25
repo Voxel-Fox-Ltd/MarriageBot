@@ -44,20 +44,25 @@ class Marriage(utils.Cog):
                 return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
 
         # Neither are married, set up the proposal
+        self.logger.critical(1)
         await ctx.send(text_processor.valid_target())
         await self.bot.proposal_cache.add(instigator, target, 'MARRIAGE')
+        self.logger.critical(2)
 
         # Wait for a response
+        self.logger.critical(3)
         check = utils.AcceptanceCheck(target.id, ctx.channel.id)
         try:
             await check.wait_for_response(self.bot)
         except utils.AcceptanceCheck.TIMEOUT:
             return await ctx.send(text_processor.request_timeout(), ignore_error=True)
+        self.logger.critical(4)
 
         # They said no
         if check.response == 'NO':
             await self.bot.proposal_cache.remove(instigator, target)
             return await ctx.send(text_processor.request_denied(), ignore_error=True)
+        self.logger.critical(5)
 
         # They said yes!
         async with self.bot.database() as db:
@@ -73,6 +78,7 @@ class Marriage(utils.Cog):
             await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
+        self.logger.critical(6)
         # Remove users from proposal cache
         await self.bot.proposal_cache.remove(instigator, target)
 

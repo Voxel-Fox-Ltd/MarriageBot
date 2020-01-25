@@ -44,7 +44,7 @@ class RedisHandler(utils.Cog):
         for channel in self._channels.copy():
             self.bot.loop.run_until_complete(self.bot.redis.pool.unsubscribe(channel))
             self._channels.remove(channel)
-            self.log_handler.info(f"Unsubscribing from Redis channel {channel}")
+            self.logger.info(f"Unsubscribing from Redis channel {channel}")
 
     async def channel_handler(self, channel_name:str, function:callable, *args, **kwargs):
         """General handler for creating a channel, waiting for an input, and then plugging the
@@ -53,12 +53,12 @@ class RedisHandler(utils.Cog):
         # Subscribe to the given channel
         self._channels.append(channel_name)
         async with self.bot.redis() as re:
-            self.log_handler.info(f"Subscribing to Redis channel {channel_name}")
+            self.logger.info(f"Subscribing to Redis channel {channel_name}")
             channel_list = await re.conn.subscribe(channel_name)
 
         # Get the channel from the list, loop it forever
         channel = channel_list[0]
-        self.log_handler.info(f"Looping to wait for messages to channel {channel_name}")
+        self.logger.info(f"Looping to wait for messages to channel {channel_name}")
         while (await channel.wait_message()):
             data = await channel.get_json()
             self.bot.redis.logger.debug(f"Received JSON at channel {channel_name}:{json.dumps(data)}")
@@ -68,14 +68,14 @@ class RedisHandler(utils.Cog):
                 else:
                     function(data, *args, **kwargs)
             except Exception as e:
-                self.log_handler.error(e)
+                self.logger.error(e)
 
     async def eval_all(self, data:dict):
         """Creates a context object to go through and be invoked under the .ev command"""
 
         # Make sure to not run it again
         if self.bot.shard_ids == data['exempt']:
-            self.log_handler.info("Not invoking Redis received evall with reason exemption")
+            self.logger.info("Not invoking Redis received evall with reason exemption")
             return
 
         # Get message
@@ -90,7 +90,7 @@ class RedisHandler(utils.Cog):
         # Invoke command
         ctx: utils.Context = await self.bot.get_context(message, cls=utils.Context)
         ctx.invoked_with = 'ev'
-        self.log_handler.info(f"Invoking evall - {content}")
+        self.logger.info(f"Invoking evall - {content}")
         await ctx.command.invoke(ctx)
 
     def update_guild_prefix(self, data):
@@ -139,7 +139,7 @@ class RedisHandler(utils.Cog):
         try:
             user = await self.bot.fetch_user(data['user_id'])
             await user.send(data['content'])
-            self.log_handler.info(f"Sent a DM to user ID {data['user_id']}")
+            self.logger.info(f"Sent a DM to user ID {data['user_id']}")
         except (discord.NotFound, discord.Forbidden, AttributeError):
             pass
 
