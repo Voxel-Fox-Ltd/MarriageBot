@@ -97,7 +97,7 @@ class CustomBot(commands.AutoShardedBot):
         ProposalCache.bot = self
         random_text.RandomText.original.bot = self
 
-    def get_invite_link(self, *, join_server_redirect_uri:str=None, guild_id:int=None, **kwargs):
+    def get_invite_link(self, *, scope:str='bot', redirect_uri:str=None, guild_id:int=None, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
 
         permissions = discord.Permissions()
@@ -105,11 +105,11 @@ class CustomBot(commands.AutoShardedBot):
             setattr(permissions, name, value)
         data = {
             'client_id': self.config.get('oauth', {}).get('client_id', None) or self.user.id,
-            'scope': 'bot',
+            'scope': scope,
             'permissions': permissions.value
         }
-        if join_server_redirect_uri:
-            data['redirect_uri'] = join_server_redirect_uri
+        if redirect_uri:
+            data['redirect_uri'] = redirect_uri
         if guild_id:
             data['guild_id'] = guild_id
         return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)

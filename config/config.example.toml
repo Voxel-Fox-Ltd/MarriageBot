@@ -16,7 +16,7 @@ server_specific = false  # Bool flag for whether the bot uses global or server s
 [command_data]
     guild_invite = ""
     github = ""
-    patreon = ""  # The link that is output when 'donate' is called
+    patreon = ""
 
 # This data is passed directly over to asyncpg
 [database]
