@@ -18,12 +18,14 @@ class DatabaseConnection(object):
         self.conn = connection
         self.transaction = transaction
 
-    @staticmethod
-    async def create_pool(config:dict) -> None:
+    @classmethod
+    async def create_pool(cls, config:dict) -> None:
         """Creates the database pool and plonks it in DatabaseConnection.pool"""
 
-        DatabaseConnection.config = config
-        DatabaseConnection.pool = await asyncpg.create_pool(**config)
+        cls.config = config.copy()
+        if config.pop('enabled', True) is False:
+            raise NotImplementedError("The database connection has been disabled.")
+        cls.pool = await asyncpg.create_pool(**cls.config)
 
     @classmethod
     async def get_connection(cls) -> 'DatabaseConnection':

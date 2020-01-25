@@ -13,6 +13,7 @@ import discord
 from discord.ext import commands
 
 from cogs.utils.database import DatabaseConnection
+from cogs.utils.redis import RedisConnection
 from cogs.utils.custom_context import CustomContext
 
 
@@ -53,6 +54,10 @@ class CustomBot(commands.AutoShardedBot):
         # Allow database connections like this
         self.database = DatabaseConnection
         self.database.logger = self.logger.getChild('database')
+
+        # Allow redis connections like this
+        self.redis = RedisConnection
+        self.redis.logger = self.logger.getChild('redis')
 
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
@@ -102,10 +107,10 @@ class CustomBot(commands.AutoShardedBot):
         if delete is None:
             delete = [message]
         for i in delete:
-            try:
+        try:
                 await i.delete()
             except (discord.Forbidden, discord.NotFound):
-                return  # Ah well
+            return  # Ah well
 
     @property
     def owner_ids(self) -> list:
