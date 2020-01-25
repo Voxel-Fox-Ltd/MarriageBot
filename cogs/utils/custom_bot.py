@@ -1,19 +1,24 @@
-from datetime import datetime as dt
 import asyncio
-import glob
-import re as regex
-import logging
-from urllib.parse import urlencode
 import collections
-import typing
+import glob
 import json
+import logging
+import typing
+from datetime import datetime as dt
+from urllib.parse import urlencode
 
 import aiohttp
 import discord
-from discord.ext import commands
 import toml
+from discord.ext import commands
 
-from cogs import utils
+from cogs.utils.custom_context import CustomContext
+from cogs.utils.database import DatabaseConnection
+from cogs.utils.redis import RedisConnection
+from cogs.utils.shallow_user import ShallowUser
+from cogs.utils.proposal_cache import ProposalCache
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils import random_text
 
 
 def get_prefix(bot, message:discord.Message):
@@ -48,77 +53,101 @@ class CustomBot(commands.AutoShardedBot):
     }
 
     def __init__(self, *args, config_file:str, logger:logging.Logger=None, **kwargs):
-        super().__init__(command_prefix=get_prefix, *args, **kwargs)
+        """The initialiser for the bot object
+        Note that we load the config before running the original method"""
 
-        # Throw down the root logger
-        self.logger: logging.Logger = logger or logging.getLogger()
-
-        # Cache the config
-        self.config: dict = None
-        self.config_file: str = config_file
+        # Store the config file for later
+        self.config = None
+        self.config_file = config_file
+        self.logger = logger or logging.getLogger("bot")
         self.reload_config()
 
-        # Update our default guild settings using the config
-        self.DEFAULT_GUILD_SETTINGS['prefix'] = self.config['prefix']['default_prefix']
-        self.DEFAULT_GUILD_SETTINGS['max_family_members'] = self.config['max_family_members']
+        # Run original
+        super().__init__(command_prefix=get_prefix, *args, **kwargs)
 
         # Set up arguments that are used in cogs and stuff
         self._invite_link = None  # populated by 'invite' property
         self.support_guild = None  # populated by Patreon or bot mod check
 
         # Set up stuff that'll be used bot-wide
-        self.shallow_users: typing.Dict[int, utils.ShallowUser] = {}  # A shallow copy of users' names
+        self.shallow_users: typing.Dict[int, ShallowUser] = {}  # A shallow copy of users' names
         self.session = aiohttp.ClientSession(loop=self.loop)  # Session for DBL post
         self.startup_time = dt.now()  # Store when the instance was created
         self.startup_method = None  # Store the startup task so I can see if it err'd
 
         # Set up stuff that'll be used literally everywhere
-        self.database = utils.DatabaseConnection
-        utils.DatabaseConnection.logger = self.logger.getChild("database")
-        self.redis = utils.RedisConnection
-        utils.RedisConnection.logger = self.logger.getChild("redis")
+        self.database = DatabaseConnection
+        DatabaseConnection.logger = self.logger.getChild("database")
+        self.redis = RedisConnection
+        RedisConnection.logger = self.logger.getChild("redis")
 
         # Set up some caches
         self.server_specific_families: typing.List[int] = []  # List of whitelisted guild IDs
-        self.proposal_cache: typing.Dict[int, tuple] = utils.ProposalCache()
+        self.proposal_cache: typing.Dict[int, tuple] = ProposalCache()
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
         self.blocked_users: typing.Dict[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
         self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.DEFAULT_GUILD_SETTINGS.copy())
         self.dbl_votes: typing.Dict[int, dt] = {}
 
         # Put the bot object in some other classes
-        utils.ProposalCache.bot = self
-        utils.random_text.RandomText.original.bot = self
+        ProposalCache.bot = self
+        random_text.RandomText.original.bot = self
 
-    @property
-    def invite_link(self):
-        """The invite link for the bot, with all permissions in tow"""
+    def get_invite_link(self, *, join_server_redirect_uri:str=None, guild_id:int=None, **kwargs):
+        """Gets the invite link for the bot, with permissions all set properly"""
 
-        if self._invite_link:
-            return self._invite_link
         permissions = discord.Permissions()
-        permissions.read_messages = True
-        permissions.send_messages = True
-        permissions.embed_links = True
-        permissions.attach_files = True
-        self._invite_link = 'https://discordapp.com/oauth2/authorize?' + urlencode({
-            'client_id': self.config['oauth']['client_id'],
+        for name, value in kwargs.items():
+            setattr(permissions, name, value)
+        data = {
+            'client_id': self.config.get('oauth', {}).get('client_id', None) or self.user.id,
             'scope': 'bot',
-            'permissions': permissions.value,
-            'redirect_uri': self.config['oauth']['join_server_redirect_uri'],
-        })
-        return self._invite_link
+            'permissions': permissions.value
+        }
+        if join_server_redirect_uri:
+            data['redirect_uri'] = join_server_redirect_uri
+        if guild_id:
+            data['guild_id'] = guild_id
+        return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)
 
-    def invite_link_to_guild(self, guild_id:int):
-        """Returns an invite link to a guild
-        Used for the website to easily add the bot to a given guild
+    async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, delete:typing.List[discord.Message]=None, timeout=60.0):
+        """Adds a delete button to the given message"""
 
-        Params:
-            guild_id: int
-                The ID for the guild the invite link should default to
-        """
+        # Add reaction
+        await message.add_reaction("\N{WASTEBASKET}")
 
-        return self.invite_link + f'&guild_id={guild_id}'
+        # Fix up arguments
+        if not isinstance(valid_users, list):
+            valid_users = [valid_users]
+
+        # Wait for response
+        def check(r, u):
+            return all([
+                r.message.id == message.id,
+                u.id in [user.id for user in valid_users],
+                str(r.emoji) == "\N{WASTEBASKET}"
+            ])
+        try:
+            await self.wait_for("reaction_add", check=check, timeout=timeout)
+        except asyncio.TimeoutError:
+            try:
+                return await message.remove_reaction("\N{WASTEBASKET}", self.user)
+            except Exception:
+                return
+
+        # We got a response
+        if delete is None:
+            delete = [message]
+
+        # Try and bulk delete
+        bulk = False
+        if message.guild:
+            permissions: discord.Permissions = message.channel.permissions_for(message.guild.me)
+            bulk = permissions.manage_message and permissions.read_message_history
+        try:
+            await message.channel.purge(check=lambda m: m.id in [i.id for i in delete], bulk=bulk)
+        except Exception:
+            return  # Ah well
 
     @property
     def is_server_specific(self) -> bool:
@@ -144,7 +173,7 @@ class CustomBot(commands.AutoShardedBot):
 
         # Remove caches
         self.logger.debug("Clearing family tree member cache")
-        utils.FamilyTreeMember.all_users.clear()
+        FamilyTreeMember.all_users.clear()
         self.logger.debug("Clearing blacklisted guilds cache")
         self.blacklisted_guilds.clear()
         self.logger.debug("Clearing guild settings cache")
@@ -154,20 +183,20 @@ class CustomBot(commands.AutoShardedBot):
         self.logger.debug("Clearing blocked users cache")
         self.blocked_users.clear()
         self.logger.debug("Clearing random text cache")
-        utils.random_text.RandomText.original.all_random_text.clear()
+        random_text.RandomText.original.all_random_text.clear()
 
         # Grab a database connection
-        db: utils.DatabaseConnection = await self.database.get_connection()
+        db: DatabaseConnection = await self.database.get_connection()
 
         # Load in all of the random text
         try:
-            random_text = await db('SELECT * FROM random_text')
+            text_lines = await db('SELECT * FROM random_text')
         except Exception as e:
             self.logger.critical(f"Ran into an errorr selecting random text: {e}")
             exit(1)
-        self.logger.debug(f"Caching {len(random_text)} lines of random text")
-        for row in random_text:
-            utils.random_text.RandomText.original.all_random_text[row['command_name']][row['event_name']].append(row['string'])
+        self.logger.debug(f"Caching {len(text_lines)} lines of random text")
+        for row in text_lines:
+            text_lines.RandomText.original.all_random_text[row['command_name']][row['event_name']].append(row['string'])
 
         # Pick up the blacklisted guilds from the db
         try:
@@ -259,14 +288,14 @@ class CustomBot(commands.AutoShardedBot):
         # Cache the family data - partners
         self.logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
-            utils.FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'], guild_id=i['guild_id'])
+            FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'], guild_id=i['guild_id'])
 
         # - children
         self.logger.debug(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
-            parent = utils.FamilyTreeMember.get(i['parent_id'], i['guild_id'])
+            parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
             parent._children.append(i['child_id'])
-            child = utils.FamilyTreeMember.get(i['child_id'], i['guild_id'])
+            child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
             child._parent = i['parent_id']
 
         # Disconnect from the database
@@ -288,7 +317,7 @@ class CustomBot(commands.AutoShardedBot):
             return
 
         # Invoke context
-        ctx: utils.Context = await self.get_context(message, cls=utils.Context)
+        ctx: CustomContext = await self.get_context(message, cls=CustomContext)
 
         # Add timeout to all commands - 2 minutes or bust
         try:
@@ -315,52 +344,50 @@ class CustomBot(commands.AutoShardedBot):
             return str(user)
         user = self.shallow_users.get(user_id)
         if user is None:
-            user = utils.ShallowUser(user_id)
+            user = ShallowUser(user_id)
             self.shallow_users[user_id] = user
         return await user.get_name(self)
 
     def get_uptime(self) -> float:
-        """Gets the total time since the class was initialised (in seconds)"""
+        """Gets the uptime of the bot in seconds
+        Uptime is a bit of a misnomer, since it starts when the instance is created, but
+        yknow that's close enough"""
 
         return (dt.now() - self.startup_time).total_seconds()
 
-    @property
-    def owners(self) -> list:
-        """Get a list of the owners from the config file"""
+    async def get_context(self, message, *, cls=commands.Context):
+        """Gently insert a new original_author field into the context"""
 
-        return self.config.get('owners', list())
+        ctx = await super().get_context(message, cls=CustomContext)
+        if ctx.guild:
+            ctx.original_author = ctx.guild.get_member(message.author.id)
+        else:
+            ctx.original_author = self.get_user(message.author.id)
+        return ctx
 
-    async def fetch_support_guild(self):
-        """Fetches the guild object for the given support guild in the config file, storing it
-        locally in bot.support_guild"""
-
-        guild_id = self.config.get('guild_id')
-        if guild_id in [None, '']:
-            self.logger.warn("No guild ID set in the bot config")
-        guild = await self.fetch_guild(guild_id)
-        self.support_guild = guild
-
-    def get_extensions(self) -> typing.List[str]:
-        """Gets a list of the extensions that are to be loaded into the bot"""
+    def get_extensions(self) -> list:
+        """Gets a list of filenames of all the loadable cogs"""
 
         ext = glob.glob('cogs/[!_]*.py')
-        rand = []
-        extensions = [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext + rand]
+        extensions = [i.replace('\\', '.').replace('/', '.')[:-3] for i in ext]
         self.logger.debug("Getting all extensions: " + str(extensions))
         return extensions
 
     def load_all_extensions(self):
-        """Loads all the given extensions into the bot"""
+        """Loads all the given extensions from self.get_extensions()"""
 
-        self.logger.debug('Unloading extensions... ')
+        # Unload all the given extensions
+        self.logger.info('Unloading extensions... ')
         for i in self.get_extensions():
             try:
                 self.unload_extension(i)
-            except discord.ext.commands.ExtensionNotLoaded as e:
-                self.logger.debug(f" * {i} :: not loaded")
+            except Exception as e:
+                self.logger.warning(f' * {i}... failed - {e!s}')
             else:
-                self.logger.debug(f" * {i} :: success")
-        self.logger.debug('Loading extensions... ')
+                self.logger.info(f' * {i}... success')
+
+        # Now load em up again
+        self.logger.info('Loading extensions... ')
         for i in self.get_extensions():
             try:
                 self.load_extension(i)
@@ -369,26 +396,27 @@ class CustomBot(commands.AutoShardedBot):
                 raise e
             self.logger.debug(f" * {i} :: success")
 
-    async def set_default_presence(self, shard_id:int=None):
-        """Sets the default presence for the bot as it appears in the config
+    async def set_default_presence(self):
+        """Sets the default presence for the bot as appears in the config file"""
 
-        Params:
-            shard_id: int = None
-                If given, the bot will set the presence for only the shard ID
-                If None, then the presence will be set for the whole instance
-        """
-
-        presence_text = self.config.get('presence_text')
-        if shard_id:
-            game = discord.Game(f"{presence_text} (shard {shard_id})".strip())
-            await self.change_presence(activity=game, shard_id=shard_id)
-        elif self.shard_ids:
-            for i in self.shard_ids:
-                game = discord.Game(f"{presence_text} (shard {i})".strip())
-                await self.change_presence(activity=game, shard_id=i)
+        # Update presence
+        self.logger.info("Setting default bot presence")
+        presence = self.config['presence']
+        if self.shard_count > 1:
+            for i in range(self.shard_count):
+                activity = discord.Activity(
+                    name=f"{presence['text']} (shard {i})",
+                    type=getattr(discord.ActivityType, presence['activity_type'].lower())
+                )
+                status = getattr(discord.Status, presence['status'].lower())
+                await self.change_presence(activity=activity, status=status, shard_id=i)
         else:
-            game = discord.Game(f"{presence_text} (shard 0)".strip())
-            await self.change_presence(activity=game)
+            activity = discord.Activity(
+                name=presence['text'],
+                type=getattr(discord.ActivityType, presence['activity_type'].lower())
+            )
+            status = getattr(discord.Status, presence['status'].lower())
+            await self.change_presence(activity=activity, status=status)
 
     async def post_guild_count(self):
         """Post the average guild count to DiscordBots.org"""
@@ -412,7 +440,7 @@ class CustomBot(commands.AutoShardedBot):
             'Authorization': self.config['dbl_token']
         }
         self.logger.info(f"Sending POST request to DBL with data {json.dumps(data)}")
-        async with self.session.post(url, json=data, headers=headers) as r:
+        async with self.session.post(url, json=data, headers=headers):
             pass
 
     def reload_config(self):

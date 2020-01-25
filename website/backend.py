@@ -528,3 +528,12 @@ async def webhook_handler(request:Request):
             await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user_id, time)
     return success
 
+
+@routes.get('/login_redirect')
+async def login(request:Request):
+    """Page the discord login redirects the user to when successfully logged in with Discord"""
+
+    await aiohttp_session.new_session(request)
+    await webutils.process_discord_login(request, ['identify', 'guilds'])
+    return HTTPFound(location=f'/')
+

@@ -1,7 +1,7 @@
-import os
 import argparse
 import warnings
 import logging
+import os
 import asyncio
 import sys
 
@@ -10,9 +10,9 @@ import discord
 from cogs import utils
 
 
-# Set up a basic logger for us to use for a lil bit
+# Set up loggers
 logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
-logger = logging.getLogger(os.getcwd().split(os.sep)[-1].lower())
+logger = logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower())
 
 # Filter warnings
 warnings.filterwarnings('ignore', category=RuntimeWarning)
@@ -40,19 +40,23 @@ def get_program_arguments():
     )
     parser.add_argument(
         "--loglevel", default="INFO",
+        help="Global logging level - probably most useful is INFO and DEBUG"
+    )
+    parser.add_argument(
+        "--loglevel-bot", default=None,
         help="Logging level for the bot - probably most useful is INFO and DEBUG"
     )
     parser.add_argument(
-        "--loglevel-discord", default="INFO",
+        "--loglevel-discord", default=None,
         help="Logging level for discord - probably most useful is INFO and DEBUG"
     )
     parser.add_argument(
-        "--loglevel-redis", default="INFO",
-        help="Logging level for redis - probably most useful is INFO and DEBUG"
+        "--loglevel-database", default=None,
+        help="Logging level for database - probably most useful is INFO and DEBUG"
     )
     parser.add_argument(
-        "--loglevel-database", default="INFO",
-        help="Logging level for database - probably most useful is INFO and DEBUG"
+        "--loglevel-redis", default=None,
+        help="Logging level for redis - probably most useful is INFO and DEBUG"
     )
     return parser.parse_args()
 args = get_program_arguments()
@@ -71,7 +75,7 @@ if args.shardcount is not None and not (args.min is not None and args.max is not
     exit(1)
 
 # Okay cool make the bot object
-bot = utils.CustomBot(
+bot = utils.Bot(
     config_file=args.config_file,
     activity=discord.Game(name="Reconnecting..."),
     status=discord.Status.dnd,
@@ -83,15 +87,28 @@ bot = utils.CustomBot(
     logger=logger.getChild('bot'),
 )
 
-# Set up out loggers
-log_level = getattr(logging, args.loglevel.upper(), None)
-if log_level is None:
-    logger.critical("An invalid log level was provided")
-    exit(1)
-logger.setLevel(log_level)
-logging.getLogger('discord').setLevel(getattr(logging, args.loglevel_discord.upper(), log_level))
-bot.redis.logger.setLevel(getattr(logging, args.loglevel_redis.upper(), log_level))
-bot.database.logger.setLevel(getattr(logging, args.loglevel_database.upper(), log_level))
+# Set up the loggers
+def set_log_level(logger_to_change:logging.Logger, loglevel:str):
+    if loglevel is None:
+        return
+    if isinstance(logger_to_change, str):
+        logger_to_change = logging.getLogger(logger_to_change)
+    level = getattr(logging, loglevel.upper(), None)
+    if level is None:
+        raise ValueError(f"The log level {loglevel.upper()} wasn't found in the logging module")
+    logger_to_change.setLevel(level)
+
+# Set loglevel defaults
+set_log_level(logger, args.loglevel)
+set_log_level(bot.database.logger, args.loglevel)
+set_log_level(bot.redis.logger, args.loglevel)
+set_log_level('discord', args.loglevel)
+
+# Set loglevels by config
+set_log_level(logger, args.loglevel_bot)
+set_log_level(bot.database.logger, args.loglevel_database)
+set_log_level(bot.redis.logger, args.loglevel_redis)
+set_log_level('discord', args.loglevel_discord)
 
 
 @bot.event
@@ -101,59 +118,57 @@ async def on_shard_connect(shard_id:int):
     logger.info(f"Shard {shard_id} successfully connected")
 
 
+@bot.event
+async def on_ready():
+    """Run when the bot connects to Discord properly
+    Sets presence to default and not a lot else"""
+
+    logger.info(f"Bot connected - {bot.user} // {bot.user.id}")
+    logger.info("Setting activity to default")
+    await bot.set_default_presence()
+    logger.info('Bot loaded.')
+
+
 if __name__ == '__main__':
-    """Start the bot, database pool, redis pool, and webserver,
-    and run the loop forever"""
+    """Starts the bot, connects the database, runs the async loop forever"""
 
     # Grab the event loop
     loop = bot.loop
 
-    # Connect the database
-    logger.info("Creating database pool")
-    try:
-        db_connect = loop.create_task(utils.DatabaseConnection.create_pool(bot.config['database']))
-        loop.run_until_complete(db_connect)
-    except KeyError as e:
-        logger.critical("KeyError creating database pool - is there a 'database' object in the config?")
-        if logger.level > logging.DEBUG:
-            exit(1)
-        else:
-            raise e
-    except ConnectionRefusedError as e:
-        logger.critical("ConnectionRefusedError creating database pool - did you set the right information in the config, and is the database running?")
-        if logger.level > logging.DEBUG:
-            exit(1)
-        else:
-            raise e
-    except Exception as e:
-        logger.critical("Error creating database pool")
-        raise e
-    logger.info("Created database pool successfully")
+    # Connect the database pool
+    if bot.config['database'].get('enabled', True):
+        logger.info("Creating database pool")
+        try:
+            db_connect_task = loop.create_task(utils.DatabaseConnection.create_pool(bot.config['database']))
+            loop.run_until_complete(db_connect_task)
+        except KeyError as e:
+            raise Exception("KeyError creating database pool - is there a 'database' object in the config?")
+        except ConnectionRefusedError as e:
+            raise Exception("ConnectionRefusedError creating database pool - did you set the right information in the config, and is the database running?")
+        except Exception as e:
+            raise Exception("Error creating database pool")
+        logger.info("Created database pool successfully")
+    else:
+        logger.info("Database connection has been disabled")
 
-    # Connect the redis
-    logger.info("Creating redis pool")  # TODO make redis optional
-    try:
-        re_connect = loop.create_task(utils.RedisConnection.create_pool(bot.config['redis']))
-        loop.run_until_complete(re_connect)
-    except KeyError as e:
-        logger.critical("KeyError creating redis pool - is there a 'redis' object in the config?")
-        if logger.level > logging.DEBUG:
-            exit(1)
-        else:
-            raise e
-    except ConnectionRefusedError as e:
-        logger.critical("ConnectionRefusedError creating redis pool - did you set the right information in the config, and is the database running?")
-        if logger.level > logging.DEBUG:
-            exit(1)
-        else:
-            raise e
-    except Exception as e:
-        logger.critical("Error creating redis pool")
-        raise e
-    logger.info("Created redis pool successfully")
+    # Connect the redis pool
+    if bot.config['redis'].get('enabled', True):
+        logger.info("Creating redis pool")
+        try:
+            re_connect = loop.create_task(utils.RedisConnection.create_pool(bot.config['redis']))
+            loop.run_until_complete(re_connect)
+        except KeyError as e:
+            raise KeyError("KeyError creating redis pool - is there a 'redis' object in the config?")
+        except ConnectionRefusedError as e:
+            raise ConnectionRefusedError("ConnectionRefusedError creating redis pool - did you set the right information in the config, and is the database running?")
+        except Exception as e:
+            raise Exception("Error creating redis pool")
+        logger.info("Created redis pool successfully")
+    else:
+        logger.info("Redis connection has been disabled")
 
     # Load the bot's extensions
-    logger.info('Loading extensions')
+    logger.info('Loading extensions... ')
     bot.load_all_extensions()
 
     # Run the bot
@@ -165,12 +180,11 @@ if __name__ == '__main__':
         loop.run_until_complete(bot.logout())
 
     # We're now done running the bot, time to clean up and close
-    logger.info("Closing database pool")
-    loop.run_until_complete(utils.DatabaseConnection.pool.close())
-    logger.info("Database pool closed")
-    logger.info("Closing redis pool")
-    utils.RedisConnection.pool.close()
-    logger.info("Redis pool closed")
+    if bot.config['database']['enabled']:
+        logger.info("Closing database pool")
+        loop.run_until_complete(utils.DatabaseConnection.pool.close())
+    if bot.config['redis']['enabled']:
+        logger.info("Closing redis pool")
+        utils.RedisConnection.pool.close()
     logger.info("Closing asyncio loop")
     loop.close()
-    logger.info("Asyncio loop closed")

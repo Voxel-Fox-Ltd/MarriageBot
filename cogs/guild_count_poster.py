@@ -22,6 +22,6 @@ class GuildCountPoster(utils.Cog):
             await self.bot.post_guild_count()
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = GuildCountPoster(bot)
     bot.add_cog(x)

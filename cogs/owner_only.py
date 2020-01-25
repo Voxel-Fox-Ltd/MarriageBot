@@ -3,6 +3,7 @@ import io
 import textwrap
 import contextlib
 import copy
+import collections
 import json
 
 import discord
@@ -12,36 +13,29 @@ from cogs import utils
 
 
 class OwnerOnly(utils.Cog):
-    """Handles commands that only people registered as owners are able to run"""
+    """Handles commands that only the owner should be able to run"""
 
-    async def cog_check(self, ctx:utils.Context):
-        """Checks that the ORIGINAL author (not counting sudo) is in the owners list"""
+    @commands.command(aliases=['pm', 'dm'], cls=utils.Command)
+    @commands.is_owner()
+    async def message(self, ctx:utils.Context, user:discord.User, *, content:str):
+        """PMs a user the given content"""
 
-        if ctx.original_author_id in self.bot.owners:
-            return True
-        raise commands.NotOwner()
-
-    @commands.command(aliases=['pm', 'dm'])
-    async def message(self, ctx:utils.Context, user:utils.converters.UserID, *, content:str):
-        """Messages a user the given content"""
-
-        user_object = self.bot.get_user(user) or await self.bot.fetch_user(user)
-        await user_object.send(content)
-        await ctx.okay()
+        await user.send(content)
 
     def _cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
 
-        # Remove multiline backticks ```py\n```
+        # remove ```py\n```
         if content.startswith('```') and content.endswith('```'):
             if content[-4] == '\n':
                 return '\n'.join(content.split('\n')[1:-1])
             return '\n'.join(content.split('\n')[1:]).rstrip('`')
 
-        # Remove inline backticks `foo`
+        # remove `foo`
         return content.strip('` \n')
 
-    @commands.command(aliases=['evall'])
+    @commands.command(aliases=['evall'], cls=utils.Command)
+    @commands.is_owner()
     async def ev(self, ctx:utils.Context, *, content:str):
         """Evaluates some Python code
 
@@ -86,7 +80,7 @@ class OwnerOnly(utils.Cog):
             value = stdout.getvalue()
 
             # Give reaction just to show that it ran
-            await ctx.okay(ignore_error=True)
+            await ctx.message.add_reaction("\N{OK HAND SIGN}")
 
             # If the function returned nothing
             if ret is None:
@@ -105,24 +99,16 @@ class OwnerOnly(utils.Cog):
                     except Exception:
                         pass
                 if type(result_raw) == dict and type(result) == str:
-                    text = f'Run by shards {self.bot.shard_ids}```json\n{result}\n```'
+                    text = f'```json\n{result}\n```'
                 else:
-                    text = f'Run by shards {self.bot.shard_ids}```py\n{result_raw}\n```'
+                    text = f'```py\n{result}\n```'
                 if len(text) > 2000:
-                    await ctx.send(f'Run by shards {self.bot.shard_ids}', file=discord.File(io.StringIO(result_raw), filename='ev.txt'))
+                    await ctx.send(file=discord.File(io.StringIO(result), filename='ev.txt'))
                 else:
                     await ctx.send(text)
 
-        if ctx.invoked_with == "evall":
-            async with self.bot.redis() as re:
-                await re.publish_json('EvalAll', {
-                    'content': content,
-                    'channel_id': ctx.channel.id,
-                    'message_id': ctx.message.id,
-                    'exempt': self.bot.shard_ids,
-                })
-
-    @commands.command(aliases=['rld'])
+    @commands.command(aliases=['rld'], cls=utils.Command)
+    @commands.is_owner()
     async def reload(self, ctx:utils.Context, *cog_name:str):
         """Unloads and reloads a cog from the bot"""
 
@@ -132,8 +118,9 @@ class OwnerOnly(utils.Cog):
             self.bot.load_extension(cog_name)
         except commands.ExtensionAlreadyLoaded:
             try:
-                self.bot.unload_extension(cog_name)
-                self.bot.load_extension(cog_name)
+                # self.bot.unload_extension(cog_name)
+                # self.bot.load_extension(cog_name)
+                self.bot.reload_extension(cog_name)
             except Exception:
                 await ctx.send('```py\n' + traceback.format_exc() + '```')
                 return
@@ -142,7 +129,8 @@ class OwnerOnly(utils.Cog):
             return
         await ctx.send('Cog reloaded.')
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
     async def runsql(self, ctx:utils.Context, *, content:str):
         """Runs a line of SQL into the sparcli database"""
 
@@ -174,44 +162,41 @@ class OwnerOnly(utils.Cog):
         string_output = '\n'.join(output)
         await ctx.send('```\n{}```'.format(string_output))
 
-    @commands.group()
-    async def profile(self, ctx:utils.Context):
-        """A parent group for the different bot profile commands"""
+    @commands.group(cls=utils.Group)
+    @commands.is_owner()
+    async def botuser(self, ctx:utils.Context):
+        """A parent command for the bot user configuration section"""
 
         pass
 
-    @profile.command(aliases=['username'])
+    @botuser.command(aliases=['username'], cls=utils.Command)
+    @commands.is_owner()
     async def name(self, ctx:utils.Context, *, username:str):
-        """Lets you change the username of the bot"""
+        """Lets you set the username for the bot account"""
 
         if len(username) > 32:
-            await ctx.send('That username is too long to be compatible with Discord.')
-            return
-
+            return await ctx.send('That username is too long.')
         await self.bot.user.edit(username=username)
-        await ctx.okay(ignore_error=True)
+        await ctx.send('Done.')
 
-    @profile.command(aliases=['photo', 'image', 'avatar'])
+    @botuser.command(aliases=['photo', 'image', 'avatar'], cls=utils.Command)
+    @commands.is_owner()
     async def picture(self, ctx:utils.Context, *, image_url:str=None):
-        """Lets you change the avatar of the bot"""
+        """Lets you set the profile picture of the bot"""
 
-        # Get url
         if image_url == None:
             try:
                 image_url = ctx.message.attachments[0].url
             except IndexError:
-                await ctx.send("You need to provide an image.")
-                return
+                return await ctx.send("You need to provide an image.")
 
-        # Get image bytes
         async with self.bot.session.get(image_url) as r:
             image_content = await r.read()
-
-        # Edit bot
         await self.bot.user.edit(avatar=image_content)
-        await ctx.okay(ignore_error=True)
+        await ctx.send('Done.')
 
-    @profile.command(aliases=['game'])
+    @botuser.command(aliases=['game'], cls=utils.Command)
+    @commands.is_owner()
     async def activity(self, ctx:utils.Context, activity_type:str, *, name:str=None):
         """Changes the activity of the bot"""
 
@@ -221,7 +206,7 @@ class OwnerOnly(utils.Cog):
             return await self.bot.set_default_presence()
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
-    @profile.command()
+    @botuser.command()
     async def status(self, ctx:utils.Context, status:str):
         """Changes the bot's status"""
 
@@ -326,8 +311,16 @@ class OwnerOnly(utils.Cog):
             await db('INSERT INTO guild_specific_families VALUES ($1)', guild_id)
         await ctx.okay(ignore_error=True)
 
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
+    async def addreaction(self, ctx, message:discord.Message, reaction:str):
+        """Adds a reaction to a message"""
 
-def setup(bot:utils.CustomBot):
+        await message.add_reaction(reaction)
+        await ctx.message.add_reaction("\N{OK HAND SIGN}")
+
+
+def setup(bot:utils.Bot):
     x = OwnerOnly(bot)
     bot.add_cog(x)
 

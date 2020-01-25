@@ -5,7 +5,7 @@ from cogs import utils
 
 class CommandEvent(utils.Cog):
 
-    def __init__(self, bot:utils.CustomBot):
+    def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self.command_cache = []
         self.log_command_loop.start()
@@ -72,6 +72,6 @@ class CommandEvent(utils.Cog):
             )
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = CommandEvent(bot)
     bot.add_cog(x)

@@ -5,7 +5,7 @@ from cogs import utils
 
 class GoogleAnalytics(utils.Cog):
 
-    def __init__(self, bot:utils.CustomBot):
+    def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self.url = 'https://www.google-analytics.com/collect'
         self.base_params = {
@@ -77,7 +77,7 @@ class GoogleAnalytics(utils.Cog):
             pass
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = GoogleAnalytics(bot)
     if '' in list(bot.config['google_analytics'].values()):
         x.log_handler.error("Google Analytics authorization not set in config - not loading cog.")

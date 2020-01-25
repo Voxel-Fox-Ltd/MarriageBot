@@ -12,7 +12,7 @@ class RedisHandler(utils.Cog):
 
     DEFAULT_EV_MESSAGE = "return 'Message not received'"
 
-    def __init__(self, bot:utils.CustomBot):
+    def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self._channels = []  # Populated automatically
 
@@ -144,6 +144,6 @@ class RedisHandler(utils.Cog):
             pass
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = RedisHandler(bot)
     bot.add_cog(x)

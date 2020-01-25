@@ -14,7 +14,7 @@ class BotConfig(utils.Cog):
         raise commands.MissingPermissions(["manage_guild"])
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.guild)
     async def prefix(self, ctx:utils.Context, prefix:str=None):
         """Changes the prefix for your guild"""
 
@@ -38,6 +38,6 @@ class BotConfig(utils.Cog):
         await ctx.send(f"Your guild's prefix has been updated to `{prefix}`.")
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = BotConfig(bot)
     bot.add_cog(x)

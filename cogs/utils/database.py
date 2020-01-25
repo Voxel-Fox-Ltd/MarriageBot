@@ -19,12 +19,14 @@ class DatabaseConnection(object):
         self.conn = connection
         self.transaction = transaction
 
-    @staticmethod
-    async def create_pool(config:dict) -> None:
+    @classmethod
+    async def create_pool(cls, config:dict) -> None:
         """Creates the database pool and plonks it in DatabaseConnection.pool"""
 
-        DatabaseConnection.config = config
-        DatabaseConnection.pool = await asyncpg.create_pool(**config)
+        cls.config = config.copy()
+        if config.pop('enabled', True) is False:
+            raise NotImplementedError("The database connection has been disabled.")
+        cls.pool = await asyncpg.create_pool(**config)
 
     @classmethod
     async def get_connection(cls) -> 'DatabaseConnection':
@@ -101,3 +103,11 @@ class DatabaseConnection(object):
             await self.transaction.rollback()
             raise e
         await self.commit_transaction()
+
+    async def copy_records_to_table(self, table_name, *, records, columns=None, timeout=None):
+        """Copies a series of records to a given table"""
+
+        return await self.conn.copy_records_to_table(
+            table_name=table_name, records=records,
+            columns=columns, timeout=timeout
+        )

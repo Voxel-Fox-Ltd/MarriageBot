@@ -11,13 +11,15 @@ class ErrorHandler(utils.Cog):
         instead. If it fails that too, it just stays silent."""
 
         try:
-            await ctx.send(text)
+            return await ctx.send(text)
         except discord.Forbidden:
             try:
-                await ctx.author.send(author_text or text)
+                return await ctx.author.send(author_text or text)
             except discord.Forbidden:
                 pass
-        return
+        except discord.NotFound:
+            pass
+        return None
 
     @utils.Cog.listener()
     async def on_command_error(self, ctx:utils.Context, error:commands.CommandError):
@@ -37,7 +39,7 @@ class ErrorHandler(utils.Cog):
             commands.MissingRole, commands.CommandOnCooldown, commands.DisabledCommand,
             utils.errors.BlockedUserError,
         )
-        if ctx.original_author_id in self.bot.owners and isinstance(error, owner_reinvoke_errors):
+        if ctx.original_author.id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
 
         # Can't send files
@@ -47,10 +49,6 @@ class ErrorHandler(utils.Cog):
                 "I'm unable to send messages into that channel."
             )
             return
-
-        # Missing argument
-        elif isinstance(error, commands.MissingRequiredArgument):
-            return await ctx.send("You need to specify a person for this command to work properly.")
 
         # Cooldown
         elif isinstance(error, commands.CommandOnCooldown):
@@ -80,16 +78,24 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, utils.errors.NotBotAdministrator):
             return await ctx.send(f"You need to be registered as MarriageBot support to run this command.")
 
-        # Argument conversion error
-        elif isinstance(error, commands.BadArgument):
-            return await ctx.send(str(error))
-
         # Not set to server specific
         elif isinstance(error, utils.errors.NotServerSpecific):
             return await ctx.send(f"You need to be using MarriageBot Gold to run this command - see (`{ctx.clean_prefix}perks`).")
 
         # User is blocked
         elif isinstance(error, utils.errors.BlockedUserError):
+            return await ctx.send(str(error))
+
+        # Bot ready
+        elif isinstance(error, utils.errors.BotNotReady):
+            return await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+
+        # Missing argument
+        elif isinstance(error, commands.MissingRequiredArgument):
+            return await ctx.send(f"You're missing the `{error.param.name}` argument, which is required for this command to work properly.")
+
+        # Argument conversion error
+        elif isinstance(error, commands.BadArgument):
             return await ctx.send(str(error))
 
         # NSFW channel
@@ -100,13 +106,9 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.DisabledCommand):
             return await ctx.send("This command has been temporarily disabled. Apologies for any inconvenience.")
 
-        # Bot ready
-        elif isinstance(error, utils.errors.BotNotReady):
-            return await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
-
         # User is missing a role
         elif isinstance(error, commands.MissingAnyRole):
-            return await ctx.send(f"You need to have the `{error.missing_roles[0]}` role to run this command.")
+            return await ctx.send(f"You need to have one of the {', '.join(['`' + i + '`' for i in error.missing_roles])} roles to run this command.")
 
         # Bot is missing a given permission
         elif isinstance(error, commands.BotMissingPermissions):
@@ -119,6 +121,14 @@ class ErrorHandler(utils.Cog):
         # Missing role
         elif isinstance(error, commands.MissingRole):
             return await ctx.send(f"You need to have the `{error.missing_role}` role to run this command.")
+
+        # Guild only
+        elif isinstance(error, commands.NoPrivateMessage):
+            return await ctx.send(f"This command can't be run in DMs.")
+
+        # DMs only
+        elif isinstance(error, commands.PrivateMessageOnly):
+            return await ctx.send(f"This command can only be run in DMs.")
 
         # Not owner
         elif isinstance(error, commands.NotOwner):
@@ -163,6 +173,6 @@ class ErrorHandler(utils.Cog):
         await ctx.send(f"You can only use this command once every {cooldown_display} (see `{ctx.clean_prefix}perks` for more information) per server. You may use this again in {time_remaining:.1f} seconds.")
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = ErrorHandler(bot)
     bot.add_cog(x)

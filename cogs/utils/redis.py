@@ -1,4 +1,5 @@
 import logging
+import typing
 
 import aioredis
 
@@ -14,13 +15,15 @@ class RedisConnection(object):
     def __init__(self, connection:aioredis.RedisConnection=None):
         self.conn = connection
 
-    @staticmethod
-    async def create_pool(config:dict):
+    @classmethod
+    async def create_pool(cls, config:dict) -> None:
         """Creates and connects the pool object"""
 
-        RedisConnection.config = config.copy()
+        cls.config = config.copy()
+        if config.pop('enabled', True) is False:
+            raise NotImplementedError("The Redis connection has been disabled.")
         address = config.pop('host'), config.pop('port')
-        RedisConnection.pool = await aioredis.create_redis_pool(address, **config)
+        cls.pool = await aioredis.create_redis_pool(address, **config)
 
     async def __aenter__(self) -> 'cogs.utils.redis.RedisConnection':
         self.conn = self.pool
@@ -56,14 +59,24 @@ class RedisConnection(object):
     async def set(self, key:str, value:str) -> None:
         """Sets a key/value pair in the redis DB"""
 
-        self.logger.debug(f"Publishing Redis key:value pair with {key}:{value}")
+        self.logger.debug(f"Setting Redis key:value pair with {key}:{value}")
         return await self.conn.set(key, value)
 
     async def get(self, key:str) -> str:
         """Grabs a value from the redis DB given a key"""
 
         v = await self.conn.get(key)
-        self.logger.debug(f"Getting Redis key with {key}:{v!s}")
+        self.logger.debug(f"Getting Redis from key with {key}")
         if v:
             return v.decode()
+        return v
+
+    async def mget(self, key:str, *keys) -> typing.List[str]:
+        """Grabs a value from the redis DB given a key"""
+
+        keys = [key] + keys
+        v = await self.conn.mget(key)
+        self.logger.debug(f"Getting Redis from keys with {key}")
+        if v:
+            return [i.decode() for i in v]
         return v

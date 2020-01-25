@@ -67,6 +67,6 @@ class ServerSpecific(utils.Cog):
         await ctx.send(f"[See here](https://marriagebot.xyz/blog/gold) for a rundown of everything, or `{ctx.clean_prefix}perks` for an overview. Ask any questions you have at `{ctx.clean_prefix}support`.")
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = ServerSpecific(bot)
     bot.add_cog(x)

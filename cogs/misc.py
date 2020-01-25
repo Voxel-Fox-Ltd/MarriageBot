@@ -1,6 +1,5 @@
 import os
 import asyncio
-from datetime import datetime as dt, timedelta
 
 import psutil
 import discord
@@ -11,13 +10,13 @@ from cogs import utils
 
 class Misc(utils.Cog):
 
-    def __init__(self, bot:utils.CustomBot):
+    def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self.process = psutil.Process(os.getpid())
         self.process.cpu_percent()
 
     @commands.command(aliases=['upvote'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def vote(self, ctx:utils.Context):
         """Gives you a link to upvote the bot on DiscordBotList"""
 
@@ -28,15 +27,15 @@ class Misc(utils.Cog):
         await ctx.send(f"[Add a DBL vote]({url})!\nSee `{ctx.clean_prefix}perks` for more information.")
 
     @commands.command(aliases=['git', 'code'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.has_set_config('github')
     async def github(self, ctx:utils.Context):
         """Gives you a link to the bot's code repository"""
 
-        await ctx.send(f"<{self.bot.config['github']}>", embeddify=False)
+        await ctx.send(f"<{self.bot.config['command_data']['github']}>", embeddify=False)
 
     @commands.command(aliases=['patreon', 'paypal'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def donate(self, ctx:utils.Context):
         """Gives you the creator's donation links"""
 
@@ -50,29 +49,29 @@ class Misc(utils.Cog):
         await ctx.send('\n'.join(links), embeddify=False)
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def invite(self, ctx:utils.Context):
         """Gives you an invite link for the bot"""
 
         await ctx.send(f"<{self.bot.invite_link}>", embeddify=False)
 
     @commands.command(aliases=['guild', 'support'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.has_set_config('guild_invite')
     async def server(self, ctx:utils.Context):
         """Gives you a server invite link"""
 
-        await ctx.send(self.bot.config['guild_invite'], embeddify=False)
+        await ctx.send(self.bot.config['command_data']['guild_invite'], embeddify=False)
 
     @commands.command(hidden=True, enabled=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def echo(self, ctx:utils.Context, *, content:str):
         """Echos a saying"""
 
         await ctx.send(content, embeddify=False)
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def perks(self, ctx:utils.Context):
         """Shows you the perks associated with different support tiers"""
 
@@ -127,9 +126,8 @@ class Misc(utils.Cog):
         e.add_field(name=f'MarriageBot Gold ({ctx.clean_prefix}ssf)', value=f"Gvies you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
-
     @commands.command(aliases=['status'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def stats(self, ctx:utils.Context):
         """Gives you the stats for the bot"""
 
@@ -152,10 +150,10 @@ class Misc(utils.Cog):
         embed.add_field(name="Memory Usage", value=f"{self.process.memory_info()[0]/2**20:.2f}MB/{psutil.virtual_memory()[0]/2**20:.2f}MB")
         ut = self.bot.get_uptime()  # Uptime
         uptime = [
-            int(ut // (60*60*24)),
-            int((ut % (60*60*24)) // (60*60)),
-            int(((ut % (60*60*24)) % (60*60)) // 60),
-            ((ut % (60*60*24)) % (60*60)) % 60,
+            int(ut // (60 * 60 * 24)),
+            int((ut % (60 * 60 * 24)) // (60 * 60)),
+            int(((ut % (60 * 60 * 24)) % (60 * 60)) // 60),
+            ((ut % (60 * 60 * 24)) % (60 * 60)) % 60,
         ]
         embed.add_field(name="Uptime", value=f"{uptime[0]} days, {uptime[1]} hours, {uptime[2]} minutes, and {uptime[3]:.2f} seconds.")
         # embed.add_field(name="Family Members", value=len(FamilyTreeMember.all_users) - 1)
@@ -227,6 +225,6 @@ class Misc(utils.Cog):
         await ctx.send(f"The shard that your server is on is shard `{ctx.guild.shard_id}`.")
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = Misc(bot)
     bot.add_cog(x)

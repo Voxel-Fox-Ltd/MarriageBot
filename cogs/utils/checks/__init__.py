@@ -4,4 +4,4 @@ from cogs.utils.checks.is_bot_moderator import is_bot_administrator, is_bot_admi
 from cogs.utils.checks.is_donator import is_patreon, get_patreon_tier
 from cogs.utils.checks.is_server_specific import guild_is_server_specific
 from cogs.utils.checks.is_voter import is_voter, is_voter_predicate
-from cogs.utils.checks.has_set_config import has_set_config
+from cogs.utils.checks.is_config_set import is_config_set

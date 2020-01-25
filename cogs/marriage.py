@@ -7,7 +7,7 @@ class Marriage(utils.Cog):
     """The marriage cog, handling all marriage/divorce/etc commands"""
 
     @commands.command(aliases=['marry'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def propose(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
         """Lets you propose to another Discord user"""
@@ -77,7 +77,7 @@ class Marriage(utils.Cog):
         await self.bot.proposal_cache.remove(instigator, target)
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def divorce(self, ctx:utils.Context):
         """Divorces you from your current spouse"""
@@ -117,6 +117,6 @@ class Marriage(utils.Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = Marriage(bot)
     bot.add_cog(x)

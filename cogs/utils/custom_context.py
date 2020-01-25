@@ -1,4 +1,3 @@
-import re as regex
 import random
 
 import discord
@@ -9,7 +8,6 @@ class CustomContext(commands.Context):
     """A custom subclass of commands.Context that embeds all content"""
 
     DESIRED_PERMISSIONS = discord.Permissions(18432)  # embed links, send messages
-    USER_ID_REGEX = regex.compile(r"<@(\d{15,23})>")
     # __slots___ would have no effect here, since commands.Context has no slots itself
 
     def __init__(self, *args, **kwargs):
@@ -143,12 +141,3 @@ class CustomContext(commands.Context):
             if not ignore_error:
                 raise e
             return
-
-    @property
-    def clean_prefix(self):
-        """The prefix used but cleaned up for if it's a mention"""
-
-        return self.USER_ID_REGEX.sub(
-            lambda m: "@" + self.bot.get_member(int(m.group(1))).name,
-            self.prefix
-        )

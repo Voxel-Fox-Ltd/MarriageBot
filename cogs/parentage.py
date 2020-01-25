@@ -10,7 +10,7 @@ class Parentage(utils.Cog):
     """The parentage cog, handling the adoption of children"""
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def makeparent(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
         """Picks a user that you want to be your parent"""
@@ -89,7 +89,7 @@ class Parentage(utils.Cog):
 
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def adopt(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
         """Adopt another user into your family"""
@@ -175,7 +175,7 @@ class Parentage(utils.Cog):
 
 
     @commands.command(aliases=['abort'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
         """Lets you remove a user from being your child"""
@@ -207,7 +207,7 @@ class Parentage(utils.Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
     @commands.command(aliases=['eman', 'runaway', 'runawayfromhome'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def emancipate(self, ctx:utils.Context):
         """Removes your parent"""
@@ -271,6 +271,6 @@ class Parentage(utils.Cog):
         await ctx.send("You've sucessfully disowned all of your children.")
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = Parentage(bot)
     bot.add_cog(x)

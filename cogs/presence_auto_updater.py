@@ -6,7 +6,7 @@ from cogs import utils
 
 class PresenceAutoUpdater(utils.Cog):
 
-    def __init__(self, bot:utils.CustomBot):
+    def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self.shard_ready_loop.start()
 
@@ -28,6 +28,6 @@ class PresenceAutoUpdater(utils.Cog):
             await self.bot.set_default_presence()
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = PresenceAutoUpdater(bot)
     bot.add_cog(x)

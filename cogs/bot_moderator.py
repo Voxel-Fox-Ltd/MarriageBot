@@ -226,7 +226,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Created redirect: https://marriagebot.xyz/r/{code}", embeddify=False)
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = ModeratorOnly(bot)
     bot.add_cog(x)
 

@@ -1,3 +1,5 @@
+import functools
+
 from aiohttp.web import Request, HTTPFound
 import aiohttp_session
 
@@ -10,6 +12,7 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
     def inner_wrapper(func):
         """An inner wrapper so I can get args at the outer level"""
 
+        @functools.wraps(func)
         async def wrapper(request:Request):
             """This is the wrapper that does all the heavy lifting"""
 
@@ -17,13 +20,23 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
             data = await func(request)
 
             # See if we return anything other than data (like redirects)
+            if isinstance(data, HTTPFound):
+                if data.location == "/discord_oauth_login":
+                    session = await aiohttp_session.get_session(request)
+                    session['redirect_on_login'] = str(request.url)
             if not isinstance(data, dict):
                 return data
 
-            # Update data with the information
+            # See if we need to get rid of them
+            session = await aiohttp_session.get_session(request)
+            login_redirect = session.pop('redirect_on_login', None)
+            if login_redirect:
+                return HTTPFound(location=login_redirect)
+
+            # Update jinja params
             if data is None:
                 data = dict()
-            session = await aiohttp_session.get_session(request)
+            data.update({'session': session})
             if 'user_info' not in data:
                 try:
                     data.update({'user_info': session['user_info']})

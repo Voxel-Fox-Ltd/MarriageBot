@@ -15,6 +15,6 @@ class UserUpdateEvent(utils.Cog):
             await re.set(f'UserName-{after.id}', str(after))
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = UserUpdateEvent(bot)
     bot.add_cog(x)

@@ -12,7 +12,7 @@ class Simulation(utils.Cog):
     """A class to handle the simulation commands inside of the bot"""
 
     @commands.command(aliases=['snuggle', 'cuddle'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def hug(self, ctx:utils.Context, user:discord.Member):
         """Hugs a mentioned user"""
 
@@ -22,7 +22,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Hugs {user.mention}*")
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def kiss(self, ctx:utils.Context, user:discord.Member):
         """Kisses a mentioned user"""
@@ -54,7 +54,7 @@ class Simulation(utils.Cog):
         await ctx.send(random.choice(responses))
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def slap(self, ctx:utils.Context, user:discord.Member):
         """Slaps a mentioned user"""
 
@@ -64,7 +64,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Slaps {user.mention}*")
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def punch(self, ctx:utils.Context, user:discord.Member):
         """Punches a mentioned user"""
 
@@ -74,7 +74,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Punches {user.mention} right in the nose*")
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def cookie(self, ctx:utils.Context, user:discord.Member):
         """Gives a cookie to a mentioned user"""
 
@@ -84,7 +84,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Gives {user.mention} a cookie*")
 
     @commands.command(aliases=['nunget', 'nuggie'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def nugget(self, ctx:utils.Context, user:discord.Member):
         """Gives a nugget to a mentioned user"""
 
@@ -94,7 +94,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
 
     @commands.command(aliases=['borger', 'borg'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def burger(self, ctx:utils.Context, user:discord.Member):
         """Gives a burger to a mentioned user"""
 
@@ -104,7 +104,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
 
     @commands.command(aliases=['dumpster'], hidden=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def garbage(self, ctx:utils.Context, user:discord.Member):
         """Throws a user in the garbage"""
 
@@ -114,7 +114,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Throws {user.mention} into the dumpster*")
 
     @commands.command(hidden=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def insult(self, ctx:utils.Context, user:discord.Member):
         """Sends an insult into the chat"""
 
@@ -124,7 +124,7 @@ class Simulation(utils.Cog):
         await ctx.send(data['insult'])
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def poke(self, ctx:utils.Context, user:discord.Member):
         """Pokes a given user"""
 
@@ -134,7 +134,7 @@ class Simulation(utils.Cog):
             await ctx.send(f"*Pokes {user.mention}.*")
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def stab(self, ctx:utils.Context, user:discord.Member):
         """Stabs a mentioned user"""
 
@@ -285,7 +285,7 @@ class Simulation(utils.Cog):
         await ctx.send(f"You give {user.mention} {present}.")
 
     @commands.command(aliases=['intercourse', 'fuck', 'smash', 'heck'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
     async def copulate(self, ctx:utils.Context, user:discord.Member):
@@ -327,6 +327,6 @@ class Simulation(utils.Cog):
         await ctx.send(text_processor.request_accepted())
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = Simulation(bot)
     bot.add_cog(x)

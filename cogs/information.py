@@ -13,7 +13,7 @@ class Information(utils.Cog):
     """The information cog, handling telling the user what they want to hear"""
 
     @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def partner(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
         """Tells you who a user is married to"""
@@ -39,7 +39,7 @@ class Information(utils.Cog):
             await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`).")
 
     @commands.command(aliases=['child', 'kids'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def children(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
         """Tells you who a user's children are"""
@@ -80,7 +80,7 @@ class Information(utils.Cog):
         await ctx.send(output)
 
     @commands.command(aliases=['parents'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def parent(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
         """Tells you who someone's parent is"""
@@ -95,7 +95,7 @@ class Information(utils.Cog):
         await ctx.send(f"`{user_name}`'s parent is `{name}` (`{user_info._parent}`).")
 
     @commands.command(aliases=['relation'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:typing.Optional[utils.converters.UserID]):
         """Gets the relationship between the two specified users"""
@@ -123,7 +123,7 @@ class Information(utils.Cog):
         await ctx.send(f"`{other_name}` is `{user_name}`'s {relation}.")
 
     @commands.command(aliases=['treesize','fs','ts'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def familysize(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
         """Gives you the size of your family tree"""
@@ -141,7 +141,7 @@ class Information(utils.Cog):
         await ctx.send(f"There are `{size}` people in `{username}`'s family tree.")
 
     @commands.command(enabled=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
     async def treefile(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
@@ -154,7 +154,7 @@ class Information(utils.Cog):
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
     @commands.command(aliases=['familytree', 't', 'fulltree', 'ft', 'gt'])
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
     async def tree(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
@@ -170,7 +170,7 @@ class Information(utils.Cog):
             raise e
 
     @commands.command(aliases=['st'])
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @utils.checks.is_patreon(tier=2)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
@@ -244,6 +244,6 @@ class Information(utils.Cog):
         await ctx.send(f"[Click here](https://marriagebot.xyz/) to customise your tree. Generated in `{time_taken:.2f}` seconds from `{len(dot_code)}` bytes of DOT code.", file=file)
 
 
-def setup(bot:utils.CustomBot):
+def setup(bot:utils.Bot):
     x = Information(bot)
     bot.add_cog(x)
