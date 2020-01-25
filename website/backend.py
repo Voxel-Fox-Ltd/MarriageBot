@@ -378,7 +378,7 @@ async def paypal_purchase_complete(request:Request):
                 """UPDATE paypal_purchases
                 SET completed=$1, checkout_complete_timestamp=$2, guild_id=$3, discord_id=$4, customer_id=$5
                 WHERE id=$6""",
-                db_data['completed'], db_data['checkout_complete_timestamp'], db_data['guild_id'],  db_data['discord_id'],
+                db_data['completed'], db_data['checkout_complete_timestamp'], db_data['guild_id'], db_data['discord_id'],
                 db_data['customer_id'], db_data['id'],
             )
         if db_data['completed'] is True and refunded is False:
@@ -455,7 +455,7 @@ async def paypal_purchase_return(request:Request):
                 """UPDATE paypal_purchases
                 SET completed=$1, checkout_complete_timestamp=$2, guild_id=$3, discord_id=$4, customer_id=$5
                 WHERE id=$6""",
-                db_data['completed'], db_data['checkout_complete_timestamp'], db_data['guild_id'],  db_data['discord_id'],
+                db_data['completed'], db_data['checkout_complete_timestamp'], db_data['guild_id'], db_data['discord_id'],
                 db_data['customer_id'], db_data['id'],
             )
         if db_data['completed'] is True:
@@ -474,7 +474,12 @@ async def webhook_handler(request:Request):
 
     # Set up our responses
     success = Response(text=json.dumps({"success": True}), content_type="application/json")
-    failure = lambda x: Response(text=json.dumps({"success": False, **x}), content_type="application/json", status=400)
+
+    def failure(data:dict) -> Response:
+        return Response(
+            text=json.dumps({"success": False, **data}),
+            content_type="application/json", status=400
+        )
 
     # See if we can get it
     try:
@@ -528,7 +533,7 @@ async def webhook_handler(request:Request):
 
 
 @routes.get('/login_redirect')
-async def login(request:Request):
+async def login_redirect(request:Request):
     """Page the discord login redirects the user to when successfully logged in with Discord"""
 
     await aiohttp_session.new_session(request)

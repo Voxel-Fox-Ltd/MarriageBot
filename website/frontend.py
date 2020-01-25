@@ -95,7 +95,7 @@ async def user_settings(request:Request):
         }
         colours = {}
         for i, o in colours_raw.items():
-            if o == None:
+            if o is None:
                 o = 'transparent'
             colours[i] = o
     else:
@@ -138,7 +138,7 @@ async def tree_preview(request:Request):
     }
     colours = {}
     for i, o in colours_raw.items():
-        if o == None or o == 'transparent':
+        if o is None or o == 'transparent':
             o = 'transparent'
         elif i == 'direction':
             pass
@@ -206,7 +206,7 @@ async def guild_settings_get_stripe(request:Request):
         config = request.app['config']
         location = webutils.DISCORD_OAUTH_URL + urlencode({
             'client_id': config['oauth']['client_id'],
-            'redirect_uri': config['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
+            'redirect_uri': config['oauth']['join_server_redirect_uri'],
             'response_type': 'code',
             'permissions': 52224,
             'scope': 'bot',
@@ -272,7 +272,7 @@ async def guild_settings_get_paypal(request:Request):
         config = request.app[config_type]
         location = webutils.DISCORD_OAUTH_URL + urlencode({
             'client_id': config['oauth']['client_id'],
-            'redirect_uri': config['oauth']['join_server_redirect_uri'], # + f'?guild_id={guild_id}',
+            'redirect_uri': config['oauth']['join_server_redirect_uri'],
             'response_type': 'code',
             'permissions': 52224,
             'scope': 'bot',
