@@ -27,7 +27,7 @@ class ErrorHandler(utils.Cog):
 
         # Set up some errors that are just straight up ignored
         ignored_errors = (
-            commands.CommandNotFound,
+            commands.CommandNotFound, utils.errors.InvokedMetaCommand,
         )
         if isinstance(error, ignored_errors):
             return
