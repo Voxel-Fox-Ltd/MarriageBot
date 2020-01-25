@@ -57,7 +57,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         # Add each command to the embed
         command_strings = []
         for cog, cog_commands in runnable_commands.items():
-            value = '\n'.join([command.get_help_line(self.context) for command in cog_commands])
+            value = '\n'.join([self.get_help_line(command) for command in cog_commands])
             command_strings.append((getattr(cog, 'get_name', lambda: cog.name)(), value))
 
         # Order embed by length before embedding
@@ -92,6 +92,13 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         embed.set_author(name=self.context.bot.user, icon_url=self.context.bot.user.avatar_url)
         embed.colour = random.randint(1, 0xffffff)
         return embed
+
+    def get_help_line(self, command:utils.Command):
+        """Gets a doc line of help for a given command"""
+
+        if command.short_doc:
+            return f"{self.clean_prefix}{command.qualified_name} - *{command.short_doc}*"
+        return f"{self.clean_prefix}{command.qualified_name}"
 
 
 class Help(utils.Cog):
