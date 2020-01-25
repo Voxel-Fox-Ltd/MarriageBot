@@ -175,10 +175,10 @@ if __name__ == '__main__':
         loop.run_until_complete(bot.logout())
 
     # We're now done running the bot, time to clean up and close
-    if bot.config['database']['enabled']:
+    if bot.config['database'].get('enabled', True):
         logger.info("Closing database pool")
         loop.run_until_complete(utils.DatabaseConnection.pool.close())
-    if bot.config['redis']['enabled']:
+    if bot.config['redis'].get('enabled', True):
         logger.info("Closing redis pool")
         utils.RedisConnection.pool.close()
     logger.info("Closing asyncio loop")
