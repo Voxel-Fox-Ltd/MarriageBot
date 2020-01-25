@@ -107,7 +107,7 @@ set_log_level('discord', args.loglevel)
 # Set loglevels by config
 set_log_level(logger, args.loglevel_bot)
 set_log_level(bot.database.logger, args.loglevel_database)
-set_log_level(bot.redis.logger, args.loglevel_logger)
+set_log_level(bot.redis.logger, args.loglevel_redis)
 set_log_level('discord', args.loglevel_discord)
 
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     loop = bot.loop
 
     # Connect the database pool
-    if bot.config['database']['enabled']:
+    if bot.config['database'].get('enabled', True):
         logger.info("Creating database pool")
         try:
             db_connect_task = loop.create_task(utils.DatabaseConnection.create_pool(bot.config['database']))
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         logger.info("Database connection has been disabled")
 
     # Connect the redis pool
-    if bot.config['redis']['enabled']:
+    if bot.config['redis'].get('enabled', True):
         logger.info("Creating redis pool")
         try:
             re_connect = loop.create_task(utils.RedisConnection.create_pool(bot.config['redis']))
