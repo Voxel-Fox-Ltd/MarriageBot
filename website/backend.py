@@ -1,8 +1,6 @@
-import hashlib
-import hmac
 import json
 from datetime import datetime as dt
-from urllib.parse import unquote, urlencode
+from urllib.parse import unquote
 
 import aiohttp
 import aiohttp_session
@@ -35,24 +33,24 @@ async def redirect(request:Request):
     return HTTPFound(location=data[0]['location'])
 
 
-@routes.get("/login/art_contest")
-async def art_contest(request:Request):
-    """Handles redirects using codes stored in the db"""
+# @routes.get("/discord_oauth_login/art_contest")
+# async def art_contest(request:Request):
+#     """Handles redirects using codes stored in the db"""
 
-    # See if they're logged in
-    await webutils.process_discord_login(request)
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
-    url = "https://docs.google.com/forms/d/e/1FAIpQLSdZtfEp7wvzhxy1FpFNxeOhew1zKPTkHMQ7oQ_mla50TRHCrg/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
-    return HTTPFound(location=url + urlencode({
-        'usp': 'pp_url',
-        'entry.865916339': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
-        'entry.1362434111': session['user_id'],
-    }))
+#     # See if they're logged in
+#     await webutils.process_discord_login(request)
+#     session = await aiohttp_session.get_session(request)
+#     if not session.get('user_id'):
+#         return HTTPFound(location='/')
+#     url = "https://docs.google.com/forms/d/e/1FAIpQLSdZtfEp7wvzhxy1FpFNxeOhew1zKPTkHMQ7oQ_mla50TRHCrg/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
+#     return HTTPFound(location=url + urlencode({
+#         'usp': 'pp_url',
+#         'entry.865916339': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
+#         'entry.1362434111': session['user_id'],
+#     }))
 
 
-@routes.get('/login')
+@routes.get('/discord_oauth_login')
 async def login(request:Request):
     """Page the discord login redirects the user to when successfully logged in with Discord"""
 
@@ -277,46 +275,6 @@ async def set_max_allowed_children(request:Request):
 
     # Redirect to page
     return HTTPFound(location=f'/guild_settings?guild_id={guild_id}&gold=1')
-
-
-@routes.post('/webhooks/stripe/purchase_complete')
-async def stripe_purchase_complete(request:Request):
-    """Handles Stripe throwing data my way"""
-
-    # Decode the data
-    content_bytes: bytes = await request.content.read()
-    stripe_data: dict = json.loads(content_bytes.decode())
-
-    # Check the signature of the payload
-    signature: str = request.headers['Stripe-Signature']
-    signature_params = {i.strip().split('=')[0]: i.strip().split('=')[1] for i in signature.split(',')}
-    computed_signature = hmac.new(
-        request.app['config']['stripe']['signing_key'].encode(),
-        f"{signature_params['t']}.{content_bytes.decode()}".encode(),
-        digestmod=hashlib.sha256
-    ).hexdigest()
-    if signature_params['v1'] != computed_signature:
-        return Response(status=200)  # invalid signature
-
-    # Grab data from db
-    db = await request.app['database'].get_connection()
-    database_data = await db("SELECT * FROM stripe_purchases WHERE id=$1", stripe_data['data']['object']['id'])
-    if database_data is None:
-        return Response(status=200)  # no transaction ID in DB
-
-    # Update db with data
-    await db(
-        "UPDATE stripe_purchases SET customer_id=$1, completed=true, checkout_complete_timestamp=NOW() WHERE id=$2",
-        stripe_data['data']['object']['customer'], stripe_data['data']['object']['id']
-    )
-    try:
-        await db("INSERT INTO guild_specific_families VALUES ($1)", database_data[0]['guild_id'])
-    except asyncpg.UniqueViolationError:
-        pass
-    await db.disconnect()
-
-    # Let the user get redirected
-    return Response(status=200)
 
 
 @routes.post('/webhooks/paypal/purchase_ipn')

@@ -1,6 +1,3 @@
-from urllib.parse import urlencode
-
-import aiohttp
 import aiohttp_session
 import discord
 from aiohttp.web import HTTPFound, Request, RouteTableDef, json_response
@@ -20,13 +17,12 @@ async def index(request:Request):
     """Index of the website, has "login with Discord" button
     If not logged in, all pages should redirect here"""
 
-    config = request.app['config']
-    login_url = webutils.DISCORD_OAUTH_URL + urlencode({
-        'client_id': config['oauth']['client_id'],
-        'redirect_uri': config['oauth']['redirect_uri'],
-        'response_type': 'code',
-        'scope': webutils.OAUTH_SCOPES
-    })
+    bot = request.app['bot']
+    login_url = bot.get_invite(
+        redirect_uri='https://marriagebot.xyz/discord_oauth_login',
+        response_type='code',
+        scope='identify guilds'
+    )
     return {'login_url': login_url}
 
 
@@ -61,12 +57,6 @@ async def blog(request:Request):
 async def settings(request:Request):
     """Handles the main settings page for the bot"""
 
-    # See if they're logged in
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
-
-    # Give them the page
     return {}
 
 
@@ -78,8 +68,6 @@ async def user_settings(request:Request):
 
     # See if they're logged in
     session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
 
     # Get the colours they're using
     db = await request.app['database'].get_connection()
@@ -158,12 +146,12 @@ async def guild_picker(request:Request):
     """Shows the guilds that the user has permission to change"""
 
     # See if they're logged in
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
+    guild_id = request.query.get('guild_id')
+    if not guild_id:
         return HTTPFound(location='/')
 
     # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
+    all_guilds = webutils.get_user_guilds(request)
     try:
         guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
     except TypeError:
@@ -184,64 +172,6 @@ async def guild_picker(request:Request):
     return {'guilds': guilds}
 
 
-@routes.get('/guild_settings_stripe')
-@template('guild_settings_stripe.j2')
-@webutils.add_output_args(redirect_if_logged_out="/r/login")
-async def guild_settings_get_stripe(request:Request):
-    """Shows the settings for a particular guild"""
-
-    # See if they're logged in
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
-    guild_id = request.query.get('guild_id')
-    if not guild_id:
-        return HTTPFound(location='/')
-
-    # See if the bot is in the guild
-    bot = request.app['bot']
-    try:
-        guild_object = await bot.fetch_guild(int(guild_id))
-    except discord.Forbidden:
-        config = request.app['config']
-        location = webutils.DISCORD_OAUTH_URL + urlencode({
-            'client_id': config['oauth']['client_id'],
-            'redirect_uri': config['oauth']['join_server_redirect_uri'],
-            'response_type': 'code',
-            'permissions': 52224,
-            'scope': 'bot',
-            'guild_id': guild_id,
-        })
-        return HTTPFound(location=location)
-
-    # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
-    oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
-    if not oauth_guild_data:
-        return HTTPFound(location='/')
-
-    # Get current prefix
-    async with request.app['database']() as db:
-        guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
-        mbg = await db('SELECT * FROM guild_specific_families WHERE guild_id=$1', int(guild_id))
-    try:
-        prefix = guild_settings[0]['prefix']
-    except IndexError:
-        prefix = request.app['config']['prefix']['default_prefix']
-
-    # Get channels
-    channels = sorted([i for i in await guild_object.fetch_channels() if isinstance(i, discord.TextChannel)], key=lambda c: c.position)
-
-    # Return info to the page
-    return {
-        'guild': guild_object,
-        'prefix': prefix,
-        'channels': channels,
-        'gold': bool(mbg),
-        'normal': None,
-    }
-
-
 @routes.get('/guild_settings')
 @template('guild_settings_paypal.j2')
 @webutils.add_output_args(redirect_if_logged_out="/r/login")
@@ -249,9 +179,6 @@ async def guild_settings_get_paypal(request:Request):
     """Shows the settings for a particular guild"""
 
     # See if they're logged in
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
     guild_id = request.query.get('guild_id')
     gold_param = request.query.get('gold', '0') == '1'
     if not guild_id:
@@ -268,20 +195,16 @@ async def guild_settings_get_paypal(request:Request):
         guild_object = await bot.fetch_guild(int(guild_id))
     except discord.Forbidden:
         # We get here? Bot's not in the server
-        config_type = 'gold_config' if gold_param else 'config'
-        config = request.app[config_type]
-        location = webutils.DISCORD_OAUTH_URL + urlencode({
-            'client_id': config['oauth']['client_id'],
-            'redirect_uri': config['oauth']['join_server_redirect_uri'],
-            'response_type': 'code',
-            'permissions': 52224,
-            'scope': 'bot',
-            'guild_id': guild_id,
-        })
+        location = bot.get_invite(
+            redirect_uri='https://marriagebot.xyz/guild_settings',
+            response_type='code',
+            scope='bot identify guilds',
+            permissions=52224
+        )
         return HTTPFound(location=location)
 
     # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
+    all_guilds = webutils.get_user_guilds(request)
     oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not oauth_guild_data:
         return HTTPFound(location='/')
@@ -353,55 +276,6 @@ async def guild_settings_get_paypal(request:Request):
     return page_data
 
 
-@routes.get('/buy_gold')
-@template('buy_gold.j2')
-@webutils.add_output_args(redirect_if_logged_out="/r/login")
-async def buy_gold(request:Request):
-    """Shows the guilds that the user has permission to change"""
-
-    # Get relevant data
-    session = await aiohttp_session.get_session(request)
-    guild_id = request.query.get('guild_id')
-    if not guild_id:
-        return HTTPFound(location='/guild_picker')
-    guild_id = int(guild_id)
-
-    # Generate params
-    data = {
-        "payment_method_types[0]": "card",
-        "success_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}&gold=1",
-        "cancel_url": f"https://marriagebot.xyz/guild_settings?guild_id={guild_id}",
-        "line_items[0][name]": 'MarriageBot Gold',
-        "line_items[0][description]": f"Access to the Discord bot 'MarriageBot Gold' for guild ID {guild_id}" + {
-            True: f"(Discounted by £{request.app['config']['payment_info']['discount_gbp']/100:.2f})",
-            False: ""
-        }[request.app['config']['payment_info']['discount_gbp'] > 0],
-        "line_items[0][amount]": request.app['config']['payment_info']['original_price'] - request.app['config']['payment_info']['discount_gbp'],
-        "line_items[0][currency]": 'gbp',
-        "line_items[0][quantity]": 1,
-    }
-    url = "https://api.stripe.com/v1/checkout/sessions"
-
-    # Send request
-    async with aiohttp.ClientSession(loop=request.app.loop) as requests:
-        async with requests.post(url, data=data, auth=aiohttp.BasicAuth(request.app['config']['stripe']['secret_key'])) as r:
-            stripe_session = await r.json()
-
-    # Store data
-    async with request.app['database']() as db:
-        await db(
-            "INSERT INTO stripe_purchases (id, name, payment_amount, discord_id, guild_id) VALUES ($1, $2, $3, $4, $5)",
-            stripe_session['id'], stripe_session['display_items'][0]['custom']['name'],
-            stripe_session['display_items'][0]['amount'], session['user_id'], guild_id
-        )
-
-    # Return relevant info to page
-    return {
-        'stripe_publishable_key': request.app['config']['stripe']['public_key'],
-        'checkout_session_id': stripe_session['id'],
-    }
-
-
 @routes.get('/get_session')
 async def get_session(request:Request):
     """Gets your session data and throws it in your face"""
@@ -419,13 +293,14 @@ async def logout(request:Request):
     return HTTPFound(location='/')
 
 
-@routes.get("/discord_oauth_login")
+@routes.get("/login")
 async def login(request:Request):
     """Index of the website"""
 
-    login_url = webutils.get_discord_login_url(
-        request,
-        redirect_uri="http://127.0.0.1:8080/login_redirect",
-        oauth_scopes=['identify', 'guilds'],
+    bot = request.app['bot']
+    login_url = bot.get_invite(
+        redirect_uri='https://marriagebot.xyz/discord_oauth_login',
+        response_type='code',
+        scope='identify guilds'
     )
     return HTTPFound(location=login_url)
