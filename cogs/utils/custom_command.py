@@ -1,5 +1,5 @@
-import typing
 import datetime
+import typing
 
 from discord.ext import commands
 
@@ -21,6 +21,13 @@ class CustomCommand(commands.Command):
         else:
             raise ValueError("No mapping found for cooldown")
         self._buckets = mapping(cooldown)  # Wrap the cooldown in the mapping
+
+    def get_help_line(self, ctx:commands.Context):
+        """Gets a simple line describing the command that can go straight into the help"""
+
+        if self.short_doc:
+            return f"{ctx.clean_prefix}{self.qualified_name} - *{self.short_doc}*"
+        return f"{ctx.clean_prefix}{self.qualified_name}"
 
     async def can_run(self, ctx:commands.Context):
         """The normal Command.can_run but it ignores cooldowns"""

@@ -1,5 +1,5 @@
-from discord.ext import commands
 import asyncpg
+from discord.ext import commands
 
 from cogs import utils
 
@@ -30,4 +30,3 @@ class BotSettings(utils.Cog):
 def setup(bot:utils.Bot):
     x = BotSettings(bot)
     bot.add_cog(x)
-

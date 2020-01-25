@@ -1,19 +1,18 @@
-import asyncio
-import os
 import argparse
-import warnings
+import asyncio
 import logging
+import os
+import warnings
 
+import toml
 from aiohttp.web import Application, AppRunner, TCPSite
 from aiohttp_jinja2 import setup as jinja_setup
-from aiohttp_session import setup as session_setup, SimpleCookieStorage
+from aiohttp_session import setup as session_setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
 from jinja2 import FileSystemLoader
-import toml
 
-from cogs import utils
 import website
-
+from cogs import utils
 
 # Set up loggers
 logging.getLogger().setLevel(logging.INFO)

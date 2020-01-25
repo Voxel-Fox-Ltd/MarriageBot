@@ -1,8 +1,7 @@
-from aiohttp.web import RouteTableDef, Request, HTTPFound
+from aiohttp.web import HTTPFound, Request, RouteTableDef
 from aiohttp_jinja2 import template
 
 from website import utils as webutils
-
 
 routes = RouteTableDef()
 

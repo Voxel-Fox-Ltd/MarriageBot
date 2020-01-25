@@ -1,26 +1,26 @@
 import argparse
-import warnings
+import asyncio
 import logging
 import os
-import asyncio
 import sys
+import warnings
 
 import discord
 
 from cogs import utils
 
 
-# Set up loggers
-logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
-logger = logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower())
+# Set up the loggers
+def set_log_level(logger_to_change:logging.Logger, loglevel:str):
+    if loglevel is None:
+        return
+    if isinstance(logger_to_change, str):
+        logger_to_change = logging.getLogger(logger_to_change)
+    level = getattr(logging, loglevel.upper(), None)
+    if level is None:
+        raise ValueError(f"The log level {loglevel.upper()} wasn't found in the logging module")
+    logger_to_change.setLevel(level)
 
-# Filter warnings
-warnings.filterwarnings('ignore', category=RuntimeWarning)
-
-# Use right event loop
-if sys.platform == 'win32':
-    loop = asyncio.ProactorEventLoop()
-    asyncio.set_event_loop(loop)
 
 # Parse arguments
 def get_program_arguments():
@@ -59,14 +59,27 @@ def get_program_arguments():
         help="Logging level for redis - probably most useful is INFO and DEBUG"
     )
     return parser.parse_args()
-args = get_program_arguments()
+args = get_program_arguments()  # noqa: E305
+
+
+# Set up loggers
+logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
+logger = logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower())
+
+# Filter warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning)
+
+# Use right event loop
+if sys.platform == 'win32':
+    loop = asyncio.ProactorEventLoop()
+    asyncio.set_event_loop(loop)
 
 # Make sure the sharding info provided is correctish
 if args.shardcount is None:
     args.shardcount = 1
     args.min = 0
     args.max = 0
-shard_ids = list(range(args.min, args.max+1))
+shard_ids = list(range(args.min, args.max + 1))
 if args.shardcount is None and (args.min or args.max):
     logger.critical("You set a min/max shard handler but no shard count")
     exit(1)
@@ -86,17 +99,6 @@ bot = utils.Bot(
     max_messages=100,  # The lowest amount that we can actually cache
     logger=logger.getChild('bot'),
 )
-
-# Set up the loggers
-def set_log_level(logger_to_change:logging.Logger, loglevel:str):
-    if loglevel is None:
-        return
-    if isinstance(logger_to_change, str):
-        logger_to_change = logging.getLogger(logger_to_change)
-    level = getattr(logging, loglevel.upper(), None)
-    if level is None:
-        raise ValueError(f"The log level {loglevel.upper()} wasn't found in the logging module")
-    logger_to_change.setLevel(level)
 
 # Set loglevel defaults
 set_log_level(logger, args.loglevel)
@@ -134,11 +136,11 @@ if __name__ == '__main__':
         try:
             db_connect_task = loop.create_task(utils.DatabaseConnection.create_pool(bot.config['database']))
             loop.run_until_complete(db_connect_task)
-        except KeyError as e:
+        except KeyError:
             raise Exception("KeyError creating database pool - is there a 'database' object in the config?")
-        except ConnectionRefusedError as e:
+        except ConnectionRefusedError:
             raise Exception("ConnectionRefusedError creating database pool - did you set the right information in the config, and is the database running?")
-        except Exception as e:
+        except Exception:
             raise Exception("Error creating database pool")
         logger.info("Created database pool successfully")
     else:
@@ -150,11 +152,11 @@ if __name__ == '__main__':
         try:
             re_connect = loop.create_task(utils.RedisConnection.create_pool(bot.config['redis']))
             loop.run_until_complete(re_connect)
-        except KeyError as e:
+        except KeyError:
             raise KeyError("KeyError creating redis pool - is there a 'redis' object in the config?")
-        except ConnectionRefusedError as e:
+        except ConnectionRefusedError:
             raise ConnectionRefusedError("ConnectionRefusedError creating redis pool - did you set the right information in the config, and is the database running?")
-        except Exception as e:
+        except Exception:
             raise Exception("Error creating redis pool")
         logger.info("Created redis pool successfully")
     else:

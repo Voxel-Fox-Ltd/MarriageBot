@@ -1,20 +1,19 @@
-from datetime import datetime as dt
-import toml
-import glob
-import logging
-from urllib.parse import urlencode
-import os
 import asyncio
 import collections
+import glob
+import logging
 import typing
+from datetime import datetime as dt
+from urllib.parse import urlencode
 
 import aiohttp
 import discord
+import toml
 from discord.ext import commands
 
+from cogs.utils.custom_context import CustomContext
 from cogs.utils.database import DatabaseConnection
 from cogs.utils.redis import RedisConnection
-from cogs.utils.custom_context import CustomContext
 
 
 def get_prefix(bot, message:discord.Message):
@@ -94,11 +93,12 @@ class CustomBot(commands.AutoShardedBot):
             valid_users = [valid_users]
 
         # Wait for response
-        check = lambda r, u: all([
-            r.message.id == message.id,
-            u.id in [user.id for user in valid_users],
-            str(r.emoji) == "\N{WASTEBASKET}"
-        ])
+        def check(r, u) -> bool:
+            return all([
+                r.message.id == message.id,
+                u.id in [user.id for user in valid_users],
+                str(r.emoji) == "\N{WASTEBASKET}"
+            ])
         try:
             await self.wait_for("reaction_add", check=check, timeout=timeout)
         except asyncio.TimeoutError:

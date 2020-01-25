@@ -1,7 +1,6 @@
-import typing
 import logging
+import typing
 
-import discord
 import asyncpg
 
 

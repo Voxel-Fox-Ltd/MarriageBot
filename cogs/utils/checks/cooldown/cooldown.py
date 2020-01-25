@@ -1,6 +1,6 @@
+import collections
 import time
 import typing
-import collections
 
 import discord
 from discord.ext import commands
@@ -27,12 +27,6 @@ class CooldownMapping(commands.CooldownMapping):
         """Whether or not the mapping is valid"""
 
         return super().valid
-
-    @classmethod
-    def from_cooldown(cls, rate:float, per:int, type:commands.BucketType) -> commands.Cooldown:
-        """Creates a new mapping from given cooldown params"""
-
-        return cls(self.original.__class__(rate, per, type))
 
     def _bucket_key(self, message:discord.Message) -> typing.Optional[int]:
         """Gets the key for the given cooldown mapping, depending on the type of the cooldown"""
@@ -64,6 +58,8 @@ class CooldownMapping(commands.CooldownMapping):
 
 
 grouped_cooldown_mapping_cache = collections.defaultdict(dict)
+
+
 class GroupedCooldownMapping(CooldownMapping):
 
     grouped_cache = grouped_cooldown_mapping_cache
@@ -156,7 +152,7 @@ class Cooldown(commands.Cooldown):
     def copy(self) -> commands.Cooldown:
         """Returns a copy of the cooldown"""
 
-        kwargs = {i: getattr(getattr(self, attr, None), 'copy', lambda x: x).copy() for attr in self._copy_kwargs}
+        kwargs = {attr: getattr(getattr(self, attr, None), 'copy', lambda x: x).copy() for attr in self._copy_kwargs}
         cooldown = self.__class__(error=self.error, mapping=self.mapping, **kwargs)
         cooldown = cooldown(rate=self.rate, per=self.per, type=self.type)
         return cooldown

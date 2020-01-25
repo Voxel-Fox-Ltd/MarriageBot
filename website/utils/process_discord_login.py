@@ -1,11 +1,10 @@
 from urllib.parse import urlencode
 
 import aiohttp
-from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 import aiohttp_session
+from aiohttp.web import HTTPFound, Request
 
 from website.utils.get_avatar import get_avatar
-
 
 DISCORD_OAUTH_URL = 'https://discordapp.com/api/oauth2/authorize?'
 

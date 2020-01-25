@@ -1,3 +1,6 @@
+import asyncio
+import json
+
 import discord
 from discord.ext import commands
 
@@ -24,7 +27,6 @@ class EmbedMaker(utils.Cog):
         user = ctx.author
         content = None
         embed = {"fields": []}
-        show_keys = False
         await ctx.okay()
 
         # These are our instructions
@@ -60,7 +62,7 @@ class EmbedMaker(utils.Cog):
             instruction_message = await user.send('\n'.join(INSTRUCTIONS))
             for e in METHOD_EMOJI.keys():
                 await instruction_message.add_reaction(e)
-            check = lambda r, u: r.message.channel == instruction_message.channel and u.id == ctx.author.id
+            check = lambda r, u: r.message.channel == instruction_message.channel and u.id == ctx.author.id  # noqa: E731
             try:
                 reaction, _ = await self.bot.wait_for("reaction_add", check=check, timeout=120)
             except asyncio.TimeoutError:
@@ -208,7 +210,7 @@ class EmbedMaker(utils.Cog):
         channel = None
         try:
             channel = await commands.TextChannelConverter().convert(ctx, message.content)
-        except commands.CommandError as e:
+        except commands.CommandError:
             if message.content.lower() != 'skip':
                 return await user.send("Alright, skpping.")
             return await user.send("I can't work out where you want to send that. Sorry about that. Cancelled.")

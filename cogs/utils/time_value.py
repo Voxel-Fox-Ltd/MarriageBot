@@ -1,5 +1,5 @@
 import re as regex
-from datetime import datetime as dt, timedelta
+from datetime import timedelta
 
 from discord.ext import commands
 

@@ -57,8 +57,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         # Add each command to the embed
         command_strings = []
         for cog, cog_commands in runnable_commands.items():
-            get_string = lambda c: f"{self.clean_prefix}{c.qualified_name} - *{c.short_doc}*" if c.short_doc else f"{self.clean_prefix}{c.qualified_name}"
-            value = '\n'.join([get_string(command) for command in cog_commands])
+            value = '\n'.join([command.get_help_line(self.context) for command in cog_commands])
             command_strings.append((getattr(cog, 'get_name', lambda: cog.name)(), value))
 
         # Order embed by length before embedding
