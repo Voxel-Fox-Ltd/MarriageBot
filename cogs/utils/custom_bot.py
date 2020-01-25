@@ -65,7 +65,7 @@ class CustomBot(commands.AutoShardedBot):
         # Here's the storage for cached stuff
         self.guild_settings = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
 
-    def get_invite_link(self, *, scope:str='bot', redirect_uri:str=None, guild_id:int=None, **kwargs):
+    def get_invite_link(self, *, scope:str='bot', response_type:str=None, redirect_uri:str=None, guild_id:int=None, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
 
         permissions = discord.Permissions()
@@ -80,6 +80,8 @@ class CustomBot(commands.AutoShardedBot):
             data['redirect_uri'] = redirect_uri
         if guild_id:
             data['guild_id'] = guild_id
+        if response_type:
+            data['response_type'] = response_type
         return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)
 
     async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, delete:typing.List[discord.Message]=None, timeout=60.0):
