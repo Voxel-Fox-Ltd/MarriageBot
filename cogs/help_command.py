@@ -100,7 +100,7 @@ class Help(utils.Cog):
     def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self._original_help_command = bot.help_command
-        bot.help_command = CustomHelpCommand()
+        bot.help_command = CustomHelpCommand(dm_help=true)
         bot.help_command.cog = self
 
     def cog_unload(self):
