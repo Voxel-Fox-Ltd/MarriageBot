@@ -1,7 +1,9 @@
-import typing
 import datetime
+import typing
 
 from discord.ext import commands
+
+from cogs.utils.checks.meta_command import InvokedMetaCommand
 
 
 class CustomCommand(commands.Command):
@@ -34,6 +36,15 @@ class CustomCommand(commands.Command):
 
         bucket = self._buckets.get_bucket(ctx.message)
         return bucket.get_remaining_cooldown()
+
+    async def invoke_ignoring_meta(self, ctx):
+        """Invokes the given ctx, reinvoking when it reaches an InvokedMetaCommand error
+        Throws any other error it finds as normal"""
+
+        try:
+            return await self.invoke(ctx)
+        except InvokedMetaCommand:
+            return await ctx.reinvoke()
 
     def _prepare_cooldowns(self, ctx:commands.Context):
         """Prepares all the cooldowns for the command to be called"""

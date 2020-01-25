@@ -1,8 +1,7 @@
-import typing
 import logging
+import typing
 from datetime import datetime as dt
 
-import discord
 import asyncpg
 
 

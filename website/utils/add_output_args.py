@@ -1,7 +1,7 @@
 import functools
 
-from aiohttp.web import Request, HTTPFound
 import aiohttp_session
+from aiohttp.web import HTTPFound, Request
 
 
 def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:str=None):

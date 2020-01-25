@@ -1,15 +1,14 @@
 from urllib.parse import urlencode
 
 import aiohttp
-from aiohttp.web import RouteTableDef, Request, HTTPFound, json_response
 import aiohttp_session
-from aiohttp_jinja2 import template
 import discord
-import markdown2
+from aiohttp.web import HTTPFound, Request, RouteTableDef, json_response
+from aiohttp_jinja2 import template
 
+import markdown2
 from cogs import utils
 from website import utils as webutils
-
 
 routes = RouteTableDef()
 

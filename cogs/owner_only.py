@@ -1,10 +1,9 @@
-import traceback
-import io
-import textwrap
 import contextlib
 import copy
-import collections
+import io
 import json
+import textwrap
+import traceback
 
 import discord
 from discord.ext import commands
@@ -184,7 +183,7 @@ class OwnerOnly(utils.Cog):
     async def picture(self, ctx:utils.Context, *, image_url:str=None):
         """Lets you set the profile picture of the bot"""
 
-        if image_url == None:
+        if image_url is None:
             try:
                 image_url = ctx.message.attachments[0].url
             except IndexError:

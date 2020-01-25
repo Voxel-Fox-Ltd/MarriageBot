@@ -48,5 +48,4 @@ class ContextEmbed(discord.Embed):
         for index, field in enumerate(self.fields):
             if field.name == key:
                 return self.edit_field_by_index(index, name=name, value=value, inline=inline)
-        if not found:
-            raise KeyError("Key not found in embed")
+        raise KeyError("Key not found in embed")

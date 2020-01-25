@@ -27,7 +27,7 @@ class ErrorHandler(utils.Cog):
 
         # Set up some errors that are just straight up ignored
         ignored_errors = (
-            commands.CommandNotFound,
+            commands.CommandNotFound, utils.errors.InvokedMetaCommand,
         )
         if isinstance(error, ignored_errors):
             return
@@ -90,6 +90,10 @@ class ErrorHandler(utils.Cog):
         # Bot ready
         elif isinstance(error, utils.errors.BotNotReady):
             return await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+
+        # Missing argument (string)
+        elif isinstance(error, utils.errors.MissingRequiredArgumentString):
+            return await ctx.send(f"You're missing the `{error.param}` argument, which is required for this command to work properly.")
 
         # Missing argument
         elif isinstance(error, commands.MissingRequiredArgument):

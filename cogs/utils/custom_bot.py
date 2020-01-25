@@ -12,13 +12,13 @@ import discord
 import toml
 from discord.ext import commands
 
+from cogs.utils import random_text
 from cogs.utils.custom_context import CustomContext
 from cogs.utils.database import DatabaseConnection
+from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
+from cogs.utils.proposal_cache import ProposalCache
 from cogs.utils.redis import RedisConnection
 from cogs.utils.shallow_user import ShallowUser
-from cogs.utils.proposal_cache import ProposalCache
-from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
-from cogs.utils import random_text
 
 
 def get_prefix(bot, message:discord.Message):
@@ -125,7 +125,7 @@ class CustomBot(commands.AutoShardedBot):
             valid_users = [valid_users]
 
         # Wait for response
-        def check(r, u):
+        def check(r, u) -> bool:
             return all([
                 r.message.id == message.id,
                 u.id in [user.id for user in valid_users],

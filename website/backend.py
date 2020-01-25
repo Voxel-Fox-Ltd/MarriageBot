@@ -1,18 +1,16 @@
-import hmac
 import hashlib
-from urllib.parse import urlencode, unquote
+import hmac
+import json
 from datetime import datetime as dt
+from urllib.parse import unquote, urlencode
 
 import aiohttp
-from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 import aiohttp_session
-import json
 import asyncpg
-import discord
+from aiohttp.web import HTTPFound, Request, Response, RouteTableDef
 
 from cogs import utils
 from website import utils as webutils
-
 
 """
 All pages on this website that implement the base.jinja file should return two things:
@@ -536,4 +534,3 @@ async def login(request:Request):
     await aiohttp_session.new_session(request)
     await webutils.process_discord_login(request, ['identify', 'guilds'])
     return HTTPFound(location=f'/')
-
