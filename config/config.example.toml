@@ -7,6 +7,7 @@ guild_id = 1  # The ID of the main/support guild
 [command_data]
     guild_invite = ""
     github = ""
+    patreon = ""
 
 # This data is passed directly over to asyncpg
 [database]
