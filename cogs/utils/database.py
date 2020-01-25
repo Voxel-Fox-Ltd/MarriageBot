@@ -80,3 +80,11 @@ class DatabaseConnection(object):
         if 'select' in sql.casefold() or 'returning' in sql.casefold():
             return []
         return None
+
+    async def copy_records_to_table(self, table_name, *, records, columns=None, timeout=None):
+        """Copies a series of records to a given table"""
+
+        return await self.conn.copy_records_to_table(
+            table_name=table_name, records=records,
+            columns=columns, timeout=timeout
+        )
