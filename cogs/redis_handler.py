@@ -1,6 +1,6 @@
-from datetime import datetime as dt
 import asyncio
 import json
+from datetime import datetime as dt
 
 import discord
 
@@ -8,7 +8,6 @@ from cogs import utils
 
 
 class RedisHandler(utils.Cog):
-    """A cog to handle all of the redis message recieves"""
 
     DEFAULT_EV_MESSAGE = "return 'Message not received'"
 

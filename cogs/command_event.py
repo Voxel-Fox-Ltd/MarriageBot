@@ -45,18 +45,18 @@ class CommandEvent(utils.Cog):
 
         # Log commands
         command_values = [[
-                ctx.guild.id if ctx.guild else None,
-                ctx.channel.id,
-                ctx.author.id,
-                ctx.message.id,
-                ctx.message.content,
-                ctx.command.name if ctx.command else None,
-                ctx.invoked_with,
-                ctx.prefix,
-                ctx.message.created_at,
-                ctx.command_failed,
-                ctx.valid,
-                ctx.guild.shard_id if ctx.guild else 0,
+            ctx.guild.id if ctx.guild else None,
+            ctx.channel.id,
+            ctx.author.id,
+            ctx.message.id,
+            ctx.message.content,
+            ctx.command.name if ctx.command else None,
+            ctx.invoked_with,
+            ctx.prefix,
+            ctx.message.created_at,
+            ctx.command_failed,
+            ctx.valid,
+            ctx.guild.shard_id if ctx.guild else 0,
         ] for ctx in commands]
 
         # Save to DB

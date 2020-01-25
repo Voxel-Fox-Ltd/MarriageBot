@@ -1,4 +1,3 @@
-import asyncpg
 import discord
 from discord.ext import commands
 
@@ -6,19 +5,24 @@ from cogs import utils
 
 
 class ServerSpecific(utils.Cog):
-    """A cog to group together all of the server specific commands"""
 
     @utils.Cog.listener()
     async def on_guild_join(self, guild:discord.Guild):
         """Looks for when the bot is added to a guild, leaving if it's not whitelisted"""
 
+        # Only work with Gold
         if not self.bot.is_server_specific:
             return
+
+        # See if we should be here
         async with self.bot.database() as db:
             data = await db('SELECT guild_id FROM guild_specific_families WHERE guild_id=$1', guild.id)
-            if not data:
-                self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
-                await guild.leave()
+        if data:
+            return
+
+        # Leave server
+        self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
+        await guild.leave()
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
@@ -27,16 +31,10 @@ class ServerSpecific(utils.Cog):
         """Toggles allowing incest on your guild"""
 
         async with self.bot.database() as db:
-            try:
-                await db(
-                    'INSERT INTO guild_settings (guild_id, prefix, allow_incest) VALUES ($1, $2, $3)',
-                    ctx.guild.id, self.bot.guild_settings[ctx.guild.id]['prefix'], True,
-                )
-            except asyncpg.UniqueViolationError:
-                await db(
-                    'UPDATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
-                    ctx.guild.id, True,
-                )
+            await db(
+                'INSERT INTO guild_settings (guild_id, prefix, allow_incest) VALUES ($1, $2, $3) ON CONFLICT (guild_id) DO UPDATE SET allow_incest=$3',
+                ctx.guild.id, self.bot.guild_settings[ctx.guild.id]['prefix'], False,
+            )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
@@ -47,16 +45,10 @@ class ServerSpecific(utils.Cog):
         """Toggles allowing incest on your guild"""
 
         async with self.bot.database() as db:
-            try:
-                await db(
-                    'INSERT INTO guild_settings (guild_id, prefix, allow_incest) VALUES ($1, $2, $3)',
-                    ctx.guild.id, self.bot.guild_settings[ctx.guild.id]['prefix'], False,
-                )
-            except asyncpg.UniqueViolationError:
-                await db(
-                    'UPDATE guild_settings SET allow_incest=$2 WHERE guild_id=$1',
-                    ctx.guild.id, False,
-                )
+            await db(
+                'INSERT INTO guild_settings (guild_id, prefix, allow_incest) VALUES ($1, $2, $3) ON CONFLICT (guild_id) DO UPDATE SET allow_incest=$3',
+                ctx.guild.id, self.bot.guild_settings[ctx.guild.id]['prefix'], False,
+            )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 

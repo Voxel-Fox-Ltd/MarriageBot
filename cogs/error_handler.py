@@ -44,11 +44,10 @@ class ErrorHandler(utils.Cog):
 
         # Can't send files
         if isinstance(error, utils.errors.CantSendFiles):
-            await self.send_to_ctx_or_author(ctx,
+            return await self.send_to_ctx_or_author(ctx,
                 "I'm not able to send files into this channel.",
                 "I'm unable to send messages into that channel."
             )
-            return
 
         # Cooldown
         elif isinstance(error, commands.CommandOnCooldown):

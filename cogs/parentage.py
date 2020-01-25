@@ -1,13 +1,11 @@
 from datetime import datetime as dt
 
-import discord
 from discord.ext import commands
 
 from cogs import utils
 
 
 class Parentage(utils.Cog):
-    """The parentage cog, handling the adoption of children"""
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -86,7 +84,6 @@ class Parentage(utils.Cog):
 
         # Uncache
         await self.bot.proposal_cache.remove(instigator, target)
-
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -173,7 +170,6 @@ class Parentage(utils.Cog):
         # Output to user
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
-
     @commands.command(aliases=['abort'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
@@ -250,7 +246,7 @@ class Parentage(utils.Cog):
         user_tree = utils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
         children = user_tree.children[:]
         if not children:
-            return await ctx.send("You don't have any children to disown .-.") # TODO make this text into a template
+            return await ctx.send("You don't have any children to disown .-.")
 
         # Disown em
         for child in children:

@@ -10,7 +10,6 @@ from cogs import utils
 
 
 class Information(utils.Cog):
-    """The information cog, handling telling the user what they want to hear"""
 
     @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -24,7 +23,7 @@ class Information(utils.Cog):
         user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
 
         # Output
-        if user_info._partner == None:
+        if user_info._partner is None:
             return await ctx.send(f"`{user_name}` is not currently married.")
         partner_name = await self.bot.get_name(user_info._partner)
         async with self.bot.database() as db:
@@ -56,7 +55,7 @@ class Information(utils.Cog):
         if len(user_info._children) == 0:
             output += f"`{user_name}` has no children right now."
         else:
-            ren = {False:"ren", True:""}[len(user_info._children)==1]
+            ren = {False:"ren", True:""}[len(user_info._children) == 1]
             output += f"`{user_name}` has `{len(user_info._children)}` child{ren}: "
             children = [(await self.bot.get_name(i), i) for i in user_info._children]
             output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
@@ -71,7 +70,7 @@ class Information(utils.Cog):
         if len(user_info._children) == 0:
             output += f"\n\nTheir partner, `{user_name}`, has no children right now."
         else:
-            ren = {False:"ren", True:""}[len(user_info._children)==1]
+            ren = {False:"ren", True:""}[len(user_info._children) == 1]
             output += f"\n\nTheir partner, `{user_name}`, has `{len(user_info._children)}` child{ren}: "
             children = [(await self.bot.get_name(i), i) for i in user_info._children]
             output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
@@ -88,7 +87,7 @@ class Information(utils.Cog):
         user = user or ctx.author.id
         user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
         user_name = await self.bot.get_name(user)
-        if user_info._parent == None:
+        if user_info._parent is None:
             await ctx.send(f"`{user_name}` has no parent.")
             return
         name = await self.bot.get_name(user_info._parent)
@@ -106,7 +105,7 @@ class Information(utils.Cog):
         await ctx.channel.trigger_typing()
 
         # Get their relation
-        if other == None:
+        if other is None:
             user, other = ctx.author.id, user
         user_tree = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
         other_tree = utils.FamilyTreeMember.get(other, ctx.family_guild_id)
@@ -118,7 +117,7 @@ class Information(utils.Cog):
         other_name = await self.bot.get_name(other)
 
         # Output
-        if relation == None:
+        if relation is None:
             return await ctx.send(f"`{user_name}` is not related to `{other_name}`.")
         await ctx.send(f"`{other_name}` is `{user_name}`'s {relation}.")
 
@@ -223,8 +222,7 @@ class Information(utils.Cog):
             '-o',
             f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png',
             '-Gcharset=UTF-8',
-            ], loop=self.bot.loop
-        )
+        ], loop=self.bot.loop)
         await asyncio.wait_for(dot.wait(), 10.0, loop=self.bot.loop)
 
         # Kill subprocess

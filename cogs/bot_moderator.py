@@ -1,5 +1,4 @@
 from datetime import datetime as dt
-import typing
 
 import asyncpg
 from discord.ext import commands
@@ -102,9 +101,8 @@ class ModeratorOnly(utils.Cog):
         them = utils.FamilyTreeMember.get(user_b, ctx.family_guild_id)
 
         # See if they have partners
-        if me.partner != None or them.partner != None:
-            await ctx.send("One of those users already has a partner.")
-            return
+        if me.partner is not None or them.partner is not None:
+            return await ctx.send("One of those users already has a partner.")
 
         # Update database
         async with self.bot.database() as db:
@@ -194,10 +192,7 @@ class ModeratorOnly(utils.Cog):
 
         self.bot.dbl_votes[user] = dt.now()
         async with self.bot.database() as db:
-            try:
-                await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user, self.bot.dbl_votes[user])
-            except asyncpg.UniqueViolationError:
-                await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user, self.bot.dbl_votes[user])
+            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=$2', user, self.bot.dbl_votes[user])
         await ctx.send("Consider it done.")
 
     @commands.command(aliases=['addblogpost'], cls=utils.Command)
@@ -229,4 +224,3 @@ class ModeratorOnly(utils.Cog):
 def setup(bot:utils.Bot):
     x = ModeratorOnly(bot)
     bot.add_cog(x)
-

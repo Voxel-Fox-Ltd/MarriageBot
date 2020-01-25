@@ -9,7 +9,6 @@ from cogs import utils
 
 
 class Simulation(utils.Cog):
-    """A class to handle the simulation commands inside of the bot"""
 
     @commands.command(aliases=['snuggle', 'cuddle'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -17,9 +16,8 @@ class Simulation(utils.Cog):
         """Hugs a mentioned user"""
 
         if user == ctx.author:
-            await ctx.send(f"*You hug yourself... and start crying.*")
-        else:
-            await ctx.send(f"*Hugs {user.mention}*")
+            return await ctx.send(f"*You hug yourself... and start crying.*")
+        await ctx.send(f"*Hugs {user.mention}*")
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -29,8 +27,7 @@ class Simulation(utils.Cog):
 
         # Check if they're themself
         if user == ctx.author:
-            await ctx.send(f"How would you even manage to do that?")
-            return
+            return await ctx.send(f"How would you even manage to do that?")
 
         # Check if they're related
         x = utils.FamilyTreeMember.get(ctx.author.id)
@@ -39,7 +36,7 @@ class Simulation(utils.Cog):
             relationship = x.get_relation(y)
 
         # Generate responses
-        if relationship == None or relationship.casefold() == 'partner':
+        if relationship is None or relationship.casefold() == 'partner':
             responses = [
                 f"*Kisses {user.mention}*"
             ]
@@ -49,8 +46,6 @@ class Simulation(utils.Cog):
                 f"Incest is wincest, I guess.",
                 f"You two are related but go off I guess.",
             ]
-
-        # Boop an output
         await ctx.send(random.choice(responses))
 
     @commands.command(cls=utils.Command)
@@ -59,9 +54,8 @@ class Simulation(utils.Cog):
         """Slaps a mentioned user"""
 
         if user == ctx.author:
-            await ctx.send(f"*You slapped yourself... for some reason.*")
-        else:
-            await ctx.send(f"*Slaps {user.mention}*")
+            return await ctx.send(f"*You slapped yourself... for some reason.*")
+        await ctx.send(f"*Slaps {user.mention}*")
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -69,9 +63,8 @@ class Simulation(utils.Cog):
         """Punches a mentioned user"""
 
         if user == ctx.author:
-            await ctx.send("*You punched yourself... for some reason.*")
-        else:
-            await ctx.send(f"*Punches {user.mention} right in the nose*")
+            return await ctx.send("*You punched yourself... for some reason.*")
+        await ctx.send(f"*Punches {user.mention} right in the nose*")
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -79,9 +72,8 @@ class Simulation(utils.Cog):
         """Gives a cookie to a mentioned user"""
 
         if user == ctx.author:
-            await ctx.send("*You gave yourself a cookie.*")
-        else:
-            await ctx.send(f"*Gives {user.mention} a cookie*")
+            return await ctx.send("*You gave yourself a cookie.*")
+        await ctx.send(f"*Gives {user.mention} a cookie*")
 
     @commands.command(aliases=['nunget', 'nuggie'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -89,9 +81,8 @@ class Simulation(utils.Cog):
         """Gives a nugget to a mentioned user"""
 
         if user == ctx.author:
-            await ctx.send(f"*You give yourself a {ctx.invoked_with}* <:nugget:585626539605884950>")
-        else:
-            await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
+            return await ctx.send(f"*You give yourself a {ctx.invoked_with}* <:nugget:585626539605884950>")
+        await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
 
     @commands.command(aliases=['borger', 'borg'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -99,9 +90,8 @@ class Simulation(utils.Cog):
         """Gives a burger to a mentioned user"""
 
         if user == ctx.author:
-            await ctx.send(f"*You give yourself a {ctx.invoked_with}* 🍔")
-        else:
-            await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
+            return await ctx.send(f"*You give yourself a {ctx.invoked_with}* 🍔")
+        await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
 
     @commands.command(aliases=['dumpster'], hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -109,9 +99,8 @@ class Simulation(utils.Cog):
         """Throws a user in the garbage"""
 
         if user == ctx.author:
-            await ctx.send(f"*You climb right into the trash can, where you belong*")
-        else:
-            await ctx.send(f"*Throws {user.mention} into the dumpster*")
+            return await ctx.send(f"*You climb right into the trash can, where you belong*")
+        await ctx.send(f"*Throws {user.mention} into the dumpster*")
 
     @commands.command(hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -129,9 +118,8 @@ class Simulation(utils.Cog):
         """Pokes a given user"""
 
         if user == ctx.author:
-            await ctx.send("You poke yourself.")
-        else:
-            await ctx.send(f"*Pokes {user.mention}.*")
+            return await ctx.send("You poke yourself.")
+        await ctx.send(f"*Pokes {user.mention}.*")
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -209,13 +197,12 @@ class Simulation(utils.Cog):
         y = utils.FamilyTreeMember.get(user.id)
         async with ctx.channel.typing():
             relationship = x.get_relation(y)
-        if relationship == None or relationship.casefold() == 'partner':
+        if relationship is None or relationship.casefold() == 'partner':
             pass
         elif not self.bot.allows_incest(ctx.guild.id):
             pass
         else:
-            await ctx.send(text_processor.target_is_family())
-            return
+            return await ctx.send(text_processor.target_is_family())
 
         # Ping out a message for them
         await ctx.send(text_processor.valid_target())

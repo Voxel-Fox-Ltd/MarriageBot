@@ -1,8 +1,8 @@
-import os
 import asyncio
+import os
 
-import psutil
 import discord
+import psutil
 from discord.ext import commands
 
 from cogs import utils
@@ -20,10 +20,7 @@ class Misc(utils.Cog):
     async def vote(self, ctx:utils.Context):
         """Gives you a link to upvote the bot on DiscordBotList"""
 
-        if self.bot.config['dbl_vainity']:
-            url = f"https://discordbots.org/bot/{self.bot.config['dbl_vainity']}/vote"
-        else:
-            url = f"https://discordbots.org/bot/{self.bot.user.id}/vote"
+        url = f"https://discordbots.org/bot/{self.bot.user.id}/vote"
         await ctx.send(f"[Add a DBL vote]({url})!\nSee `m!perks` for more information.")
 
     @commands.command(aliases=['git', 'code'], cls=utils.Command)
@@ -109,7 +106,9 @@ class Misc(utils.Cog):
             "Togglable incest",
             "Faster bot responses",
             "Server specific families",
-            "Access to the `forcemarry`, `forcedivorce`, and `forceemancipate` commands"
+            "Access to the `forcemarry`, `forcedivorce`, and `forceemancipate` commands",
+            "Maximum 2000 family members",
+            "Configurable maximum children per role",
         ]
         e = discord.Embed()
         e.add_field(name=f'Normal Users', value=f"Gives you access to:\n* " + '\n* '.join(normal_users), inline=False)

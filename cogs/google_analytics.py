@@ -45,7 +45,7 @@ class GoogleAnalytics(utils.Cog):
             "cs": f"{ctx.guild.id}" if ctx.guild is not None else "PRIVATE_MESSAGE",
             "dt": ctx.command.name,
         })
-        async with self.bot.session.get(self.url, params=params) as r:
+        async with self.bot.session.get(self.url, params=params):
             pass
 
     @utils.Cog.listener()
@@ -59,7 +59,7 @@ class GoogleAnalytics(utils.Cog):
             "cs": f"{guild.id}",
             "dt": "GUILD_ADD",
         })
-        async with self.bot.session.get(self.url, params=params) as r:
+        async with self.bot.session.get(self.url, params=params):
             pass
 
     @utils.Cog.listener()
@@ -73,7 +73,7 @@ class GoogleAnalytics(utils.Cog):
             "cs": f"{guild.id}",
             "dt": "GUILD_REMOVE",
         })
-        async with self.bot.session.get(self.url, params=params) as r:
+        async with self.bot.session.get(self.url, params=params):
             pass
 
 

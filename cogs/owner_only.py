@@ -12,7 +12,6 @@ from cogs import utils
 
 
 class OwnerOnly(utils.Cog):
-    """Handles commands that only the owner should be able to run"""
 
     @commands.command(aliases=['pm', 'dm'], cls=utils.Command)
     @commands.is_owner()
@@ -329,5 +328,3 @@ class OwnerOnly(utils.Cog):
 def setup(bot:utils.Bot):
     x = OwnerOnly(bot)
     bot.add_cog(x)
-
-
