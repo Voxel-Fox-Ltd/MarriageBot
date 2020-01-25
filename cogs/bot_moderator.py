@@ -9,7 +9,7 @@ from cogs import utils
 
 class ModeratorOnly(utils.Cog):
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
     async def uncache(self, ctx:utils.Context, user:utils.converters.UserID):
         """Removes a user from the propsal cache."""
@@ -17,7 +17,7 @@ class ModeratorOnly(utils.Cog):
         await self.bot.proposal_cache.remove(user)
         await ctx.send("Sent Redis request to remove user from cache.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
     async def recache(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object"""
@@ -47,7 +47,7 @@ class ModeratorOnly(utils.Cog):
         # Output to user
         await ctx.send("Published update.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
     async def recachefamily(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object, but through their whole family"""
@@ -85,7 +85,7 @@ class ModeratorOnly(utils.Cog):
         # Output to user
         await ctx.send(f"Published `{len(family)}` updates.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     async def forcemarry(self, ctx:utils.Context, user_a:utils.converters.UserID, user_b:utils.converters.UserID=None):
         """Marries the two specified users"""
@@ -113,7 +113,7 @@ class ModeratorOnly(utils.Cog):
         them._partner = user_a
         await ctx.send("Consider it done.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     async def forcedivorce(self, ctx:utils.Context, user:utils.converters.UserID):
         """Divorces a user from their spouse"""
@@ -133,7 +133,7 @@ class ModeratorOnly(utils.Cog):
         me._partner = None
         await ctx.send("Consider it done.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     async def forceadopt(self, ctx:utils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
         """Adds the child to the specified parent"""
@@ -163,7 +163,7 @@ class ModeratorOnly(utils.Cog):
             await re.publish_json('TreeMemberUpdate', them.to_json())
         await ctx.send("Consider it done.")
 
-    @commands.command(aliases=['forceeman'])
+    @commands.command(aliases=['forceeman'], cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     async def forceemancipate(self, ctx:utils.Context, user:utils.converters.UserID):
         """Force emancipates a child"""
@@ -187,7 +187,7 @@ class ModeratorOnly(utils.Cog):
             await re.publish_json('TreeMemberUpdate', parent.to_json())
         await ctx.send("Consider it done.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
     async def addvoter(self, ctx:utils.Context, user:utils.converters.UserID):
         """Adds a voter to the database"""
@@ -200,7 +200,7 @@ class ModeratorOnly(utils.Cog):
                 await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user, self.bot.dbl_votes[user])
         await ctx.send("Consider it done.")
 
-    @commands.command(aliases=['addblogpost'])
+    @commands.command(aliases=['addblogpost'], cls=utils.Command)
     @utils.checks.is_bot_administrator()
     async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
         """Adds a blog post to the database"""
@@ -216,7 +216,7 @@ class ModeratorOnly(utils.Cog):
                 verb = "Updated"
         await ctx.send(f"{verb} blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
     async def createredirect(self, ctx:utils.Context, code:str, redirect:str):
         """Adds a redirect to the database"""

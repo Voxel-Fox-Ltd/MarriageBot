@@ -9,7 +9,7 @@ from cogs import utils
 class Parentage(utils.Cog):
     """The parentage cog, handling the adoption of children"""
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def makeparent(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
@@ -88,7 +88,7 @@ class Parentage(utils.Cog):
         await self.bot.proposal_cache.remove(instigator, target)
 
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def adopt(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
@@ -174,7 +174,7 @@ class Parentage(utils.Cog):
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
 
-    @commands.command(aliases=['abort'])
+    @commands.command(aliases=['abort'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
@@ -189,7 +189,7 @@ class Parentage(utils.Cog):
         target_tree = utils.FamilyTreeMember.get(target, ctx.family_guild_id)
 
         # Make sure they're the child of the instigator
-        if not target_tree.id in instigator_tree._children:
+        if target_tree.id not in instigator_tree._children:
             return await ctx.send(text_processor.instigator_is_unqualified())
 
         # Oh hey they are - remove from database
@@ -206,7 +206,7 @@ class Parentage(utils.Cog):
             await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
-    @commands.command(aliases=['eman', 'runaway', 'runawayfromhome'])
+    @commands.command(aliases=['eman', 'runaway', 'runawayfromhome'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def emancipate(self, ctx:utils.Context):
@@ -241,7 +241,7 @@ class Parentage(utils.Cog):
         v = text_processor.valid_target()
         await ctx.send(v)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_patreon(tier=1)
     async def disownall(self, ctx:utils.Context):
         """Disowns all of your children"""

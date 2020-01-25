@@ -15,7 +15,7 @@ class Misc(utils.Cog):
         self.process = psutil.Process(os.getpid())
         self.process.cpu_percent()
 
-    @commands.command(aliases=['upvote'])
+    @commands.command(aliases=['upvote'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def vote(self, ctx:utils.Context):
         """Gives you a link to upvote the bot on DiscordBotList"""
@@ -26,7 +26,7 @@ class Misc(utils.Cog):
             url = f"https://discordbots.org/bot/{self.bot.user.id}/vote"
         await ctx.send(f"[Add a DBL vote]({url})!\nSee `m!perks` for more information.")
 
-    @commands.command(aliases=['git', 'code'])
+    @commands.command(aliases=['git', 'code'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.has_set_config('github')
     async def github(self, ctx:utils.Context):
@@ -34,28 +34,22 @@ class Misc(utils.Cog):
 
         await ctx.send(f"<{self.bot.config['command_data']['github']}>", embeddify=False)
 
-    @commands.command(aliases=['patreon', 'paypal'])
+    @commands.command(aliases=['patreon'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.has_set_config('patreon')
     async def donate(self, ctx:utils.Context):
         """Gives you the creator's donation links"""
 
-        links = []
-        if self.bot.config['patreon']:
-            links.append(f"Patreon: <{self.bot.config['patreon']}> (see {ctx.prefix}perks to see what you get)")
-        if self.bot.config['paypal']:
-            links.append(f"PayPal: <{self.bot.config['paypal']}> (doesn't get you the perks, but is very appreciated)")
-        if not links:
-            raise utils.errors.NoSetConfig([])
-        await ctx.send('\n'.join(links), embeddify=False)
+        await ctx.send(self.bot.config['command_data']['patreon'], embeddify=False)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def invite(self, ctx:utils.Context):
         """Gives you an invite link for the bot"""
 
         await ctx.send(f"<{self.bot.get_invite_link(embed_links=True, attach_files=True)}>", embeddify=False)
 
-    @commands.command(aliases=['guild', 'support'])
+    @commands.command(aliases=['guild', 'support'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.has_set_config('guild_invite')
     async def server(self, ctx:utils.Context):
@@ -63,14 +57,14 @@ class Misc(utils.Cog):
 
         await ctx.send(self.bot.config['command_data']['guild_invite'], embeddify=False)
 
-    @commands.command(hidden=True, enabled=False)
+    @commands.command(hidden=True, enabled=False, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def echo(self, ctx:utils.Context, *, content:str):
         """Echos a saying"""
 
         await ctx.send(content, embeddify=False)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def perks(self, ctx:utils.Context):
         """Shows you the perks associated with different support tiers"""
@@ -126,7 +120,7 @@ class Misc(utils.Cog):
         e.add_field(name=f'MarriageBot Gold (m!ssf)', value=f"Gvies you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
-    @commands.command(aliases=['status'])
+    @commands.command(aliases=['status'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def stats(self, ctx:utils.Context):
         """Gives you the stats for the bot"""
@@ -162,7 +156,8 @@ class Misc(utils.Cog):
         except Exception:
             await ctx.send("I tried to send an embed, but I couldn't.")
 
-    @commands.command(aliases=['clean'])
+    @commands.command(aliases=['clean'], cls=utils.Command)
+    @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     async def clear(self, ctx:utils.Context):
         """Clears the bot's commands from chat"""
@@ -173,7 +168,7 @@ class Misc(utils.Cog):
             _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
         await ctx.send(f"Cleared `{len(_)}` messages from chat.", delete_after=3.0)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     async def block(self, ctx:utils.Context, user_id:utils.converters.UserID):
         """Blocks a user from being able to adopt/makeparent/whatever you"""
 
@@ -195,7 +190,7 @@ class Misc(utils.Cog):
         # Tell user
         await ctx.send("That user is now blocked.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     async def unblock(self, ctx:utils.Context, user:utils.converters.UserID):
         """Unblocks a user and allows them to adopt/makeparent/whatever you"""
 
@@ -217,7 +212,7 @@ class Misc(utils.Cog):
         # Tell user
         await ctx.send("That user is now unblocked.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @commands.guild_only()
     async def shard(self, ctx:utils.Context):
         """Gives you the shard that your server is running on"""

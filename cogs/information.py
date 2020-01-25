@@ -12,7 +12,7 @@ from cogs import utils
 class Information(utils.Cog):
     """The information cog, handling telling the user what they want to hear"""
 
-    @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
+    @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def partner(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
@@ -38,7 +38,7 @@ class Information(utils.Cog):
         else:
             await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`).")
 
-    @commands.command(aliases=['child', 'kids'])
+    @commands.command(aliases=['child', 'kids'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def children(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
@@ -79,7 +79,7 @@ class Information(utils.Cog):
         # Return all output
         await ctx.send(output)
 
-    @commands.command(aliases=['parents'])
+    @commands.command(aliases=['parents'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def parent(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
@@ -94,7 +94,7 @@ class Information(utils.Cog):
         name = await self.bot.get_name(user_info._parent)
         await ctx.send(f"`{user_name}`'s parent is `{name}` (`{user_info._parent}`).")
 
-    @commands.command(aliases=['relation'])
+    @commands.command(aliases=['relation'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:typing.Optional[utils.converters.UserID]):
@@ -122,7 +122,7 @@ class Information(utils.Cog):
             return await ctx.send(f"`{user_name}` is not related to `{other_name}`.")
         await ctx.send(f"`{other_name}` is `{user_name}`'s {relation}.")
 
-    @commands.command(aliases=['treesize','fs','ts'])
+    @commands.command(aliases=['treesize', 'fs', 'ts'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def familysize(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
@@ -140,7 +140,7 @@ class Information(utils.Cog):
         username = await self.bot.get_name(user)
         await ctx.send(f"There are `{size}` people in `{username}`'s family tree.")
 
-    @commands.command(enabled=False)
+    @commands.command(enabled=False, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
@@ -153,7 +153,7 @@ class Information(utils.Cog):
         file_bytes = io.BytesIO(text.encode())
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
-    @commands.command(aliases=['familytree', 't', 'fulltree', 'ft', 'gt'])
+    @commands.command(aliases=['familytree', 't', 'fulltree', 'ft', 'gt'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
@@ -169,7 +169,7 @@ class Information(utils.Cog):
         except Exception as e:
             raise e
 
-    @commands.command(aliases=['st'])
+    @commands.command(aliases=['st'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @utils.checks.is_patreon(tier=2)
     @commands.bot_has_permissions(attach_files=True)

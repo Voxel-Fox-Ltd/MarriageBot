@@ -71,7 +71,7 @@ class OwnerOnly(utils.Cog):
             # Shove stdout into StringIO
             with contextlib.redirect_stdout(stdout):
                 ret = await func()
-        except Exception as e:
+        except Exception:
             # Oh no it caused an error
             value = stdout.getvalue()
             await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
@@ -206,14 +206,16 @@ class OwnerOnly(utils.Cog):
             return await self.bot.set_default_presence()
         await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
 
-    @botuser.command()
+    @botuser.command(cls=utils.Command)
+    @commands.is_owner()
     async def status(self, ctx:utils.Context, status:str):
         """Changes the bot's status"""
 
         status_object = getattr(discord.Status, status.lower())
         await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status_object)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
     async def sudo(self, ctx, who:utils.converters.UserID, *, command: str):
         """Run a command as another user optionally in another channel."""
 
@@ -223,7 +225,8 @@ class OwnerOnly(utils.Cog):
         new_ctx = await self.bot.get_context(msg, cls=utils.Context)
         await self.bot.invoke(new_ctx)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
     async def runall(self, ctx, *, command: str):
         """Run a command across all instances of the bot"""
 
@@ -235,7 +238,8 @@ class OwnerOnly(utils.Cog):
                 'exempt': [],
             })
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
     async def rldall(self, ctx, *cog_name:str):
         """Reloads all of a given cog"""
 
@@ -247,7 +251,8 @@ class OwnerOnly(utils.Cog):
                 'exempt': [],
             })
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
     async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
@@ -275,7 +280,8 @@ class OwnerOnly(utils.Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
     async def copyfamilytoguildnodelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
@@ -303,7 +309,8 @@ class OwnerOnly(utils.Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
     async def addserverspecific(self, ctx:utils.Context, guild_id:int):
         """Adds a guild to the MarriageBot Gold whitelist"""
 

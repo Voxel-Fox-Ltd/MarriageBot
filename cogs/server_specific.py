@@ -20,7 +20,7 @@ class ServerSpecific(utils.Cog):
                 self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
                 await guild.leave()
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     @utils.checks.guild_is_server_specific()
     async def allowincest(self, ctx:utils.Context):
@@ -40,7 +40,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     @utils.checks.guild_is_server_specific()
     async def disallowincest(self, ctx:utils.Context):
@@ -60,7 +60,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @commands.command(aliases=['ssf'])
+    @commands.command(aliases=['ssf'], cls=utils.Command)
     async def serverspecificfamilies(self, ctx:utils.Context):
         """Gives you the information about server specific families and MarriageBot gold"""
 

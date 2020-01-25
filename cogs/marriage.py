@@ -6,7 +6,7 @@ from cogs import utils
 class Marriage(utils.Cog):
     """The marriage cog, handling all marriage/divorce/etc commands"""
 
-    @commands.command(aliases=['marry'])
+    @commands.command(aliases=['marry'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def propose(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
@@ -82,7 +82,7 @@ class Marriage(utils.Cog):
         # Remove users from proposal cache
         await self.bot.proposal_cache.remove(instigator, target)
 
-    @commands.command()
+    @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     async def divorce(self, ctx:utils.Context):
