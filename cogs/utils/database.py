@@ -25,7 +25,7 @@ class DatabaseConnection(object):
         cls.config = config.copy()
         if config.pop('enabled', True) is False:
             raise NotImplementedError("The database connection has been disabled.")
-        cls.pool = await asyncpg.create_pool(**cls.config)
+        cls.pool = await asyncpg.create_pool(**config)
 
     @classmethod
     async def get_connection(cls) -> 'DatabaseConnection':
