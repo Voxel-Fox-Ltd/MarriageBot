@@ -117,7 +117,7 @@ class CustomBot(commands.AutoShardedBot):
         bulk = False
         if message.guild:
             permissions: discord.Permissions = message.channel.permissions_for(message.guild.me)
-            bulk = permissions.manage_message and permissions.read_message_history
+            bulk = permissions.manage_messages and permissions.read_message_history
         try:
             await message.channel.purge(check=lambda m: m.id in [i.id for i in delete], bulk=bulk)
         except Exception:
