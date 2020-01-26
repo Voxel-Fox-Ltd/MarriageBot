@@ -3,7 +3,7 @@ from cogs import utils
 
 class CommandEvent(utils.Cog):
 
-    CONTENT_LIMIT = 10
+    CONTENT_LIMIT = 50
 
     @utils.Cog.listener()
     async def on_command(self, ctx:utils.Context):
