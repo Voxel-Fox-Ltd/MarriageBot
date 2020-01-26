@@ -1,3 +1,4 @@
+import aiohttp_session
 import discord
 from aiohttp.web import HTTPFound, Request, RouteTableDef
 from aiohttp_jinja2 import template
@@ -26,6 +27,15 @@ async def login(request:Request):
         oauth_scopes=['identify', 'guilds'],
     )
     return HTTPFound(location=login_url)
+
+
+@routes.get("/logout")
+async def logout(request:Request):
+    """Index of the website"""
+
+    session = await aiohttp_session.get_session(request)
+    session.invalidate()
+    return HTTPFound(location='/')
 
 
 @routes.get("/guilds")
