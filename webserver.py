@@ -9,7 +9,6 @@ from aiohttp.web import Application, AppRunner, TCPSite
 from aiohttp_jinja2 import setup as jinja_setup
 from aiohttp_session import setup as session_setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage as ECS
-from aiohttp_session.redis_storage import RedisStorage
 from jinja2 import FileSystemLoader
 
 import website
@@ -83,11 +82,6 @@ if __name__ == '__main__':
     # Connect the redis
     logger.info("Creating redis pool")
     loop.run_until_complete(utils.RedisConnection.create_pool(app['config']['redis']))
-
-    # Connect redis to middleware
-    logger.info("Connecting Redis to app")
-    storage = RedisStorage(utils.RedisConnection.pool)
-    session_setup(app, storage)
 
     # Start the server unless I said otherwise
     webserver = None

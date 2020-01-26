@@ -18,8 +18,8 @@ async def index(request:Request):
     If not logged in, all pages should redirect here"""
 
     bot = request.app['bot']
-    login_url = bot.get_invite(
-        redirect_uri='https://marriagebot.xyz/discord_oauth_login',
+    login_url = bot.get_invite_link(
+        redirect_uri='https://dev.marriagebot.xyz/discord_oauth_login',
         response_type='code',
         scope='identify guilds'
     )
@@ -141,17 +141,12 @@ async def tree_preview(request:Request):
 
 @routes.get('/guild_picker')
 @template('guild_picker.j2')
-@webutils.add_output_args(redirect_if_logged_out="/r/login")
+@webutils.add_output_args(redirect_if_logged_out="/login")
 async def guild_picker(request:Request):
     """Shows the guilds that the user has permission to change"""
 
-    # See if they're logged in
-    guild_id = request.query.get('guild_id')
-    if not guild_id:
-        return HTTPFound(location='/')
-
     # Get the guilds they're valid to alter
-    all_guilds = webutils.get_user_guilds(request)
+    all_guilds = await webutils.get_user_guilds(request)
     try:
         guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
     except TypeError:
@@ -195,8 +190,8 @@ async def guild_settings_get_paypal(request:Request):
         guild_object = await bot.fetch_guild(int(guild_id))
     except discord.Forbidden:
         # We get here? Bot's not in the server
-        location = bot.get_invite(
-            redirect_uri='https://marriagebot.xyz/guild_settings',
+        location = bot.get_invite_link(
+            redirect_uri='https://dev.marriagebot.xyz/guild_settings',
             response_type='code',
             scope='bot identify guilds',
             permissions=52224
@@ -204,7 +199,7 @@ async def guild_settings_get_paypal(request:Request):
         return HTTPFound(location=location)
 
     # Get the guilds they're valid to alter
-    all_guilds = webutils.get_user_guilds(request)
+    all_guilds = await webutils.get_user_guilds(request)
     oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not oauth_guild_data:
         return HTTPFound(location='/')
@@ -298,8 +293,8 @@ async def login(request:Request):
     """Index of the website"""
 
     bot = request.app['bot']
-    login_url = bot.get_invite(
-        redirect_uri='https://marriagebot.xyz/discord_oauth_login',
+    login_url = bot.get_invite_link(
+        redirect_uri='https://dev.marriagebot.xyz/discord_oauth_login',
         response_type='code',
         scope='identify guilds'
     )

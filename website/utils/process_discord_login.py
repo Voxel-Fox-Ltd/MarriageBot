@@ -1,3 +1,4 @@
+import asyncio
 from urllib.parse import urlencode
 
 import aiohttp
@@ -97,7 +98,12 @@ async def get_user_guilds(request:Request):
 
         # Get guilds
         guilds_url = f"https://discordapp.com/api/v6/users/@me/guilds"
-        async with session.get(guilds_url, headers=headers) as r:
-            guild_info = await r.json()
+        while True:
+            async with session.get(guilds_url, headers=headers) as r:
+                guild_info = await r.json()
+                if r.status == 429:
+                    await asyncio.sleep(guild_info['retry_after'] / 1000)
+                    continue
+                break
 
     return guild_info

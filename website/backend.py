@@ -54,7 +54,7 @@ async def redirect(request:Request):
 async def login(request:Request):
     """Page the discord login redirects the user to when successfully logged in with Discord"""
 
-    await webutils.process_discord_login(request)
+    await webutils.process_discord_login(request, oauth_scopes=['identify', 'guilds'])
 
     # Redirect to settings
     return HTTPFound(location=f'/settings')
@@ -128,7 +128,7 @@ async def set_prefix(request:Request):
         return HTTPFound(location='/')
 
     # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
+    all_guilds = await webutils.get_user_guilds(request)
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
@@ -144,9 +144,10 @@ async def set_prefix(request:Request):
     # Update prefix in DB
     async with request.app['database']() as db:
         if post_data['gold']:
-            await db('UPDATE guild_settings SET gold_prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
+            key = 'gold_prefix'
         else:
-            await db('UPDATE guild_settings SET prefix=$1 WHERE guild_id=$2', prefix, int(guild_id))
+            key = 'prefix'
+        await db(f'INSERT INTO guild_settings (guild_id, {key}) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET {key}=$2', int(guild_id), prefix)
     async with request.app['redis']() as re:
         redis_data = {'guild_id': int(guild_id)}
         redis_data[{True: 'gold_prefix', False: 'prefix'}[bool(post_data['gold'])]] = prefix
@@ -162,16 +163,13 @@ async def set_max_family_members(request:Request):
     """Sets the maximum family members for a given guild"""
 
     # See if they're logged in
-    session = await aiohttp_session.get_session(request)
     post_data = await request.post()
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
     guild_id = post_data['guild_id']
     if not guild_id:
         return HTTPFound(location='/')
 
     # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
+    all_guilds = await webutils.get_user_guilds(request)
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
@@ -188,7 +186,7 @@ async def set_max_family_members(request:Request):
 
     # Get current prefix
     async with request.app['database']() as db:
-        await db('UPDATE guild_settings SET max_family_members=$1 WHERE guild_id=$2', max_members, int(guild_id))
+        await db('INSERT INTO guild_settings (guild_id, max_family_members) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET max_family_members=$2', int(guild_id), max_members)
     async with request.app['redis']() as re:
         await re.publish_json('UpdateFamilyMaxMembers', {
             'guild_id': int(guild_id),
@@ -213,7 +211,7 @@ async def set_incest_enabled(request:Request):
         return HTTPFound(location='/')
 
     # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
+    all_guilds = await webutils.get_user_guilds(request)
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
@@ -226,7 +224,7 @@ async def set_incest_enabled(request:Request):
 
     # Get current prefix
     async with request.app['database']() as db:
-        await db('UPDATE guild_settings SET allow_incest=$1 WHERE guild_id=$2', enabled, int(guild_id))
+        await db('INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET allow_incest=$2', int(guild_id), enabled)
     async with request.app['redis']() as re:
         await re.publish_json('UpdateIncestAllowed', {
             'guild_id': int(guild_id),
@@ -251,7 +249,7 @@ async def set_max_allowed_children(request:Request):
         return HTTPFound(location='/')
 
     # Get the guilds they're valid to alter
-    all_guilds = session['guild_info']
+    all_guilds = await webutils.get_user_guilds(request)
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
