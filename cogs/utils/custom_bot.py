@@ -195,7 +195,7 @@ class CustomBot(commands.AutoShardedBot):
             try:
                 self.unload_extension(i)
             except Exception as e:
-                self.logger.warning(f' * {i}... failed - {e!s}')
+                self.logger.debug(f' * {i}... failed - {e!s}')
             else:
                 self.logger.info(f' * {i}... success')
 
