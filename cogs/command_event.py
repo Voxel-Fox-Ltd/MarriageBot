@@ -5,7 +5,7 @@ from cogs import utils
 
 class CommandEvent(utils.Cog):
 
-    CONTENT_LIMIT = 10
+    CONTENT_LIMIT = 50
 
     def __init__(self, bot:utils.Bot):
         super().__init__(bot)
@@ -33,7 +33,7 @@ class CommandEvent(utils.Cog):
         content = ctx.message.content.replace('\n', '\\n')[:self.CONTENT_LIMIT]
         if len(ctx.message.content) > self.CONTENT_LIMIT:
             content += '...'
-        if ctx.guild:
+        if ctx.guild is None:
             return logger.info(f"Command invoked ({ctx.invoked_with}) ~ (G0/C{ctx.channel.id}/U{ctx.author.id}) :: {content}")
         logger.info(f"Command invoked ({ctx.invoked_with}) ~ (G{ctx.guild.id}/C{ctx.channel.id}/U{ctx.author.id}) :: {content}")
 
