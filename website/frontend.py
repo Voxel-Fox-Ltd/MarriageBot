@@ -19,7 +19,7 @@ async def index(request:Request):
 
     bot = request.app['bot']
     login_url = bot.get_invite_link(
-        redirect_uri='https://dev.marriagebot.xyz/discord_oauth_login',
+        redirect_uri='https://marriagebot.xyz/discord_oauth_login',
         response_type='code',
         scope='identify guilds'
     )
@@ -195,7 +195,7 @@ async def guild_settings_get_paypal(request:Request):
     except discord.Forbidden:
         # We get here? Bot's not in the server
         location = bot.get_invite_link(
-            redirect_uri='https://dev.marriagebot.xyz/guild_settings',
+            redirect_uri='https://marriagebot.xyz/guild_settings',
             response_type='code',
             scope='bot identify guilds',
             permissions=52224
@@ -298,7 +298,7 @@ async def login(request:Request):
 
     bot = request.app['bot']
     login_url = bot.get_invite_link(
-        redirect_uri='https://dev.marriagebot.xyz/login_redirect',
+        redirect_uri='https://marriagebot.xyz/login_redirect',
         response_type='code',
         scope='identify guilds'
     )

@@ -37,7 +37,7 @@ class Misc(utils.Cog):
     async def donate(self, ctx:utils.Context):
         """Gives you the creator's donation links"""
 
-        await ctx.send(self.bot.config['command_data']['patreon'], embeddify=False)
+        await ctx.send(f"See `{ctx.prefix}perks` for more information!\n{self.bot.config['command_data']['patreon']}", embeddify=False)
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -116,7 +116,7 @@ class Misc(utils.Cog):
         e.add_field(name=f'T1 Patreon Donation (m!donate)', value=f"Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
         e.add_field(name=f'T2 Patreon Donation (m!donate)', value=f"Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
         e.add_field(name=f'T3 Patreon Donation (m!donate)', value=f"Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
-        e.add_field(name=f'MarriageBot Gold (m!ssf)', value=f"Gvies you access to:\n* " + '\n* '.join(gold_perks), inline=False)
+        e.add_field(name=f'MarriageBot Gold (m!gold)', value=f"Gvies you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
     @commands.command(aliases=['status'], cls=utils.Command)

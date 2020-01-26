@@ -4,6 +4,27 @@ from discord.ext import commands
 from cogs import utils
 
 
+MARRIAGEBOT_GOLD_INFORMATION = """
+**MarriageBot Gold** is, put simply, the premium version of MarriageBot. It gives you a range of features that aren't present in the normal version of MarriageBot, which can help making your families even better than before.
+
+**Server Specific Families**
+> This allows you to keep families registered to your own guild. No more will you be trying to marry someone to find out they have a partner you've never met 4 servers away - all family members will be kept right on your server.
+**5s Tree Command Cooldown**
+> The tree command cooldown is reduced _massively_ to just 5s per command call, instead of the 60s that the regular MarriageBot has.
+**"force" Commands**
+> Users with a role named "MarriageBot Moderator" will be able to run commands like `forceadopt` and `forcemarry` in order to construct trees exactly how you want them.
+**Configurable Max Family Members**
+> Via the MarriageBot website, you're able to set the maximum number of members in a family to a number up to 2000 people, putting it far above the 500 offered normally.
+**Configurable Max Children Amount**
+> Stuck with only 5 children? Using the MarriageBot website, you're able to set the maximum number of children that a given role can have, allowing you to tier your users.
+**Togglable Incest**
+> You love your family? With Gold you're able to show them... a lot _more_ love.
+
+MarriageBot Gold is a one-time purchase available per server on the MarriageBot website (<https://marriagebot.xyz/guild_picker>).
+Please feel free to direct any questions to the team at `m!server`. Caleb is constantly updating MarriageBot and MarriageBot Gold, and he'd love to hear your suggestions for more features if you have any!
+""".strip()
+
+
 class ServerSpecific(utils.Cog):
 
     @utils.Cog.listener()
@@ -52,11 +73,15 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @commands.command(aliases=['ssf'], cls=utils.Command)
-    async def serverspecificfamilies(self, ctx:utils.Context):
+    @commands.command(aliases=['ssf', 'incest'], cls=utils.Command)
+    async def gold(self, ctx:utils.Context):
         """Gives you the information about server specific families and MarriageBot gold"""
 
-        await ctx.send(f"[See here](https://marriagebot.xyz/blog/gold) for a rundown of everything, or `m!perks` for an overview. Ask any questions you have at `m!support`.")
+        try:
+            await ctx.author.send(MARRIAGEBOT_GOLD_INFORMATION)
+            await ctx.send("Sent you a DM!")
+        except discord.Forbidden:
+            await ctx.send("I couldn't send you a DM :c")
 
 
 def setup(bot:utils.Bot):
