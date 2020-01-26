@@ -12,7 +12,7 @@ routes = RouteTableDef()
 
 @routes.get("/")
 @template('index.j2')
-@webutils.add_output_args(redirect_if_logged_in="/settings")
+@webutils.add_output_args()
 async def index(request:Request):
     """Index of the website, has "login with Discord" button
     If not logged in, all pages should redirect here"""
@@ -53,7 +53,8 @@ async def blog(request:Request):
 
 @routes.get('/settings')
 @template('settings.j2')
-@webutils.add_output_args(redirect_if_logged_out="/discord_oauth_login")
+@webutils.add_output_args()
+@webutils.requires_login()
 async def settings(request:Request):
     """Handles the main settings page for the bot"""
 
@@ -62,7 +63,8 @@ async def settings(request:Request):
 
 @routes.get('/user_settings')
 @template('user_settings.j2')
-@webutils.add_output_args(redirect_if_logged_out="/discord_oauth_login")
+@webutils.add_output_args()
+@webutils.requires_login()
 async def user_settings(request:Request):
     """Handles the users' individual settings pages"""
 
@@ -141,7 +143,8 @@ async def tree_preview(request:Request):
 
 @routes.get('/guild_picker')
 @template('guild_picker.j2')
-@webutils.add_output_args(redirect_if_logged_out="/login")
+@webutils.add_output_args()
+@webutils.requires_login()
 async def guild_picker(request:Request):
     """Shows the guilds that the user has permission to change"""
 
@@ -169,7 +172,8 @@ async def guild_picker(request:Request):
 
 @routes.get('/guild_settings')
 @template('guild_settings_paypal.j2')
-@webutils.add_output_args(redirect_if_logged_out="/discord_oauth_login")
+@webutils.add_output_args()
+@webutils.requires_login()
 async def guild_settings_get_paypal(request:Request):
     """Shows the settings for a particular guild"""
 
@@ -299,17 +303,3 @@ async def login(request:Request):
         scope='identify guilds'
     )
     return HTTPFound(location=login_url)
-
-
-@routes.get("/guilds")
-@template('guild_picker.j2')
-@webutils.add_output_args()
-@webutils.requires_login()
-async def guild_picker(request:Request):
-    """The guild picker page for the user"""
-
-    # Return information
-    user_guilds = await webutils.get_user_guilds(request)
-    return {
-        'user_guilds': [i for i in user_guilds if discord.Permissions(i['permissions']).manage_messages],
-    }

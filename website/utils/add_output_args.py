@@ -4,7 +4,7 @@ import aiohttp_session
 from aiohttp.web import HTTPFound, Request
 
 
-def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:str=None):
+def add_output_args():
     """This function is a wrapper around all routes. It takes the output and
     adds the user info and request to the returning dictionary
     It must be applied before the template decorator"""
@@ -55,12 +55,6 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
             og_data['og:image'] = og_data.get('og:image', 'https://marriagebot.xyz/static/images/MarriageBotCircle.150.png')
             og_data['og:locale'] = og_data.get('og:locale', 'en_GB')
             data['opengraph'] = og_data
-
-            # Check return relevant info
-            if redirect_if_logged_out and session.get('user_id') is None:
-                return HTTPFound(location=redirect_if_logged_out)
-            elif redirect_if_logged_in and session.get('user_id') is not None:
-                return HTTPFound(location=redirect_if_logged_in)
 
             return data
         return wrapper
