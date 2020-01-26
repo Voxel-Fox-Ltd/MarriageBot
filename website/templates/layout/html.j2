@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         {% block embed %}
-        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:card" content="{% block embed_card %}summary{% embed_card %}" />
         <meta name="twitter:title" content="{% block embed_title %}BASEBOT{% endblock embed_title %}" />
         <meta name="twitter:description" content="{% block embed_description %}BASEBOT DESCRIPTION{% endblock embed_description %}" />
         <meta name="twitter:image" content="{% block embed_image %}{% endblock embed_image %}" />
