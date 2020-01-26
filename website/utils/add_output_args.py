@@ -23,7 +23,8 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
             if isinstance(data, HTTPFound):
                 if data.location == "/discord_oauth_login":
                     session = await aiohttp_session.get_session(request)
-                    session['redirect_on_login'] = str(request.url)
+                    if 'redirect_on_login' not in session:
+                        session['redirect_on_login'] = str(request.url)
             if not isinstance(data, dict):
                 return data
 
@@ -44,17 +45,6 @@ def add_output_args(*, redirect_if_logged_out:str=None, redirect_if_logged_in:st
                     data.update({'user_info': None})
             if 'request' not in data:
                 data.update({'request': request})
-
-            # Update OpenGraph information
-            if 'opengraph' not in data:
-                data.update({'opengraph': dict()})
-            og_data = data['opengraph'].copy()
-            og_data['og:title'] = og_data.get('og:title', 'MarriageBot - A marriage-based Discord bot')
-            og_data['og:description'] = og_data.get('og:description', 'MarriageBot is a Discord bot used for simulations of your family, be it that you want b1nzy as your mom, or Jake as your nephew, MarriageBot can handle it all.')
-            og_data['og:type'] = og_data.get('og:type', 'website')
-            og_data['og:image'] = og_data.get('og:image', 'https://marriagebot.xyz/static/images/MarriageBotCircle.150.png')
-            og_data['og:locale'] = og_data.get('og:locale', 'en_GB')
-            data['opengraph'] = og_data
 
             # Check return relevant info
             if redirect_if_logged_out and session.get('user_id') is None:
