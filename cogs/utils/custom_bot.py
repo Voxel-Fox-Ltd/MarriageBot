@@ -210,14 +210,18 @@ class CustomBot(commands.AutoShardedBot):
             else:
                 self.logger.info(f' * {i}... success')
 
-    async def set_default_presence(self):
+    async def set_default_presence(self, shard_id:int=None):
         """Sets the default presence for the bot as appears in the config file"""
 
         # Update presence
         self.logger.info("Setting default bot presence")
         presence = self.config['presence']
         if self.shard_count > 1:
-            for i in range(self.shard_count):
+            if shard_id:
+                min, max = shard_id, shard_id + 1
+            else:
+                min, max = self.shard_ids[0], self.shard_ids[-1]
+            for i in range(min, max):
                 activity = discord.Activity(
                     name=f"{presence['text']} (shard {i})",
                     type=getattr(discord.ActivityType, presence['activity_type'].lower())
