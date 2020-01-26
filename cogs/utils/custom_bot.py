@@ -97,7 +97,7 @@ class CustomBot(commands.AutoShardedBot):
         ProposalCache.bot = self
         random_text.RandomText.original.bot = self
 
-    def get_invite_link(self, *, scope:str='bot', redirect_uri:str=None, response_type:str=None, guild_id:int=None, **kwargs):
+    def get_invite_link(self, *, scope:str='bot', response_type:str=None, redirect_uri:str=None, guild_id:int=None, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
 
         permissions = discord.Permissions()
