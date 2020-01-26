@@ -1,3 +1,4 @@
+import discord
 from aiohttp.web import HTTPFound, Request, RouteTableDef
 from aiohttp_jinja2 import template
 
@@ -25,3 +26,17 @@ async def login(request:Request):
         oauth_scopes=['identify', 'guilds'],
     )
     return HTTPFound(location=login_url)
+
+
+@routes.get("/guilds")
+@template('guild_picker.j2')
+@webutils.add_output_args()
+@webutils.requires_login()
+async def guild_picker(request:Request):
+    """The guild picker page for the user"""
+
+    # Return information
+    user_guilds = await webutils.get_user_guilds(request)
+    return {
+        'user_guilds': [i for i in user_guilds if discord.Permissions(i['permissions']).manage_messages],
+    }

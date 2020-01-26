@@ -1,0 +1,36 @@
+{% extends "layout/base.j2" %}
+
+{% block content %}
+<div class="container mt-3">
+
+    {% block copy_to_guild %}{% endblock copy_to_guild %}
+
+    <div class="row">
+        <div class="col">
+            <p>Here you can see the guilds that you have access to. You need to have the <code>MANAGE_MESSAGES</code> permission to be able to manage your interactions, so you may not see all of your guilds here.</p>
+        </div> <!-- col -->
+    </div> <!-- row -->
+
+    <div class="row">
+        <div class="col">
+            <div class="card-columns">
+                {% for guild in user_guilds %}
+                    <div class="card guild-data">
+                        <div class="card-header text-center">
+                            <a href="{% block guild_base_url %}/guilds/{% endblock guild_base_url %}{{ guild.id }}{% block guild_end_url %}{% endblock guild_end_url %}">
+                                {{ guild.name }}
+                            </a>
+                        </div> <!-- card-header -->
+                        <div class="card-body">
+                            <a href="{{ self.guild_base_url() }}{{ guild.id }}{{ self.guild_end_url() }}">
+                                <img class="text-center rounded mx-auto d-block" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" alt="The guild icon for {{ guild.name }}" />
+                            </a>
+                        </div> <!-- card-body -->
+                    </div> <!-- card -->
+                {% endfor %}
+            </div><!-- card-columns-->
+        </div> <!-- col -->
+    </div> <!-- row -->
+
+</div>
+{% endblock content%}
