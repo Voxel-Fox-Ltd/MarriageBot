@@ -5,6 +5,8 @@ from cogs import utils
 
 class CommandEvent(utils.Cog):
 
+    CONTENT_LIMIT = 10
+
     def __init__(self, bot:utils.Bot):
         super().__init__(bot)
         self.command_cache = []
@@ -23,17 +25,17 @@ class CommandEvent(utils.Cog):
 
     @utils.Cog.listener()
     async def on_command(self, ctx:utils.Context):
-        """Outputs command to debug log"""
+        """Pinged when a command is invoked"""
 
-        cog = self.bot.get_cog(ctx.command.cog_name)
-        if not cog:
-            logger = self.logger
-        else:
-            logger = cog.logger
+        if ctx.command is None:
+            return
+        logger = ctx.cog.logger if ctx.cog else self.logger
+        content = ctx.message.content.replace('\n', '\\n')[:self.CONTENT_LIMIT]
+        if len(ctx.message.content) > self.CONTENT_LIMIT:
+            content += '...'
         if ctx.guild:
-            logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on {ctx.guild.id}/{ctx.channel.id}")
-        else:
-            logger.debug(f"Command '{ctx.command.qualified_name}' run by {ctx.author.id} on PMs/{ctx.channel.id}")
+            return logger.info(f"Command invoked ({ctx.invoked_with}) ~ (G0/C{ctx.channel.id}/U{ctx.author.id}) :: {content}")
+        logger.info(f"Command invoked ({ctx.invoked_with}) ~ (G{ctx.guild.id}/C{ctx.channel.id}/U{ctx.author.id}) :: {content}")
 
     @tasks.loop(seconds=15)
     async def log_command_loop(self):

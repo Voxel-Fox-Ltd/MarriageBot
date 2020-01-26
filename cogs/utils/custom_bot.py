@@ -393,7 +393,7 @@ class CustomBot(commands.AutoShardedBot):
             try:
                 self.unload_extension(i)
             except Exception as e:
-                self.logger.warning(f' * {i}... failed - {e!s}')
+                self.logger.debug(f' * {i}... failed - {e!s}')
             else:
                 self.logger.info(f' * {i}... success')
 
@@ -417,7 +417,7 @@ class CustomBot(commands.AutoShardedBot):
             if shard_id:
                 min, max = shard_id, shard_id + 1
             else:
-                min, max = 0, self.shard_count
+                min, max = self.shard_ids[0], self.shard_ids[-1]
             for i in range(min, max):
                 activity = discord.Activity(
                     name=f"{presence['text']} (shard {i})",
