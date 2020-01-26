@@ -53,7 +53,7 @@ async def blog(request:Request):
 
 @routes.get('/settings')
 @template('settings.j2')
-@webutils.add_output_args(redirect_if_logged_out="/r/login")
+@webutils.add_output_args(redirect_if_logged_out="/discord_oauth_login")
 async def settings(request:Request):
     """Handles the main settings page for the bot"""
 
@@ -62,7 +62,7 @@ async def settings(request:Request):
 
 @routes.get('/user_settings')
 @template('user_settings.j2')
-@webutils.add_output_args(redirect_if_logged_out="/r/login")
+@webutils.add_output_args(redirect_if_logged_out="/discord_oauth_login")
 async def user_settings(request:Request):
     """Handles the users' individual settings pages"""
 
@@ -169,7 +169,7 @@ async def guild_picker(request:Request):
 
 @routes.get('/guild_settings')
 @template('guild_settings_paypal.j2')
-@webutils.add_output_args(redirect_if_logged_out="/r/login")
+@webutils.add_output_args(redirect_if_logged_out="/discord_oauth_login")
 async def guild_settings_get_paypal(request:Request):
     """Shows the settings for a particular guild"""
 
@@ -288,13 +288,13 @@ async def logout(request:Request):
     return HTTPFound(location='/')
 
 
-@routes.get("/login")
+@routes.get("/discord_oauth_login")
 async def login(request:Request):
     """Index of the website"""
 
     bot = request.app['bot']
     login_url = bot.get_invite_link(
-        redirect_uri='https://dev.marriagebot.xyz/discord_oauth_login',
+        redirect_uri='https://dev.marriagebot.xyz/login_redirect',
         response_type='code',
         scope='identify guilds'
     )

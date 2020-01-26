@@ -27,7 +27,7 @@
         <li class="logo-holder left"><a href="/"><img class="mb-logo" alt="The MarriageBot logo" src="/static/images/MarriageBot.150.png" /></a></li>
         <li class="left"><a href="/"><h1 class="mb-title">MarriageBot</h1></a></li>
         {% if user_info == None -%}
-            <li class="right"><a class="header-button login-button" href="/login">Login</a></li>
+            <li class="right"><a class="header-button login-button" href="/discord_oauth_login">Login</a></li>
         {% else -%}
             <li class="right"><a class="header-button logout-button" href="/logout">Logout</a></li>
             <li class="right"><img class="user-avatar" alt="Your Discord user avatar" src="{{ user_info.avatar_url }}" /></li>

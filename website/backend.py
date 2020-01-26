@@ -50,16 +50,6 @@ async def redirect(request:Request):
 #     }))
 
 
-@routes.get('/discord_oauth_login')
-async def login(request:Request):
-    """Page the discord login redirects the user to when successfully logged in with Discord"""
-
-    await webutils.process_discord_login(request, oauth_scopes=['identify', 'guilds'])
-
-    # Redirect to settings
-    return HTTPFound(location=f'/settings')
-
-
 @routes.post('/colour_settings')
 async def colour_settings_post_handler(request:Request):
     """Handles when people submit their new colours"""
