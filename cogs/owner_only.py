@@ -145,21 +145,24 @@ class OwnerOnly(utils.Cog):
         # Get columns and widths
         column_headers = list(database_data[0].keys())
         column_max_lengths = {i:0 for i in column_headers}
-        for row in database_data:
+        for row in [{i:i for i in column_headers}] + list(database_data):
             for header in column_headers:
                 column_max_lengths[header] = max(column_max_lengths[header], len(str(row[header])))
 
         # Sort our output
         output = []  # List of lines
-        current_line = ""
         for row in [{i:i for i in column_headers}] + list(database_data):
+            current_line = ""
             for header in column_headers:
                 current_line += format(str(row[header]), f"<{column_max_lengths[header]}") + '|'
             output.append(current_line.strip('| '))
 
         # Send it to user
         string_output = '\n'.join(output)
-        await ctx.send('```\n{}```'.format(string_output))
+        try:
+            await ctx.send('```\n{}```'.format(string_output))
+        except discord.Forbidden:
+            await ctx.send(file=discord.File(io.StringIO(string_output), filename="runsql.txt"))
 
     @commands.group(cls=utils.Group)
     @commands.is_owner()
