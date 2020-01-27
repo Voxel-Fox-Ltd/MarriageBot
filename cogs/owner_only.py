@@ -161,7 +161,7 @@ class OwnerOnly(utils.Cog):
         string_output = '\n'.join(output)
         try:
             await ctx.send('```\n{}```'.format(string_output))
-        except discord.Forbidden:
+        except discord.HTTPException:
             await ctx.send(file=discord.File(io.StringIO(string_output), filename="runsql.txt"))
 
     @commands.group(cls=utils.Group)
