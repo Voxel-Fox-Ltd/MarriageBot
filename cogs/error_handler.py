@@ -52,6 +52,10 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(str(error))
 
+        # Cooldown
+        elif isinstance(error, commands.CommandOnCooldown):
+            return await ctx.send(f"You can't use this command again for another {utils.TimeValue(error.retry_after).clean_spaced}.")
+
         # NSFW channel
         elif isinstance(error, commands.NSFWChannelRequired):
             return await ctx.send("This command can't be run in a non-NSFW channel.")
