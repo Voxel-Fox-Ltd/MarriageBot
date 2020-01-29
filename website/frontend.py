@@ -21,7 +21,11 @@ async def index(request:Request):
     login_url = bot.get_invite_link(
         redirect_uri='https://marriagebot.xyz/discord_oauth_login',
         response_type='code',
-        scope='identify guilds'
+        scope='identify guilds',
+        read_messages=True,
+        send_messages=True,
+        attach_files=True,
+        embed_links=True,
     )
     return {'login_url': login_url}
 
@@ -150,6 +154,8 @@ async def guild_picker(request:Request):
 
     # Get the guilds they're valid to alter
     all_guilds = await webutils.get_user_guilds(request)
+    if all_guilds is None:
+        return HTTPFound(location='/discord_oauth_login')
     try:
         guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
     except TypeError:
@@ -198,12 +204,18 @@ async def guild_settings_get_paypal(request:Request):
             redirect_uri='https://marriagebot.xyz/guild_settings',
             response_type='code',
             scope='bot identify guilds',
-            permissions=52224
+            read_messages=True,
+            send_messages=True,
+            attach_files=True,
+            embed_links=True,
+            guild_id=guild_id,
         )
         return HTTPFound(location=location)
 
     # Get the guilds they're valid to alter
     all_guilds = await webutils.get_user_guilds(request)
+    if all_guilds is None:
+        return HTTPFound(location='/discord_oauth_login')
     oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not oauth_guild_data:
         return HTTPFound(location='/')
@@ -233,7 +245,7 @@ async def guild_settings_get_paypal(request:Request):
     # Get prefix
     try:
         prefix = guild_settings[0]['gold_prefix' if gold_param else 'prefix']
-    except IndexError:
+    except (IndexError, KeyError):
         prefix = request.app['gold_config' if gold_param else 'config']['prefix']['default_prefix']
 
     # Get channel objects from the guild
@@ -300,6 +312,10 @@ async def login(request:Request):
     login_url = bot.get_invite_link(
         redirect_uri='https://marriagebot.xyz/login_redirect',
         response_type='code',
-        scope='identify guilds'
+        scope='identify guilds',
+        read_messages=True,
+        send_messages=True,
+        attach_files=True,
+        embed_links=True,
     )
     return HTTPFound(location=login_url)

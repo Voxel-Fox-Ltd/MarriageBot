@@ -119,6 +119,8 @@ async def set_prefix(request:Request):
 
     # Get the guilds they're valid to alter
     all_guilds = await webutils.get_user_guilds(request)
+    if all_guilds is None:
+        return HTTPFound(location='/discord_oauth_login')
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
@@ -160,6 +162,8 @@ async def set_max_family_members(request:Request):
 
     # Get the guilds they're valid to alter
     all_guilds = await webutils.get_user_guilds(request)
+    if all_guilds is None:
+        return HTTPFound(location='/discord_oauth_login')
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
@@ -202,6 +206,8 @@ async def set_incest_enabled(request:Request):
 
     # Get the guilds they're valid to alter
     all_guilds = await webutils.get_user_guilds(request)
+    if all_guilds is None:
+        return HTTPFound(location='/discord_oauth_login')
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')
@@ -240,6 +246,8 @@ async def set_max_allowed_children(request:Request):
 
     # Get the guilds they're valid to alter
     all_guilds = await webutils.get_user_guilds(request)
+    if all_guilds is None:
+        return HTTPFound(location='/discord_oauth_login')
     guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
     if not guild:
         return HTTPFound(location='/')

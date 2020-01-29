@@ -87,7 +87,10 @@ async def get_user_guilds(request:Request):
 
     # Get auth
     session_storage = await aiohttp_session.get_session(request)
-    token_info = session_storage['token_info']
+    try:
+        token_info = session_storage['token_info']
+    except KeyError:
+        return None
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': f'{token_info["token_type"]} {token_info["access_token"]}'
