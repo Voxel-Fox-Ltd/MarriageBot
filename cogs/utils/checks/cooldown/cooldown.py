@@ -158,7 +158,7 @@ class Cooldown(commands.Cooldown):
         return cooldown
 
     def __call__(self, rate:float, per:int, type:commands.BucketType) -> None:
-        """Runs the original init method
+        """Runs the original init method. MUST return self
 
         Params:
             rate : int

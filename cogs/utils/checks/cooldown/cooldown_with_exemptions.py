@@ -28,6 +28,7 @@ class CooldownWithChannelExemptions(Cooldown):
 
     def __call__(self, rate, per, type=None):
         super().__call__(rate, per, commands.BucketType.channel)  # Override cooldown type
+        return self
 
     def predicate(self, message) -> bool:
         """The check to see if this cooldown is applied"""
