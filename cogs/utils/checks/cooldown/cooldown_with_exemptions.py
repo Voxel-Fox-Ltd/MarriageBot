@@ -32,10 +32,16 @@ class CooldownWithChannelExemptions(Cooldown):
     def predicate(self, message) -> bool:
         """The check to see if this cooldown is applied"""
 
+        # Check if invoked in a channel where there should be no cooldown
         if self.no_cooldown_in:
             if any([i for i in self.no_cooldown_in if i == message.channel.name]):
                 return False
+
+        # Check if invoked in a channel where there SHOULD be a cooldown
         if self.cooldown_in:
-            if not any([i for i in self.cooldown_in if i == message.channel.name]):
-                return False
+            if any([i for i in self.cooldown_in if i == message.channel.name]):
+                return True
+            return False  # Not invoked in a cooldown_in channel
+
+        # Default answer - trigger cooldown
         return True
