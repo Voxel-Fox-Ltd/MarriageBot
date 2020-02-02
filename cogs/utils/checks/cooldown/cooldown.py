@@ -152,7 +152,7 @@ class Cooldown(commands.Cooldown):
     def copy(self) -> commands.Cooldown:
         """Returns a copy of the cooldown"""
 
-        kwargs = {attr: getattr(getattr(self, attr, None), 'copy', lambda x: x).copy() for attr in self._copy_kwargs}
+        kwargs = {attr: getattr(getattr(self, attr, None), 'copy', lambda x: x)() for attr in self._copy_kwargs}
         cooldown = self.__class__(error=self.error, mapping=self.mapping, **kwargs)
         cooldown = cooldown(rate=self.rate, per=self.per, type=self.type)
         return cooldown
