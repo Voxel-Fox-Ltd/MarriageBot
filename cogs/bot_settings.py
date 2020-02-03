@@ -14,19 +14,18 @@ class BotSettings(utils.Cog):
 
         # Fix up prefix
         if not new_prefix:
-            prefix = self.bot.config['prefix']['default_prefix']
-        if len(prefix) > 30:
-            await ctx.send("Your prefix can't be longer than 30 characters.")
-            return
+            new_prefix = self.bot.config['prefix']['default_prefix']
+        if len(new_prefix) > 30:
+            return await ctx.send("Your prefix can't be longer than 30 characters.")
 
         # Update db
         prefix_key = 'gold_prefix' if self.bot.is_server_specific else 'prefix'
         async with self.bot.database() as db:
-            await db(f'INSERT INTO guild_settings (guild_id, {prefix_key}) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET {prefix_key}=$2', ctx.guild.id, prefix)
+            await db(f'INSERT INTO guild_settings (guild_id, {prefix_key}) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET {prefix_key}=$2', ctx.guild.id, new_prefix)
 
         # Update cache
-        self.bot.guild_settings[ctx.guild.id]['prefix'] = prefix
-        await ctx.send(f"Your guild's prefix has been updated to `{prefix}`.")
+        self.bot.guild_settings[ctx.guild.id]['prefix'] = new_prefix
+        await ctx.send(f"Your guild's prefix has been updated to `{new_prefix}`.")
 
 
 def setup(bot:utils.Bot):
