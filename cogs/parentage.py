@@ -118,7 +118,7 @@ class Parentage(utils.Cog):
 
         # Manage children
         if self.bot.is_server_specific:
-            guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children'][await utils.checks.get_patreon_tier(ctx.bot, target)]
+            guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
             gold_children_amount = max([
                 amount if role_id in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
             ])
