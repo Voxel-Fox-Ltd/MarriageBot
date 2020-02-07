@@ -15,7 +15,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(aliases=['pm', 'dm'], cls=utils.Command)
     @commands.is_owner()
-    async def message(self, ctx:utils.Context, user:discord.User, *, content:str):
+    async def message(self, ctx:utils.Context, user:utils.converters.UserID, *, content:str):
         """PMs a user the given content"""
 
         await user.send(content)

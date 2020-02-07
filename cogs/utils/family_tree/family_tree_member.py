@@ -92,6 +92,15 @@ class FamilyTreeMember(object):
             return [self.get(i, self._guild_id) for i in self._children]
         return []
 
+    def get_direct_relations(self) -> typing.List[int]:
+        """Gets the direct relations for a given user"""
+
+        output = []
+        output.extend(self._children)
+        output.append(self._parent)
+        output.append(self._partner)
+        return [i for i in output if i is not None]
+
     @property
     def is_empty(self) -> bool:
         """Is this instance useless"""

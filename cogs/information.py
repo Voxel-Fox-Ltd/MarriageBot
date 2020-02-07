@@ -40,7 +40,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['child', 'kids'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
-    async def children(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
+    async def children(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Tells you who a user's children are"""
 
         # Setup output variable
@@ -81,7 +81,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['parents'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
-    async def parent(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
+    async def parent(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Tells you who someone's parent is"""
 
         user = user or ctx.author.id
@@ -96,7 +96,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['relation'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
-    async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:typing.Optional[utils.converters.UserID]):
+    async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:utils.converters.UserID=None):
         """Gets the relationship between the two specified users"""
 
         # Check against themselves
@@ -124,7 +124,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['treesize', 'fs', 'ts'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
-    async def familysize(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
+    async def familysize(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Gives you the size of your family tree"""
 
         # Get user info
@@ -143,7 +143,7 @@ class Information(utils.Cog):
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
-    async def treefile(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
+    async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gives you the full family tree of a user"""
 
         root_user_id = root or ctx.author.id
@@ -156,7 +156,7 @@ class Information(utils.Cog):
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
-    async def tree(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
+    async def tree(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gets the family tree of a given user"""
 
         try:
@@ -173,7 +173,7 @@ class Information(utils.Cog):
     @utils.checks.is_patreon(tier=2)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
-    async def stupidtree(self, ctx:utils.Context, root:typing.Optional[utils.converters.UserID]):
+    async def stupidtree(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gets the family tree of a given user"""
 
         try:

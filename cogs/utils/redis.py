@@ -74,9 +74,7 @@ class RedisConnection(object):
     async def mget(self, key:str, *keys) -> typing.List[str]:
         """Grabs a value from the redis DB given a key"""
 
-        keys = [key] + keys
+        keys = [key] + list(keys)
         v = await self.conn.mget(key)
         self.logger.debug(f"Getting Redis from keys with {key}")
-        if v:
-            return [i.decode() for i in v]
-        return v
+        return [i.decode() if i else i for i in v]
