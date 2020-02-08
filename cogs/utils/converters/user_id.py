@@ -1,12 +1,15 @@
-import discord
+import re as regex
+
 from discord.ext import commands
 
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 
 
-class UserID(commands.UserConverter):
+class UserID(commands.IDConverter):
     """A conveter that takes the given value and tries to grab the ID from it
     Returns the ID of the user"""
+
+    USER_ID_REGEX = regex.compile(r'([0-9]{15,21})')
 
     async def convert(self, ctx:commands.Context, value:str) -> int:
         """Converts the given value to a valid user ID"""
@@ -18,7 +21,7 @@ class UserID(commands.UserConverter):
             pass
 
         # They pinged the user
-        match = self._get_id_match(value)
+        match = self.USER_ID_REGEX.search(value)
         if match is not None:
             return int(match.group(1))
 
