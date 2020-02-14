@@ -152,11 +152,11 @@ class Information(utils.Cog):
         file_bytes = io.BytesIO(text.encode())
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
-    @commands.command(aliases=['familytree', 't', 'fulltree', 'ft', 'gt'], cls=utils.Command)
+    @commands.command(aliases=['tree', 't'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
-    async def tree(self, ctx:utils.Context, root:utils.converters.UserID=None):
+    async def familytree(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gets the family tree of a given user"""
 
         try:
@@ -239,7 +239,12 @@ class Information(utils.Cog):
 
         # Send file and delete cached
         file = discord.File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-        await ctx.send(f"[Click here](https://marriagebot.xyz/) to customise your tree. Generated in `{time_taken:.2f}` seconds from `{len(dot_code)}` bytes of DOT code.", file=file)
+        text = f"[Click here](https://marriagebot.xyz/) to customise your tree. Generated in `{time_taken:.2f}` seconds from `{len(dot_code)}` bytes of DOT code, "
+        if stupid_tree:
+            text += f"showing {len(tree.span(expand_upwards=True, add_parent=True))} family members."
+        else:
+            text += f"showing {len(tree.span())} blood relatives out of {len(tree.span(expand_upwards=True, add_parent=True))} total family members (see `{ctx.prefix}perks` for your full family)."
+        await ctx.send(text, file=file)
 
 
 def setup(bot:utils.Bot):
