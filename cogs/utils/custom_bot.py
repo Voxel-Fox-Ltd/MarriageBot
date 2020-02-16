@@ -67,7 +67,7 @@ class CustomBot(commands.AutoShardedBot):
         self.DEFAULT_GUILD_SETTINGS['max_family_members'] = self.config['max_family_members']
 
         # Run original
-        super().__init__(command_prefix=get_prefix, *args, **kwargs)
+        super().__init__(command_prefix=get_prefix, guild_subscriptions=self.is_server_specific, *args, **kwargs)
 
         # Set up arguments that are used in cogs and stuff
         self._invite_link = None  # populated by 'invite' property
@@ -183,17 +183,17 @@ class CustomBot(commands.AutoShardedBot):
         as if rebooted"""
 
         # Remove caches
-        self.logger.debug("Clearing family tree member cache")
+        self.logger.info("Clearing family tree member cache")
         FamilyTreeMember.all_users.clear()
-        self.logger.debug("Clearing blacklisted guilds cache")
+        self.logger.info("Clearing blacklisted guilds cache")
         self.blacklisted_guilds.clear()
-        self.logger.debug("Clearing guild settings cache")
+        self.logger.info("Clearing guild settings cache")
         self.guild_settings.clear()
-        self.logger.debug("Clearing DBL votes cache")
+        self.logger.info("Clearing DBL votes cache")
         self.dbl_votes.clear()
-        self.logger.debug("Clearing blocked users cache")
+        self.logger.info("Clearing blocked users cache")
         self.blocked_users.clear()
-        self.logger.debug("Clearing random text cache")
+        self.logger.info("Clearing random text cache")
         random_text.RandomText.original.all_random_text.clear()
 
         # Grab a database connection
@@ -205,7 +205,7 @@ class CustomBot(commands.AutoShardedBot):
         except Exception as e:
             self.logger.critical(f"Ran into an errorr selecting random text: {e}")
             exit(1)
-        self.logger.debug(f"Caching {len(text_lines)} lines of random text")
+        self.logger.info(f"Caching {len(text_lines)} lines of random text")
         for row in text_lines:
             random_text.RandomText.original.all_random_text[row['command_name']][row['event_name']].append(row['string'])
 
@@ -215,7 +215,7 @@ class CustomBot(commands.AutoShardedBot):
         except Exception as e:
             self.logger.critical(f"Ran into an error selecting blacklisted guilds: {e}")
             exit(1)
-        self.logger.debug(f"Caching {len(blacklisted)} blacklisted guilds")
+        self.logger.info(f"Caching {len(blacklisted)} blacklisted guilds")
         self.blacklisted_guilds = [i['guild_id'] for i in blacklisted]
 
         # Pick up the blocked users
@@ -224,7 +224,7 @@ class CustomBot(commands.AutoShardedBot):
         except Exception as e:
             self.logger.critical(f"Ran into an error selecting blocked users: {e}")
             exit(1)
-        self.logger.debug(f"Caching {len(blocked)} blocked users")
+        self.logger.info(f"Caching {len(blocked)} blocked users")
         for user in blocked:
             self.blocked_users[user['user_id']].append(user['blocked_user_id'])
 
@@ -234,7 +234,7 @@ class CustomBot(commands.AutoShardedBot):
         except Exception as e:
             self.logger.critical(f"Ran into an error selecting guild settings: {e}")
             exit(1)
-        self.logger.debug(f"Caching {len(all_settings)} guild settings")
+        self.logger.info(f"Caching {len(all_settings)} guild settings")
         for items in all_settings:
             current_settings = self.guild_settings[items['guild_id']]  # Get current (which should include defaults)
             current_settings.update(**dict(items))  # Update from db
@@ -249,7 +249,7 @@ class CustomBot(commands.AutoShardedBot):
             except Exception as e:
                 self.logger.critical(f"Ran into an error selecting guild settings: {e}")
                 exit(1)
-            self.logger.debug(f"Caching {len(max_children_data)} max children settings")
+            self.logger.info(f"Caching {len(max_children_data)} max children settings")
             for row in max_children_data:
                 current_settings = self.guild_settings[row['guild_id']]  # Get current (which should include defaults)
                 current_settings['max_children'][row['role_id']] = row['amount']
@@ -261,12 +261,12 @@ class CustomBot(commands.AutoShardedBot):
         except Exception as e:
             self.logger.critical(f"Ran into an error selecting DBL votes: {e}")
             exit(1)
-        self.logger.debug(f"Caching {len(votes)} DBL votes")
+        self.logger.info(f"Caching {len(votes)} DBL votes")
         for v in votes:
             self.dbl_votes[v['user_id']] = v['timestamp']
 
         # Wait for the bot to cache users before continuing
-        self.logger.debug("Waiting until ready before completing startup method.")
+        self.logger.info("Waiting until ready before completing startup method.")
         await self.wait_until_ready()
 
         # Look through and find what servers the bot is allowed to be on, if server specific
@@ -281,7 +281,7 @@ class CustomBot(commands.AutoShardedBot):
             guild_ids_to_leave = [i for i in current_guild_ids if i not in allowed_guild_ids]
             for guild_id in guild_ids_to_leave:
                 guild = self.get_guild(guild_id)
-                self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
+                self.logger.info(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
                 await guild.leave()
 
         # Get family data from database
@@ -297,12 +297,12 @@ class CustomBot(commands.AutoShardedBot):
             exit(1)
 
         # Cache the family data - partners
-        self.logger.debug(f"Caching {len(partnerships)} partnerships from partnerships")
+        self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
             FamilyTreeMember(discord_id=i['user_id'], children=[], parent_id=None, partner_id=i['partner_id'], guild_id=i['guild_id'])
 
         # - children
-        self.logger.debug(f"Caching {len(parents)} parents/children from parents")
+        self.logger.info(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
             parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
             parent._children.append(i['child_id'])
@@ -393,7 +393,7 @@ class CustomBot(commands.AutoShardedBot):
             try:
                 self.unload_extension(i)
             except Exception as e:
-                self.logger.debug(f' * {i}... failed - {e!s}')
+                self.logger.info(f' * {i}... failed - {e!s}')
             else:
                 self.logger.info(f' * {i}... success')
 
@@ -405,7 +405,7 @@ class CustomBot(commands.AutoShardedBot):
             except Exception as e:
                 self.logger.critical(f"Error loading {i}")
                 raise e
-            self.logger.debug(f" * {i} :: success")
+            self.logger.info(f" * {i} :: success")
 
     async def set_default_presence(self, shard_id:int=None):
         """Sets the default presence for the bot as appears in the config file"""
@@ -461,7 +461,7 @@ class CustomBot(commands.AutoShardedBot):
     def reload_config(self):
         """Opens the config file, loads it (as TOML) and stores it in Bot.config"""
 
-        self.logger.debug("Reloading config")
+        self.logger.info("Reloading config")
         with open(self.config_file) as a:
             self.config = toml.load(a)
 
@@ -472,16 +472,16 @@ class CustomBot(commands.AutoShardedBot):
         """The original start method from the bot, using the token from the config
         and running the bot startup method with it"""
 
-        self.logger.debug("Running startup method")
+        self.logger.info("Running startup method")
         self.startup_method = self.loop.create_task(self.startup())
-        self.logger.debug("Running original D.py start method")
+        self.logger.info("Running original D.py start method")
         await super().start(token or self.config['token'], *args, **kwargs)
 
     async def close(self, *args, **kwargs):
         """The original bot close method, but with the addition of closing the
         aiohttp ClientSession that was opened on bot creation"""
 
-        self.logger.debug("Closing aiohttp ClientSession")
+        self.logger.info("Closing aiohttp ClientSession")
         await asyncio.wait_for(self.session.close(), timeout=None)
-        self.logger.debug("Running original D.py logout method")
+        self.logger.info("Running original D.py logout method")
         await super().close(*args, **kwargs)
