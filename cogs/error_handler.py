@@ -39,7 +39,7 @@ class ErrorHandler(utils.Cog):
             commands.MissingRole, commands.CommandOnCooldown, commands.DisabledCommand,
             utils.errors.BlockedUserError, utils.errors.BotNotReady,
         )
-        if ctx.original_author.id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
+        if (ctx.original_author and ctx.original_author.id in self.bot.owner_ids) and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
 
         # Can't send files
@@ -51,7 +51,7 @@ class ErrorHandler(utils.Cog):
 
         # Cooldown
         elif isinstance(error, commands.CommandOnCooldown):
-            if ctx.command.name in ['tree', 'globaltree']:
+            if ctx.command.name in ['familytree']:
                 return await self.tree_timeout_handler(ctx, error)
             return await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
 
@@ -144,11 +144,12 @@ class ErrorHandler(utils.Cog):
         """Handles errors for the tree commands"""
 
         # Get user perks
-        perk_index = await utils.checks.get_patreon_tier(self.bot, ctx.author)
-        if utils.checks.is_voter_predicate(ctx) and perk_index <= 0:
-            perk_index = -1
         if self.bot.is_server_specific:
             perk_index = -2
+        else:
+            perk_index = await utils.checks.get_patreon_tier(self.bot, ctx.author)
+            if utils.checks.is_voter_predicate(ctx) and perk_index <= 0:
+                perk_index = -1
         cooldown_time = {
             -2: 5,
             -1: 30,

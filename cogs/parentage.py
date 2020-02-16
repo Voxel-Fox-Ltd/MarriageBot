@@ -38,7 +38,7 @@ class Parentage(utils.Cog):
         if self.bot.is_server_specific:
             guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
             gold_children_amount = max([
-                amount if role_id in target._roles else 0 for role_id, amount in guild_max_children.items()
+                amount if int(role_id) in target._roles else 0 for role_id, amount in guild_max_children.items()
             ])
         else:
             gold_children_amount = 0
@@ -120,7 +120,7 @@ class Parentage(utils.Cog):
         if self.bot.is_server_specific:
             guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
             gold_children_amount = max([
-                amount if role_id in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
+                amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
             ])
         else:
             gold_children_amount = 0

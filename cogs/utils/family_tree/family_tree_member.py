@@ -475,8 +475,10 @@ class FamilyTreeMember(object):
         # Add the username for each user (from unflattened list)
         for generation in gen_span.values():
             for i in generation:
-                all_users.append(i)
                 name = await bot.get_name(i.id)
+                if name is None:
+                    continue
+                all_users.append(i)
                 name = name.replace('"', '\\"')
                 if i == self:
                     all_text += f'{i.id}[label="{name}", fillcolor={ctu.hex["highlighted_node"]}, fontcolor={ctu.hex["highlighted_font"]}];'
