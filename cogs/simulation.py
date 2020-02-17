@@ -33,13 +33,17 @@ class Simulation(utils.Cog):
             return
 
         # Check if they're related
-        x = utils.FamilyTreeMember.get(ctx.author.id)
-        y = utils.FamilyTreeMember.get(user.id)
-        async with ctx.channel.typing():
-            relationship = x.get_relation(y)
+        #x = utils.FamilyTreeMember.get(ctx.author.id)
+        #y = utils.FamilyTreeMember.get(user.id)
+        #async with ctx.channel.typing():
+        #    relationship = x.get_relation(y)
+        
+        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        
 
         # Generate responses
-        if relationship == None or relationship.casefold() == 'partner':
+        #if relationship == None or relationship.casefold() == 'partner':
+        if user_info._partner == None or user_info._partner == ctx.author.id:
             responses = [
                 f"*Kisses {user.mention}*"
             ]
