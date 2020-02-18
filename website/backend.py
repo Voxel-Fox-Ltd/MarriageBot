@@ -490,6 +490,6 @@ async def webhook_handler(request:Request):
 async def login_redirect(request:Request):
     """Page the discord login redirects the user to when successfully logged in with Discord"""
 
-    await aiohttp_session.new_session(request)
     await webutils.process_discord_login(request, ['identify', 'guilds'])
-    return HTTPFound(location=f'/')
+    session = await aiohttp_session.get_session(request)
+    return HTTPFound(location=session.pop('redirect_on_login', '/'))

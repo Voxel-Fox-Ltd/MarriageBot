@@ -93,9 +93,9 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"You're missing the `{error.param.name}` argument, which is required for this command to work properly.")
 
-        # Argument conversion error
-        elif isinstance(error, commands.BadArgument):
-            return await ctx.send(str(error))
+        # Cooldown
+        elif isinstance(error, commands.CommandOnCooldown):
+            return await ctx.send(f"You can't use this command again for another {utils.TimeValue(error.retry_after).clean_spaced}.")
 
         # NSFW channel
         elif isinstance(error, commands.NSFWChannelRequired):
@@ -132,6 +132,10 @@ class ErrorHandler(utils.Cog):
         # Not owner
         elif isinstance(error, commands.NotOwner):
             return await ctx.send("You need to be registered as an owner to run this command.")
+
+        # Argument conversion error
+        elif isinstance(error, commands.BadArgument):
+            return await ctx.send(str(error))
 
         # Can't tell what it is? Ah well.
         try:

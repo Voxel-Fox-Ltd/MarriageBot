@@ -102,50 +102,17 @@ async def user_settings(request:Request):
     # Make a URL for the preview
     tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' if i != 'direction' else f'{i}={o}' for i, o in colours.items()])
 
-    # Get their blocked users
-    blocked_users_db = await db("SELECT blocked_user_id FROM blocked_user WHERE user_id=$1", session['user_id'])
-    blocked_users = {i['blocked_user_id']: await request.app['bot'].get_name(i['blocked_user_id']) for i in blocked_users_db}
 
-    # Give all the data to the page
-    await db.disconnect()
-    return {
-        'hex_strings': colours,
-        'tree_preview_url': tree_preview_url,
-        'blocked_users': blocked_users,
-    }
+@routes.get("/logout")
+async def logout(request:Request):
+    """Index of the website"""
+
+    session = await aiohttp_session.get_session(request)
+    session.invalidate()
+    return HTTPFound(location='/')
 
 
-@routes.get('/tree_preview')
-@template('tree_preview.j2')
-@webutils.add_output_args()
-async def tree_preview(request:Request):
-    """Tree preview for the bot"""
-
-    colours_raw = {
-        'edge': request.query.get('edge'),
-        'node': request.query.get('node'),
-        'font': request.query.get('font'),
-        'highlighted_font': request.query.get('highlighted_font'),
-        'highlighted_node': request.query.get('highlighted_node'),
-        'background': request.query.get('background'),
-        'direction': request.query.get('direction'),
-    }
-    colours = {}
-    for i, o in colours_raw.items():
-        if o is None or o == 'transparent':
-            o = 'transparent'
-        elif i == 'direction':
-            pass
-        else:
-            o = f'#{o.strip("#")}'
-        colours[i] = o
-
-    return {
-        'hex_strings': colours,
-    }
-
-
-@routes.get('/guild_picker')
+@routes.get("/guilds")
 @template('guild_picker.j2')
 @webutils.add_output_args()
 @webutils.requires_login()

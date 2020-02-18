@@ -23,7 +23,8 @@ def add_output_args():
             if isinstance(data, HTTPFound):
                 if data.location == "/discord_oauth_login":
                     session = await aiohttp_session.get_session(request)
-                    session['redirect_on_login'] = str(request.url)
+                    if 'redirect_on_login' not in session:
+                        session['redirect_on_login'] = str(request.url)
             if not isinstance(data, dict):
                 return data
 
@@ -44,6 +45,12 @@ def add_output_args():
                     data.update({'user_info': None})
             if 'request' not in data:
                 data.update({'request': request})
+
+            # Check return relevant info
+            if redirect_if_logged_out and session.get('user_id') is None:
+                return HTTPFound(location=redirect_if_logged_out)
+            elif redirect_if_logged_in and session.get('user_id') is not None:
+                return HTTPFound(location=redirect_if_logged_in)
 
             # Update OpenGraph information
             if 'opengraph' not in data:
