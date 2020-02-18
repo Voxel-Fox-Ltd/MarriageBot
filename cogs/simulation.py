@@ -32,17 +32,8 @@ class Simulation(utils.Cog):
             await ctx.send(f"How would you even manage to do that?")
             return
 
-        # Check if they're related
-        #x = utils.FamilyTreeMember.get(ctx.author.id)
-        #y = utils.FamilyTreeMember.get(user.id)
-        #async with ctx.channel.typing():
-        #    relationship = x.get_relation(y)
-        
-        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
-        
-
         # Generate responses
-        #if relationship == None or relationship.casefold() == 'partner':
+        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
         if user_info._partner == None or user_info._partner == ctx.author.id:
             responses = [
                 f"*Kisses {user.mention}*"
