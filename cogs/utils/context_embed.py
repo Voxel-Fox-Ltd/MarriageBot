@@ -23,6 +23,21 @@ class ContextEmbed(discord.Embed):
 
         self.colour = random.randint(0, 0xffffff)
 
+    def set_footer(self, text:str, *args, **kwargs):
+        """Sets the footer of the embed"""
+
+        super().set_footer(*args, text=text, **kwargs)
+
+    def set_image(self, url:str):
+        """Sets the image of the embed"""
+
+        super().set_image(url=url)
+
+    def set_thumbnail(self, url:str):
+        """Sets the thumbnail of the embed"""
+
+        super().set_image(url=url)
+
     def set_author_to_user(self, author:discord.User):
         """Sets the author of the embed to a given Discord user"""
 
