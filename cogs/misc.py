@@ -54,9 +54,9 @@ class Misc(utils.Cog):
 
         await ctx.send(self.bot.config['command_data']['guild_invite'], embeddify=False)
 
-    @commands.command(hidden=True, enabled=False, cls=utils.Command)
+    @commands.command(hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    async def echo(self, ctx:utils.Context, *, content:str):
+    async def echo(self, ctx:utils.Context, *, content:commands.clean_content):
         """Echos a saying"""
 
         await ctx.send(content, embeddify=False)
@@ -217,6 +217,18 @@ class Misc(utils.Cog):
         """Gives you the shard that your server is running on"""
 
         await ctx.send(f"The shard that your server is on is shard `{ctx.guild.shard_id}`.")
+
+    @commands.command(cls=utils.Command, aliases=['kitty'], hidden=True)
+    async def cat(self, ctx:utils.Context):
+        """Gives you some cats innit"""
+
+        await ctx.channel.trigger_typing()
+        headers = {"User-Agent": "MarriageBot/1.0.0 - Discord@Caleb#2831"}
+        async with self.bot.session.get("https://api.thecatapi.com/v1/images/search", headers=headers) as r:
+            data = await r.json()
+        with utils.Embed(use_random_colour=True) as embed:
+            embed.set_image(url=data[0]['url'])
+        await ctx.send(embed=embed)
 
 
 def setup(bot:utils.Bot):
