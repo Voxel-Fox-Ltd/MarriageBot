@@ -370,10 +370,7 @@ class CustomBot(commands.AutoShardedBot):
         """Gently insert a new original_author field into the context"""
 
         ctx = await super().get_context(message, cls=CustomContext)
-        if ctx.guild:
-            ctx.original_author = ctx.guild.get_member(message.author.id)
-        else:
-            ctx.original_author = self.get_user(message.author.id)
+        ctx.original_author_id = message.author.id
         return ctx
 
     def get_extensions(self) -> list:

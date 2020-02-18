@@ -39,7 +39,7 @@ class ErrorHandler(utils.Cog):
             commands.MissingRole, commands.CommandOnCooldown, commands.DisabledCommand,
             utils.errors.BlockedUserError, utils.errors.BotNotReady,
         )
-        if (ctx.original_author and ctx.original_author.id in self.bot.owner_ids) and isinstance(error, owner_reinvoke_errors):
+        if ctx.original_author_id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
 
         # Can't send files
