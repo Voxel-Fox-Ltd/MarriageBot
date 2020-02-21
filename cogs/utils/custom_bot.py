@@ -51,6 +51,15 @@ class CustomBot(commands.AutoShardedBot):
         'max_family_members': None,  # Set in init; only used in gold
         'max_children': {},  # RoleID: ChildAmount; only used in gold
     }
+    
+    DEFAULT_GUILD_COMMAND_SETTINGS = {
+        #command gif toggles
+        'command_hug': True,
+        'command_kiss': True,
+        'command_punch': True,
+        'command_slap': True,
+    }
+        
 
     def __init__(self, *args, config_file:str, logger:logging.Logger=None, **kwargs):
         """The initialiser for the bot object
@@ -91,6 +100,7 @@ class CustomBot(commands.AutoShardedBot):
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
         self.blocked_users: typing.Dict[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
         self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.DEFAULT_GUILD_SETTINGS.copy())
+        self.guild_command_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.DEFAULT_GUILD_COMMAND_SETTINGS.copy())
         self.dbl_votes: typing.Dict[int, dt] = {}
 
         # Put the bot object in some other classes
@@ -176,6 +186,20 @@ class CustomBot(commands.AutoShardedBot):
 
         guild_id = getattr(guild, 'id', guild)
         return self.is_server_specific and guild_id in self.guild_settings and self.guild_settings[guild_id]['allow_incest']
+    
+    def gif_command_toggled(self, guild:typing.Union[discord.Guild, int], command:str) -> bool:
+        """Returns if a given command with a gif or not
+
+        Params:
+            guild_id: int
+                The ID for the guild you want to check against
+            command: str
+                The command name to be checked
+        """
+
+        guild_id = getattr(guild, 'id', guild)
+        return guild_id in self.guild_settings and self.guild_command_settings[guild_id][f"command_{command}"]
+
 
     async def startup(self):
         """The startup method for the bot - clears all the caches and reads
@@ -264,6 +288,20 @@ class CustomBot(commands.AutoShardedBot):
         self.logger.info(f"Caching {len(votes)} DBL votes")
         for v in votes:
             self.dbl_votes[v['user_id']] = v['timestamp']
+            
+        # Grab the gif toggles
+            # +-------------------------------------+
+            # |                                     |
+            # |                                     |
+            # |                                     |
+            # |      Don't know how to cache        |
+            # |      Please do this for me          |
+            # |                                     |
+            # |                                     |
+            # |                                     |
+            # |                                     |
+            # +-------------------------------------+
+
 
         # Wait for the bot to cache users before continuing
         self.logger.info("Waiting until ready before completing startup method.")
