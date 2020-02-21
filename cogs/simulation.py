@@ -17,7 +17,7 @@ class Simulation(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send(f"*You hug yourself... and start crying.*")
-        image_url = await utils.get_reaction_gif(ctx.bot, "hug")
+        image_url = await utils.get_reaction_gif(ctx.bot, "hug") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Hugs {user.mention}*", image_url=image_url)
 
     @commands.command(cls=utils.Command)
@@ -42,7 +42,7 @@ class Simulation(utils.Cog):
             responses = [
                 f"*Kisses {user.mention}*"
             ]
-            image_url = await utils.get_reaction_gif(ctx.bot, "kiss")
+            image_url = await utils.get_reaction_gif(ctx.bot, "kiss") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         else:
             responses = [
                 f"Woah woah, you two are family!",
@@ -58,7 +58,7 @@ class Simulation(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send(f"*You slapped yourself... for some reason.*")
-        image_url = await utils.get_reaction_gif(ctx.bot, "slap")
+        image_url = await utils.get_reaction_gif(ctx.bot, "slap") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Slaps {user.mention}*", image_url=image_url)
 
     @commands.command(cls=utils.Command)
@@ -68,7 +68,7 @@ class Simulation(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send("*You punched yourself... for some reason.*")
-        image_url = await utils.get_reaction_gif(ctx.bot, "punch")
+        image_url = await utils.get_reaction_gif(ctx.bot, "punch") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Punches {user.mention} right in the nose*", image_url=image_url)
 
     @commands.command(cls=utils.Command)
@@ -124,7 +124,7 @@ class Simulation(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send("You poke yourself.")
-        image_url = await utils.get_reaction_gif(ctx.bot, "poke")
+        image_url = await utils.get_reaction_gif(ctx.bot, "poke") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Pokes {user.mention}.*", image_url=image_url)
 
     @commands.command(cls=utils.Command)

@@ -50,6 +50,7 @@ class CustomBot(commands.AutoShardedBot):
         'allow_incest': False,  # Only used in gold
         'max_family_members': None,  # Set in init; only used in gold
         'max_children': {},  # RoleID: ChildAmount; only used in gold
+        'gifs_enabled': True,  # Whether or not to add gifs to the simulation commands
     }
 
     def __init__(self, *args, config_file:str, logger:logging.Logger=None, **kwargs):
