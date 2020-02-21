@@ -18,6 +18,10 @@ server_specific = false  # Bool flag for whether the bot uses global or server s
     github = ""
     patreon = ""
 
+# API keys for various commands etc yknow
+[api_keys]
+    weebsh = ""  # An API key for Weeb.sh. I don't expect you to have one of these.
+
 # This data is passed directly over to asyncpg
 [database]
     user = "database_username"
