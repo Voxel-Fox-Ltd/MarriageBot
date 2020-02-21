@@ -47,10 +47,10 @@ CREATE TABLE guild_settings(
 
 CREATE TABLE guild_command_settings(
     guild_id BIGINT NOT NULL,
-    command_hug VARCHAR(30) DEFAULT TRUE,
-    command_kiss VARCHAR(30) DEFAULT TRUE,
-    command_slap VARCHAR(30) DEFAULT TRUE,
-    command_punch VARCHAR(30) DEFAULT TRUE,
+    command_hug BOOLEAN DEFAULT TRUE,
+    command_kiss BOOLEAN DEFAULT TRUE,
+    command_slap BOOLEAN DEFAULT TRUE,
+    command_punch BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (guild_id)
 );
 
