@@ -45,6 +45,15 @@ CREATE TABLE guild_settings(
 );
 -- A config for a guild to change their prefix or other bot settings
 
+CREATE TABLE guild_command_settings(
+    guild_id BIGINT NOT NULL,
+    command_hug VARCHAR(30) DEFAULT TRUE,
+    command_kiss VARCHAR(30) DEFAULT TRUE,
+    command_slap VARCHAR(30) DEFAULT TRUE,
+    command_punch VARCHAR(30) DEFAULT TRUE,
+    PRIMARY KEY (guild_id)
+);
+
 
 CREATE TYPE direction AS ENUM('TB', 'LR');
 CREATE TABLE customisation(
