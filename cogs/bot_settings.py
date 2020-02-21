@@ -28,6 +28,28 @@ class BotSettings(utils.Cog):
         await ctx.send(f"Your guild's prefix has been updated to `{new_prefix}`.")
 
 
+    @commands.command(cls=utils.Command)
+    @commands.guild_only()
+    @commands.bot_has_permissions(send_messages=True)
+    @commands.has_permissions(manage_guild=True)
+    async def togglegif(self, ctx:utils.Context, command:str=None, toggle:str=None):
+        """Changes whether the bot shows gifs or not depending on command."""
+        
+        if not toggle:
+            toggle = True
+
+        # Update db
+        async with self.bot.database() as db:
+            await db(f'INSERT INTO guild_command_settings (guild_id, command_{command}, {toggle.upper()}) VALUES ($1, $2, $3) ON CONFLICT (command_{command}) DO UPDATE SET {toggle}=$3', ctx.guild.id, f"command_{command}", toggle.upper())
+
+        # Update cache
+        self.bot.guild_settings[ctx.guild.id][command] = toggle
+        if toggle:
+            await ctx.send(f"`{command}` will now show gifs.")
+        else:
+            await ctx.send(f"`{command}` will now not show gifs.")
+
+
 def setup(bot:utils.Bot):
     x = BotSettings(bot)
     bot.add_cog(x)
