@@ -31,8 +31,8 @@ class Simulation(utils.Cog):
             return await ctx.send(f"How would you even manage to do that?")
 
         # Check if they're related
-        x = utils.FamilyTreeMember.get(ctx.author.id)
-        y = utils.FamilyTreeMember.get(user.id)
+        x = utils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
+        y = utils.FamilyTreeMember.get(user.id, ctx.family_guild_id)
         async with ctx.channel.typing():
             relationship = x.get_relation(y)
 
@@ -199,8 +199,8 @@ class Simulation(utils.Cog):
             return await ctx.send(text)
 
         # Check if they are related
-        x = utils.FamilyTreeMember.get(ctx.author.id)
-        y = utils.FamilyTreeMember.get(user.id)
+        x = utils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
+        y = utils.FamilyTreeMember.get(user.id, ctx.family_guild_id)
         async with ctx.channel.typing():
             relationship = x.get_relation(y)
         if relationship is None or relationship.casefold() == 'partner':
