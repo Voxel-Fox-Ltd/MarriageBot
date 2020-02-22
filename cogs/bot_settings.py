@@ -32,18 +32,27 @@ class BotSettings(utils.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True)
     @commands.has_permissions(manage_guild=True)
-    async def togglegif(self, ctx:utils.Context, command:str=None, toggle:str=None):
+    async def togglegif(self, ctx:utils.Context, command:str=None):
         """Changes whether the bot shows gifs or not depending on command."""
         
-        if not toggle:
-            toggle = True
+        commands = {
+            "hug",
+            "kiss",
+            "punch",
+            "slap",
+        }
+        
+        if command not in commands:
+            return await ctx.send("Invaild Command entered")
+        
+        toggle = not self.bot.guild_settings[ctx.guild.id][f"command_{command}"]
 
         # Update db
         async with self.bot.database() as db:
             await db(f'INSERT INTO guild_command_settings (guild_id, command_{command}, {toggle.upper()}) VALUES ($1, $2, $3) ON CONFLICT (command_{command}) DO UPDATE SET {toggle}=$3', ctx.guild.id, f"command_{command}", toggle.upper())
 
         # Update cache
-        self.bot.guild_settings[ctx.guild.id][command] = toggle
+        self.bot.guild_settings[ctx.guild.id][f"command_{command}"] = toggle
         if toggle:
             await ctx.send(f"`{command}` will now show gifs.")
         else:
