@@ -41,13 +41,19 @@ CREATE TABLE guild_settings(
     gold_prefix VARCHAR(30) DEFAULT 'm.',
     allow_incest BOOLEAN DEFAULT FALSE,
     max_family_members INTEGER DEFAULT 500,
+    PRIMARY KEY (guild_id)
+);
+-- A config for a guild to change their prefix or other bot settings
+
+CREATE TABLE guild_command_settings(
+    guild_id BIGINT NOT NULL,
     command_hug BOOLEAN DEFAULT TRUE,
     command_kiss BOOLEAN DEFAULT TRUE,
     command_slap BOOLEAN DEFAULT TRUE,
     command_punch BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (guild_id)
 );
--- A config for a guild to change their prefix or other bot settings
+-- A config for a guild to change their gif commands
 
 
 CREATE TYPE direction AS ENUM('TB', 'LR');
