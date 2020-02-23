@@ -51,7 +51,7 @@ class Simulation(utils.Cog):
             ]
         await ctx.send(random.choice(responses), image_url=image_url)
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, aliases=['smack'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     async def slap(self, ctx:utils.Context, user:discord.Member):
         """Slaps a mentioned user"""
@@ -97,6 +97,15 @@ class Simulation(utils.Cog):
         if user == ctx.author:
             return await ctx.send(f"*You give yourself a {ctx.invoked_with}* 🍔")
         await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
+
+    @commands.command(cls=utils.Command)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    async def tea(self, ctx:utils.Context, user:discord.Member):
+        """Gives tea to a mentioned user"""
+
+        if user == ctx.author:
+            return await ctx.send("*You gave yourself tea.*")
+        await ctx.send(f"*Gives {user.mention} tea*")
 
     @commands.command(aliases=['dumpster'], hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
