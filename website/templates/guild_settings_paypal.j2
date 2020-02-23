@@ -25,14 +25,24 @@ MarriageBot - {{ guild.name }} Settings
     <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
 </form> <!-- prefix -->
 
+<form id="gifs-enabled" class="boxed">
+    <p>Gifs - sets whether gifs are enabled for your server's simulation commands.</p>
+    <p>
+        <input name="enabled"{% if gifs_enabled %} checked{% endif %} type="checkbox" />
+        <button form="gifs-enabled" type="submit" formmethod="post" formaction="/set_gifs_enabled">Submit Gif Enable Change</button>
+    </p>
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+    <input name="gold" value="{% if gold is none %}1{% endif %}" type="hidden" />
+</form> <!-- gifs-enabled -->
+
 <form id="incest-allowed" class="boxed">
     <p>Incest - sets whether incest is allowed on your server.</p>
     <p>
         <input name="allowed"{% if allow_incest %} checked{% endif %} type="checkbox"{% if not gold is none %} disabled{% endif %} />
         {% if gold is none -%}
-            <button type="submit" formmethod="post" formaction="/set_incest_enabled">Submit Incest Change</button>
+            <button form="incest-allowed" type="submit" formmethod="post" formaction="/set_incest_enabled">Submit Incest Change</button>
         {%- else -%}
-            <button type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
+            <button form="incest-allowed" type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
         {%- endif -%}
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
@@ -44,9 +54,9 @@ MarriageBot - {{ guild.name }} Settings
     <p>
         <input name="amount" value="{{ max_family_members }}" placeholder="Maximum Family Members" max="2000" min="50" type="number"{% if not gold is none %} disabled{% endif %} />
         {% if gold is none -%}
-            <button type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button>
+            <button form="max-family-members" type="submit" formmethod="post" formaction="/set_max_family_members">Submit Prefix Change</button>
         {%- else -%}
-            <button type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
+            <button form="max-family-members" type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
         {%- endif -%}
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
@@ -62,9 +72,9 @@ MarriageBot - {{ guild.name }} Settings
     </div>
     <p>
         {%- if gold is none -%}
-            <button type="submit" disabled formmethod="post" formaction="/set_disabled_commands">Disabled for testing<!-- Submit Disabled Commands --></button>
+            <button form="disabled-commands" type="submit" disabled formmethod="post" formaction="/set_disabled_commands">Disabled for testing<!-- Submit Disabled Commands --></button>
         {%- else -%}
-            <button type="submit" disabled formmethod="post" disabled>Disabled for testing<!-- Disabled for non-Gold bot --></button>
+            <button form="disabled-commands" type="submit" disabled formmethod="post" disabled>Disabled for testing<!-- Disabled for non-Gold bot --></button>
         {%- endif -%}
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
@@ -84,9 +94,9 @@ MarriageBot - {{ guild.name }} Settings
     </div>
     <p>
         {%- if gold is none -%}
-            <button type="submit" formmethod="post" formaction="/set_max_allowed_children">Submit Children Amount Change</button>
+            <button form="max-allowed-children" type="submit" formmethod="post" formaction="/set_max_allowed_children">Submit Children Amount Change</button>
         {%- else -%}
-            <button type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
+            <button form="max-allowed-children" type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
         {%- endif -%}
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />

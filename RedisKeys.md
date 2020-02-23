@@ -97,6 +97,17 @@ Update the maximum amount of children allowed for a set of roles in a given guil
 }
 ```
 
+### UpdateGifsEnabled
+
+Update the whether or not gifs are enabled for simulation commands in a given guild.
+
+```json
+{
+    "guild_id": "INT",
+    "gifs_enabled": true
+}
+```
+
 ### SendUserMessage
 
 Ping a DM to a given user.

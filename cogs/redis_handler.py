@@ -28,6 +28,7 @@ class RedisHandler(utils.Cog):
             task(self.channel_handler('UpdateFamilyMaxMembers', self.update_max_family_members)),
             task(self.channel_handler('UpdateIncestAllowed', self.update_incest_alllowed)),
             task(self.channel_handler('UpdateMaxChildren', self.update_max_children)),
+            task(self.channel_handler('UpdateGifsEnabled', self.update_gifs_enabled)),
             task(self.channel_handler('SendUserMessage', self.send_user_message)),
         ]
         # if not self.bot.is_server_specific:
@@ -127,6 +128,14 @@ class RedisHandler(utils.Cog):
         if prefix is None:
             return
         self.bot.guild_settings[data['guild_id']]['max_children'] = prefix
+
+    def update_gifs_enabled(self, data):
+        """Updates whether or not gifs are enabled for a guild"""
+
+        prefix = data.get('gifs_enabled')
+        if prefix is None:
+            return
+        self.bot.guild_settings[data['guild_id']]['gifs_enabled'] = prefix
 
     async def send_user_message(self, data):
         """Sends a message to a given user"""

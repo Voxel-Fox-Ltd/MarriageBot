@@ -102,6 +102,18 @@ async def user_settings(request:Request):
     # Make a URL for the preview
     tree_preview_url = '/tree_preview?' + '&'.join([f'{i}={o.strip("#")}' if i != 'direction' else f'{i}={o}' for i, o in colours.items()])
 
+    # Get their blocked users
+    blocked_users_db = await db("SELECT blocked_user_id FROM blocked_user WHERE user_id=$1", session['user_id'])
+    blocked_users = {i['blocked_user_id']: await request.app['bot'].get_name(i['blocked_user_id']) for i in blocked_users_db}
+
+    # Give all the data to the page
+    await db.disconnect()
+    return {
+        'hex_strings': colours,
+        'tree_preview_url': tree_preview_url,
+        'blocked_users': blocked_users,
+    }
+
 
 @routes.get("/logout")
 async def logout(request:Request):
@@ -141,6 +153,36 @@ async def guild_picker(request:Request):
             i['gold'] = False
 
     return {'guilds': guilds}
+
+
+@routes.get('/tree_preview')
+@template('tree_preview.j2')
+@webutils.add_output_args()
+async def tree_preview(request:Request):
+    """Tree preview for the bot"""
+
+    colours_raw = {
+        'edge': request.query.get('edge'),
+        'node': request.query.get('node'),
+        'font': request.query.get('font'),
+        'highlighted_font': request.query.get('highlighted_font'),
+        'highlighted_node': request.query.get('highlighted_node'),
+        'background': request.query.get('background'),
+        'direction': request.query.get('direction'),
+    }
+    colours = {}
+    for i, o in colours_raw.items():
+        if o == None or o == 'transparent':
+            o = 'transparent'
+        elif i == 'direction':
+            pass
+        else:
+            o = f'#{o.strip("#")}'
+        colours[i] = o
+
+    return {
+        'hex_strings': colours,
+    }
 
 
 @routes.get('/guild_settings')
@@ -248,6 +290,7 @@ async def guild_settings_get_paypal(request:Request):
         'disabled_commands': disabled_commands,  # The commands that are disabled
         'roles': roles,  # The role objects for the guild
         'max_children_amount': max_children_amount,  # Children amounts for this guild
+        'gifs_enabled': guild_settings[0]['gifs_enabled'],  # Children amounts for this guild
         'max_children_hard_cap': request.app['config']['max_children'][-1],  # Hard cap on children for all users
         'min_children_hard_cap': request.app['config']['max_children'][0],  # Hard minimum on children for all users
     }

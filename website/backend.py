@@ -191,6 +191,44 @@ async def set_max_family_members(request:Request):
     return HTTPFound(location=f'/guild_settings?guild_id={guild_id}&gold=1')
 
 
+@routes.post('/set_gifs_enabled')
+async def set_gifs_enabled(request:Request):
+    """Sets whether or not gifs are enabled for a given guild"""
+
+    # See if they're logged in
+    post_data = await request.post()
+    guild_id = post_data['guild_id']
+    if not guild_id:
+        return HTTPFound(location='/')
+
+    # Get the guilds they're valid to alter
+    all_guilds = await webutils.get_user_guilds(request)
+    if all_guilds is None:
+        return HTTPFound(location='/discord_oauth_login')
+    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
+    if not guild:
+        return HTTPFound(location='/')
+
+    # Get the maximum members
+    try:
+        enabled = bool(post_data['enabled'])
+    except KeyError:
+        enabled = False
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db('INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET gifs_enabled=$2', int(guild_id), enabled is True)
+    async with request.app['redis']() as re:
+        await re.publish_json('UpdateGifsEnabled', {
+            'guild_id': int(guild_id),
+            'gifs_enabled': enabled is True,
+        })
+
+    # Redirect to page
+    location = f'/guild_settings?guild_id={guild_id}&gold=1' if post_data['gold'] else f'/guild_settings?guild_id={guild_id}'
+    return HTTPFound(location=location)
+
+
 @routes.post('/set_incest_enabled')
 async def set_incest_enabled(request:Request):
     """Sets the whether or not incest is enabled for a given guild"""
