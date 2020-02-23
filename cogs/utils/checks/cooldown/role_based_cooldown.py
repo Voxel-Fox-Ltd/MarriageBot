@@ -6,7 +6,6 @@ from cogs.utils.checks.cooldown.cooldown import Cooldown, CooldownMapping
 
 class RoleBasedCooldown(Cooldown):
 
-    default_cooldown_error = PatreonCommandOnCooldown
     tier_cooldowns = {
         1: 60,
         2: 60 * 2,
