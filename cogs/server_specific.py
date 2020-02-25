@@ -20,7 +20,7 @@ MARRIAGEBOT_GOLD_INFORMATION = """
 **Togglable Incest**
 > You love your family? With Gold you're able to show them... a lot _more_ love.
 
-MarriageBot Gold is a one-time purchase available per server on the MarriageBot website (<https://marriagebot.xyz/guild_picker>).
+MarriageBot Gold is a one-time purchase available per server on the MarriageBot website (<https://marriagebot.xyz/guilds>).
 Please feel free to direct any questions to the team at `m!server`. Caleb is constantly updating MarriageBot and MarriageBot Gold, and he'd love to hear your suggestions for more features if you have any!
 """.strip()
 

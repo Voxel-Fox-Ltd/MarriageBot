@@ -37,9 +37,12 @@ class Parentage(utils.Cog):
         # Manage children
         if self.bot.is_server_specific:
             guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
-            gold_children_amount = max([
-                amount if int(role_id) in target._roles else 0 for role_id, amount in guild_max_children.items()
-            ])
+            if guild_max_children:
+                gold_children_amount = max([
+                    amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
+                ])
+            else:
+                gold_children_amount = 0
         else:
             gold_children_amount = 0
         normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, target)]
@@ -119,9 +122,12 @@ class Parentage(utils.Cog):
         # Manage children
         if self.bot.is_server_specific:
             guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
-            gold_children_amount = max([
-                amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
-            ])
+            if guild_max_children:
+                gold_children_amount = max([
+                    amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
+                ])
+            else:
+                gold_children_amount = 0
         else:
             gold_children_amount = 0
         normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, ctx.author)]
