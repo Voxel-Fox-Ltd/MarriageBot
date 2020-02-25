@@ -408,7 +408,7 @@ async def paypal_purchase_return(request:Request):
     # Work out what we're dealin with
     lines = site_data.strip().split('\n')
     if lines[0] != "SUCCESS":
-        return HTTPFound(location='/guild_picker')  # No success
+        return HTTPFound(location='/guilds')  # No success
 
     # Success bois lets GO
     data = {unquote(i.split('=')[0]):unquote(i.split('=')[1]) for i in lines[1:]}
@@ -457,7 +457,7 @@ async def paypal_purchase_return(request:Request):
                 pass
 
     # Nice, redirect the user
-    return HTTPFound(location='/guild_picker')
+    return HTTPFound(location='/guilds')
 
 
 @routes.post('/webhooks/dbl/vote_added')
