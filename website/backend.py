@@ -1,6 +1,6 @@
 import json
 from datetime import datetime as dt
-from urllib.parse import unquote
+from urllib.parse import unquote, urlencode
 
 import aiohttp
 import aiohttp_session
@@ -48,6 +48,23 @@ async def redirect(request:Request):
 #         'entry.865916339': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
 #         'entry.1362434111': session['user_id'],
 #     }))
+
+
+@routes.get("/discord_oauth_login/jacket_poll")
+async def jacket_poll(request:Request):
+    """Handles redirects using codes stored in the db"""
+
+    # See if they're logged in
+    await webutils.process_discord_login(request)
+    session = await aiohttp_session.get_session(request)
+    if not session.get('user_id'):
+        return HTTPFound(location='/')
+    url = "https://docs.google.com/forms/d/e/1FAIpQLScu9Wya__di-Ke2jnkG5XO3OSaWB7Sj6Z2Hd2U1wnnKUWkZ4w/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
+    return HTTPFound(location=url + urlencode({
+        'usp': 'pp_url',
+        'entry.710546805': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
+        'entry.1788377605': session['user_id'],
+    }))
 
 
 @routes.post('/colour_settings')
