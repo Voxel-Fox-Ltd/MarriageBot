@@ -212,9 +212,7 @@ class Simulation(utils.Cog):
         y = utils.FamilyTreeMember.get(user.id, ctx.family_guild_id)
         async with ctx.channel.typing():
             relationship = x.get_relation(y)
-        if relationship is None or relationship.casefold() == 'partner':
-            pass
-        elif not self.bot.allows_incest(ctx.guild.id):
+        if relationship is None or relationship.casefold() == 'partner' or self.bot.allows_incest(ctx.guild.id):
             pass
         else:
             return await ctx.send(text_processor.target_is_family())
