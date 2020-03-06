@@ -101,7 +101,8 @@ class CustomBot(commands.AutoShardedBot):
             return all([
                 r.message.id == message.id,
                 any([u.id in [user.id for user in valid_users], u.permissions_in(message.channel).manage_messages]),
-                str(r.emoji) == "\N{WASTEBASKET}"
+                str(r.emoji) == "\N{WASTEBASKET}",
+                u.bot is False,
             ])
         try:
             await self.wait_for("reaction_add", check=check, timeout=timeout)
