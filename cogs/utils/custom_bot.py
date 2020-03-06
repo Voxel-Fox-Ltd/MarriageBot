@@ -20,9 +20,11 @@ def get_prefix(bot, message:discord.Message):
     """Gives the prefix for the bot - override this to make guild-specific prefixes"""
 
     if message.guild is None:
-        return commands.when_mentioned_or(bot.config['default_prefix'])(bot, message)
-    prefix = bot.guild_settings[message.guild.id]['prefix'] or bot.config['default_prefix']
-    return commands.when_mentioned_or(prefix)(bot, message)
+        prefix = bot.config['default_prefix']
+    else:
+        prefix = bot.guild_settings[message.guild.id]['prefix'] or bot.config['default_prefix']
+    prefix = [prefix] if isinstance(prefix, str) else prefix
+    return commands.when_mentioned_or(*prefix)(bot, message)
 
 
 class CustomBot(commands.AutoShardedBot):
