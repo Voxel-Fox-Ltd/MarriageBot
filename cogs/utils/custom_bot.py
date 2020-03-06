@@ -100,7 +100,7 @@ class CustomBot(commands.AutoShardedBot):
         def check(r, u) -> bool:
             return all([
                 r.message.id == message.id,
-                u.id in [user.id for user in valid_users],
+                any([u.id in [user.id for user in valid_users], u.permissions_in(message.channel).manage_messages]),
                 str(r.emoji) == "\N{WASTEBASKET}"
             ])
         try:
