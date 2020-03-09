@@ -48,7 +48,6 @@ class Misc(utils.Cog):
             colour=0x1e90ff
         )
         embed.set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar_url)
-        embed.add_field(name="ProfileBot", value="A bot to make the process of filling out forms fun.")
         creator_id = self.bot.config["owners"][0]
         creator = await self.bot.fetch_user(creator_id)
         embed.add_field(name="Creator", value=f"{creator!s}\n{creator_id}")
@@ -60,7 +59,6 @@ class Misc(utils.Cog):
         embed.add_field(name="Shard Count", value=self.bot.shard_count)
         embed.add_field(name="Average WS Latency", value=f"{(self.bot.latency * 1000):.2f}ms")
         embed.add_field(name="Coroutines", value=f"{len([i for i in Task.all_tasks() if not i.done()])} running, {len(Task.all_tasks())} total.")
-        embed.add_field(name="Process ID", value=self.process.pid)
         try:
             await ctx.send(embed=embed)
         except Exception:
