@@ -1,3 +1,6 @@
+import asyncio
+
+import discord
 from discord.ext import commands
 
 from cogs import utils
@@ -37,32 +40,31 @@ class Misc(utils.Cog):
         """Echos the given content into the channel"""
 
         await ctx.send(content)
-                       
-    @command(aliases=['status'])
-    @cooldown(1, 5, BucketType.user)
-    async def stats(self, ctx:Context):
-        '''Gives you the stats for the bot'''       
 
-        # await ctx.channel.trigger_typing()
-        embed = Embed(
-            colour=0x1e90ff
-        )
-        embed.set_footer(text=str(self.bot.user), icon_url=self.bot.user.avatar_url)
+    @commands.command(aliases=['status'])
+    @commands.bot_has_permissions(embed_links=True)
+    async def stats(self, ctx:utils.Context):
+        """Gives you the stats for the bot"""
+
+        # Get creator info
         creator_id = self.bot.config["owners"][0]
-        creator = await self.bot.fetch_user(creator_id)
-        embed.add_field(name="Creator", value=f"{creator!s}\n{creator_id}")
-        embed.add_field(name="Library", value=f"Discord.py {dpy_version}")
-        try:
-            embed.add_field(name="Average Guild Count", value=int((len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count))
-        except TypeError:
-            embed.add_field(name="Guild Count", value=len(self.bot.guilds))
-        embed.add_field(name="Shard Count", value=self.bot.shard_count)
-        embed.add_field(name="Average WS Latency", value=f"{(self.bot.latency * 1000):.2f}ms")
-        embed.add_field(name="Coroutines", value=f"{len([i for i in Task.all_tasks() if not i.done()])} running, {len(Task.all_tasks())} total.")
-        try:
-            await ctx.send(embed=embed)
-        except Exception:
-            await ctx.send("I tried to send an embed, but I couldn't.")
+        creator = self.bot.get_user(creator_id) or await self.bot.fetch_user(creator_id)
+
+        # Make embed
+        with utils.Embed(colour=0x1e90ff) as embed:
+            embed.set_footer(str(self.bot.user), icon_url=self.bot.user.avatar_url)
+            embed.add_field("Creator", f"{creator!s}\n{creator_id}")
+            embed.add_field("Library", f"Discord.py {discord.__version__}")
+            if self.bot.shard_count != len(self.bot.shard_ids):
+                embed.add_field("Average Guild Count", int((len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count))
+            else:
+                embed.add_field("Guild Count", len(self.bot.guilds))
+            embed.add_field("Shard Count", self.bot.shard_count)
+            embed.add_field("Average WS Latency", f"{(self.bot.latency * 1000):.2f}ms")
+            embed.add_field("Coroutines", f"{len([i for i in asyncio.Task.all_tasks() if not i.done()])} running, {len(asyncio.Task.all_tasks())} total.")
+
+        # Send it out wew let's go
+        await ctx.send(embed=embed)
 
 
 def setup(bot:utils.Bot):
