@@ -58,7 +58,7 @@ class ErrorHandler(utils.Cog):
 
         # Disabled command
         elif isinstance(error, commands.DisabledCommand):
-            return await ctx.send("This command has been temporarily disabled. Apologies for any inconvenience.")
+            return await ctx.send("This command has been disabled. Apologies for any inconvenience.")
 
         # User is missing a role
         elif isinstance(error, commands.MissingAnyRole):
