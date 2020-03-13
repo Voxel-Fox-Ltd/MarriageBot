@@ -171,10 +171,10 @@ class CustomBot(commands.AutoShardedBot):
 
         return (dt.now() - self.startup_time).total_seconds()
 
-    async def get_context(self, message, *, cls=commands.Context):
+    async def get_context(self, message, *, cls=CustomContext):
         """Gently insert a new original_author field into the context"""
 
-        ctx = await super().get_context(message, cls=CustomContext)
+        ctx = await super().get_context(message, cls=cls)
         ctx.original_author_id = ctx.author.id
         return ctx
 
