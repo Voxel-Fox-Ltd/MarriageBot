@@ -48,7 +48,7 @@ class ContextEmbed(discord.Embed):
         super().set_author(name=str(user), icon_url=user.avatar_url)
         return self
 
-    def add_field(self, name:str, value:str, inline:bool=False):
+    def add_field(self, name:str, value:str, inline:bool=True):
         """Adds a field to the embed without using kwargs"""
 
         super().add_field(name=name, value=value, inline=inline)
