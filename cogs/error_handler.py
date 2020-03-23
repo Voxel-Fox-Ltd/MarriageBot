@@ -44,6 +44,10 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, utils.errors.MissingRequiredArgumentString):
             return await ctx.send(f"You're missing the `{error.param}` argument, which is required for this command to work properly.")
 
+        # Did the quotemarks wrong
+        elif isinstance(error, (commands.UnexpectedQuoteError, commands.InvalidEndOfQuotedStringError, commands.ExpectedClosingQuoteError)):
+            return await ctx.send(f"You've done your quote marks there wrong somewhere mate.")
+
         # Missing argument
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"You're missing the `{error.param.name}` argument, which is required for this command to work properly.")
