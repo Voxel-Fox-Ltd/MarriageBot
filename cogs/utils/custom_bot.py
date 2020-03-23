@@ -89,6 +89,10 @@ class CustomBot(commands.AutoShardedBot):
     async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, delete:typing.List[discord.Message]=None, timeout=60.0):
         """Adds a delete button to the given message"""
 
+        # Let's not add delete buttons to DMs
+        if isinstance(message.channel, discord.DMChannel):
+            return
+
         # Add reaction
         await message.add_reaction("\N{WASTEBASKET}")
 
@@ -100,7 +104,10 @@ class CustomBot(commands.AutoShardedBot):
         def check(r, u) -> bool:
             return all([
                 r.message.id == message.id,
-                any([u.id in [user.id for user in valid_users], u.permissions_in(message.channel).manage_messages]),
+                any([
+                    u.id in [user.id for user in valid_users],
+                    u.permissions_in(message.channel).manage_messages
+                ]),
                 str(r.emoji) == "\N{WASTEBASKET}",
                 u.bot is False,
             ])
