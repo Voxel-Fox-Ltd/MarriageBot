@@ -1,3 +1,6 @@
+import io
+import traceback
+
 import discord
 from discord.ext import commands
 
@@ -101,6 +104,20 @@ class ErrorHandler(utils.Cog):
             await ctx.send(f'```py\n{error}```')
         except (discord.Forbidden, discord.NotFound):
             pass
+
+        # Can't tell what it is and we wanna DM the owner about it? Nice.
+        if self.bot.config['dm_uncaught_errors']:
+            try:
+                raise error
+            except Exception:
+                exc = traceback.format_exc()
+                data = io.StringIO(exc)
+                owner_id = self.bot.config['owners'][0]
+                owner = self.bot.get_user(owner_id) or await self.bot.fetch_user(owner_id)
+                text = f"Error found: Guild `{ctx.guild.id}`, channel `{ctx.channel.id}`, user `{ctx.author.id}` ```\n{ctx.message.content}\n```"
+                await owner.send(text, file=discord.File(data, filename="error_log.py"))
+
+        # And throw it into the console
         raise error
 
 
