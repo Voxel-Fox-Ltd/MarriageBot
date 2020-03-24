@@ -15,10 +15,17 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(aliases=['pm', 'dm'], cls=utils.Command)
     @commands.is_owner()
-    async def message(self, ctx:utils.Context, user:utils.converters.UserID, *, content:str):
+    async def message(self, ctx:utils.Context, user_id:utils.converters.UserID, *, content:str):
         """PMs a user the given content"""
 
-        await user.send(content)
+        user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
+        try:
+            await user.send(content)
+        except discord.Forbidden:
+            return await ctx.send("Couldn't send them a DM.")
+        except AttributeError:
+            return await ctx.send("That person doesn't exist.")
+        await ctx.okay()
 
     def _cleanup_code(self, content):
         """Automatically removes code blocks from the code."""

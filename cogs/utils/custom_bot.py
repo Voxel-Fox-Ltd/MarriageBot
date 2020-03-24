@@ -120,6 +120,10 @@ class CustomBot(commands.AutoShardedBot):
     async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, delete:typing.List[discord.Message]=None, timeout=60.0):
         """Adds a delete button to the given message"""
 
+        # Let's not add delete buttons to DMs
+        if isinstance(message.channel, discord.DMChannel):
+            return
+
         # Add reaction
         await message.add_reaction("\N{WASTEBASKET}")
 
@@ -131,8 +135,12 @@ class CustomBot(commands.AutoShardedBot):
         def check(r, u) -> bool:
             return all([
                 r.message.id == message.id,
-                u.id in [user.id for user in valid_users],
-                str(r.emoji) == "\N{WASTEBASKET}"
+                any([
+                    u.id in [user.id for user in valid_users],
+                    u.permissions_in(message.channel).manage_messages
+                ]),
+                str(r.emoji) == "\N{WASTEBASKET}",
+                u.bot is False,
             ])
         try:
             await self.wait_for("reaction_add", check=check, timeout=timeout)
@@ -364,11 +372,11 @@ class CustomBot(commands.AutoShardedBot):
 
         return (dt.now() - self.startup_time).total_seconds()
 
-    async def get_context(self, message, *, cls=commands.Context):
+    async def get_context(self, message, *, cls=CustomContext):
         """Gently insert a new original_author field into the context"""
 
-        ctx = await super().get_context(message, cls=CustomContext)
-        ctx.original_author_id = message.author.id
+        ctx = await super().get_context(message, cls=cls)
+        ctx.original_author_id = ctx.author.id
         return ctx
 
     def get_extensions(self) -> list:

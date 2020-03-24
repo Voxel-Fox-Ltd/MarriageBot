@@ -6,13 +6,12 @@ from cogs.utils.checks.cooldown.cooldown import Cooldown, CooldownMapping
 
 class RoleBasedCooldown(Cooldown):
 
-    default_cooldown_error = PatreonCommandOnCooldown
     tier_cooldowns = {
-        1: 60
-        2: 60 * 2
-        3: 60 * 3
-        4: 60 * 4
-        5: 60 * 5
+        1: 60,
+        2: 60 * 2,
+        3: 60 * 3,
+        4: 60 * 4,
+        5: 60 * 5,
     }  # RoleID: CooldownSeconds
 
     _copy_kwargs = ()

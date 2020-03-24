@@ -218,7 +218,7 @@ class EmbedMaker(utils.Cog):
             return await user.send(f"Found an error sending that. Sorry about that. Cancelled.")
 
         # Send it out
-        if embed:
+        if embed and embed != {"fields": []}:
             embed_object = discord.Embed.from_dict(embed)
         else:
             embed_object = None
