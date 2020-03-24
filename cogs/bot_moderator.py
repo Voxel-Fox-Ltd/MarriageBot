@@ -18,6 +18,17 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    async def cachename(self, ctx:utils.Context, user:utils.converters.UserID):
+        """Removes a user from the propsal cache."""
+
+        user = await self.bot.fetch_user(user)
+        async with self.bot.redis() as re:
+            await re.set(f'UserName-{user.id}', str(user))
+        self.bot.shallow_users.pop(user.id, None)
+        await ctx.send("Donezo babey.")
+
+    @commands.command(cls=utils.Command)
+    @utils.checks.is_bot_administrator()
     async def recache(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object"""
 
