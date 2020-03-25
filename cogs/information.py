@@ -22,16 +22,20 @@ class Information(utils.Cog):
         user_name = await self.bot.get_name(user)
         user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
 
-        # Output
+        # Check they have a partner
         if user_info._partner is None:
             return await ctx.send(f"`{user_name}` is not currently married.")
         partner_name = await self.bot.get_name(user_info._partner)
+
+        # Get timestamp
         async with self.bot.database() as db:
             if self.bot.is_server_specific:
-                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id<>0", ctx.author.id)
+                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id<>0", user)
             else:
-                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", ctx.author.id)
+                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", user)
         timestamp = data[0]['timestamp']
+
+        # Output
         if timestamp:
             await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`). They've been married since {timestamp.strftime('%B %d %Y')}.")
         else:
