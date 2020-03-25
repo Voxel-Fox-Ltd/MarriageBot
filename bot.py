@@ -131,7 +131,7 @@ if __name__ == '__main__':
     loop = bot.loop
 
     # Connect the database pool
-    if bot.config['database'].get('enabled', True):
+    if bot.config['database']['enabled']:
         logger.info("Creating database pool")
         try:
             db_connect_task = loop.create_task(utils.DatabaseConnection.create_pool(bot.config['database']))
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         logger.info("Database connection has been disabled")
 
     # Connect the redis pool
-    if bot.config['redis'].get('enabled', True):
+    if bot.config['redis']['enabled']:
         logger.info("Creating redis pool")
         try:
             re_connect = loop.create_task(utils.RedisConnection.create_pool(bot.config['redis']))
@@ -175,10 +175,10 @@ if __name__ == '__main__':
         loop.run_until_complete(bot.logout())
 
     # We're now done running the bot, time to clean up and close
-    if bot.config['database'].get('enabled', True):
+    if bot.config['database']['enabled']:
         logger.info("Closing database pool")
         loop.run_until_complete(utils.DatabaseConnection.pool.close())
-    if bot.config['redis'].get('enabled', True):
+    if bot.config['redis']['enabled']:
         logger.info("Closing redis pool")
         utils.RedisConnection.pool.close()
     logger.info("Closing asyncio loop")
