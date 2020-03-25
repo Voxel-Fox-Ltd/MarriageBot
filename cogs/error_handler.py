@@ -1,5 +1,6 @@
 import io
 import traceback
+import typing
 
 import discord
 from discord.ext import commands
@@ -9,7 +10,7 @@ from cogs import utils
 
 class ErrorHandler(utils.Cog):
 
-    async def send_to_ctx_or_author(self, ctx:utils.Context, text:str, author_text:str=None):
+    async def send_to_ctx_or_author(self, ctx:utils.Context, text:str, author_text:str=None) -> typing.Optional[discord.Message]:
         """Tries to send the given text to ctx, but failing that, tries to send it to the author
         instead. If it fails that too, it just stays silent."""
 
@@ -98,6 +99,17 @@ class ErrorHandler(utils.Cog):
         # Argument conversion error
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(str(error))
+
+        # I'm trying to do something that doesn't exist
+        elif isinstance(error, discord.NotFound):
+            pass  # Gonna pass this so it's raised again
+
+        # Discord hecked up
+        elif isinstance(error, discord.HTTPException):
+            try:
+                return await ctx.send(f"Discord messed up there somewhere - do you mind trying again? I received a {error.status} error.")
+            except Exception:
+                return
 
         # Can't tell what it is? Ah well.
         try:
