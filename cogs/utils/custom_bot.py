@@ -415,12 +415,18 @@ class CustomBot(commands.AutoShardedBot):
 
         # Update presence
         self.logger.info("Setting default bot presence")
-        presence = self.config['presence']
+        presence = self.config['presence']  # Get text
+
+        # Update per shard
         if self.shard_count > 1:
+
+            # Get shard IDs
             if shard_id:
-                min, max = shard_id, shard_id + 1
+                min, max = shard_id, shard_id + 1  # If we're only setting it for one shard
             else:
-                min, max = self.shard_ids[0], self.shard_ids[-1]
+                min, max = self.shard_ids[0], self.shard_ids[-1]  # If we're setting for all shards
+
+            # Go through each shard ID
             for i in range(min, max):
                 activity = discord.Activity(
                     name=f"{presence['text']} (shard {i})",
@@ -428,6 +434,8 @@ class CustomBot(commands.AutoShardedBot):
                 )
                 status = getattr(discord.Status, presence['status'].lower())
                 await self.change_presence(activity=activity, status=status, shard_id=i)
+
+        # Not sharded - just do everywhere
         else:
             activity = discord.Activity(
                 name=presence['text'],
@@ -465,8 +473,12 @@ class CustomBot(commands.AutoShardedBot):
         """Opens the config file, loads it (as TOML) and stores it in Bot.config"""
 
         self.logger.info("Reloading config")
-        with open(self.config_file) as a:
-            self.config = toml.load(a)
+        try:
+            with open(self.config_file) as a:
+                self.config = toml.load(a)
+        except Exception as e:
+            self.logger.critical(f"Couldn't read config file - {e}")
+            exit(1)
 
     async def login(self, token:str=None, *args, **kwargs):
         await super().login(token or self.config['token'], *args, **kwargs)
@@ -475,8 +487,11 @@ class CustomBot(commands.AutoShardedBot):
         """The original start method from the bot, using the token from the config
         and running the bot startup method with it"""
 
-        self.logger.info("Running startup method")
-        self.startup_method = self.loop.create_task(self.startup())
+        if self.config['database']['enabled']:
+            self.logger.info("Running startup method")
+            self.startup_method = self.loop.create_task(self.startup())
+        else:
+            self.logger.info("Not running bot startup method due to database being disabled")
         self.logger.info("Running original D.py start method")
         await super().start(token or self.config['token'], *args, **kwargs)
 
