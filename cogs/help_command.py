@@ -75,15 +75,28 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         """Sends content to the given destination"""
 
         dest = self.get_destination()
-        if isinstance(dest, (discord.User, discord.Member)):
+
+        # If the destination is a user
+        if isinstance(dest, (discord.User, discord.Member, discord.DMChannel)):
             try:
                 await dest.send(*args, **kwargs)
                 if self.context.guild:
-                    await self.context.send("Sent you a DM!")
-            except Exception:
-                await self.context.send("I couldn't send you a DM :c")
+                    try:
+                        await self.context.send("Sent you a DM!")
+                    except discord.Forbidden:
+                        pass  # Fail silently
+            except discord.Forbidden:
+                try:
+                    await self.context.send("I couldn't send you a DM :c")
+                except discord.Forbidden:
+                    pass  # Oh no now they won't know anything
             return
-        await dest.send(*args, **kwargs)
+
+        # If the destination is a channel
+        try:
+            await dest.send(*args, **kwargs)
+        except discord.Forbidden:
+            pass  # Can't talk in the channel? Shame
 
     def get_initial_embed(self) -> discord.Embed:
         """Get the initial embed for that gets sent"""
