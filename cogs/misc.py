@@ -20,7 +20,7 @@ class Misc(utils.Cog):
     async def vote(self, ctx:utils.Context):
         """Gives you a link to upvote the bot on DiscordBotList"""
 
-        url = f"https://discordbots.org/bot/{self.bot.user.id}/vote"
+        url = f"https://discordbots.org/bot/{self.bot.config.get('dbl_vainity', None) or self.bot.user.id}/vote"
         await ctx.send(f"[Add a DBL vote]({url})!\nSee `m!perks` for more information.")
 
     @commands.command(aliases=['git', 'code'], cls=utils.Command)
