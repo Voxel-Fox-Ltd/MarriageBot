@@ -102,6 +102,8 @@ class CustomBot(commands.AutoShardedBot):
 
         # Wait for response
         def check(r, u) -> bool:
+            if u.bot:
+                return False
             return all([
                 r.message.id == message.id,
                 isinstance(u, discord.Member),
