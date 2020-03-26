@@ -20,10 +20,11 @@ class RedisConnection(object):
         """Creates and connects the pool object"""
 
         cls.config = config.copy()
-        if config.pop('enabled', True) is False:
+        modified_config = config.copy()
+        if modified_config.pop('enabled', True) is False:
             raise NotImplementedError("The Redis connection has been disabled.")
-        address = config.pop('host'), config.pop('port')
-        cls.pool = await aioredis.create_redis_pool(address, **config)
+        address = modified_config.pop('host'), modified_config.pop('port')
+        cls.pool = await aioredis.create_redis_pool(address, **modified_config)
 
     async def __aenter__(self):
         self.conn = self.pool
