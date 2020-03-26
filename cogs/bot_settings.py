@@ -8,8 +8,8 @@ class BotSettings(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True)
     @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(send_messages=True)
     async def prefix(self, ctx:utils.Context, *, new_prefix:str):
         """Changes the prefix that the bot uses"""
 

@@ -15,6 +15,7 @@ class EmbedMaker(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def makeembed(self, ctx, *, data:str=None):
         """Run a command as another user optionally in another channel."""
 
