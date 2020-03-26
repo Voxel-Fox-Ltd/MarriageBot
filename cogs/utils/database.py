@@ -22,10 +22,11 @@ class DatabaseConnection(object):
         """Creates the database pool and plonks it in DatabaseConnection.pool"""
 
         cls.config = config.copy()
-        if config.pop('enabled') is False:
+        modified_config = config.copy()
+        if modified_config.pop('enabled') is False:
             cls.logger.critical("Database create pool method is being run when the database is disabled")
             exit(1)
-        cls.pool = await asyncpg.create_pool(**config)
+        cls.pool = await asyncpg.create_pool(**modified_config)
 
     @classmethod
     async def get_connection(cls) -> 'DatabaseConnection':
