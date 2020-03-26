@@ -48,6 +48,7 @@ class ServerSpecific(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     @utils.checks.guild_is_server_specific()
+    @commands.bot_has_permissions(send_messages=True)
     async def allowincest(self, ctx:utils.Context):
         """Toggles allowing incest on your guild"""
 
@@ -62,6 +63,7 @@ class ServerSpecific(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
     @utils.checks.guild_is_server_specific()
+    @commands.bot_has_permissions(send_messages=True)
     async def disallowincest(self, ctx:utils.Context):
         """Toggles allowing incest on your guild"""
 
@@ -74,6 +76,7 @@ class ServerSpecific(utils.Cog):
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
     @commands.command(aliases=['ssf', 'incest'], cls=utils.Command)
+    @commands.bot_has_permissions(send_messages=True)
     async def gold(self, ctx:utils.Context):
         """Gives you the information about server specific families and MarriageBot gold"""
 

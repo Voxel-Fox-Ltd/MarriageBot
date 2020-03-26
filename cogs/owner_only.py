@@ -15,6 +15,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(aliases=['pm', 'dm'], cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def message(self, ctx:utils.Context, user_id:utils.converters.UserID, *, content:str):
         """PMs a user the given content"""
 
@@ -41,6 +42,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(aliases=['evall'], cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def ev(self, ctx:utils.Context, *, content:str):
         """Evaluates some Python code
 
@@ -114,6 +116,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(aliases=['rld'], cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def reload(self, ctx:utils.Context, *cog_name:str):
         """Unloads and reloads a cog from the bot"""
 
@@ -136,6 +139,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def runsql(self, ctx:utils.Context, *, content:str):
         """Runs a line of SQL into the sparcli database"""
 
@@ -172,6 +176,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.group(cls=utils.Group)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def botuser(self, ctx:utils.Context):
         """A parent command for the bot user configuration section"""
 
@@ -179,6 +184,7 @@ class OwnerOnly(utils.Cog):
 
     @botuser.command(aliases=['username'], cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def name(self, ctx:utils.Context, *, username:str):
         """Lets you set the username for the bot account"""
 
@@ -189,6 +195,7 @@ class OwnerOnly(utils.Cog):
 
     @botuser.command(aliases=['photo', 'image', 'avatar'], cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def picture(self, ctx:utils.Context, *, image_url:str=None):
         """Lets you set the profile picture of the bot"""
 
@@ -205,6 +212,7 @@ class OwnerOnly(utils.Cog):
 
     @botuser.command(aliases=['game'], cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def activity(self, ctx:utils.Context, activity_type:str, *, name:str=None):
         """Changes the activity of the bot"""
 
@@ -216,6 +224,7 @@ class OwnerOnly(utils.Cog):
 
     @botuser.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def status(self, ctx:utils.Context, status:str):
         """Changes the bot's status"""
 
@@ -224,6 +233,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def sudo(self, ctx, who:utils.converters.UserID, *, command: str):
         """Run a command as another user optionally in another channel."""
 
@@ -235,6 +245,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def runall(self, ctx, *, command: str):
         """Run a command across all instances of the bot"""
 
@@ -248,6 +259,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def rldall(self, ctx, *cog_name:str):
         """Reloads all of a given cog"""
 
@@ -261,6 +273,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
@@ -290,6 +303,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def copyfamilytoguildnodelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
@@ -319,6 +333,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def addserverspecific(self, ctx:utils.Context, guild_id:int):
         """Adds a guild to the MarriageBot Gold whitelist"""
 
@@ -328,6 +343,7 @@ class OwnerOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
     async def addreaction(self, ctx, message:discord.Message, reaction:str):
         """Adds a reaction to a message"""
 

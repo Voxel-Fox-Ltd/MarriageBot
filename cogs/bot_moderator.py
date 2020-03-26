@@ -10,6 +10,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
     async def uncache(self, ctx:utils.Context, user:utils.converters.UserID):
         """Removes a user from the propsal cache."""
 
@@ -18,6 +19,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
     async def cachename(self, ctx:utils.Context, user:utils.converters.UserID):
         """Removes a user from the propsal cache."""
 
@@ -29,6 +31,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
     async def recache(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object"""
 
@@ -59,6 +62,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
     async def recachefamily(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object, but through their whole family"""
 
@@ -97,6 +101,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
     async def forcemarry(self, ctx:utils.Context, user_a:utils.converters.UserID, user_b:utils.converters.UserID=None):
         """Marries the two specified users"""
 
@@ -124,6 +129,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
     async def forcedivorce(self, ctx:utils.Context, user:utils.converters.UserID):
         """Divorces a user from their spouse"""
 
@@ -144,6 +150,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
     async def forceadopt(self, ctx:utils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
         """Adds the child to the specified parent"""
 
@@ -174,6 +181,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(aliases=['forceeman'], cls=utils.Command)
     @utils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
     async def forceemancipate(self, ctx:utils.Context, user:utils.converters.UserID):
         """Force emancipates a child"""
 
@@ -198,6 +206,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
     async def addvoter(self, ctx:utils.Context, user:utils.converters.UserID):
         """Adds a voter to the database"""
 
@@ -208,6 +217,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(aliases=['addblogpost'], cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
     async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
         """Adds a blog post to the database"""
 
@@ -224,6 +234,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
     async def createredirect(self, ctx:utils.Context, code:str, redirect:str):
         """Adds a redirect to the database"""
 

@@ -17,6 +17,7 @@ class Misc(utils.Cog):
 
     @commands.command(aliases=['upvote'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def vote(self, ctx:utils.Context):
         """Gives you a link to upvote the bot on DiscordBotList"""
 
@@ -26,6 +27,7 @@ class Misc(utils.Cog):
     @commands.command(aliases=['git', 'code'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.is_config_set('command_data', 'github')
+    @commands.bot_has_permissions(send_messages=True)
     async def github(self, ctx:utils.Context):
         """Gives you a link to the bot's code repository"""
 
@@ -34,6 +36,7 @@ class Misc(utils.Cog):
     @commands.command(aliases=['patreon'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.is_config_set('command_data', 'patreon')
+    @commands.bot_has_permissions(send_messages=True)
     async def donate(self, ctx:utils.Context):
         """Gives you the creator's donation links"""
 
@@ -41,6 +44,7 @@ class Misc(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def invite(self, ctx:utils.Context):
         """Gives you an invite link for the bot"""
 
@@ -49,6 +53,7 @@ class Misc(utils.Cog):
     @commands.command(aliases=['guild', 'support'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.is_config_set('command_data', 'guild_invite')
+    @commands.bot_has_permissions(send_messages=True)
     async def server(self, ctx:utils.Context):
         """Gives you a server invite link"""
 
@@ -56,6 +61,7 @@ class Misc(utils.Cog):
 
     @commands.command(hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def echo(self, ctx:utils.Context, *, content:commands.clean_content):
         """Echos a saying"""
 
@@ -63,6 +69,7 @@ class Misc(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def perks(self, ctx:utils.Context):
         """Shows you the perks associated with different support tiers"""
 
@@ -121,6 +128,7 @@ class Misc(utils.Cog):
 
     @commands.command(aliases=['status'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def stats(self, ctx:utils.Context):
         """Gives you the stats for the bot"""
 
@@ -158,6 +166,7 @@ class Misc(utils.Cog):
     @commands.command(aliases=['clean'], cls=utils.Command)
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
+    @commands.bot_has_permissions(send_messages=True)
     async def clear(self, ctx:utils.Context):
         """Clears the bot's commands from chat"""
 
@@ -168,6 +177,7 @@ class Misc(utils.Cog):
         await ctx.send(f"Cleared `{len(_)}` messages from chat.", delete_after=3.0)
 
     @commands.command(cls=utils.Command)
+    @commands.bot_has_permissions(send_messages=True)
     async def block(self, ctx:utils.Context, user_id:utils.converters.UserID):
         """Blocks a user from being able to adopt/makeparent/whatever you"""
 
@@ -190,6 +200,7 @@ class Misc(utils.Cog):
         await ctx.send("That user is now blocked.")
 
     @commands.command(cls=utils.Command)
+    @commands.bot_has_permissions(send_messages=True)
     async def unblock(self, ctx:utils.Context, user:utils.converters.UserID):
         """Unblocks a user and allows them to adopt/makeparent/whatever you"""
 
@@ -213,12 +224,14 @@ class Misc(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @commands.guild_only()
+    @commands.bot_has_permissions(send_messages=True)
     async def shard(self, ctx:utils.Context):
         """Gives you the shard that your server is running on"""
 
         await ctx.send(f"The shard that your server is on is shard `{ctx.guild.shard_id}`.")
 
     @commands.command(cls=utils.Command, aliases=['kitty'], hidden=True)
+    @commands.bot_has_permissions(send_messages=True)
     async def cat(self, ctx:utils.Context):
         """Gives you some cats innit"""
 

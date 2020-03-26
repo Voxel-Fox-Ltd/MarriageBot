@@ -14,6 +14,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def partner(self, ctx:utils.Context, user:typing.Optional[utils.converters.UserID]):
         """Tells you who a user is married to"""
 
@@ -44,6 +45,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['child', 'kids'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def children(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Tells you who a user's children are"""
 
@@ -85,6 +87,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['parents'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def parent(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Tells you who someone's parent is"""
 
@@ -100,6 +103,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['relation'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:utils.converters.UserID=None):
         """Gets the relationship between the two specified users"""
 
@@ -128,6 +132,7 @@ class Information(utils.Cog):
     @commands.command(aliases=['treesize', 'fs', 'ts'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def familysize(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Gives you the size of your family tree"""
 
@@ -145,8 +150,8 @@ class Information(utils.Cog):
 
     @commands.command(enabled=False, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gives you the full family tree of a user"""
 
@@ -158,8 +163,8 @@ class Information(utils.Cog):
 
     @commands.command(aliases=['tree', 't'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
-    @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def familytree(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gets the family tree of a given user"""
 
@@ -175,8 +180,8 @@ class Information(utils.Cog):
     @commands.command(aliases=['st'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @utils.checks.is_patreon(tier=2)
-    @commands.bot_has_permissions(attach_files=True)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def stupidtree(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gets the family tree of a given user"""
 

@@ -10,6 +10,7 @@ class Parentage(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def makeparent(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
         """Picks a user that you want to be your parent"""
 
@@ -91,6 +92,7 @@ class Parentage(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def adopt(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
         """Adopt another user into your family"""
 
@@ -179,6 +181,7 @@ class Parentage(utils.Cog):
     @commands.command(aliases=['abort'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
         """Lets you remove a user from being your child"""
 
@@ -211,6 +214,7 @@ class Parentage(utils.Cog):
     @commands.command(aliases=['eman', 'runaway', 'runawayfromhome'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def emancipate(self, ctx:utils.Context):
         """Removes your parent"""
 
@@ -245,6 +249,7 @@ class Parentage(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.checks.is_patreon(tier=1)
+    @commands.bot_has_permissions(send_messages=True)
     async def disownall(self, ctx:utils.Context):
         """Disowns all of your children"""
 

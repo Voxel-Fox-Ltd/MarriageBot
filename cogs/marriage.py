@@ -8,6 +8,7 @@ class Marriage(utils.Cog):
     @commands.command(aliases=['marry'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def propose(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
         """Lets you propose to another Discord user"""
 
@@ -78,6 +79,7 @@ class Marriage(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def divorce(self, ctx:utils.Context):
         """Divorces you from your current spouse"""
 
@@ -89,7 +91,7 @@ class Marriage(utils.Cog):
         text_processor = utils.random_text.RandomText('divorce', instigator, self.bot.get_user(instigator_tree._partner))
 
         # See if they have a partner to divorce
-        if instigator_tree._partner == None:
+        if instigator_tree._partner is None:
             await ctx.send(text_processor.instigator_is_unqualified())
             return
 

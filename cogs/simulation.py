@@ -12,6 +12,7 @@ class Simulation(utils.Cog):
 
     @commands.command(aliases=['snuggle', 'cuddle'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def hug(self, ctx:utils.Context, user:discord.Member):
         """Hugs a mentioned user"""
 
@@ -23,6 +24,7 @@ class Simulation(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def kiss(self, ctx:utils.Context, user:discord.Member):
         """Kisses a mentioned user"""
 
@@ -53,6 +55,7 @@ class Simulation(utils.Cog):
 
     @commands.command(cls=utils.Command, aliases=['smack'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def slap(self, ctx:utils.Context, user:discord.Member):
         """Slaps a mentioned user"""
 
@@ -63,6 +66,7 @@ class Simulation(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def punch(self, ctx:utils.Context, user:discord.Member):
         """Punches a mentioned user"""
 
@@ -73,6 +77,7 @@ class Simulation(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def cookie(self, ctx:utils.Context, user:discord.Member):
         """Gives a cookie to a mentioned user"""
 
@@ -82,6 +87,7 @@ class Simulation(utils.Cog):
 
     @commands.command(aliases=['nunget', 'nuggie'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def nugget(self, ctx:utils.Context, user:discord.Member):
         """Gives a nugget to a mentioned user"""
 
@@ -91,6 +97,7 @@ class Simulation(utils.Cog):
 
     @commands.command(aliases=['borger', 'borg'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def burger(self, ctx:utils.Context, user:discord.Member):
         """Gives a burger to a mentioned user"""
 
@@ -100,6 +107,7 @@ class Simulation(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def tea(self, ctx:utils.Context, user:discord.Member):
         """Gives tea to a mentioned user"""
 
@@ -109,6 +117,7 @@ class Simulation(utils.Cog):
 
     @commands.command(aliases=['dumpster'], hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def garbage(self, ctx:utils.Context, user:discord.Member):
         """Throws a user in the garbage"""
 
@@ -118,6 +127,7 @@ class Simulation(utils.Cog):
 
     @commands.command(hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def insult(self, ctx:utils.Context, user:discord.Member):
         """Sends an insult into the chat"""
 
@@ -128,6 +138,7 @@ class Simulation(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def poke(self, ctx:utils.Context, user:discord.Member):
         """Pokes a given user"""
 
@@ -138,6 +149,7 @@ class Simulation(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def stab(self, ctx:utils.Context, user:discord.Member):
         """Stabs a mentioned user"""
 
@@ -160,6 +172,7 @@ class Simulation(utils.Cog):
         await ctx.send(random.choice(responses))
 
     @commands.command(hidden=True, aliases=['murder'], cls=utils.Command)
+    @commands.bot_has_permissions(send_messages=True)
     async def kill(self, ctx:utils.Context, user:discord.Member=None):
         """Kills a person :/"""
 
@@ -174,6 +187,7 @@ class Simulation(utils.Cog):
         await ctx.send(random.choice(responses))
 
     @commands.command(aliases=['vore'], hidden=True, cls=utils.Command)
+    @commands.bot_has_permissions(send_messages=True)
     async def eat(self, ctx:utils.Context, user:discord.Member=None):
         """Eats a person OwO"""
 
@@ -187,6 +201,7 @@ class Simulation(utils.Cog):
         await ctx.send(random.choice(responses))
 
     @commands.command(hidden=True, cls=utils.Command)
+    @commands.bot_has_permissions(send_messages=True)
     async def sleep(self, ctx:utils.Context):
         """Todd Howard strikes once more"""
 
@@ -198,6 +213,7 @@ class Simulation(utils.Cog):
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
     async def copulate(self, ctx:utils.Context, user:discord.Member):
         """Lets you... um... heck someone"""
 
@@ -234,6 +250,7 @@ class Simulation(utils.Cog):
         await ctx.send(text_processor.request_accepted())
 
     @commands.command(hidden=True)
+    @commands.bot_has_permissions(send_messages=True)
     async def present(self, ctx:utils.Context, user:discord.Member):
         """Gives a present to the user"""
 
