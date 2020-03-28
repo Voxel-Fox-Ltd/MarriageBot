@@ -6,7 +6,7 @@ from discord.ext import commands
 from cogs import utils
 
 
-class Misc(utils.Cog):
+class MiscCommands(utils.Cog):
 
     @commands.command(aliases=['git', 'code'], cls=utils.Command)
     @utils.checks.is_config_set('command_data', 'github')
@@ -73,5 +73,5 @@ class Misc(utils.Cog):
 
 
 def setup(bot:utils.Bot):
-    x = Misc(bot)
+    x = MiscCommands(bot)
     bot.add_cog(x)
