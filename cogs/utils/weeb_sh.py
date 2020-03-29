@@ -33,7 +33,12 @@ async def get_reaction_gif(bot, reaction_type:str):
         "nsfw": "false",
     }
     async with bot.session.get(f"{BASE_URL}/images/random", params=params, headers=headers) as r:
-        data = await r.json()
+        try:
+            data = await r.json()
+        except json.JSONDecodeError:
+            data = await r.text()
+            bot.logger.warning("Error from Weeb.sh (JSONDecodeError): " + data)
+            return None
         if str(r.status)[0] == "2":
             return data['url']
     bot.logger.warning("Error from Weeb.sh: " + json.dumps(data))
