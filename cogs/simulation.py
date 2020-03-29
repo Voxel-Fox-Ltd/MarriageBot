@@ -188,7 +188,7 @@ class Simulation(utils.Cog):
 
     @commands.command(aliases=['vore'], hidden=True, cls=utils.Command)
     @commands.bot_has_permissions(send_messages=True)
-    async def eat(self, ctx:utils.Context, user:discord.Member=None):
+    async def eat(self, ctx:utils.Context, user:discord.Member):
         """Eats a person OwO"""
 
         responses = [
@@ -219,7 +219,7 @@ class Simulation(utils.Cog):
 
         # Check for the most common catches
         text_processor = utils.random_text.RandomText('copulate', ctx.author, user)
-        text = text_processor.process()
+        text = text_processor.process(check_for_instigator=False)
         if text:
             return await ctx.send(text)
 

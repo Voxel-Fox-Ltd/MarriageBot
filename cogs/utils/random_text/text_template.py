@@ -95,14 +95,14 @@ class TextTemplate(object):
         self.target = target
         self.responses = self.all_random_text.get(command)
 
-    def process(self) -> str:
+    def process(self, *, check_for_instigator:bool=True) -> str:
         """Processes a target/instigator pair to get the appropriate validation response"""
 
         instigator = self.instigator
         target = self.target
 
         # See if the instigator is in the proposal cache
-        if self.bot.proposal_cache.get(instigator.id):
+        if check_for_instigator and self.bot.proposal_cache.get(instigator.id):
             x = self.bot.proposal_cache.get(instigator.id)
             if x[0] == 'INSTIGATOR':
                 return get_random_valid_string(self.instigator_is_instigator)()
@@ -110,7 +110,7 @@ class TextTemplate(object):
                 return get_random_valid_string(self.instigator_is_target)()
 
         # Now check for the target
-        if self.bot.proposal_cache.get(target.id):
+        if check_for_instigator and self.bot.proposal_cache.get(target.id):
             x = self.bot.proposal_cache.get(target.id)
             if x[0] == 'INSTIGATOR':
                 return get_random_valid_string(self.target_is_instigator)()
