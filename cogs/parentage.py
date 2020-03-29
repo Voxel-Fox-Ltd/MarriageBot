@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 
+import asyncpg
 from discord.ext import commands
 
 from cogs import utils
@@ -74,7 +75,10 @@ class Parentage(utils.Cog):
 
         # They said yes
         async with self.bot.database() as db:
-            await db('INSERT INTO parents (child_id, parent_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
+            try:
+                await db('INSERT INTO parents (child_id, parent_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
+            except asyncpg.UniqueViolationError:
+                return await ctx.send("I ran into an error saving your family data - please try again later.")
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
         # Cache
@@ -161,7 +165,10 @@ class Parentage(utils.Cog):
 
         # Database it up
         async with self.bot.database() as db:
-            await db('INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
+            try:
+                await db('INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
+            except asyncpg.UniqueViolationError:
+                return await ctx.send("I ran into an error saving your family data - please try again later.")
 
         # Add family caching
         instigator_tree._children.append(target.id)

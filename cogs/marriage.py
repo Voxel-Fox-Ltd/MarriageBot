@@ -1,3 +1,4 @@
+import asyncpg
 from discord.ext import commands
 
 from cogs import utils
@@ -61,7 +62,10 @@ class Marriage(utils.Cog):
 
         # They said yes!
         async with self.bot.database() as db:
-            await db.marry(instigator, target, ctx.family_guild_id)
+            try:
+                await db.marry(instigator, target, ctx.family_guild_id)
+            except asyncpg.UniqueViolationError:
+                return await ctx.send("I ran into an error saving your family data - please try again later.")
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
         # Cache values locally
