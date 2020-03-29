@@ -1,3 +1,4 @@
+import random
 from datetime import datetime as dt
 
 import asyncpg
@@ -241,6 +242,25 @@ class ModeratorOnly(utils.Cog):
         async with self.bot.database() as db:
             await db("INSERT INTO redirects VALUES ($1, $2)", code, redirect)
         await ctx.send(f"Created redirect: https://marriagebot.xyz/r/{code}", embeddify=False)
+
+    @commands.command(cls=utils.Command)
+    @utils.checks.is_bot_administrator()
+    @commands.bot_has_permissions(send_messages=True)
+    async def randomisetreecolours(self, ctx:utils.Context, user:utils.converters.UserID):
+        """Adds a redirect to the database"""
+
+        ctu = utils.CustomisedTreeUser(
+            user,
+            edge=random.randint(0, 0xffffff),
+            node=random.randint(0, 0xffffff),
+            font=random.randint(0, 0xffffff),
+            highlighted_font=random.randint(0, 0xffffff),
+            highlighted_node=random.randint(0, 0xffffff),
+            background=random.randint(0, 0xffffff),
+        )
+        async with self.bot.database() as db:
+            await ctu.save(db)
+        await ctx.send("Done.")
 
 
 def setup(bot:utils.Bot):
