@@ -114,6 +114,13 @@ set_log_level(bot.redis.logger, args.loglevel_redis)
 set_log_level('discord', args.loglevel_discord)
 
 
+# Filter out some of the logger lines
+class UnknownMemberIDFilter(logging.Filter):
+    def filter(self, record):
+        return not record.getMessage().startswith("VOICE_STATE_UPDATE referencing an unknown member ID:")
+logging.getLogger("discord.state").addFilter(UnknownMemberIDFilter())
+
+
 @bot.event
 async def on_shard_connect(shard_id:int):
     """Simple logger for shard connection"""
