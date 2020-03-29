@@ -69,7 +69,7 @@ class Misc(utils.Cog):
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @commands.bot_has_permissions(send_messages=True)
+    @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def perks(self, ctx:utils.Context):
         """Shows you the perks associated with different support tiers"""
 
