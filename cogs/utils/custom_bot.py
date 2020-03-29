@@ -434,7 +434,11 @@ class CustomBot(commands.AutoShardedBot):
                     type=getattr(discord.ActivityType, presence['activity_type'].lower())
                 )
                 status = getattr(discord.Status, presence['status'].lower())
-                await self.change_presence(activity=activity, status=status, shard_id=i)
+                try:
+                    await self.change_presence(activity=activity, status=status, shard_id=i)
+                except KeyError:
+                    self.logger.info(f"Encountered KeyError on setting presence in shard {i}")
+                    pass  # Library error so we'll just discard it
 
         # Not sharded - just do everywhere
         else:
