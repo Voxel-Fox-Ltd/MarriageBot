@@ -2,6 +2,7 @@ import io
 import traceback
 import typing
 
+import aiohttp
 import discord
 from discord.ext import commands
 
@@ -105,7 +106,7 @@ class ErrorHandler(utils.Cog):
             pass  # Gonna pass this so it's raised again
 
         # Discord hecked up
-        elif isinstance(error, discord.HTTPException):
+        elif isinstance(error, (discord.HTTPException, aiohttp.ClientOSError)):
             try:
                 return await ctx.send(f"Discord messed up there somewhere - do you mind trying again? I received a {error.status} error.")
             except Exception:
