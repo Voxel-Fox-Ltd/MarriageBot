@@ -133,16 +133,19 @@ class CustomBot(commands.AutoShardedBot):
 
         # Wait for response
         def check(r, u) -> bool:
-            return all([
-                r.message.id == message.id,
-                isinstance(u, discord.Member),
-                any([
-                    u.id in [user.id for user in valid_users],
-                    u.permissions_in(message.channel).manage_messages
-                ]),
-                str(r.emoji) == "\N{WASTEBASKET}",
-                u.bot is False,
-            ])
+            if r.message.id != message.id:
+                return False
+            if u.bot is True:
+                return False
+            if isinstance(u, discord.Member) is False:
+                return False
+            if getattr(u, 'roles', None) is None:
+                return False
+            if str(r.emoji) != "\N{WASTEBASKET}":
+                return False
+            if u.id in [user.id for user in valid_users] or u.permissions_in(message.channel).manage_messages:
+                return True
+            return False
         try:
             await self.wait_for("reaction_add", check=check, timeout=timeout)
         except asyncio.TimeoutError:

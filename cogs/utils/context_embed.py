@@ -39,7 +39,7 @@ class ContextEmbed(discord.Embed):
     def set_thumbnail(self, url:str):
         """Sets the thumbnail of the embed"""
 
-        super().set_image(url=url)
+        super().set_thumbnail(url=url)
         return self
 
     def set_author_to_user(self, user:discord.User):

@@ -8,7 +8,7 @@ from discord.ext import commands
 from cogs import utils
 
 
-class Misc(utils.Cog):
+class MiscCommands(utils.Cog):
 
     def __init__(self, bot:utils.Bot):
         super().__init__(bot)
@@ -245,5 +245,5 @@ class Misc(utils.Cog):
 
 
 def setup(bot:utils.Bot):
-    x = Misc(bot)
+    x = MiscCommands(bot)
     bot.add_cog(x)
