@@ -249,18 +249,54 @@ class ModeratorOnly(utils.Cog):
     async def randomisetreecolours(self, ctx:utils.Context, user:utils.converters.UserID):
         """Adds a redirect to the database"""
 
-        ctu = utils.CustomisedTreeUser(
-            user,
-            edge=random.randint(0, 0xffffff),
-            node=random.randint(0, 0xffffff),
-            font=random.randint(0, 0xffffff),
-            highlighted_font=random.randint(0, 0xffffff),
-            highlighted_node=random.randint(0, 0xffffff),
-            background=random.randint(0, 0xffffff),
-        )
-        async with self.bot.database() as db:
-            await ctu.save(db)
-        await ctx.send("Done.")
+        if user == None or user == ctx.author:
+            
+            ctu = utils.CustomisedTreeUser(
+                user,
+                edge=random.randint(0, 0xffffff),
+                node=random.randint(0, 0xffffff),
+                font=random.randint(0, 0xffffff),
+                highlighted_font=random.randint(0, 0xffffff),
+                highlighted_node=random.randint(0, 0xffffff),
+                background=random.randint(0, 0xffffff),
+            )
+
+            async with self.bot.database() as db:
+                await ctu.save(db)
+            await ctx.send("Done.")
+        else
+            
+            # Make sure both settings are set
+            if ctx.bot.config.get('bot_admin_role') in [None, '']:
+                ctx.bot.logger.warn("No bot admin role set in the config")
+                return await ctx.send(f"You need to be registered as MarriageBot support to target other people using this command.")
+
+            # Set the support guild if we have to
+            if not ctx.bot.support_guild:
+                try:
+                    await ctx.bot.fetch_support_guild()
+                except (discord.NotFound, discord.Forbidden, discord.HTTPException):
+                    return await ctx.send(f"You need to be registered as MarriageBot support to target other people using this command.")
+
+            # Get member and look for role
+            try:
+                member = await ctx.bot.support_guild.fetch_member(ctx.author.id)
+                if ctx.bot.config['bot_admin_role'] in member._roles:
+                    ctu = utils.CustomisedTreeUser(
+                        user,
+                        edge=random.randint(0, 0xffffff),
+                        node=random.randint(0, 0xffffff),
+                        font=random.randint(0, 0xffffff),
+                        highlighted_font=random.randint(0, 0xffffff),
+                        highlighted_node=random.randint(0, 0xffffff),
+                        background=random.randint(0, 0xffffff),
+                    )
+                    async with self.bot.database() as db:
+                        await ctu.save(db)
+                    await ctx.send("Done.")
+            except (discord.NotFound, discord.HTTPException):
+                pass
+            return await ctx.send(f"You need to be registered as MarriageBot support to target other people using this command.")
 
 
 def setup(bot:utils.Bot):
