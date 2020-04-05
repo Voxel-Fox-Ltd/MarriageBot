@@ -106,7 +106,7 @@ class Cooldown(commands.Cooldown):
         self.error = error or commands.CommandOnCooldown
         self.mapping = mapping
 
-    def predicate(self, message:discord.Message) -> bool:
+    def predicate(self, ctx) -> bool:
         """Returns whether or not the cooldown should be checked to be applied or not"""
 
         return True
