@@ -57,8 +57,6 @@ class CustomCommand(commands.Command):
                 predicate = bucket.predicate(ctx)
                 if asyncio.iscoroutine(predicate):
                     predicate = await predicate
-                if predicate is False:
-                    return
             except AttributeError:
                 ctx.bot.logger.critical(f"Invalid cooldown set on command {ctx.invoked_with}")
                 raise commands.CheckFailure("Invalid cooldown set for this command")

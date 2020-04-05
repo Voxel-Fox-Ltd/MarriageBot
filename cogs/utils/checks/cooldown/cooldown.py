@@ -107,7 +107,10 @@ class Cooldown(commands.Cooldown):
         self.mapping = mapping
 
     def predicate(self, ctx) -> bool:
-        """Returns whether or not the cooldown should be checked to be applied or not"""
+        """A function that runs before each command call, so you're able to update anything
+        before the command runs. Most likely you'll be using this to update the self.per attr so that
+        cooldowns can be tailored to the individual. Everything this method returns is discarded.
+        This method CAN be a coroutine."""
 
         return True
 
