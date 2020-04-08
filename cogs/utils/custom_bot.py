@@ -166,7 +166,8 @@ class CustomBot(commands.AutoShardedBot):
             self.logger.critical(f"Error selecting from guild_settings - {e}")
             exit(1)
         for row in guild_data:
-            self.guild_settings[row['guild_id']] = dict(row)
+            for key, value in row.items():
+                self.guild_settings[row['guild_id']][key] = value
 
         # Wait for the bot to cache users before continuing
         self.logger.debug("Waiting until ready before completing startup method.")
