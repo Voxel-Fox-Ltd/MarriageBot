@@ -186,16 +186,17 @@ class ErrorHandler(utils.Cog):
             perk_index = -2
         else:
             perk_index = await utils.checks.get_patreon_tier(self.bot, ctx.author)
-            if utils.checks.is_voter_predicate(ctx) and perk_index <= 0:
+            if utils.checks.is_voter_predicate(ctx) and perk_index == 0:
                 perk_index = -1
         cooldown_time = {
-            -2: 5,
-            -1: 30,
-            0: error.cooldown.per,
-            1: 15,
-            2: 15,
-            3: 5,
-        }.get(perk_index)  # perk_index = range(-2, 3) = server_specific, donator, none, patron...
+            -2: 5,  # Server Specific
+            -1: 30,  # Voter
+            0: error.cooldown.per,  # 60s
+            1: 15,  # Patreon T1
+            2: 15,  # Patreon T2
+            3: 5,  # Patreon T3
+            4: 5,  # Booster
+        }.get(perk_index)  # perk_index = range(-2, 3) = server_specific, voter, none, patron...
 
         # See if they're able to call the command
         if (error.cooldown.per - cooldown_time) > error.retry_after:

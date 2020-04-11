@@ -73,8 +73,6 @@ async def get_patreon_tier(bot:commands.Bot, user:discord.User):
         for role_id in bot.config['patreon_roles']:
             if role_id in member._roles:
                 counter += 1
-            else:
-                return counter
         return counter
     except (discord.NotFound, discord.Forbidden, discord.HTTPException):
         pass
