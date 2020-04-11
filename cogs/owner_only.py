@@ -85,7 +85,7 @@ class OwnerOnly(utils.Cog):
             await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
             # Oh no it didn't cause an error
-            value = stdout.getvalue()
+            stdout_value = stdout.getvalue()
 
             # Give reaction just to show that it ran
             await ctx.message.add_reaction("\N{OK HAND SIGN}")
@@ -93,14 +93,14 @@ class OwnerOnly(utils.Cog):
             # If the function returned nothing
             if ret is None:
                 # It might have printed something
-                if value:
-                    await ctx.send(f'```py\n{value}\n```')
+                if stdout_value is not None:
+                    await ctx.send(f'```py\n{stdout_value}\n```')
 
             # If the function did return a value
             else:
                 self._last_result = ret
-                result_raw = ret or value
-                result = str(result_raw)
+                result_raw = ret or value  # What's returned from the function
+                result = str(result_raw)  # The result as a string
                 if type(result_raw) == dict:
                     try:
                         result = json.dumps(result_raw, indent=4)

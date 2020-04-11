@@ -74,4 +74,4 @@ class TimeValue(object):
             duration += int(match.group(6)) * 60
         if match.group(8):
             duration += int(match.group(8))
-        return TimeValue(duration)
+        return cls(duration)
