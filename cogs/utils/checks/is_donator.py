@@ -42,7 +42,7 @@ async def is_patreon_predicate(bot:commands.Bot, user:discord.User, tier:int=1):
     # Get member and look for role
     try:
         member = await bot.support_guild.fetch_member(user.id)
-        if bot.config['patreon_roles'][tier-1] in member._roles:
+        if bot.config['patreon_roles'][tier - 1] in member._roles:
             return True
     except (discord.NotFound, discord.Forbidden, discord.HTTPException):
         pass

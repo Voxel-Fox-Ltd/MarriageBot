@@ -34,7 +34,10 @@ class Information(utils.Cog):
                 data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id<>0", user)
             else:
                 data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", user)
-        timestamp = data[0]['timestamp']
+        try:
+            timestamp = data[0]['timestamp']
+        except IndexError:
+            timestamp = None
 
         # Output
         if timestamp:
