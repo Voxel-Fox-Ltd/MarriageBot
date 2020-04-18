@@ -105,6 +105,14 @@ class ErrorHandler(utils.Cog):
         elif isinstance(error, discord.NotFound):
             pass  # Gonna pass this so it's raised again
 
+        # Bot can't send in the channel or can't send to the user or something like that
+        elif isinstance(error, discord.Forbidden):
+            return await self.send_to_ctx_or_author(
+                ctx,
+                "Discord is saying I'm unable to perform that action.",
+                "Discord is saying I'm unable to perform that action - I probably don't have permission to talk in that channel."
+            )
+
         # Discord hecked up
         elif isinstance(error, (discord.HTTPException, aiohttp.ClientOSError)):
             try:
