@@ -353,7 +353,7 @@ class CustomBot(commands.AutoShardedBot):
                 ignore_error=True
             )
 
-    async def get_name(self, user_id:int):
+    async def get_name(self, user_id:int, fetch_from_api:str):
         """Tries its best to grab a name for a user - firstly from the bot cache,
         secontly from the shallow users cache, thirdly from Redis, and then finally
         from HTTP
@@ -367,6 +367,8 @@ class CustomBot(commands.AutoShardedBot):
         if user is None:
             user = ShallowUser(user_id)
             self.shallow_users[user_id] = user
+        if fetch_from_api:
+            return await user.fetch_from_api(self)
         return await user.get_name(self)
 
     def get_uptime(self) -> float:
