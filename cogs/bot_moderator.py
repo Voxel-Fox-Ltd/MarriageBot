@@ -18,12 +18,13 @@ class ModeratorOnly(utils.Cog):
         await self.bot.proposal_cache.remove(user)
         await ctx.send("Sent Redis request to remove user from cache.")
 
-    @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @commands.command(cls=utils.Command, hidden=True)
+    # @utils.checks.is_bot_administrator()
     @commands.bot_has_permissions(send_messages=True)
-    async def cachename(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def cachename(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Removes a user from the propsal cache."""
 
+        user = ctx.author.id or user
         user = await self.bot.fetch_user(user)
         async with self.bot.redis() as re:
             await re.set(f'UserName-{user.id}', str(user))
