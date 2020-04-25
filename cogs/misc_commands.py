@@ -42,10 +42,10 @@ class MiscCommands(utils.Cog):
     @commands.command(cls=utils.Command)
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def echo(self, ctx:utils.Context, *, content:utils.converters.CleanContent):
+    async def echo(self, ctx:utils.Context, *, content:str):
         """Echos the given content into the channel"""
 
-        await ctx.send(content)
+        await ctx.send(content, allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False))
 
     @commands.command(aliases=['status'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
