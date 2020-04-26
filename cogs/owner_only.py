@@ -79,10 +79,11 @@ class OwnerOnly(utils.Cog):
             # Shove stdout into StringIO
             with contextlib.redirect_stdout(stdout):
                 ret = await func()
+            stdout_value = stdout.getvalue()
         except Exception:
             # Oh no it caused an error
-            value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            stdout_value = stdout.getvalue()
+            await ctx.send(f'```py\n{stdout_value}{traceback.format_exc()}\n```')
         else:
             # Oh no it didn't cause an error
             stdout_value = stdout.getvalue()
@@ -98,7 +99,7 @@ class OwnerOnly(utils.Cog):
                 return
 
             # If the function did return a value
-            result_raw = ret or value  # What's returned from the function
+            result_raw = ret or stdout_value  # What's returned from the function
             result = str(result_raw)  # The result as a string
             if result_raw is None:
                 return
