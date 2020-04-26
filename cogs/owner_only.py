@@ -95,27 +95,25 @@ class OwnerOnly(utils.Cog):
                 # It might have printed something
                 if stdout_value is not None:
                     await ctx.send(f'```py\n{stdout_value}\n```')
+                return
 
             # If the function did return a value
-            else:
-                self._last_result = ret
-                result_raw = ret or value  # What's returned from the function
-                result = str(result_raw)  # The result as a string
-                if not result:
-                    return
-                if type(result_raw) == dict:
-                    try:
-                        result = json.dumps(result_raw, indent=4)
-                    except Exception:
-                        pass
-                if type(result_raw) == dict and type(result) == str:
+            result_raw = ret or value  # What's returned from the function
+            result = str(result_raw)  # The result as a string
+            if result_raw is None:
+                return
+            text = f'```py\n{result}\n```'
+            if type(result_raw) == dict:
+                try:
+                    result = json.dumps(result_raw, indent=4)
+                except Exception:
+                    pass
+                else:
                     text = f'```json\n{result}\n```'
-                else:
-                    text = f'```py\n{result}\n```'
-                if len(text) > 2000:
-                    await ctx.send(file=discord.File(io.StringIO(result), filename='ev.txt'))
-                else:
-                    await ctx.send(text)
+            if len(text) > 2000:
+                await ctx.send(file=discord.File(io.StringIO(result), filename='ev.txt'))
+            else:
+                await ctx.send(text)
 
     @commands.command(aliases=['rld'], cls=utils.Command)
     @commands.is_owner()
