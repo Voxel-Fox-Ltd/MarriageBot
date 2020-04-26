@@ -101,6 +101,8 @@ class OwnerOnly(utils.Cog):
                 self._last_result = ret
                 result_raw = ret or value  # What's returned from the function
                 result = str(result_raw)  # The result as a string
+                if not result:
+                    return
                 if type(result_raw) == dict:
                     try:
                         result = json.dumps(result_raw, indent=4)
