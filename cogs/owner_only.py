@@ -98,7 +98,7 @@ class OwnerOnly(utils.Cog):
                 return
 
             # If the function did return a value
-            result_raw = ret or stdout_value  # What's returned from the function
+            result_raw = stdout_value or ret  # What's returned from the function
             result = str(result_raw)  # The result as a string
             if result_raw is None:
                 return
