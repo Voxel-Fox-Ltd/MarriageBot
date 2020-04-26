@@ -79,14 +79,13 @@ class OwnerOnly(utils.Cog):
             # Shove stdout into StringIO
             with contextlib.redirect_stdout(stdout):
                 ret = await func()
-            stdout_value = stdout.getvalue()
         except Exception:
             # Oh no it caused an error
-            stdout_value = stdout.getvalue()
-            await ctx.send(f'```py\n{stdout_value}{traceback.format_exc()}\n```')
+            stdout_value = stdout.getvalue() or None
+            await ctx.send(f'```py\n{stdout_value}\n{traceback.format_exc()}\n```')
         else:
             # Oh no it didn't cause an error
-            stdout_value = stdout.getvalue()
+            stdout_value = stdout.getvalue() or None
 
             # Give reaction just to show that it ran
             await ctx.message.add_reaction("\N{OK HAND SIGN}")
