@@ -348,16 +348,29 @@ async def paypal_purchase_complete(request:Request):
 
     # Get the data from PP
     data_split = {unquote(i.split('=')[0]):unquote(i.split('=')[1]) for i in paypal_data.split('&')}
-    custom_data = {i.split('=')[0]:i.split('=')[1] for i in data_split['custom'].split(';')}
-    payment_amount = int(data_split['mc_gross'].replace('.', ''))
-    print(data_split)
+    try:
+        custom_data = {i.split('=')[0]:i.split('=')[1] for i in data_split['custom'].split(';')}
+    except KeyError:
+        custom_data = {}
+    payment_amount = int(data_split.get('mc_gross', '0').replace('.', ''))
+
+    # See if we want to handle it at all
+    if data_split['txn_type'] not in ['web_accept', 'express_checkout']:
+        return Response(status=200)  # Not the right thing
+
+    # See if it's MarriageBot Gold
+    if data_split.get('item_name', None) == 'MarriageBot Gold':
+        return Response(status=200)
 
     # Make sure it's real data
     if data_split['receiver_email'] != request.app['config']['paypal_pdt']['receiver_email']:
         return Response(status=200)  # Wrong email passed
     refunded = False
     if payment_amount < 0:
-        refunded = True
+        if data_split['payment_status'] == 'Refunded' or data_split['payment_status'] == 'Reversed':
+            refunded = True
+        else:
+            return Response(status=200)
     elif payment_amount < request.app['config']['payment_info']['original_price'] - request.app['config']['payment_info']['discount_gbp']:
         return Response(status=200)  # Payment too small
 
