@@ -353,7 +353,7 @@ class CustomBot(commands.AutoShardedBot):
                 ignore_error=True
             )
 
-    async def get_name(self, user_id:int, fetch_from_api:str):
+    async def get_name(self, user_id:int, fetch_from_api:bool=False):
         """Tries its best to grab a name for a user - firstly from the bot cache,
         secontly from the shallow users cache, thirdly from Redis, and then finally
         from HTTP
