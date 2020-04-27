@@ -81,42 +81,46 @@ class MiscCommands(utils.Cog):
 
         # Perks for voting
         voting_perks = [
-            "Previous tiers' perks",
             "30s tree cooldown",
+            "5 children",
         ]
+
+        # The Nitro perks would go here but I want to keep them mostly undocumented
 
         # Perks for $1 Patrons
         t1_donate_perks = [
-            "Previous tiers' perks",
             "15s tree cooldown",
-            "Up to 10 children",
+            "10 children",
             "`disownall` command (disowns all of your children at once)",
         ]
 
         # $3 Patrons
         t2_donate_perks = [
-            "Previous tiers' perks",
-            "Up to 15 children",
+            "15s tree cooldown",
+            "15 children",
+            "`disownall` command (disowns all of your children at once)",
             "`stupidtree` command (shows all relations, not just blood relatives)",
         ]
 
         # Perks for $5 Patrons
         t3_donate_perks = [
-            "Previous tiers' perks",
             "5s tree cooldown",
-            "Up to 20 children",
+            "20 children",
+            "`disownall` command (disowns all of your children at once)",
+            "`stupidtree` command (shows all relations, not just blood relatives)",
         ]
 
         # Perks for MarriageBot Gold
         gold_perks = [
             "5s tree cooldown for all users",
             "Togglable incest",
-            "Faster bot responses",
             "Server specific families",
             "Access to the `forcemarry`, `forcedivorce`, and `forceemancipate` commands",
-            "Maximum 2000 family members",
+            f"Maximum 2000 family members (as opposed to the normal {self.bot.config['max_family_members']})",
             "Configurable maximum children per role",
         ]
+
+        # Make embed
         e = discord.Embed()
         e.add_field(name=f'Normal Users', value=f"Gives you access to:\n* " + '\n* '.join(normal_users), inline=False)
         e.add_field(name=f'Voting (m!vote)', value=f"Gives you access to:\n* " + '\n* '.join(voting_perks), inline=False)
