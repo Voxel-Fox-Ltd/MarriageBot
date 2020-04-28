@@ -233,12 +233,15 @@ class SettingsMenu(object):
             # Send message
             self.emoji_options.clear()
             data, emoji_list = self.get_sendable_data(ctx)
+            sent_new_message = False
             if message is None:
                 message = await ctx.send(**data)
+                sent_new_message = True
             else:
                 await message.edit(**data)
-            for e in emoji_list:
-                await message.add_reaction(e)
+            if sent_new_message or clear_reactions_on_loop:
+                for e in emoji_list:
+                    await message.add_reaction(e)
 
             # Get the reaction
             try:
