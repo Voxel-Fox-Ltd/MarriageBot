@@ -67,6 +67,33 @@ class CustomBot(commands.AutoShardedBot):
         # Here's the storage for cached stuff
         self.guild_settings = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
 
+    async def startup(self):
+        """Clears all the bot's caches and fills them from a DB read"""
+
+        # Remove caches
+        self.logger.debug("Clearing caches")
+        self.guild_settings.clear()
+
+        # Get database connection
+        db = await self.database.get_connection()
+
+        # Get stored prefixes
+        try:
+            guild_data = await db("SELECT * FROM guild_settings")
+        except Exception as e:
+            self.logger.critical(f"Error selecting from guild_settings - {e}")
+            exit(1)
+        for row in guild_data:
+            for key, value in row.items():
+                self.guild_settings[row['guild_id']][key] = value
+
+        # Wait for the bot to cache users before continuing
+        self.logger.debug("Waiting until ready before completing startup method.")
+        await self.wait_until_ready()
+
+        # Close database connection
+        await db.disconnect()
+
     def get_invite_link(self, *, scope:str='bot', response_type:str=None, redirect_uri:str=None, guild_id:int=None, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
 
@@ -148,33 +175,6 @@ class CustomBot(commands.AutoShardedBot):
         """A setter method so that the original bot object doesn't complain"""
 
         pass
-
-    async def startup(self):
-        """Clears all the bot's caches and fills them from a DB read"""
-
-        # Remove caches
-        self.logger.debug("Clearing caches")
-        self.guild_settings.clear()
-
-        # Get database connection
-        db = await self.database.get_connection()
-
-        # Get stored prefixes
-        try:
-            guild_data = await db("SELECT * FROM guild_settings")
-        except Exception as e:
-            self.logger.critical(f"Error selecting from guild_settings - {e}")
-            exit(1)
-        for row in guild_data:
-            for key, value in row.items():
-                self.guild_settings[row['guild_id']][key] = value
-
-        # Wait for the bot to cache users before continuing
-        self.logger.debug("Waiting until ready before completing startup method.")
-        await self.wait_until_ready()
-
-        # Close database connection
-        await db.disconnect()
 
     def get_uptime(self) -> float:
         """Gets the uptime of the bot in seconds
