@@ -153,6 +153,7 @@ class SettingsMenuOption(object):
                     "INSERT INTO guild_settings (guild_id, {0}) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET {0}=$2".format(database_key),
                     self.context.guild.id, data
                 )
+            self.context.bot.guild_settings[self.context.guild.id][database_key] = data
         return callback
 
     @staticmethod
