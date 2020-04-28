@@ -224,7 +224,7 @@ class SettingsMenu(object):
         for data in args:
             self.add_option(SettingsMenuOption(ctx, **data))
 
-    async def start(self, ctx:commands.Context, timeout:float=120):
+    async def start(self, ctx:commands.Context, *, timeout:float=120, clear_reactions_on_loop:bool=False):
         """Start up the menu, let's get this train rollin"""
 
         message = None
@@ -261,8 +261,10 @@ class SettingsMenu(object):
 
             # Remove the emoji
             try:
-                # await reaction.message.remove_reaction(picked_emoji, ctx.author)
-                await reaction.message.clear_reactions()
+                if clear_reactions_on_loop:
+                    await reaction.message.clear_reactions()
+                else:
+                    await reaction.message.remove_reaction(picked_emoji, ctx.author)
             except discord.Forbidden:
                 pass
 
