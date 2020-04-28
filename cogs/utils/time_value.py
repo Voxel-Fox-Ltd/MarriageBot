@@ -39,7 +39,7 @@ class TimeValue(object):
             return 0, value
 
     def __str__(self):
-        return f"<{self.__class__.__name__} {self.clean} ({self.duration})>"
+        return self.clean
 
     def __repr__(self):
         return f"{self.__class__.name__}.parse('{self.clean}')"
