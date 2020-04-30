@@ -64,7 +64,7 @@ class SettingsMenuOption(object):
             if asyncio.iscoroutine(called_data):
                 await called_data
 
-    async def convert_prompted_information(self, prompt:str, asking_for:str, converter:commands.Converter) -> typing.Any:
+    async def convert_prompted_information(self, prompt:str, asking_for:str, converter:commands.Converter, reactions:typing.List[discord.Emoji]=list()) -> typing.Any:
         """Ask the user for some information, convert it, and return that converted value to the user
 
         Params:
@@ -78,9 +78,19 @@ class SettingsMenuOption(object):
 
         # Send prompt
         bot_message = await self.context.send(prompt)
-        check = lambda m: m.channel.id == self.context.channel.id and m.author.id == self.context.author.id
+        if reactions:
+            for r in reactions:
+                await bot_message.add_reaction(r)
         try:
-            user_message = await self.context.bot.wait_for("message", timeout=120, check=check)
+            if reactions:
+                user_message = None
+                check = lambda r, u: r.message.id == bot_message.id and u.id == self.context.author.id and str(r.emoji) in reactions
+                reaction, _ = await self.context.bot.wait_for("reaction_add", timeout=120, check=check)
+                content = str(r.emoji)
+            else:
+                check = lambda m: m.channel.id == self.context.channel.id and m.author.id == self.context.author.id
+                user_message = await self.context.bot.wait_for("message", timeout=120, check=check)
+                content = user_message.content
         except asyncio.TimeoutError:
             await self.context.send(f"Timed out asking for {asking_for}.")
             raise utils.errors.InvokedMetaCommand()
@@ -92,12 +102,12 @@ class SettingsMenuOption(object):
             except TypeError:
                 pass
             try:
-                value = await converter.convert(self.context, user_message.content)
+                value = await converter.convert(self.context, content)
             except commands.CommandError:
                 value = None
         else:
             try:
-                value = converter(user_message.content)
+                value = converter(content)
             except Exception:
                 value = None
 
@@ -108,7 +118,7 @@ class SettingsMenuOption(object):
             pass
         try:
             await user_message.delete()
-        except (discord.Forbidden, discord.NotFound):
+        except (discord.Forbidden, discord.NotFound, AttributeError):
             pass
 
         # Return converted value
