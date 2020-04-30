@@ -7,9 +7,9 @@ from cogs import utils
 class BotSettings(utils.Cog):
 
     @commands.command(cls=utils.Command)
-    @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(send_messages=True)
+    @commands.guild_only()
     async def prefix(self, ctx:utils.Context, *, new_prefix:str):
         """Changes the prefix that the bot uses"""
 
@@ -27,9 +27,9 @@ class BotSettings(utils.Cog):
         await ctx.send(f"My prefix has been updated to `{new_prefix}`.")
 
     @commands.command(cls=utils.Command, enabled=False)
-    @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
+    @commands.guild_only()
     async def setup(self, ctx:utils.Context):
         """Run the bot setup"""
 

@@ -51,7 +51,7 @@ class SettingsMenuOption(object):
         for i in self.args:
             data = await self.convert_prompted_information(*i)
             if data is None:
-                return
+                break
             returned_data.append(data)
 
         # Do callback
