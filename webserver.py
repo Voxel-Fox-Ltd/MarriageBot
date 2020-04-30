@@ -3,6 +3,7 @@ import asyncio
 import logging
 import os
 import warnings
+import sys
 
 import toml
 from aiohttp.web import Application, AppRunner, TCPSite
@@ -15,9 +16,8 @@ import website
 from cogs import utils
 
 # Set up loggers
-logging.getLogger().setLevel(logging.INFO)
-logging.basicConfig(format='%(name)s:%(levelname)s: %(message)s')
-logger = logging.getLogger('website')
+logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s: %(message)s', stream=sys.stdout)
+logger = logging.getLogger(os.getcwd().split(os.sep)[-1].split()[-1].lower())
 logger.setLevel(logging.INFO)
 
 # Filter warnings
@@ -47,6 +47,8 @@ app.router.add_static('/static', os.getcwd() + '/website/static', append_version
 # Add our connections
 app['database'] = utils.DatabaseConnection
 utils.DatabaseConnection.logger = logger.getChild("db")
+app['redis'] = utils.RedisConnection
+utils.RedisConnection.logger = logger.getChild("redis")
 
 # Add our configs
 app['config'] = config
@@ -65,8 +67,14 @@ if __name__ == '__main__':
     loop.run_until_complete(app['bot'].login(app['config']['token']))
 
     # Connect the database
-    logger.info("Creating database pool")
-    loop.run_until_complete(utils.DatabaseConnection.create_pool(app['config']['database']))
+    if app['config']['database'].get('enabled', True):
+        logger.info("Creating database pool")
+        loop.run_until_complete(utils.DatabaseConnection.create_pool(app['config']['database']))
+
+    # Connect the database
+    if app['config']['redis'].get('enabled', True):
+        logger.info("Creating redis pool")
+        loop.run_until_complete(utils.RedisConnection.create_pool(app['config']['redis']))
 
     # HTTP server
     logger.info("Creating webserver...")
@@ -88,8 +96,12 @@ if __name__ == '__main__':
     # Clean up our shit
     logger.info("Closing webserver")
     loop.run_until_complete(application.cleanup())
-    logger.info("Closing database pool")
-    loop.run_until_complete(utils.DatabaseConnection.pool.close())
+    if bot.config['database']['enabled']:
+        logger.info("Closing database pool")
+        loop.run_until_complete(utils.DatabaseConnection.pool.close())
+    if bot.config['redis']['enabled']:
+        logger.info("Closing redis pool")
+        utils.RedisConnection.pool.close()
     logger.info("Closing bot")
     loop.run_until_complete(app['bot'].close())
     logger.info("Closing asyncio loop")
