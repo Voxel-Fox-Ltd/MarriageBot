@@ -1,4 +1,3 @@
-import asyncpg
 from discord.ext import commands
 
 from cogs import utils
@@ -20,10 +19,7 @@ class BotSettings(utils.Cog):
         # Store setting
         self.bot.guild_settings[ctx.guild.id]['prefix'] = new_prefix
         async with self.bot.database() as db:
-            try:
-                await db("INSERT INTO guild_settings (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id, new_prefix)
-            except asyncpg.UniqueViolationError:
-                await db("UPDATE guild_settings SET prefix=$2 WHERE guild_id=$1", ctx.guild.id, new_prefix)
+            await db("INSERT INTO guild_settings (guild_id, prefix) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET prefix=excluded.prefix", ctx.guild.id, new_prefix)
         await ctx.send(f"My prefix has been updated to `{new_prefix}`.")
 
     @commands.command(cls=utils.Command, enabled=False)
