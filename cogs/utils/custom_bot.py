@@ -48,6 +48,8 @@ class CustomBot(commands.AutoShardedBot):
         self.DEFAULT_GUILD_SETTINGS = {
             'prefix': self.config['default_prefix'],
         }
+        self.DEFAULT_USER_SETTINGS = {
+        }
 
         # Aiohttp session
         self.session = aiohttp.ClientSession(loop=self.loop)
@@ -66,6 +68,7 @@ class CustomBot(commands.AutoShardedBot):
 
         # Here's the storage for cached stuff
         self.guild_settings = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
+        self.user_settings = collections.defaultdict(self.DEFAULT_USER_SETTINGS.copy)
 
     async def startup(self):
         """Clears all the bot's caches and fills them from a DB read"""
@@ -73,19 +76,30 @@ class CustomBot(commands.AutoShardedBot):
         # Remove caches
         self.logger.debug("Clearing caches")
         self.guild_settings.clear()
+        self.user_settings.clear()
 
         # Get database connection
         db = await self.database.get_connection()
 
-        # Get stored prefixes
+        # Get guild settings
         try:
-            guild_data = await db("SELECT * FROM guild_settings")
+            data = await db("SELECT * FROM guild_settings")
         except Exception as e:
             self.logger.critical(f"Error selecting from guild_settings - {e}")
             exit(1)
-        for row in guild_data:
+        for row in data:
             for key, value in row.items():
                 self.guild_settings[row['guild_id']][key] = value
+
+        # Get user settings
+        try:
+            data = await db("SELECT * FROM user_settings")
+        except Exception as e:
+            self.logger.critical(f"Error selecting from user_settings - {e}")
+            exit(1)
+        for row in data:
+            for key, value in row.items():
+                self.user_settings[row['user_id']][key] = value
 
         # Wait for the bot to cache users before continuing
         self.logger.debug("Waiting until ready before completing startup method.")

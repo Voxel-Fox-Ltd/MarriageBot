@@ -4,6 +4,11 @@ CREATE TABLE guild_settings(
 );
 
 
+CREATE TABLE user_settings(
+    user_id BIGINT PRIMARY KEY
+);
+
+
 CREATE TABLE role_list(
     guild_id BIGINT,
     role_id BIGINT,

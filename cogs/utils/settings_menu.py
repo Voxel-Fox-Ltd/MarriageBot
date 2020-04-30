@@ -4,6 +4,8 @@ import typing
 import discord
 from discord.ext import commands
 
+from cogs import utils
+
 
 class SettingsMenuOption(object):
     """An option that can be chosen for a settings menu's selectable item,
@@ -81,7 +83,7 @@ class SettingsMenuOption(object):
             user_message = await self.context.bot.wait_for("message", timeout=120, check=check)
         except asyncio.TimeoutError:
             await self.context.send(f"Timed out asking for {asking_for}.")
-            return None
+            raise utils.errors.InvokedMetaCommand()
 
         # Run converter
         if hasattr(converter, 'convert'):
@@ -131,6 +133,25 @@ class SettingsMenuOption(object):
         # Get mention
         return cls.get_mention(data, default)
 
+    @classmethod
+    def get_user_settings_mention(cls, ctx:commands.Context, attr:str, default:str='none'):
+        """Get an item from the bot's user settings"""
+
+        # Set variables
+        data = None
+        settings = ctx.bot.user_settings[ctx.author.id]
+
+        # Run converters
+        if '_channel' in attr.lower():
+            data = ctx.bot.get_channel(settings[attr])
+        elif '_role' in attr.lower():
+            data = ctx.guild.get_role(settings[attr])
+        else:
+            raise RuntimeError("Can't work out what you want to mention")
+
+        # Get mention
+        return cls.get_mention(data, default)
+
     @staticmethod
     def get_mention(data, default:str):
         """Get the mention of an object"""
@@ -154,6 +175,24 @@ class SettingsMenuOption(object):
                     self.context.guild.id, data
                 )
             self.context.bot.guild_settings[self.context.guild.id][database_key] = data
+        return callback
+
+    @staticmethod
+    def get_set_user_settings_callback(database_key:str):
+        """Return an async method that takes the data retuend by convert_prompted_information and then
+        saves it into the database - should be used for the add_option stuff in the SettingsMenu init"""
+
+        async def callback(self, *data):
+            data = data[0]  # Since data is returned as a tuple, we just want the first item from it
+            if isinstance(data, (discord.Role, discord.TextChannel)):
+                data = data.id
+
+            async with self.context.bot.database() as db:
+                await db(
+                    "INSERT INTO user_settings (user_id, {0}) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET {0}=$2".format(database_key),
+                    self.context.author.id, data
+                )
+            self.context.bot.user_settings[self.context.author.id][database_key] = data
         return callback
 
     @staticmethod

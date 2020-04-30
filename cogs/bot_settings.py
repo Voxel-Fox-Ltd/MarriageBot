@@ -39,6 +39,29 @@ class BotSettings(utils.Cog):
                 'callback': utils.SettingsMenuOption.get_set_guild_settings_callback('setting_id'),
             },
         )
+        try:
+            await menu.start(ctx)
+            await ctx.send("Done setting up!")
+        except utils.errors.InvokedMetaCommand:
+            pass
+
+    @commands.command(cls=utils.Command, enabled=False)
+    @commands.bot_has_permissions(send_messages=True, embed_links=True)
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.member)
+    @commands.guild_only()
+    async def usersettings(self, ctx:utils.Context):
+        """Run the bot setup"""
+
+        menu = utils.SettingsMenu()
+        settings_mention = utils.SettingsMenuOption.get_user_settings_mention
+        menu.bulk_add_options(
+            ctx,
+            {
+                'display': lambda c: "Set setting (currently {0})".format(settings_mention(c, 'setting_id')),
+                'converter_args': [("What do you want to set the setting to?", "setting channel", commands.TextChannelConverter)],
+                'callback': utils.SettingsMenuOption.get_set_guild_settings_callback('setting_id'),
+            },
+        )
         await menu.start(ctx)
         await ctx.send("Done setting up!")
 
