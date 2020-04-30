@@ -36,3 +36,8 @@ dm_uncaught_errors = false
 [oauth]
     client_id = ""
     client_secret = ""
+
+[paypal_pdt]
+    receiver_email = ""  # The email that the PayPal account is set up with
+    identity_token = ""
+    sandbox = true

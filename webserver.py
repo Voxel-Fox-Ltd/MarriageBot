@@ -44,11 +44,12 @@ app.router.add_routes(website.frontend_routes)
 app.router.add_routes(website.backend_routes)
 app.router.add_static('/static', os.getcwd() + '/website/static', append_version=True)
 
-# Add our connections
+# Add our connections and their loggers
 app['database'] = utils.DatabaseConnection
 utils.DatabaseConnection.logger = logger.getChild("db")
 app['redis'] = utils.RedisConnection
 utils.RedisConnection.logger = logger.getChild("redis")
+app['logger'] = logger.getChild("route")
 
 # Add our configs
 app['config'] = config
