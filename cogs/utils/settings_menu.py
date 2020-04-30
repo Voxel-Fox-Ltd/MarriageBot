@@ -86,7 +86,7 @@ class SettingsMenuOption(object):
                 user_message = None
                 check = lambda r, u: r.message.id == bot_message.id and u.id == self.context.author.id and str(r.emoji) in reactions
                 reaction, _ = await self.context.bot.wait_for("reaction_add", timeout=120, check=check)
-                content = str(r.emoji)
+                content = str(reaction.emoji)
             else:
                 check = lambda m: m.channel.id == self.context.channel.id and m.author.id == self.context.author.id
                 user_message = await self.context.bot.wait_for("message", timeout=120, check=check)
