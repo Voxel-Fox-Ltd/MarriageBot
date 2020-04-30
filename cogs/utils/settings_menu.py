@@ -50,9 +50,9 @@ class SettingsMenuOption(object):
         returned_data = []
         for i in self.args:
             data = await self.convert_prompted_information(*i)
+            returned_data.append(data)
             if data is None:
                 break
-            returned_data.append(data)
 
         # Do callback
         if isinstance(self.callback, commands.Command):
