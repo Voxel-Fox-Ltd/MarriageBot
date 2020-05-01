@@ -73,17 +73,20 @@ async def paypal_purchase_complete(request:Request):
         'payment_amount': payment_amount,
         'discord_id': int(custom_data['discord_user_id']),
         'guild_id': 0,
+        'item_name': paypal_data['item_name'],
+        'option_selection': paypal_data.get('option_selection1', None)
     }
     if db_data['completed'] is False:
         db_data['checkout_complete_timestamp'] = None
     async with request.app['database']() as db:
         await db(
             """INSERT INTO paypal_purchases
-            (id, customer_id, payment_amount, discord_id, guild_id, completed, checkout_complete_timestamp) VALUES
-            ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO UPDATE SET completed=$6, checkout_complete_timestamp=$7,
+            (id, customer_id, payment_amount, discord_id, guild_id, completed, checkout_complete_timestamp, item_name, option_selection) VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO UPDATE SET completed=$6, checkout_complete_timestamp=$7,
             guild_id=$5, discord_id=$4, customer_id=$2""",
             db_data['id'], db_data['customer_id'], db_data['payment_amount'], db_data['discord_id'],
             db_data['guild_id'], db_data['completed'], db_data['checkout_complete_timestamp'],
+            db_data['item_name'], db_data['option_selection'],
         )
 
     # Put your additional processing here

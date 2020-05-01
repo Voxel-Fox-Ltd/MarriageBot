@@ -39,5 +39,4 @@ dm_uncaught_errors = false
 
 [paypal_pdt]
     receiver_email = ""  # The email that the PayPal account is set up with
-    identity_token = ""
     sandbox = true
