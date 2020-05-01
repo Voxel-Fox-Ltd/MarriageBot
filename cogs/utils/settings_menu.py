@@ -170,7 +170,7 @@ class SettingsMenuOption(object):
         return mention
 
     @staticmethod
-    def get_set_guild_settings_callback(database_key:str):
+    def get_set_guild_settings_callback(database_name:str, database_key:str):
         """Return an async method that takes the data retuend by convert_prompted_information and then
         saves it into the database - should be used for the add_option stuff in the SettingsMenu init"""
 
@@ -181,14 +181,14 @@ class SettingsMenuOption(object):
 
             async with self.context.bot.database() as db:
                 await db(
-                    "INSERT INTO guild_settings (guild_id, {0}) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET {0}=$2".format(database_key),
+                    "INSERT INTO {0} (guild_id, {1}) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET {1}=$2".format(database_name, database_key),
                     self.context.guild.id, data
                 )
             self.context.bot.guild_settings[self.context.guild.id][database_key] = data
         return callback
 
     @staticmethod
-    def get_set_user_settings_callback(database_key:str):
+    def get_set_user_settings_callback(database_name:str, database_key:str):
         """Return an async method that takes the data retuend by convert_prompted_information and then
         saves it into the database - should be used for the add_option stuff in the SettingsMenu init"""
 
@@ -199,7 +199,7 @@ class SettingsMenuOption(object):
 
             async with self.context.bot.database() as db:
                 await db(
-                    "INSERT INTO user_settings (user_id, {0}) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET {0}=$2".format(database_key),
+                    "INSERT INTO {0} (user_id, {1}) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET {1}=$2".format(database_name, database_key),
                     self.context.author.id, data
                 )
             self.context.bot.user_settings[self.context.author.id][database_key] = data
