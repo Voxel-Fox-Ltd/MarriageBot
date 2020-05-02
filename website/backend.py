@@ -328,65 +328,30 @@ async def paypal_purchase_complete(request:Request):
     return Response(status=200)
 
 
-@routes.post('/webhooks/dbl/vote_added')
+@routes.post('/webhooks/voxel_fox/topgg')
 async def webhook_handler(request:Request):
     """Sends a PM to the user with the webhook attached if user in owners"""
 
-    # Set up our responses
-    success = Response(text=json.dumps({"success": True}), content_type="application/json")
-
-    def failure(data:dict) -> Response:
-        return Response(
-            text=json.dumps({"success": False, **data}),
-            content_type="application/json", status=400
-        )
-
-    # See if we can get it
-    try:
-        x = await request.json()
-    except Exception:
-        return failure({'reason': 'No JSON response'})
-
-    # See if it's all valid
-    keys = set(['bot', 'user', 'type'])
-    if not set(x.keys()).issuperset(keys):
-        return failure({'reason': 'Invalid request params'})
-
-    # Check the bot's ID
-    try:
-        if int(x['bot']) != request.app['config']['bot_id']:
-            return failure({'reason': 'Invalid bot ID'})  # wrong bot
-    except ValueError:
-        return failure({'reason': 'Invalid bot ID'})  # not an int
-
-    # Check user's ID
-    try:
-        user_id = int(x['user'])
-    except ValueError:
-        return failure({'reason': 'Invalid user ID'})  # uid wasn't int
-
-    # Check type
-    if x['type'] not in ['upvote', 'test']:
-        return failure({'reason': 'Invalid request type'})
+    if request.headers.get('Authorization', None) != request.app['config']['topgg_authorization']:
+        return Response(400)
+    data = await request.json()
+    time = dt.utcnow()
 
     # Send proper thanks to the user
-    if x['type'] == 'upvote':
-        text = "Thank you for upvoting MarriageBot!"
-    elif x['type'] == 'test':
-        text = "Thanks for the test ping boss."
-    else:
-        text = "Invalid webhook type from DBL"
-    time = dt.now()
+    text = {
+        'upvote': 'Thank you for upvoting MarriageBot!',
+        'test': 'Thanks for the test ping boss.',
+    }.get(data['type'], 'Invalid webhook type from DBL')
 
     # Redis thanks to user
     async with request.app['redis']() as re:
-        await re.publish_json("SendUserMessage", {"user_id": user_id, "content": text})
-        await re.publish_json('DBLVote', {'user_id': user_id, 'datetime': time.isoformat()})
+        await re.publish_json("SendUserMessage", {"user_id": data['user_id'], "content": text})
+        await re.publish_json('DBLVote', {'user_id': data['user_id'], 'datetime': time.isoformat()})
 
     # DB vote
     async with request.app['database']() as db:
-        await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=excluded.timestamp', user_id, time)
-    return success
+        await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=excluded.timestamp', data['user_id'], time)
+    return Response(status=200)
 
 
 @routes.get('/login_redirect')
