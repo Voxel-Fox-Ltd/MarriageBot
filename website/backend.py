@@ -1,10 +1,7 @@
 import json
 from datetime import datetime as dt
-from urllib.parse import unquote, urlencode
 
-import aiohttp
 import aiohttp_session
-import asyncpg
 from aiohttp.web import HTTPFound, Request, Response, RouteTableDef
 
 from cogs import utils
@@ -33,8 +30,8 @@ async def redirect(request:Request):
     return HTTPFound(location=data[0]['location'])
 
 
-# @routes.get("/discord_oauth_login/art_contest")
-# async def art_contest(request:Request):
+# @routes.get("/discord_oauth_login/jacket_poll")
+# async def jacket_poll(request:Request):
 #     """Handles redirects using codes stored in the db"""
 
 #     # See if they're logged in
@@ -42,29 +39,12 @@ async def redirect(request:Request):
 #     session = await aiohttp_session.get_session(request)
 #     if not session.get('user_id'):
 #         return HTTPFound(location='/')
-#     url = "https://docs.google.com/forms/d/e/1FAIpQLSdZtfEp7wvzhxy1FpFNxeOhew1zKPTkHMQ7oQ_mla50TRHCrg/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
+#     url = "https://docs.google.com/forms/d/e/1FAIpQLScu9Wya__di-Ke2jnkG5XO3OSaWB7Sj6Z2Hd2U1wnnKUWkZ4w/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
 #     return HTTPFound(location=url + urlencode({
 #         'usp': 'pp_url',
-#         'entry.865916339': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
-#         'entry.1362434111': session['user_id'],
+#         'entry.710546805': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
+#         'entry.1788377605': session['user_id'],
 #     }))
-
-
-@routes.get("/discord_oauth_login/jacket_poll")
-async def jacket_poll(request:Request):
-    """Handles redirects using codes stored in the db"""
-
-    # See if they're logged in
-    await webutils.process_discord_login(request)
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
-    url = "https://docs.google.com/forms/d/e/1FAIpQLScu9Wya__di-Ke2jnkG5XO3OSaWB7Sj6Z2Hd2U1wnnKUWkZ4w/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
-    return HTTPFound(location=url + urlencode({
-        'usp': 'pp_url',
-        'entry.710546805': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
-        'entry.1788377605': session['user_id'],
-    }))
 
 
 @routes.post('/colour_settings')
@@ -328,166 +308,24 @@ async def set_max_allowed_children(request:Request):
     return HTTPFound(location=f'/guild_settings?guild_id={guild_id}&gold=1')
 
 
-@routes.post('/webhooks/paypal/purchase_ipn')
+@routes.post('/webhooks/voxel_fox/purchase')
 async def paypal_purchase_complete(request:Request):
     """Handles Paypal throwing data my way"""
 
-    # Get the data
-    content_bytes: bytes = await request.content.read()
-    paypal_data: str = content_bytes.decode()
-
-    # Send the data back
-    data_send_back = "cmd=_notify-validate&" + paypal_data
-    async with aiohttp.ClientSession(loop=request.app.loop) as session:
-        # paypal_url = "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr"  # Sandbox
-        paypal_url = "https://ipnpb.paypal.com/cgi-bin/webscr"  # Live
-        async with session.post(paypal_url, data=data_send_back) as site:
-            site_data = await site.read()
-            if site_data.decode() != "VERIFIED":
-                return Response(status=200)  # Oh no it was fake data
-
-    # Get the data from PP
-    data_split = {unquote(i.split('=')[0]):unquote(i.split('=')[1]) for i in paypal_data.split('&')}
-    try:
-        custom_data = {i.split('=')[0]:i.split('=')[1] for i in data_split['custom'].split(';')}
-    except KeyError:
-        custom_data = {}
-    payment_amount = int(data_split.get('mc_gross', '0').replace('.', ''))
-
-    # See if we want to handle it at all
-    if data_split['txn_type'] not in ['web_accept', 'express_checkout']:
-        return Response(status=200)  # Not the right thing
-
-    # See if it's MarriageBot Gold
-    if data_split.get('item_name', None) == 'MarriageBot Gold':
+    # Check the headers
+    if request.headers.get("Authorization", None) != request.app['config']['payment_info']['authorization']:
         return Response(status=200)
+    data = await request.json()
+    custom_data = json.loads(data['custom'])
 
-    # Make sure it's real data
-    if data_split['receiver_email'] != request.app['config']['paypal_pdt']['receiver_email']:
-        return Response(status=200)  # Wrong email passed
-    refunded = False
-    if payment_amount < 0:
-        if data_split['payment_status'] == 'Refunded' or data_split['payment_status'] == 'Reversed':
-            refunded = True
-        else:
-            return Response(status=200)
-    elif payment_amount < request.app['config']['payment_info']['original_price'] - request.app['config']['payment_info']['discount_gbp']:
-        return Response(status=200)  # Payment too small
-
-    # Database the relevant data
-    db_data = {
-        'completed': data_split['payment_status'] == 'Completed',
-        'checkout_complete_timestamp': dt.utcnow(),
-        'customer_id': data_split['payer_id'],
-        'id': data_split['txn_id'],
-        'payment_amount': payment_amount,
-        'discord_id': int(custom_data['user']),
-        'guild_id': int(custom_data['guild']),
-    }
-    if db_data['completed'] is False:
-        db_data['checkout_complete_timestamp'] = None
     async with request.app['database']() as db:
-        try:
-            await db(
-                """INSERT INTO paypal_purchases
-                (id, customer_id, payment_amount, discord_id, guild_id, completed,
-                checkout_complete_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7)""",
-                db_data['id'], db_data['customer_id'], db_data['payment_amount'], db_data['discord_id'],
-                db_data['guild_id'], db_data['completed'], db_data['checkout_complete_timestamp'],
-            )
-        except asyncpg.UniqueViolationError:
-            await db(
-                """UPDATE paypal_purchases
-                SET completed=$1, checkout_complete_timestamp=$2, guild_id=$3, discord_id=$4, customer_id=$5
-                WHERE id=$6""",
-                db_data['completed'], db_data['checkout_complete_timestamp'], db_data['guild_id'], db_data['discord_id'],
-                db_data['customer_id'], db_data['id'],
-            )
-        if db_data['completed'] is True and refunded is False:
-            try:
-                await db("INSERT INTO guild_specific_families VALUES ($1)", db_data['guild_id'])
-            except asyncpg.UniqueViolationError:
-                pass
-        if refunded:
-            await db("DELETE FROM guild_specific_families WHERE guild_id=$1", db_data['guild_id'])
+        if data['refunded'] is False:
+            await db("INSERT INTO guild_specific_families VALUES ($1) ON CONFLICT (guild_id) DO NOTHING", custom_data['discord_guild_id'])
+        else:
+            await db("DELETE FROM guild_specific_families WHERE guild_id=$1", custom_data['discord_guild_id'])
 
     # Let the user get redirected
     return Response(status=200)
-
-
-@routes.get('/webhooks/paypal/return_pdt')
-async def paypal_purchase_return(request:Request):
-    """Handles Paypal throwing data my way"""
-
-    # Get the data
-    transaction_id = request.query['tx']
-    data = {
-        'tx': transaction_id,
-        'at': request.app['config']['paypal_pdt']['identity_token'],
-        'cmd': '_notify-synch',
-    }
-
-    # Send the data back to PayPal
-    async with aiohttp.ClientSession(loop=request.app.loop) as session:
-        # paypal_url = "https://www.sandbox.paypal.com/cgi-bin/webscr"  # Sandbox
-        paypal_url = "https://www.paypal.com/cgi-bin/webscr"  # Live
-        async with session.post(paypal_url, data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'}) as site:
-            site_data_bytes = await site.read()
-        site_data = site_data_bytes.decode()
-
-    # Work out what we're dealin with
-    lines = site_data.strip().split('\n')
-    if lines[0] != "SUCCESS":
-        return HTTPFound(location='/guilds')  # No success
-
-    # Success bois lets GO
-    data = {unquote(i.split('=')[0]):unquote(i.split('=')[1]) for i in lines[1:]}
-    custom_data = {i.split('=')[0]:i.split('=')[1] for i in request.query['cm'].split(';')}
-    payment_amount = int(data['mc_gross'].replace('.', ''))
-
-    # Make sure it's real data
-    if data['receiver_email'] != request.app['config']['paypal_pdt']['receiver_email']:
-        return Response(status=200)  # Wrong email passed
-    if payment_amount < request.app['config']['payment_info']['original_price'] - request.app['config']['payment_info']['discount_gbp']:
-        return Response(status=200)  # Payment too small
-
-    # Database the relevant data
-    db_data = {
-        'completed': data['payment_status'] == 'Completed',
-        'checkout_complete_timestamp': dt.utcnow(),
-        'customer_id': data['payer_id'],
-        'id': data['txn_id'],
-        'payment_amount': payment_amount,
-        'discord_id': int(custom_data['user']),
-        'guild_id': int(custom_data['guild']),
-    }
-    if db_data['completed'] is False:
-        db_data['checkout_complete_timestamp'] = None
-    async with request.app['database']() as db:
-        try:
-            await db(
-                """INSERT INTO paypal_purchases
-                (id, customer_id, payment_amount, discord_id, guild_id, completed,
-                checkout_complete_timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7)""",
-                db_data['id'], db_data['customer_id'], db_data['payment_amount'], db_data['discord_id'],
-                db_data['guild_id'], db_data['completed'], db_data['checkout_complete_timestamp'],
-            )
-        except asyncpg.UniqueViolationError:
-            await db(
-                """UPDATE paypal_purchases
-                SET completed=$1, checkout_complete_timestamp=$2, guild_id=$3, discord_id=$4, customer_id=$5
-                WHERE id=$6""",
-                db_data['completed'], db_data['checkout_complete_timestamp'], db_data['guild_id'], db_data['discord_id'],
-                db_data['customer_id'], db_data['id'],
-            )
-        if db_data['completed'] is True:
-            try:
-                await db("INSERT INTO guild_specific_families VALUES ($1)", db_data['guild_id'])
-            except asyncpg.UniqueViolationError:
-                pass
-
-    # Nice, redirect the user
-    return HTTPFound(location='/guilds')
 
 
 @routes.post('/webhooks/dbl/vote_added')
@@ -547,10 +385,7 @@ async def webhook_handler(request:Request):
 
     # DB vote
     async with request.app['database']() as db:
-        try:
-            await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2)', user_id, time)
-        except asyncpg.UniqueViolationError:
-            await db('UPDATE dbl_votes SET timestamp=$2 WHERE user_id=$1', user_id, time)
+        await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=excluded.timestamp', user_id, time)
     return success
 
 
