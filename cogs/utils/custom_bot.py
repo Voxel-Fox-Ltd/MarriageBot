@@ -82,21 +82,13 @@ class CustomBot(commands.AutoShardedBot):
         db = await self.database.get_connection()
 
         # Get guild settings
-        try:
-            data = await db("SELECT * FROM guild_settings")
-        except Exception as e:
-            self.logger.critical(f"Error selecting from guild_settings - {e}")
-            exit(1)
+        data = await self.get_all_table_data(db, "guild_settings")
         for row in data:
             for key, value in row.items():
                 self.guild_settings[row['guild_id']][key] = value
 
         # Get user settings
-        try:
-            data = await db("SELECT * FROM user_settings")
-        except Exception as e:
-            self.logger.critical(f"Error selecting from user_settings - {e}")
-            exit(1)
+        data = await self.get_all_table_data(db, "user_settings")
         for row in data:
             for key, value in row.items():
                 self.user_settings[row['user_id']][key] = value
@@ -107,6 +99,25 @@ class CustomBot(commands.AutoShardedBot):
 
         # Close database connection
         await db.disconnect()
+
+    async def run_sql_exit_on_error(self, db, sql, *args):
+        """Get data form a table, exiting if it can't"""
+
+        try:
+            return await db(sql, *args)
+        except Exception as e:
+            self.logger.critical(f"Error selecting from table - {e}")
+            exit(1)
+
+    async def get_all_table_data(self, db, table_name):
+        """Get all data from a table"""
+
+        return await self.run_sql_exit_on_error(db "SELECT * FROM {0}".format(table_name))
+
+    async def get_list_table_data(self, db, table_name, key):
+        """Get all data from a table"""
+
+        return await self.run_sql_exit_on_error(db "SELECT * FROM {0} WHERE key=$1".format(table_name), key)
 
     def get_invite_link(self, *, scope:str='bot', response_type:str=None, redirect_uri:str=None, guild_id:int=None, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
