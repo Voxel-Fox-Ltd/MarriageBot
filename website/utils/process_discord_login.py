@@ -113,7 +113,7 @@ async def get_access_token(request:Request, oauth_scopes:list=None, *, refresh_i
     # See if we even need to make a new request
     if refresh:
         pass
-    elif refresh_if_expired is False or session_storage['token_info']['expires_at'] < dt.uctnow().timestamp():
+    elif refresh_if_expired is False or session_storage['token_info']['expires_at'] < dt.utcnow().timestamp():
         return session_storage['token_info']['access_token']
 
     # Generate the post data
@@ -195,7 +195,7 @@ async def add_user_to_guild(request:Request, guild_id:int) -> bool:
 
     # Get our headers
     guild_join_url = f"https://discordapp.com/api/v6/guilds/{guild_id}/members/{user_info['id']}"
-    headers = {'Authorization': f"Bot {config['token']}"}
+    headers = {'Authorization': f"Bot {request.app['config']['token']}"}
 
     # Get our access token
     data = {
