@@ -30,17 +30,17 @@ class CooldownWithChannelExemptions(Cooldown):
         super().__call__(rate, per, commands.BucketType.channel)  # Override cooldown type
         return self
 
-    def predicate(self, message) -> bool:
+    def predicate(self, ctx) -> bool:
         """The check to see if this cooldown is applied"""
 
         # Check if invoked in a channel where there should be no cooldown
         if self.no_cooldown_in:
-            if any([i for i in self.no_cooldown_in if i == message.channel.name]):
+            if any([i for i in self.no_cooldown_in if i == ctx.channel.name]):
                 return False
 
         # Check if invoked in a channel where there SHOULD be a cooldown
         if self.cooldown_in:
-            if any([i for i in self.cooldown_in if i == message.channel.name]):
+            if any([i for i in self.cooldown_in if i == ctx.channel.name]):
                 return True
             return False  # Not invoked in a cooldown_in channel
 

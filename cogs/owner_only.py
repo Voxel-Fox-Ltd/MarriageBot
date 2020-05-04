@@ -80,11 +80,11 @@ class OwnerOnly(utils.Cog):
                 ret = await func()
         except Exception:
             # Oh no it caused an error
-            value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            stdout_value = stdout.getvalue() or None
+            await ctx.send(f'```py\n{stdout_value}\n{traceback.format_exc()}\n```')
         else:
             # Oh no it didn't cause an error
-            value = stdout.getvalue()
+            stdout_value = stdout.getvalue() or None
 
             # Give reaction just to show that it ran
             await ctx.message.add_reaction("\N{OK HAND SIGN}")
@@ -92,27 +92,27 @@ class OwnerOnly(utils.Cog):
             # If the function returned nothing
             if ret is None:
                 # It might have printed something
-                if value:
-                    await ctx.send(f'```py\n{value}\n```')
+                if stdout_value is not None:
+                    await ctx.send(f'```py\n{stdout_value}\n```')
+                return
 
             # If the function did return a value
-            else:
-                self._last_result = ret
-                result_raw = ret or value
-                result = str(result_raw)
-                if type(result_raw) == dict:
-                    try:
-                        result = json.dumps(result_raw, indent=4)
-                    except Exception:
-                        pass
-                if type(result_raw) == dict and type(result) == str:
+            result_raw = stdout_value or ret  # What's returned from the function
+            result = str(result_raw)  # The result as a string
+            if result_raw is None:
+                return
+            text = f'```py\n{result}\n```'
+            if type(result_raw) == dict:
+                try:
+                    result = json.dumps(result_raw, indent=4)
+                except Exception:
+                    pass
+                else:
                     text = f'```json\n{result}\n```'
-                else:
-                    text = f'```py\n{result}\n```'
-                if len(text) > 2000:
-                    await ctx.send(file=discord.File(io.StringIO(result), filename='ev.txt'))
-                else:
-                    await ctx.send(text)
+            if len(text) > 2000:
+                await ctx.send(file=discord.File(io.StringIO(result), filename='ev.txt'))
+            else:
+                await ctx.send(text)
 
     @commands.command(aliases=['rld'], cls=utils.Command)
     @commands.is_owner()

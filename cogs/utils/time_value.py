@@ -38,11 +38,20 @@ class TimeValue(object):
         except ZeroDivisionError:
             return 0, value
 
+    def __str__(self):
+        return self.clean
+
     def __repr__(self):
-        return f"<{self.__class__.__name__} {self.clean} ({self.duration})>"
+        return f"{self.__class__.name__}.parse('{self.clean}')"
 
     @classmethod
     async def convert(cls, ctx:commands.Context, value:str) -> 'TimeValue':
+        """Takes a value (1h/30m/10s/2d etc) and returns a TimeValue instance with the duration"""
+
+        return cls.parse(value)
+
+    @classmethod
+    def parse(cls, value:str) -> 'TimeValue':
         """Takes a value (1h/30m/10s/2d etc) and returns a TimeValue instance with the duration"""
 
         match = cls.time_value_regex.search(value)
@@ -65,4 +74,4 @@ class TimeValue(object):
             duration += int(match.group(6)) * 60
         if match.group(8):
             duration += int(match.group(8))
-        return TimeValue(duration)
+        return cls(duration)

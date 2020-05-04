@@ -1,5 +1,5 @@
 # Discord and config handling
-discord.py[voice]
+git+https://github.com/4Kaylum/discord.py@master
 toml
 git+https://github.com/Rapptz/discord-ext-menus
 

@@ -45,14 +45,6 @@ class CustomBot(commands.AutoShardedBot):
     for my stuff, but ultimately it's the same ol' AutoShardedBot that the
     library provides to start with"""
 
-    DEFAULT_GUILD_SETTINGS = {
-        'prefix': None,  # Set in init
-        'allow_incest': False,  # Only used in gold
-        'max_family_members': None,  # Set in init; only used in gold
-        'max_children': {},  # RoleID: ChildAmount; only used in gold
-        'gifs_enabled': True,  # Whether or not to add gifs to the simulation commands
-    }
-
     def __init__(self, *args, config_file:str, logger:logging.Logger=None, **kwargs):
         """The initialiser for the bot object
         Note that we load the config before running the original method"""
@@ -64,8 +56,13 @@ class CustomBot(commands.AutoShardedBot):
         self.reload_config()
 
         # Set up config
-        self.DEFAULT_GUILD_SETTINGS['prefix'] = self.config['prefix']['default_prefix']
-        self.DEFAULT_GUILD_SETTINGS['max_family_members'] = self.config['max_family_members']
+        self.DEFAULT_GUILD_SETTINGS = {
+            'prefix': self.config['prefix']['default_prefix'],  # Set in init
+            'allow_incest': False,  # Only used in gold
+            'max_family_members': self.config['max_family_members'],  # Set in init; only used in gold
+            'max_children': {},  # RoleID: ChildAmount; only used in gold
+            'gifs_enabled': True,  # Whether or not to add gifs to the simulation commands
+	    }
 
         # Run original
         super().__init__(command_prefix=get_prefix, guild_subscriptions=self.is_server_specific, *args, **kwargs)
@@ -92,6 +89,7 @@ class CustomBot(commands.AutoShardedBot):
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
         self.blocked_users: typing.Dict[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
         self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.DEFAULT_GUILD_SETTINGS.copy())
+        self.user_settings = collections.defaultdict(self.DEFAULT_USER_SETTINGS.copy)
         self.dbl_votes: typing.Dict[int, dt] = {}
 
         # Put the bot object in some other classes
