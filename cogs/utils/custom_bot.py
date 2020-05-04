@@ -112,12 +112,12 @@ class CustomBot(commands.AutoShardedBot):
     async def get_all_table_data(self, db, table_name):
         """Get all data from a table"""
 
-        return await self.run_sql_exit_on_error(db "SELECT * FROM {0}".format(table_name))
+        return await self.run_sql_exit_on_error(db, "SELECT * FROM {0}".format(table_name))
 
     async def get_list_table_data(self, db, table_name, key):
         """Get all data from a table"""
 
-        return await self.run_sql_exit_on_error(db "SELECT * FROM {0} WHERE key=$1".format(table_name), key)
+        return await self.run_sql_exit_on_error(db, "SELECT * FROM {0} WHERE key=$1".format(table_name), key)
 
     def get_invite_link(self, *, scope:str='bot', response_type:str=None, redirect_uri:str=None, guild_id:int=None, **kwargs):
         """Gets the invite link for the bot, with permissions all set properly"""
