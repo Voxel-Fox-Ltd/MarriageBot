@@ -320,7 +320,7 @@ async def paypal_purchase_complete(request:Request):
 
     async with request.app['database']() as db:
         if data['refunded'] is False:
-            await db("INSERT INTO guild_specific_families VALUES ($1) ON CONFLICT (guild_id) DO NOTHING", custom_data['discord_guild_id'])
+            await db("INSERT INTO guild_specific_families VALUES ($1, $2) ON CONFLICT (guild_id) DO NOTHING", custom_data['discord_guild_id'], custom_data['discord_user_id'])
         else:
             await db("DELETE FROM guild_specific_families WHERE guild_id=$1", custom_data['discord_guild_id'])
 

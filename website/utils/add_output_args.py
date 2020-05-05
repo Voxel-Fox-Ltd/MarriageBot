@@ -46,11 +46,11 @@ def add_output_args():
             if 'request' not in data:
                 data.update({'request': request})
 
-            # Check return relevant info
-            if redirect_if_logged_out and session.get('user_id') is None:
-                return HTTPFound(location=redirect_if_logged_out)
-            elif redirect_if_logged_in and session.get('user_id') is not None:
-                return HTTPFound(location=redirect_if_logged_in)
+            # # Check return relevant info
+            # if redirect_if_logged_out and session.get('user_id') is None:
+            #     return HTTPFound(location=redirect_if_logged_out)
+            # elif redirect_if_logged_in and session.get('user_id') is not None:
+            #     return HTTPFound(location=redirect_if_logged_in)
 
             # Update OpenGraph information
             if 'opengraph' not in data:

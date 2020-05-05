@@ -3,6 +3,7 @@ dbl_token = ""  # The API token for discordbots.org - probably best left blank
 owners = [ 141231597155385344, ]
 bot_admin_role = 1  # The role ID for bot admins
 patreon_roles = [ 1,]  # A list of role IDs for Patreon subscribers
+guild_specific_role = 603656806853771264
 max_children = [ 5, 10, 15, 20, ]  # Default, *PatreonTier
 disableable_commands = ["hug", "kiss", "slap", "punch", "cookie", "nugget", "burger", "poke", "stab", "copulate"]
 max_family_members = 500  # The maximum amount of people you can have in a family
@@ -11,6 +12,7 @@ dbl_vainity = ""  # The vainity link that goes on the 'vote' command
 guild_id = 1  # The ID for the support guild - used to find the bot admin and Patreon roles
 server_specific = false  # Bool flag for whether the bot uses global or server specific trees
 dm_uncaught_errors = false
+topgg_authorization = ""
 
 # Data that's copied directly over to a command without processing
 [command_data]

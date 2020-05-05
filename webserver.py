@@ -52,9 +52,12 @@ app.router.add_static('/static', os.getcwd() + '/website/static', append_version
 # Add our connections and their loggers
 app['database'] = utils.DatabaseConnection
 utils.DatabaseConnection.logger = logger.getChild("db")
+utils.DatabaseConnection.logger.setLevel(logging.DEBUG)
 app['redis'] = utils.RedisConnection
 utils.RedisConnection.logger = logger.getChild("redis")
-app['logger'] = logger.getChild("route")
+utils.RedisConnection.logger.setLevel(logging.DEBUG)
+app['logger'] = logger
+logger.setLevel(logging.DEBUG)
 
 # Add our configs
 app['config'] = config
@@ -113,10 +116,10 @@ if __name__ == '__main__':
     # Clean up our shit
     logger.info("Closing webserver")
     loop.run_until_complete(application.cleanup())
-    if bot.config['database']['enabled']:
+    if request.app['bot'].config['database']['enabled']:
         logger.info("Closing database pool")
         loop.run_until_complete(utils.DatabaseConnection.pool.close())
-    if bot.config['redis']['enabled']:
+    if request.app['bot'].config['redis']['enabled']:
         logger.info("Closing redis pool")
         utils.RedisConnection.pool.close()
     logger.info("Closing bot")

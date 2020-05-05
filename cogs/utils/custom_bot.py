@@ -62,7 +62,7 @@ class CustomBot(commands.AutoShardedBot):
             'max_family_members': self.config['max_family_members'],  # Set in init; only used in gold
             'max_children': {},  # RoleID: ChildAmount; only used in gold
             'gifs_enabled': True,  # Whether or not to add gifs to the simulation commands
-	    }
+        }
 
         # Run original
         super().__init__(command_prefix=get_prefix, guild_subscriptions=self.is_server_specific, *args, **kwargs)
@@ -88,8 +88,8 @@ class CustomBot(commands.AutoShardedBot):
         self.proposal_cache: typing.Dict[int, tuple] = ProposalCache()
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
         self.blocked_users: typing.Dict[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
-        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: self.DEFAULT_GUILD_SETTINGS.copy())
-        self.user_settings = collections.defaultdict(self.DEFAULT_USER_SETTINGS.copy)
+        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
+        # self.user_settings = collections.defaultdict(self.DEFAULT_USER_SETTINGS.copy)
         self.dbl_votes: typing.Dict[int, dt] = {}
 
         # Put the bot object in some other classes

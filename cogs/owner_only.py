@@ -338,7 +338,7 @@ class OwnerOnly(utils.Cog):
         """Adds a guild to the MarriageBot Gold whitelist"""
 
         async with self.bot.database() as db:
-            await db('INSERT INTO guild_specific_families VALUES ($1)', guild_id)
+            await db('INSERT INTO guild_specific_families (guild_id) VALUES ($1)', guild_id)
         await ctx.okay(ignore_error=True)
 
     @commands.command(cls=utils.Command)

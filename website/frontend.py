@@ -21,12 +21,27 @@ async def index(request:Request):
     login_url = bot.get_invite_link(
         redirect_uri='https://marriagebot.xyz/discord_oauth_login',
         response_type='code',
-        scope='identify guilds',
-        read_messages=True,
-        send_messages=True,
-        attach_files=True,
-        embed_links=True,
+        scope='identify guilds guilds.join',
     )
+
+    session = await aiohttp_session.get_session(request)
+    if session.get('user_id'):
+        user_id = session['user_id']
+        async with request.app['database']() as db:
+            request.app['logger'].info("Getting user data")
+            rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
+            if rows:
+                request.app['logger'].info("PUBLICSHING MK 1")
+                await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
+                request.app['logger'].info("PUBLICSHING")
+                async with request.app['redis']() as re:
+                    await re.publish_json("AddGoldUser", {'user_id': user_id})
+                    request.app['logger'].info("PUBLISHED BABEY")
+            else:
+                request.app['logger'].info(f"No guilda tata {user_id}")
+    else:
+        request.app['logger'].info("No login")
+
     return {'login_url': login_url}
 
 
@@ -212,7 +227,7 @@ async def guild_settings_get_paypal(request:Request):
         location = bot.get_invite_link(
             redirect_uri='https://marriagebot.xyz/guild_settings',
             response_type='code',
-            scope='bot identify guilds',
+            scope='bot identify guilds guilds.join',
             read_messages=True,
             send_messages=True,
             attach_files=True,
@@ -305,15 +320,6 @@ async def get_session(request:Request):
     return json_response(dict(session))
 
 
-@routes.get('/logout')
-async def logout(request:Request):
-    """Handles logout"""
-
-    session = await aiohttp_session.get_session(request)
-    session.invalidate()
-    return HTTPFound(location='/')
-
-
 @routes.get("/discord_oauth_login")
 async def login(request:Request):
     """Index of the website"""
@@ -322,7 +328,7 @@ async def login(request:Request):
     login_url = bot.get_invite_link(
         redirect_uri='https://marriagebot.xyz/login_redirect',
         response_type='code',
-        scope='identify guilds',
+        scope='identify guilds guilds.join',
         read_messages=True,
         send_messages=True,
         attach_files=True,
