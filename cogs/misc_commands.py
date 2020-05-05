@@ -61,7 +61,6 @@ class MiscCommands(utils.Cog):
 
     @commands.command(hidden=True, cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(cls=utils.Command)
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(send_messages=True)
     async def echo(self, ctx:utils.Context, *, content:commands.clean_content):
