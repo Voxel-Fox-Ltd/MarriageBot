@@ -9,9 +9,10 @@ class NameHandler(utils.Cog):
 
         user = self.bot.shallow_users.get(ctx.author.id)
         if user is None:
-            user = utils.ShallowUser(ctx.author.id)
-            self.bot.shallow_users[ctx.author.id] = user
-        user.age -= 1
+            # user = utils.ShallowUser(ctx.author.id)
+            # self.bot.shallow_users[ctx.author.id] = user
+            return
+        user.age += 1
         if user.age >= utils.ShallowUser.LIFETIME_THRESHOLD:
             await self.bot.get_name(ctx.author.id, fetch_from_api=True)
 
