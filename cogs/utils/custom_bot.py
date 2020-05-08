@@ -3,6 +3,7 @@ import collections
 import glob
 import logging
 import typing
+import copy
 from datetime import datetime as dt
 from urllib.parse import urlencode
 
@@ -67,8 +68,8 @@ class CustomBot(commands.AutoShardedBot):
         self.startup_method = None
 
         # Here's the storage for cached stuff
-        self.guild_settings = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
-        self.user_settings = collections.defaultdict(self.DEFAULT_USER_SETTINGS.copy)
+        self.guild_settings = collections.defaultdict(lambda: copy.deepcopy(self.DEFAULT_GUILD_SETTINGS))
+        self.user_settings = collections.defaultdict(lambda: copy.deepcopy(self.DEFAULT_USER_SETTINGS))
 
     async def startup(self):
         """Clears all the bot's caches and fills them from a DB read"""
