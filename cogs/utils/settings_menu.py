@@ -255,7 +255,8 @@ class SettingsMenu(object):
     referred to by string in the MenuItem's action
     """
 
-    TICK_EMOJI = "<:tickYes:596096897995899097>"
+    # TICK_EMOJI = "<:tickYes:596096897995899097>"
+    TICK_EMOJI = "\N{HEAVY CHECK MARK}"
     PLUS_EMOJI = "\N{HEAVY PLUS SIGN}"
 
     def __init__(self):
