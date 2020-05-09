@@ -7,6 +7,10 @@ from discord.ext import commands
 from cogs import utils
 
 
+class SettingsMenuError(commands.CommandError):
+    pass
+
+
 class SettingsMenuOption(object):
     """An option that can be chosen for a settings menu's selectable item,
     eg an option that refers to a sub-menu, or a setting that refers to grabbing
@@ -96,6 +100,7 @@ class SettingsMenuOption(object):
             raise utils.errors.InvokedMetaCommand()
 
         # Run converter
+        conversion_failed = False
         if hasattr(converter, 'convert'):
             try:
                 converter = converter()
@@ -105,11 +110,13 @@ class SettingsMenuOption(object):
                 value = await converter.convert(self.context, content)
             except commands.CommandError:
                 value = None
+                conversion_failed = True
         else:
             try:
                 value = converter(content)
             except Exception:
                 value = None
+                conversion_failed = True
 
         # Delete prompt messages
         try:
@@ -120,6 +127,10 @@ class SettingsMenuOption(object):
             await user_message.delete()
         except (discord.Forbidden, discord.NotFound, AttributeError):
             pass
+
+        # Check conversion didn't fail
+        if conversion_failed:
+            raise SettingsMenuError()
 
         # Return converted value
         return value
@@ -226,13 +237,15 @@ class SettingsMenuOption(object):
     @staticmethod
     def get_set_role_list_add_callback(guild_settings_key:str, database_key:str, serialize_function:typing.Callable[[typing.Any], str]=lambda x: x):
         """Return an async method that takes the data retuend by convert_prompted_information and then
-        saves it into the database - should be used for the add_option stuff in the SettingsMenu init"""
+        saves it into the database - should be used for the add_option stuff in the SettingsMenu init
+
+        serialize_function - The function run on the value to make it database-safe"""
 
         async def callback(self, *data):
             # data will either be [role_id], or [role_id, value]
             try:
-                role, value = data
-                value = str(serialize_function(value))
+                role, original_value = data
+                value = str(serialize_function(original_value))
             except ValueError:
                 role, value = data[0], None
             async with self.context.bot.database() as db:
@@ -242,7 +255,7 @@ class SettingsMenuOption(object):
                     self.context.guild.id, role.id, database_key, value
                 )
             if value:
-                self.context.bot.guild_settings[self.context.guild.id][guild_settings_key][role.id] = value
+                self.context.bot.guild_settings[self.context.guild.id][guild_settings_key][role.id] = original_value
             else:
                 if role.id not in self.context.bot.guild_settings[self.context.guild.id][guild_settings_key]:
                     self.context.bot.guild_settings[self.context.guild.id][guild_settings_key].append(role.id)
@@ -255,8 +268,7 @@ class SettingsMenu(object):
     referred to by string in the MenuItem's action
     """
 
-    # TICK_EMOJI = "<:tickYes:596096897995899097>"
-    TICK_EMOJI = "\N{HEAVY CHECK MARK}"
+    TICK_EMOJI = "<:tickYes:596096897995899097>"
     PLUS_EMOJI = "\N{HEAVY PLUS SIGN}"
 
     def __init__(self):
@@ -310,7 +322,10 @@ class SettingsMenu(object):
             # Process the picked option
             if picked_option is None:
                 break
-            await picked_option.perform_action()
+            try:
+                await picked_option.perform_action()
+            except SettingsMenuError:
+                pass
 
             # Remove the emoji
             try:
@@ -374,7 +389,7 @@ class SettingsMenuIterable(SettingsMenu):
         self.value_converter = value_converter
         self.key_prompt = key_prompt
         self.value_prompt = value_prompt
-        self.value_serialize_function = value_serialize_function
+        self.value_serialize_function = value_serialize_function or (lambda x: x)
 
     def get_sendable_data(self, ctx:commands.Context):
         """Create a list of mentions from the given guild settings key, creating all relevant callbacks"""
