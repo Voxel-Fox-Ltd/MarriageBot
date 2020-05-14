@@ -9,6 +9,9 @@ dm_uncaught_errors = false
     guild_invite = ""
     github = ""
     patreon = ""
+    invite_command_enabled = true
+    echo_command_enabled = true
+    stats_command_enabled = true
 
 # This data is passed directly over to asyncpg
 [database]
