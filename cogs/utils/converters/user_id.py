@@ -23,3 +23,4 @@ class UserID(int):
         match = cls.USER_ID_REGEX.search(value)
         if match is not None:
             return int(match.group(1))
+        raise commands.BadArgument()

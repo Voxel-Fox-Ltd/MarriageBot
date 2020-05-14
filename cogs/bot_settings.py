@@ -72,8 +72,11 @@ class BotSettings(utils.Cog):
                 'callback': utils.SettingsMenuOption.get_set_user_settings_callback('user_settings', 'setting_id'),
             },
         )
-        await menu.start(ctx)
-        await ctx.send("Done setting up!")
+        try:
+            await menu.start(ctx)
+            await ctx.send("Done setting up!")
+        except utils.errors.InvokedMetaCommand:
+            pass
 
 
 def setup(bot:utils.Bot):
