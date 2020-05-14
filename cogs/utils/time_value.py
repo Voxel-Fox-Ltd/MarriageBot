@@ -17,7 +17,7 @@ class InvalidTimeDuration(commands.BadArgument):
 class TimeValue(object):
     """An object that nicely converts an integer value into an easily readable string"""
 
-    time_value_regex = regex.compile(r"^((\d+)d)?((\d+)h)?((\d+)m)?((\d+)s)?$")
+    time_value_regex = regex.compile(r"^(?:(?<days>\d+)d)?(?:(?<hours>\d+)h)?(?:(?<minutes>\d+)m)?(?:(?<seconds>\d+)s)?$")
 
     def __init__(self, duration:int):
         self.duration = int(duration)
@@ -30,7 +30,7 @@ class TimeValue(object):
         self.delta = timedelta(seconds=self.duration)
 
     @staticmethod
-    def get_quotient_and_remainder(value:int, divisor:int, raise_error_on_zero:bool=False):
+    def get_quotient_and_remainder(value:int, divisor:int):
         """Gets the quotiend AND remainder of a given value"""
 
         try:
@@ -59,19 +59,12 @@ class TimeValue(object):
             raise InvalidTimeDuration(value)
         duration = 0
 
-        """
-        Group 2: days
-        Group 4: hours
-        Group 6: mins
-        Group 8: seconds
-        """
-
-        if match.group(2):
-            duration += int(match.group(2)) * 60 * 60 * 24
-        if match.group(4):
-            duration += int(match.group(4)) * 60 * 60
-        if match.group(6):
-            duration += int(match.group(6)) * 60
-        if match.group(8):
-            duration += int(match.group(8))
+        if match.group('days'):
+            duration += int(match.group('days')) * 60 * 60 * 24
+        if match.group('hours'):
+            duration += int(match.group('hours')) * 60 * 60
+        if match.group('minutes'):
+            duration += int(match.group('minutes')) * 60
+        if match.group('seconds'):
+            duration += int(match.group('seconds'))
         return cls(duration)
