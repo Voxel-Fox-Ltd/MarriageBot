@@ -18,8 +18,8 @@ class CustomCog(OriginalCog):
 
     def get_logger_name(self, *prefixes, sep:str='.') -> str:
         """Gets the name of the class with any given prefixes, with sep as a seperator"""
-        return sep.join(['cog'] + list(prefixes) + [self.__class__.__name__])
+        return sep.join(['cog'] + list(prefixes) + [self.name.replace(' ', '')])
 
     def get_name(self) -> str:
         """Gets the name of the class as a nice ol' space-seperated thingmie"""
-        return regex.sub(r"([A-Z])(([a-z])+|[A-Z]+$|[A-Z]+(?=[A-Z]))?", "\\g<0> ", self.__class__.__name__).strip()
+        return regex.sub(r"(?:[A-Z])(?:(?:[a-z0-9])+|[A-Z]+$|[A-Z]+(?=[A-Z]))?", "\\g<0> ", self.name.replace(' ', '')).strip()
