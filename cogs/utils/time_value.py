@@ -17,7 +17,7 @@ class InvalidTimeDuration(commands.BadArgument):
 class TimeValue(object):
     """An object that nicely converts an integer value into an easily readable string"""
 
-    time_value_regex = regex.compile(r"^(?:(?<days>\d+)d)?(?:(?<hours>\d+)h)?(?:(?<minutes>\d+)m)?(?:(?<seconds>\d+)s)?$")
+    time_value_regex = regex.compile(r"^(?:(?P<days>\d+)d)?(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
 
     def __init__(self, duration:int):
         self.duration = int(duration)
