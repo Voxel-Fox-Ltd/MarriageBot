@@ -24,7 +24,7 @@ class BotSettings(utils.Cog):
 
     @commands.group(cls=utils.Group, enabled=False)
     @commands.has_permissions(manage_guild=True)
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
+    @commands.bot_has_permissions(send_messages=True, embed_links=True, add_reactions=True)
     @commands.guild_only()
     async def setup(self, ctx:utils.Context):
         """Run the bot setup"""
@@ -51,7 +51,7 @@ class BotSettings(utils.Cog):
             pass
 
     @commands.group(cls=utils.Group, enabled=False)
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
+    @commands.bot_has_permissions(send_messages=True, embed_links=True, add_reactions=True)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.member)
     @commands.guild_only()
     async def usersettings(self, ctx:utils.Context):
