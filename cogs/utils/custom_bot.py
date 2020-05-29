@@ -56,14 +56,14 @@ class CustomBot(commands.AutoShardedBot):
         self.session = aiohttp.ClientSession(loop=self.loop)
 
         # Allow database connections like this
-        if self.config['database'].get('enabled'):
-            self.database = DatabaseConnection
-            self.database.logger = self.logger.getChild('database')
+        # if self.config['database'].get('enabled'):
+        self.database = DatabaseConnection
+        self.database.logger = self.logger.getChild('database')
 
         # Allow redis connections like this
-        if self.config['redis'].get('enabled'):
-            self.redis = RedisConnection
-            self.redis.logger = self.logger.getChild('redis')
+        # if self.config['redis'].get('enabled'):
+        self.redis = RedisConnection
+        self.redis.logger = self.logger.getChild('redis')
 
         # Store the startup method so I can see if it completed successfully
         self.startup_time = dt.now()
