@@ -34,13 +34,14 @@ class SettingsMenuOption(object):
             self, ctx:commands.Context, display:typing.Union[str, typing.Callable[[commands.Context], str]],
             converter_args:typing.List[typing.Tuple]=list(),
             callback:typing.Callable[['SettingsMenuOption', typing.List[typing.Any]], None]=lambda x: None,
-            emoji:str=None
+            emoji:str=None, allow_nullable:bool=True,
             ):
         self.context = ctx
         self._display = display
         self.args = converter_args
         self.callback = callback
         self.emoji = emoji
+        self.allow_nullable = allow_nullable
 
     def get_display(self) -> str:
         """Get the display prompt for this option"""
@@ -55,7 +56,12 @@ class SettingsMenuOption(object):
         # Get data
         returned_data = []
         for i in self.args:
-            data = await self.convert_prompted_information(*i)
+            try:
+                data = await self.convert_prompted_information(*i)
+            except SettingsMenuError as e:
+                if not self.allow_nullable:
+                    raise e
+                data = None
             returned_data.append(data)
             if data is None:
                 break
@@ -523,7 +529,8 @@ class SettingsMenuIterable(SettingsMenu):
             self.items = [
                 SettingsMenuOption(
                     ctx, f"{self.key_display_function(i)} - {self.value_converter(o)!s}", (),
-                    SettingsMenuOption.get_set_iterable_delete_callback(self.database_name, i, self.cache_key, self.database_key)
+                    SettingsMenuOption.get_set_iterable_delete_callback(self.database_name, i, self.cache_key, self.database_key),
+                    allow_nullable=False,
                 )
                 for i, o in data_points.items()
             ]
@@ -533,7 +540,8 @@ class SettingsMenuIterable(SettingsMenu):
                         (self.key_prompt, "value", self.key_converter),
                         (self.value_prompt, "value", self.value_converter)
                     ], SettingsMenuOption.get_set_iterable_add_callback(self.database_name, self.cache_key, self.database_key, self.value_serialize_function),
-                    emoji=self.PLUS_EMOJI
+                    emoji=self.PLUS_EMOJI,
+                    allow_nullable=False,
                 )
             )
 
@@ -542,7 +550,8 @@ class SettingsMenuIterable(SettingsMenu):
             self.items = [
                 SettingsMenuOption(
                     ctx, f"{self.key_display_function(i)}", (),
-                    SettingsMenuOption.get_set_iterable_delete_callback(self.database_name, i, self.cache_key, self.database_key)
+                    SettingsMenuOption.get_set_iterable_delete_callback(self.database_name, i, self.cache_key, self.database_key),
+                    allow_nullable=False,
                 )
                 for i in data_points
             ]
@@ -551,7 +560,8 @@ class SettingsMenuIterable(SettingsMenu):
                     ctx, "", [
                         (self.key_prompt, "value", self.key_converter),
                     ], SettingsMenuOption.get_set_iterable_add_callback(self.database_name, self.cache_key, self.database_key),
-                    emoji=self.PLUS_EMOJI
+                    emoji=self.PLUS_EMOJI,
+                    allow_nullable=False,
                 )
             )
 
