@@ -194,7 +194,7 @@ class SettingsMenuOption(object):
                 The default serialize function doesn't do anything, but is provided so you don't have to provide one yourself
         """
 
-        async def callback(self, *data):
+        async def callback(self, data):
             """The function that actually sets the data in the specified table in the database
             Any input to this function should be a direct converted value from `convert_prompted_information`
             If the input is a discord.Role or discord.TextChannel, it is automatcally converted to that value's ID,
