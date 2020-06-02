@@ -155,16 +155,23 @@ class RedisHandler(utils.Cog):
     async def add_gold_user(self, data):
         """Sends a message to a given user"""
 
-        if self.shard_ids is None or 0 in self.shard_ids:
-            try:
-                guild = await self.bot.fetch_support_guild()
-                member = await guild.fetch_member(data['user_id'])
-                roles = []
-                for role_id in self.bot.config['patreon_roles'][:-1] + [self.bot.config['guild_specific_role']]:
-                    roles.append(guild.get_role(role_id))
-                await member.add_roles(*roles, reason='MarriageBot Gold purchase')
-            except Exception:
-                pass
+        if self.bot.shard_ids is None or 0 in self.bot.shard_ids:
+            pass
+        else:
+            return
+        try:
+            await self.bot.fetch_support_guild()
+            guild = self.bot.support_guild
+            member = await guild.fetch_member(data['user_id'])
+            roles = []
+            self.logger.info("Adding Patreon roles to gold user")
+            for role_id in self.bot.config['patreon_roles'][:-1] + [self.bot.config['guild_specific_role']]:
+                roles.append(guild.get_role(role_id))
+            await member.add_roles(*roles, reason='MarriageBot Gold purchase')
+            self.logger.info("Added Patreon roles to gold user")
+        except Exception as e:
+            self.logger.error(e)
+            pass
 
 
 def setup(bot:utils.Bot):

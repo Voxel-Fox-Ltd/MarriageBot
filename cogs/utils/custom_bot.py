@@ -170,6 +170,7 @@ class CustomBot(commands.AutoShardedBot):
         """Gets and stores the support guild defined in the bot settings"""
 
         self.support_guild = self.get_guild(self.config['guild_id']) or await self.fetch_guild(self.config['guild_id'])
+        return self.support_guild
 
     @property
     def is_server_specific(self) -> bool:

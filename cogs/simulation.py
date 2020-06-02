@@ -48,7 +48,7 @@ class Simulation(utils.Cog):
         else:
             responses = [
                 f"Woah woah, you two are family!",
-                f"Incest is wincest, I guess.",
+                # f"Incest is wincest, I guess.",
                 f"You two are related but go off I guess.",
             ]
         await ctx.send(random.choice(responses), image_url=image_url)

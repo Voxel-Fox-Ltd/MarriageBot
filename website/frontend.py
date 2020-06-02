@@ -24,24 +24,6 @@ async def index(request:Request):
         scope='identify guilds guilds.join',
     )
 
-    session = await aiohttp_session.get_session(request)
-    if session.get('user_id'):
-        user_id = session['user_id']
-        async with request.app['database']() as db:
-            request.app['logger'].info("Getting user data")
-            rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
-            if rows:
-                request.app['logger'].info("PUBLICSHING MK 1")
-                await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
-                request.app['logger'].info("PUBLICSHING")
-                async with request.app['redis']() as re:
-                    await re.publish_json("AddGoldUser", {'user_id': user_id})
-                    request.app['logger'].info("PUBLISHED BABEY")
-            else:
-                request.app['logger'].info(f"No guilda tata {user_id}")
-    else:
-        request.app['logger'].info("No login")
-
     return {'login_url': login_url}
 
 
@@ -167,6 +149,17 @@ async def guild_picker(request:Request):
         else:
             i['gold'] = False
 
+    session = await aiohttp_session.get_session(request)
+    if session.get('user_id'):
+        user_id = session['user_id']
+        async with request.app['database']() as db:
+            request.app['logger'].info("Getting user data")
+            rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
+            if rows:
+                await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
+                async with request.app['redis']() as re:
+                    await re.publish_json("AddGoldUser", {'user_id': user_id})
+
     return {'guilds': guilds}
 
 
@@ -266,6 +259,17 @@ async def guild_settings_get_paypal(request:Request):
         max_children_data = await db('SELECT * FROM max_children_amount WHERE guild_id=$1', int(guild_id))
         max_children_amount = {i['role_id']: i['amount'] for i in max_children_data}
 
+        # See if we need to add them to the support guild
+        session = await aiohttp_session.get_session(request)
+        user_id = session['user_id']
+        async with request.app['database']() as db:
+            request.app['logger'].info("Getting user data")
+            rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
+            if rows:
+                await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
+                async with request.app['redis']() as re:
+                    await re.publish_json("AddGoldUser", {'user_id': user_id})
+
     # Get prefix
     try:
         prefix = guild_settings[0]['gold_prefix' if gold_param else 'prefix']
@@ -306,8 +310,8 @@ async def guild_settings_get_paypal(request:Request):
         'roles': roles,  # The role objects for the guild
         'max_children_amount': max_children_amount,  # Children amounts for this guild
         'gifs_enabled': guild_settings[0]['gifs_enabled'],  # Children amounts for this guild
-        'max_children_hard_cap': request.app['config']['max_children'][-1],  # Hard cap on children for all users
-        'min_children_hard_cap': request.app['config']['max_children'][0],  # Hard minimum on children for all users
+        'max_children_hard_cap': max(request.app['config']['max_children']),  # Hard cap on children for all users
+        'min_children_hard_cap': min(request.app['config']['max_children']),  # Hard minimum on children for all users
     }
     return page_data
 
