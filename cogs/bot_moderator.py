@@ -127,6 +127,9 @@ class ModeratorOnly(utils.Cog):
             await db.marry(user_a, user_b, ctx.family_guild_id)
         me._partner = user_b
         them._partner = user_a
+        async with self.bot.redis() as re:
+            await re.publish_json('TreeMemberUpdate', me.to_json())
+            await re.publish_json('TreeMemberUpdate', them.to_json())
         await ctx.send("Consider it done.")
 
     @commands.command(cls=utils.Command)
@@ -147,7 +150,11 @@ class ModeratorOnly(utils.Cog):
 
         # Update cache
         me.partner._partner = None
+        them = me.partner
         me._partner = None
+        async with self.bot.redis() as re:
+            await re.publish_json('TreeMemberUpdate', me.to_json())
+            await re.publish_json('TreeMemberUpdate', them.to_json())
         await ctx.send("Consider it done.")
 
     @commands.command(cls=utils.Command)
