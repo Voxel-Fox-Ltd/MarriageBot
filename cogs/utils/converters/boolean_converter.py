@@ -8,5 +8,5 @@ class BooleanConverter(commands.Converter):
 
         return any([
             argument.lower() in ['y', 'yes', 'true', 'definitely', 'ye', 'ya', 'yas', 'ok', 'okay'],
-            argument in ['\N{HEAVY CHECK MARK}', '<:tickYes:596096897995899097>'],
+            argument in ['\N{HEAVY CHECK MARK}', '<:tick_yes:596096897995899097>'],
         ])
