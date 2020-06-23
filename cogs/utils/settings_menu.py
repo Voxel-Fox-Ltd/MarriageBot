@@ -483,10 +483,14 @@ class SettingsMenuIterable(SettingsMenu):
     that are just straight read/stored in the database
 
     Params:
+        database_name : str
+            The name of the table that the data should be inserted into
+        column_name : str
+            The column name for the table where teh key should be inserted to
         cache_key : str
             The key that goes into `bot.guild_settings` to get to the cached iterable
-        database_name : str
-            The name of the database where the iterable is stored
+        database_key : str 
+            The key that would be inserted into the default `role_list` or `channel_list` tables
         key_converter : commands.Converter
             The converter that's used to take the user's input and convert it into a given object
             Usually this will be a commands.RoleConverter or commands.TextChannelConverter
