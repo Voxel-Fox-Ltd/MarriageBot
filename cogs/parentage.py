@@ -48,7 +48,7 @@ class Parentage(utils.Cog):
         else:
             gold_children_amount = 0
         normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, target)]
-        children_amount = min([max([gold_children_amount, normal_children_amount, 0]), self.bot.config['max_children'][-1]])
+        children_amount = min([max([gold_children_amount, normal_children_amount, min(self.bot.config['max_children'])]), max(self.bot.config['max_children'])])
         if len(target_tree._children) >= children_amount:
             return await ctx.send(f"They're currently at the maximum amount of children you can have - see `m!perks` for more information.")
 
@@ -137,7 +137,7 @@ class Parentage(utils.Cog):
         else:
             gold_children_amount = 0
         normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, ctx.author)]
-        children_amount = min([max([gold_children_amount, normal_children_amount, self.bot.config['max_children'][0]]), self.bot.config['max_children'][-1]])
+        children_amount = min([max([gold_children_amount, normal_children_amount, min(self.bot.config['max_children'])]), max(self.bot.config['max_children'])])
         if len(instigator_tree._children) >= children_amount:
             return await ctx.send(f"You're currently at the maximum amount of children you can have - see `m!perks` for more information.")
 
