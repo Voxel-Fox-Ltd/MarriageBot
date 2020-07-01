@@ -40,7 +40,7 @@ class Simulation(utils.Cog):
 
         # Generate responses
         image_url = None
-        if relationship is None or relationship.casefold() == 'partner':
+        if relationship is None or relationship.casefold() == 'partner' or self.bot.allows_incest(ctx.guild.id):
             responses = [
                 f"*Kisses {user.mention}*"
             ]
