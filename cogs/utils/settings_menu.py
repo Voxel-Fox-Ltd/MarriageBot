@@ -160,9 +160,9 @@ class SettingsMenuOption(object):
         """Get an item from the bot's settings"""
 
         # Run converters
-        if '_channel' in attr.lower():
+        if 'channel' in attr.lower().split('_'):
             data = ctx.bot.get_channel(settings[attr])
-        elif '_role' in attr.lower():
+        elif 'role' in attr.lower().split('_'):
             data = ctx.guild.get_role(settings[attr])
         else:
             data = settings[attr]
@@ -489,7 +489,7 @@ class SettingsMenuIterable(SettingsMenu):
             The column name for the table where teh key should be inserted to
         cache_key : str
             The key that goes into `bot.guild_settings` to get to the cached iterable
-        database_key : str 
+        database_key : str
             The key that would be inserted into the default `role_list` or `channel_list` tables
         key_converter : commands.Converter
             The converter that's used to take the user's input and convert it into a given object
@@ -507,7 +507,8 @@ class SettingsMenuIterable(SettingsMenu):
     def __init__(
             self, database_name:str, column_name:str, cache_key:str, database_key:str,
             key_converter:commands.Converter, key_prompt:str, key_display_function:typing.Callable[[typing.Any], str],
-            value_converter:commands.Converter=str, value_prompt:str=None, value_serialize_function:typing.Callable=None
+            value_converter:commands.Converter=str, value_prompt:str=None, value_serialize_function:typing.Callable=None,
+            *, iterable_add_callback:typing.Callable=None, iterable_delete_callback:typing.Callable=None,
             ):
         super().__init__()
 
@@ -527,6 +528,10 @@ class SettingsMenuIterable(SettingsMenu):
         self.value_prompt = value_prompt
         self.value_serialize_function = value_serialize_function or (lambda x: x)
 
+        # Callbacks
+        self.iterable_add_callback = iterable_add_callback or SettingsMenuOption.get_set_iterable_add_callback
+        self.iterable_delete_callback = iterable_delete_callback or SettingsMenuOption.get_set_iterable_delete_callback
+
     def get_sendable_data(self, ctx:commands.Context):
         """Create a list of mentions from the given guild settings key, creating all relevant callbacks"""
 
@@ -538,41 +543,43 @@ class SettingsMenuIterable(SettingsMenu):
             self.items = [
                 SettingsMenuOption(
                     ctx, f"{self.key_display_function(i)} - {self.value_converter(o)!s}", (),
-                    SettingsMenuOption.get_set_iterable_delete_callback(self.database_name, self.column_name, i, self.cache_key, self.database_key),
+                    self.iterable_delete_callback(self.database_name, self.column_name, i, self.cache_key, self.database_key),
                     allow_nullable=False,
                 )
                 for i, o in data_points.items()
             ]
-            self.items.append(
-                SettingsMenuOption(
-                    ctx, "", [
-                        (self.key_prompt, "value", self.key_converter),
-                        (self.value_prompt, "value", self.value_converter)
-                    ], SettingsMenuOption.get_set_iterable_add_callback(self.database_name, self.column_name, self.cache_key, self.database_key, self.value_serialize_function),
-                    emoji=self.PLUS_EMOJI,
-                    allow_nullable=False,
+            if len(self.items) < 10:
+                self.items.append(
+                    SettingsMenuOption(
+                        ctx, "", [
+                            (self.key_prompt, "value", self.key_converter),
+                            (self.value_prompt, "value", self.value_converter)
+                        ], self.iterable_add_callback(self.database_name, self.column_name, self.cache_key, self.database_key, self.value_serialize_function),
+                        emoji=self.PLUS_EMOJI,
+                        allow_nullable=False,
+                    )
                 )
-            )
 
         # Current data is a key list
         elif isinstance(data_points, list):
             self.items = [
                 SettingsMenuOption(
                     ctx, f"{self.key_display_function(i)}", (),
-                    SettingsMenuOption.get_set_iterable_delete_callback(self.database_name, self.column_name, i, self.cache_key, self.database_key),
+                    self.iterable_delete_callback(self.database_name, self.column_name, i, self.cache_key, self.database_key),
                     allow_nullable=False,
                 )
                 for i in data_points
             ]
-            self.items.append(
-                SettingsMenuOption(
-                    ctx, "", [
-                        (self.key_prompt, "value", self.key_converter),
-                    ], SettingsMenuOption.get_set_iterable_add_callback(self.database_name, self.column_name, self.cache_key, self.database_key),
-                    emoji=self.PLUS_EMOJI,
-                    allow_nullable=False,
+            if len(self.items) < 10:
+                self.items.append(
+                    SettingsMenuOption(
+                        ctx, "", [
+                            (self.key_prompt, "value", self.key_converter),
+                        ], self.iterable_add_callback(self.database_name, self.column_name, self.cache_key, self.database_key),
+                        emoji=self.PLUS_EMOJI,
+                        allow_nullable=False,
+                    )
                 )
-            )
 
         # Generate the data as normal
         return super().get_sendable_data(ctx)
