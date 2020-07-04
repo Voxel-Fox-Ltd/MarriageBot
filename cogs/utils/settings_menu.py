@@ -583,3 +583,6 @@ class SettingsMenuIterable(SettingsMenu):
 
         # Generate the data as normal
         return super().get_sendable_data(ctx)
+
+    async def start(*args, clear_reactions_on_loop:bool=True, **kwargs):
+        super().start(*args, clear_reactions_on_loop=clear_reactions_on_loop, **kwargs)
