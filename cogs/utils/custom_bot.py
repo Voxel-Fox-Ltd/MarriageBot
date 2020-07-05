@@ -24,6 +24,8 @@ def get_prefix(bot, message:discord.Message):
         prefix = bot.config['default_prefix']
     else:
         prefix = bot.guild_settings[message.guild.id]['prefix'] or bot.config['default_prefix']
+    if prefix in ["'", "‘"]:
+        prefix = ["'", "‘"]
     prefix = [prefix] if isinstance(prefix, str) else prefix
     return commands.when_mentioned_or(*prefix)(bot, message)
 
