@@ -1,9 +1,8 @@
-import re as regex
 import random
 import string
 import typing
 
-from discord import User, Guild
+from discord import Guild
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relation_simplifier import Simplifier
@@ -107,8 +106,8 @@ class FamilyTreeMember(object):
 
         return all([
             len(self._children) == 0,
-            self._parent == None,
-            self._partner == None,
+            self._parent is None,
+            self._partner is None,
         ])
 
     def get_relation(self, target_user):
@@ -146,7 +145,7 @@ class FamilyTreeMember(object):
         """
 
         # Don't add yourself again
-        if people_list == None:
+        if people_list is None:
             people_list = []
         if self in people_list:
             return people_list
@@ -225,9 +224,9 @@ class FamilyTreeMember(object):
         """
 
         # Set default values
-        if working_relation == None:
+        if working_relation is None:
             working_relation = []
-        if added_already == None:
+        if added_already is None:
             added_already = []
 
         # You're doing a loop - return None
@@ -247,20 +246,22 @@ class FamilyTreeMember(object):
             parent = self.parent
             x = parent.get_unshortened_relation(
                 target_user,
-                working_relation=working_relation+['parent'],
+                working_relation=working_relation + ['parent'],
                 added_already=added_already
             )
-            if x: return x
+            if x:
+                return x
 
         # Check partner
         if self._partner and self._partner not in added_already:
             partner = self.partner
             x = partner.get_unshortened_relation(
                 target_user,
-                working_relation=working_relation+['partner'],
+                working_relation=working_relation + ['partner'],
                 added_already=added_already
             )
-            if x: return x
+            if x:
+                return x
 
         # Check children
         if self._children:
@@ -268,10 +269,11 @@ class FamilyTreeMember(object):
             for i in [o for o in children if o not in added_already]:
                 x = i.get_unshortened_relation(
                     target_user,
-                    working_relation=working_relation+['child'],
+                    working_relation=working_relation + ['child'],
                     added_already=added_already
                 )
-                if x: return x
+                if x:
+                    return x
         return None
 
     async def generate_gedcom_script(self, bot) -> str:
@@ -366,9 +368,9 @@ class FamilyTreeMember(object):
         """
 
         # Don't add yourself again
-        if people_dict == None:
+        if people_dict is None:
             people_dict = {}
-        if all_people == None:
+        if all_people is None:
             all_people = []
         if self.id in all_people:
             return people_dict
@@ -390,17 +392,17 @@ class FamilyTreeMember(object):
         if self._children:
             children = self.children
             for child in children:
-                people_dict = child.generational_span(people_dict, depth=depth+1, add_parent=False, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth+1)
+                people_dict = child.generational_span(people_dict, depth=depth + 1, add_parent=False, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth + 1)
 
         # Add your partner
         if self._partner:
             partner = self.partner
-            people_dict = partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth+1)
+            people_dict = partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth + 1)
 
         # Add your parent
         if expand_upwards and add_parent and self._parent:
             parent = self.parent
-            people_dict = parent.generational_span(people_dict, depth=depth-1, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth+1)
+            people_dict = parent.generational_span(people_dict, depth=depth - 1, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth + 1)
 
         # Remove dupes, should they be in there
         return people_dict
@@ -454,10 +456,10 @@ class FamilyTreeMember(object):
                 gen_span[my_depth] = x
         if self._parent:
             parent = self.parent
-            if parent not in gen_span.get(my_depth-1, list()):
-                x = gen_span.get(my_depth-1, list())
+            if parent not in gen_span.get(my_depth - 1, list()):
+                x = gen_span.get(my_depth - 1, list())
                 x.append(parent)
-                gen_span[my_depth-1] = x
+                gen_span[my_depth - 1] = x
 
         # Make some initial digraph stuff
         all_text: str = (
