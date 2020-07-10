@@ -2,6 +2,7 @@ import asyncio
 import random
 import string
 from datetime import datetime as dt
+import enum
 
 import aioneo4j
 import discord
@@ -12,6 +13,27 @@ from cogs import utils
 
 bot = commands.Bot(command_prefix='m,')
 bot.neo4j = aioneo4j.Neo4j(host='127.0.0.1', port=7474, user='neo4j', password='compression', database='marriagebottest')
+
+
+class RelationshipType(enum.Enum):
+    MARRIED_TO = 1
+    PARENT_OF = 2
+
+
+class FamilyRelationship(object):
+
+    def __init__(self, user:int, relationship:RelationshipType, user2:int):
+        self.user = user
+        self.relationship = relationship
+        self.user2 = user2
+
+    def __eq__(self, other):
+        return all([
+            isinstance(other, self.__class__),
+            self.user == other.user,
+            self.relationship == other.relationship,
+            self.user2 == other.user2
+        ])
 
 
 def get_random_string(k=10):
@@ -50,29 +72,24 @@ async def get_tree_root_user_id(user):
 
 async def get_tree_expanded_from_root(root_user):
     output_data = []
-    checked_uids = []
+    processed_users = []
     uids = [root_user.id]
-    cleared = False
     while uids:
-        for i in uids.copy():
-            if not cleared:
-                uids.clear()
-                cleared = True
-            if i in checked_uids:
-                continue
-            data = await bot.neo4j.cypher(
-                r"""MATCH (n:FamilyTreeMember {user_id: $user_id, guild_id: 0})-[r:PARENT_OF|MARRIED_TO]->(m:FamilyTreeMember {guild_id: 0}) RETURN n, type(r), m""",
-                user_id=i
-            )
-            output_data.extend([r['row'] for r in data['results'][0]['data']])
-            for returnvalues in data['results'][0]['data']:
-                row = returnvalues['row']
-                if row[-1]:
-                    uids.append(row[-1]['user_id'])
-            checked_uids.append(i)
-        uids = [r for r in uids if r not in checked_uids]
-    # print(json.dumps(output_data, indent=4))
-    # print(len(output_data))
+        data = await bot.neo4j.cypher(
+            r"""UNWIND $user_ids AS X MATCH (n:FamilyTreeMember {user_id: X, guild_id: 0})-[r:PARENT_OF|MARRIED_TO]->(m:FamilyTreeMember {guild_id: 0}) RETURN n, type(r), m""",
+            user_ids=uids
+        )
+        processed_users.extend(uids)
+        uids.clear()
+        for return_value in data['results'][0]['data']:
+            n, r, m = return_value['row']
+            relationship = FamilyRelationship(n['user_id'], RelationshipType[r], m['user_id'])
+            if relationship not in output_data:
+                output_data.append(relationship)
+            if n['user_id'] not in processed_users:
+                uids.append(n['user_id'])
+            if m['user_id'] not in processed_users:
+                uids.append(m['user_id'])
     return output_data
 
 
@@ -164,6 +181,9 @@ class FamilyMember(object):
         self.partner = None
         self._relationship_string = None
 
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.user_id == other.user_id
+
     @property
     def relationship_string(self):
         if self._relationship_string:
@@ -180,7 +200,7 @@ class FamilyMember(object):
 
         added_users = 0
         output_string = (
-            "digraph{"
+            """digraph{rankdir="LR";"""
             """node [shape=box, fontcolor="#FFFFFF", color="#000000", fillcolor="#000000", style=filled];"""
             """edge [dir=none, color="#000000"];"""
         )
@@ -246,17 +266,19 @@ class FamilyMember(object):
 
         # Make it into a nice lot of objects
         family_objects = {}
-        for node_object, relationship, child_object in cypher_output:
-            node = family_objects.get(node_object['user_id'], FamilyMember(node_object['user_id']))
-            family_objects[node_object['user_id']] = node
-            if relationship == "MARRIED_TO":
-                node.partner = family_objects.get(child_object['user_id'], FamilyMember(child_object['user_id']))
+        for relationship in cypher_output:
+            node = family_objects.get(relationship.user, FamilyMember(relationship.user))
+            family_objects[relationship.user] = node
+            if relationship.relationship == RelationshipType.MARRIED_TO:
+                node.partner = family_objects.get(relationship.user2, FamilyMember(relationship.user2))
                 node.partner.partner = node
-                family_objects[child_object['user_id']] = node.partner
-            elif relationship == "PARENT_OF":
-                node.children.append(family_objects.get(child_object['user_id'], FamilyMember(child_object['user_id'])))
-                node.children[-1].parent = node
-                family_objects[child_object['user_id']] = node.children[-1]
+                family_objects[relationship.user2] = node.partner
+            elif relationship.relationship == RelationshipType.PARENT_OF:
+                new_object = family_objects.get(relationship.user2, FamilyMember(relationship.user2))
+                if new_object not in node.children:
+                    node.children.append(new_object)
+                    node.children[-1].parent = node
+                    family_objects[relationship.user2] = node.children[-1]
         return family_objects.get(root_user_id or list(family_objects.keys())[0])
 
 
@@ -486,14 +508,6 @@ class FamilyCommands(commands.Cog):
         return await ctx.send(f"<@{user_id}>'s family size is {blood_size} blood relatives and {full_size} general relatives.", allowed_mentions=discord.AllowedMentions(users=False))
 
     @commands.command(cls=utils.Command)
-    async def getroot(self, ctx:utils.Context, user_id:utils.converters.UserID=None):
-        """Tells you if you're related to a user"""
-
-        user_id = user_id or ctx.author.id
-        root_user_id = await get_tree_root_user_id(discord.Object(user_id))
-        return await ctx.send(f"<@{user_id}>'s root tree user is <@{root_user_id}>.", allowed_mentions=discord.AllowedMentions(users=False))
-
-    @commands.command(cls=utils.Command)
     async def tree(self, ctx:utils.Context, user_id:utils.converters.UserID=None):
         """Tells you if you're related to a user"""
 
@@ -520,12 +534,7 @@ class FamilyCommands(commands.Cog):
 
         # Convert to an image
         dot_process = await asyncio.create_subprocess_exec(*[
-            'dot',
-            '-Tpng',
-            f'{ctx.author.id}.gz',
-            '-o',
-            f'{ctx.author.id}.png',
-            '-Gcharset=UTF-8',
+            'dot', '-Tpng', f'{ctx.author.id}.gz', '-o', f'{ctx.author.id}.png', '-Gcharset=UTF-8',
         ])
         try:
             await asyncio.wait_for(dot_process.wait(), 10)
@@ -547,6 +556,7 @@ class FamilyCommands(commands.Cog):
             f"Time taken to generate dot: {(dot_generated_time - cached_time).total_seconds() * 1000:.2f}ms",
             f"Time taken to write to file: {(written_to_file_time - dot_generated_time).total_seconds() * 1000:.2f}ms",
             f"Time taken to interpret dot: {(output_as_image_time - written_to_file_time).total_seconds() * 1000:.2f}ms",
+            f"**Total time taken: {(dt.utcnow() - start_time).total_seconds() * 1000:.2f}ms**",
         ]
 
         # Output file
