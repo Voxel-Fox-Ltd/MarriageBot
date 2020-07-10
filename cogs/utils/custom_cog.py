@@ -1,3 +1,4 @@
+import logging
 import re as regex
 
 from discord.ext.commands import Cog as OriginalCog
@@ -11,10 +12,11 @@ class CustomCog(OriginalCog):
 
     def __init__(self, bot:CustomBot, logger_name:str=None):
         self.bot = bot
+        bot_logger = getattr(bot, "logger", logging.getLogger("bot"))
         if logger_name:
-            self.logger = bot.logger.getChild(logger_name)
+            self.logger = bot_logger.getChild(logger_name)
         else:
-            self.logger = bot.logger.getChild(self.get_logger_name())
+            self.logger = bot_logger.getChild(self.get_logger_name())
 
     def get_logger_name(self, *prefixes, sep:str='.') -> str:
         """Gets the name of the class with any given prefixes, with sep as a seperator"""
