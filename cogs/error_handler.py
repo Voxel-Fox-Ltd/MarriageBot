@@ -37,6 +37,9 @@ class ErrorHandler(utils.Cog):
         if isinstance(error, ignored_errors):
             return
 
+        # See what we've got to deal with
+        setattr(ctx, "original_author_id", getattr(ctx, "original_author_id", ctx.author.id))
+
         # Set up some errors that the owners are able to bypass
         owner_reinvoke_errors = (
             commands.MissingAnyRole, commands.MissingPermissions,
@@ -127,7 +130,7 @@ class ErrorHandler(utils.Cog):
             pass
 
         # Can't tell what it is and we wanna DM the owner about it? Nice.
-        if self.bot.config['dm_uncaught_errors']:
+        if getattr(self.bot, "config", {}).get('dm_uncaught_errors', False):
             try:
                 raise error
             except Exception:
