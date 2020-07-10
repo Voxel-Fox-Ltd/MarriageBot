@@ -40,9 +40,9 @@ def get_random_string(k=10):
     return ''.join(random.choices(string.ascii_letters, k=10))
 
 
-async def is_related(user, user2):
+async def is_related(user, user2, guild_id:int=0):
     data = await bot.neo4j.cypher(
-        r"""MATCH (n:FamilyTreeMember {user_id: $author_id, guild_id: 0}), (m:FamilyTreeMember {user_id: $user_id, guild_id: 0})
+        r"""MATCH (n:FamilyTreeMember {user_id: $author_id, guild_id: $guild_id}), (m:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})
         CALL gds.alpha.shortestPath.stream({
             nodeProjection: 'FamilyTreeMember',
             relationshipWeightProperty: null,
@@ -53,16 +53,16 @@ async def is_related(user, user2):
             }, startNode: n, endNode: m
         }) YIELD nodeId
         RETURN gds.util.asNode(nodeId)""",
-        author_id=user.id, user_id=user2.id
+        author_id=user.id, user_id=user2.id, guild_id=guild_id
     )
     matches = data['results'][0]['data']
     return matches
 
 
-async def get_tree_root_user_id(user):
+async def get_tree_root_user_id(user, guild_id:int=0):
     data = await bot.neo4j.cypher(
-        r"""MATCH (n:FamilyTreeMember {user_id: $user_id, guild_id: 0})-[:CHILD_OF*]->(m:FamilyTreeMember {guild_id: 0}) RETURN m""",
-        user_id=user.id
+        r"""MATCH (n:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})-[:CHILD_OF*]->(m:FamilyTreeMember {guild_id: $guild_id}) RETURN m""",
+        user_id=user.id, guild_id=guild_id
     )
     matches = data['results'][0]['data']
     if matches:
@@ -70,14 +70,14 @@ async def get_tree_root_user_id(user):
     return user.id
 
 
-async def get_tree_expanded_from_root(root_user):
+async def get_tree_expanded_from_root(root_user, guild_id:int=0):
     output_data = []
     processed_users = []
     uids = [root_user.id]
     while uids:
         data = await bot.neo4j.cypher(
-            r"""UNWIND $user_ids AS X MATCH (n:FamilyTreeMember {user_id: X, guild_id: 0})-[r:PARENT_OF|MARRIED_TO]->(m:FamilyTreeMember {guild_id: 0}) RETURN n, type(r), m""",
-            user_ids=uids
+            r"""UNWIND $user_ids AS X MATCH (n:FamilyTreeMember {user_id: X, guild_id: $guild_id})-[r:PARENT_OF|MARRIED_TO]->(m:FamilyTreeMember {guild_id: $guild_id}) RETURN n, type(r), m""",
+            user_ids=uids, guild_id=guild_id
         )
         processed_users.extend(uids)
         uids.clear()
@@ -93,9 +93,9 @@ async def get_tree_expanded_from_root(root_user):
     return output_data
 
 
-async def get_all_family_member_nodes(user):
+async def get_all_family_member_nodes(user, guild_id:int=0):
     data = await bot.neo4j.cypher(
-        r"""MATCH (u:FamilyTreeMember {user_id: $user_id, guild_id: 0})
+        r"""MATCH (u:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})
         CALL gds.alpha.shortestPath.deltaStepping.stream({
             startNode: u,
             nodeProjection: 'FamilyTreeMember',
@@ -108,15 +108,15 @@ async def get_all_family_member_nodes(user):
         }) YIELD nodeId, distance
         WHERE distance < gds.util.infinity()
         RETURN gds.util.asNode(nodeId), distance""",
-        user_id=user.id
+        user_id=user.id, guild_id=guild_id
     )
     matches = data['results'][0]['data']
     return matches
 
 
-async def get_blood_family_member_nodes(user):
+async def get_blood_family_member_nodes(user, guild_id:int=0):
     data = await bot.neo4j.cypher(
-        r"""MATCH (u:FamilyTreeMember {user_id: $user_id, guild_id: 0})
+        r"""MATCH (u:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})
         CALL gds.alpha.shortestPath.deltaStepping.stream({
             startNode: u,
             nodeProjection: 'FamilyTreeMember',
@@ -128,7 +128,7 @@ async def get_blood_family_member_nodes(user):
         }) YIELD nodeId, distance
         WHERE distance < gds.util.infinity()
         RETURN gds.util.asNode(nodeId), distance""",
-        user_id=user.id
+        user_id=user.id, guild_id=guild_id
     )
     matches = data['results'][0]['data']
     return matches
@@ -142,18 +142,18 @@ async def get_blood_family_size(user):
     return len(await get_blood_family_member_nodes(user))
 
 
-async def get_relationship(user, user2):
-    formatable_string = "(:FamilyTreeMember {{user_id: {0}, guild_id: 0}})"
+async def get_relationship(user, user2, guild_id:int=0):
+    formatable_string = "(:FamilyTreeMember {{user_id: {0}, guild_id: {1}}})"
     tree_member_nodes = []
     uids = []
-    data = await is_related(user, user2)
+    data = await is_related(user, user2, guild_id)
     if not data:
         return "nonesadjkhf"
 
     # Create all the nodes to match
     for row in data:
         user_id = row['row'][0]['user_id']
-        tree_member_nodes.append(formatable_string.format(user_id))
+        tree_member_nodes.append(formatable_string.format(user_id, guild_id))
 
     # Create the cypher
     cypher = "MATCH "
