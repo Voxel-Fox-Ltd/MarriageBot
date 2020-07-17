@@ -63,22 +63,6 @@ CREATE TABLE customisation(
 -- A table for user tree customisations
 
 
-CREATE TABLE command_log(
-    guild_id BIGINT,
-    channel_id BIGINT,
-    user_id BIGINT,
-    message_id BIGINT PRIMARY KEY,
-    content VARCHAR(2000),
-    command_name VARCHAR(100),
-    invoked_with VARCHAR(100),
-    command_prefix VARCHAR(2000),
-    timestamp TIMESTAMP,
-    command_failed BOOLEAN,
-    valid BOOLEAN,
-    shard_id SMALLINT
-);
-
-
 CREATE TABLE blocked_user(
     user_id BIGINT,
     blocked_user_id BIGINT,
@@ -92,38 +76,6 @@ CREATE TABLE dbl_votes(
     timestamp TIMESTAMP
 );
 -- A table to track the last time a user voted for the bot
-
-
-CREATE TABLE shard_logging(
-        message_create INTEGER,
-        message_edit INTEGER,
-        typing_start INTEGER,
-        message_delete INTEGER,
-        reaction_add INTEGER,
-        reaction_remove INTEGER,
-        reaction_clear INTEGER,
-        channel_create INTEGER,
-        channel_delete INTEGER,
-        channel_update INTEGER,
-        member_join INTEGER,
-        member_remove INTEGER,
-        member_update INTEGER,
-        guild_join INTEGER,
-        guild_remove INTEGER,
-        guild_update INTEGER,
-        role_create INTEGER,
-        role_delete INTEGER,
-        role_update INTEGER,
-        emoji_update INTEGER,
-        voice_state_update INTEGER,
-        member_ban INTEGER,
-        member_unban INTEGER,
-        latency DECIMAL,
-        shard_id INTEGER,
-        timestamp TIMESTAMP,
-        PRIMARY KEY (shard_id, timestamp)
-);
--- Simple event counter as logging for shards
 
 
 CREATE TABLE blog_posts(
@@ -143,6 +95,15 @@ CREATE TABLE paypal_purchases(
     guild_id BIGINT NOT NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     checkout_complete_timestamp TIMESTAMP
+);
+
+
+CREATE TABLE channel_list(
+    guild_id BIGINT,
+    channel_id BIGINT,
+    key VARCHAR(50),
+    value VARCHAR(50),
+    PRIMARY KEY (guild_id, channel_id, key)
 );
 
 

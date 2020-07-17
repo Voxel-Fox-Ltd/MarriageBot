@@ -1,5 +1,5 @@
 token = "bot_token"
-dbl_token = ""  # The API token for discordbots.org - probably best left blank
+topgg_token = ""  # The API token for discordbots.org - probably best left blank
 owners = [ 141231597155385344, ]
 bot_admin_role = 1  # The role ID for bot admins
 patreon_roles = [ 1,]  # A list of role IDs for Patreon subscribers
@@ -12,13 +12,15 @@ dbl_vainity = ""  # The vainity link that goes on the 'vote' command
 guild_id = 1  # The ID for the support guild - used to find the bot admin and Patreon roles
 server_specific = false  # Bool flag for whether the bot uses global or server specific trees
 dm_uncaught_errors = false
-topgg_authorization = ""
 
 # Data that's copied directly over to a command without processing
 [command_data]
     guild_invite = ""
     github = ""
     patreon = ""
+    invite_command_enabled = true
+    echo_command_enabled = true
+    stats_command_enabled = true
 
 # API keys for various commands etc yknow
 [api_keys]
@@ -101,9 +103,4 @@ topgg_authorization = ""
 # Woah it's the payment info
 # This is all the data to do with purchasing MBG
 [payment_info]
-    original_price = 2000
-    discount_gbp = 0
-
-[paypal_pdt]
-    receiver_email = ""  # The email that the PayPal account is set up with
-    identity_token = ""
+    authorization = ""

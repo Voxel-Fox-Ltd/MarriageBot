@@ -4,6 +4,7 @@ import glob
 import json
 import logging
 import typing
+import copy
 from datetime import datetime as dt
 from urllib.parse import urlencode
 
@@ -36,7 +37,10 @@ def get_prefix(bot, message:discord.Message):
         x = bot.config['prefix']['default_prefix']
 
     # Allow mentions
-    return commands.when_mentioned_or(x)(bot, message)
+    if x in ["'", "‘"]:
+        x = ["'", "‘"]
+    x = [x] if isinstance(x, str) else x
+    return commands.when_mentioned_or(*x)(bot, message)
 
 
 class CustomBot(commands.AutoShardedBot):
@@ -95,99 +99,6 @@ class CustomBot(commands.AutoShardedBot):
         # Put the bot object in some other classes
         ProposalCache.bot = self
         random_text.RandomText.original.bot = self
-
-    def get_invite_link(self, *, scope:str='bot', response_type:str=None, redirect_uri:str=None, guild_id:int=None, **kwargs):
-        """Gets the invite link for the bot, with permissions all set properly"""
-
-        permissions = discord.Permissions()
-        for name, value in kwargs.items():
-            setattr(permissions, name, value)
-        data = {
-            'client_id': self.config.get('oauth', {}).get('client_id', None) or self.user.id,
-            'scope': scope,
-            'permissions': permissions.value
-        }
-        if redirect_uri:
-            data['redirect_uri'] = redirect_uri
-        if guild_id:
-            data['guild_id'] = guild_id
-        if response_type:
-            data['response_type'] = response_type
-        return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)
-
-    async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, delete:typing.List[discord.Message]=None, timeout=60.0):
-        """Adds a delete button to the given message"""
-
-        # Let's not add delete buttons to DMs
-        if isinstance(message.channel, discord.DMChannel):
-            return
-
-        # Add reaction
-        await message.add_reaction("\N{WASTEBASKET}")
-
-        # Fix up arguments
-        if not isinstance(valid_users, list):
-            valid_users = [valid_users]
-
-        # Wait for response
-        def check(r, u) -> bool:
-            if r.message.id != message.id:
-                return False
-            if u.bot is True:
-                return False
-            if isinstance(u, discord.Member) is False:
-                return False
-            if getattr(u, 'roles', None) is None:
-                return False
-            if str(r.emoji) != "\N{WASTEBASKET}":
-                return False
-            if u.id in [user.id for user in valid_users] or u.permissions_in(message.channel).manage_messages:
-                return True
-            return False
-        try:
-            await self.wait_for("reaction_add", check=check, timeout=timeout)
-        except asyncio.TimeoutError:
-            try:
-                return await message.remove_reaction("\N{WASTEBASKET}", self.user)
-            except Exception:
-                return
-
-        # We got a response
-        if delete is None:
-            delete = [message]
-
-        # Try and bulk delete
-        bulk = False
-        if message.guild:
-            permissions: discord.Permissions = message.channel.permissions_for(message.guild.me)
-            bulk = permissions.manage_messages and permissions.read_message_history
-        try:
-            await message.channel.purge(check=lambda m: m.id in [i.id for i in delete], bulk=bulk)
-        except Exception:
-            return  # Ah well
-
-    async def fetch_support_guild(self):
-        """Gets and stores the support guild defined in the bot settings"""
-
-        self.support_guild = self.get_guild(self.config['guild_id']) or await self.fetch_guild(self.config['guild_id'])
-        return self.support_guild
-
-    @property
-    def is_server_specific(self) -> bool:
-        """Whether or not the BOT is running the server specific version"""
-
-        return self.config['server_specific']
-
-    def allows_incest(self, guild:typing.Union[discord.Guild, int]) -> bool:
-        """Returns if a given GUILD allows incest or not
-
-        Params:
-            guild_id: int
-                The ID for the guild you want to check against
-        """
-
-        guild_id = getattr(guild, 'id', guild)
-        return self.is_server_specific and guild_id in self.guild_settings and self.guild_settings[guild_id]['allow_incest']
 
     async def startup(self):
         """The startup method for the bot - clears all the caches and reads
@@ -332,6 +243,121 @@ class CustomBot(commands.AutoShardedBot):
         # And update DBL
         await self.post_guild_count()
 
+    async def get_all_table_data(self, db, table_name):
+        """Get all data from a table"""
+
+        return await self.run_sql_exit_on_error(db, "SELECT * FROM {0}".format(table_name))
+
+    async def get_list_table_data(self, db, table_name, key):
+        """Get all data from a table"""
+
+        return await self.run_sql_exit_on_error(db, "SELECT * FROM {0} WHERE key=$1".format(table_name), key)
+
+    def get_invite_link(self, *, scope:str='bot', response_type:str=None, redirect_uri:str=None, guild_id:int=None, **kwargs):
+        """Gets the invite link for the bot, with permissions all set properly"""
+
+        permissions = discord.Permissions()
+        for name, value in kwargs.items():
+            setattr(permissions, name, value)
+        data = {
+            'client_id': self.config.get('oauth', {}).get('client_id', None) or self.user.id,
+            'scope': scope,
+            'permissions': permissions.value
+        }
+        if redirect_uri:
+            data['redirect_uri'] = redirect_uri
+        if guild_id:
+            data['guild_id'] = guild_id
+        if response_type:
+            data['response_type'] = response_type
+        return 'https://discordapp.com/oauth2/authorize?' + urlencode(data)
+
+    async def add_delete_button(self, message:discord.Message, valid_users:typing.List[discord.User], *, delete:typing.List[discord.Message]=None, timeout=60.0):
+        """Adds a delete button to the given message"""
+
+        # Let's not add delete buttons to DMs
+        if isinstance(message.channel, discord.DMChannel):
+            return
+
+        # Add reaction
+        await message.add_reaction("\N{WASTEBASKET}")
+
+        # Fix up arguments
+        if not isinstance(valid_users, list):
+            valid_users = [valid_users]
+
+        # Wait for response
+        def check(r, u) -> bool:
+            if r.message.id != message.id:
+                return False
+            if u.bot is True:
+                return False
+            if isinstance(u, discord.Member) is False:
+                return False
+            if getattr(u, 'roles', None) is None:
+                return False
+            if str(r.emoji) != "\N{WASTEBASKET}":
+                return False
+            if u.id in [user.id for user in valid_users] or u.permissions_in(message.channel).manage_messages:
+                return True
+            return False
+        try:
+            await self.wait_for("reaction_add", check=check, timeout=timeout)
+        except asyncio.TimeoutError:
+            try:
+                return await message.remove_reaction("\N{WASTEBASKET}", self.user)
+            except Exception:
+                return
+
+        # We got a response
+        if delete is None:
+            delete = [message]
+
+        # Try and bulk delete
+        bulk = False
+        if message.guild:
+            permissions: discord.Permissions = message.channel.permissions_for(message.guild.me)
+            bulk = permissions.manage_messages and permissions.read_message_history
+        try:
+            await message.channel.purge(check=lambda m: m.id in [i.id for i in delete], bulk=bulk)
+        except Exception:
+            return  # Ah well
+
+    @property
+    def owner_ids(self) -> list:
+        """Gives you a list of the owner IDs"""
+
+        return self.config['owners']
+
+    @owner_ids.setter
+    def owner_ids(self, value):
+        """A setter method so that the original bot object doesn't complain"""
+
+        pass
+
+    async def fetch_support_guild(self):
+        """Gets and stores the support guild defined in the bot settings"""
+
+        self.support_guild = self.get_guild(self.config['guild_id']) or await self.fetch_guild(self.config['guild_id'])
+        return self.support_guild
+
+    @property
+    def is_server_specific(self) -> bool:
+        """Whether or not the BOT is running the server specific version"""
+
+        return self.config['server_specific']
+
+    def allows_incest(self, guild:typing.Union[discord.Guild, int]) -> bool:
+        """Returns if a given GUILD allows incest or not
+
+        Params:
+            guild_id: int
+                The ID for the guild you want to check against
+        """
+
+        guild_id = getattr(guild, 'id', guild)
+        return self.is_server_specific and guild_id in self.guild_settings and self.guild_settings[guild_id]['allow_incest']
+
     async def on_message(self, message:discord.Message):
         """Overriding the default on_message event to push my own context"""
 
@@ -452,31 +478,6 @@ class CustomBot(commands.AutoShardedBot):
             )
             status = getattr(discord.Status, presence['status'].lower())
             await self.change_presence(activity=activity, status=status)
-
-    async def post_guild_count(self):
-        """Post the average guild count to DiscordBots.org"""
-
-        # Only shard 0 can post
-        if self.shard_count > 1 and 0 not in self.shard_ids:
-            return
-
-        # Only post if there's actually a DBL token set
-        if not self.config.get('dbl_token'):
-            self.logger.warning("No DBL token has been provided")
-            return
-
-        url = f'https://discordbots.org/api/bots/{self.user.id}/stats'
-        data = {
-            'server_count': int((len(self.guilds) / len(self.shard_ids)) * self.shard_count),
-            'shard_count': self.shard_count,
-            'shard_id': 0,
-        }
-        headers = {
-            'Authorization': self.config['dbl_token']
-        }
-        self.logger.info(f"Sending POST request to DBL with data {json.dumps(data)}")
-        async with self.session.post(url, json=data, headers=headers):
-            pass
 
     def reload_config(self):
         """Opens the config file, loads it (as TOML) and stores it in Bot.config"""

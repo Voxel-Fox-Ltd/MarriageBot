@@ -45,6 +45,7 @@ class MiscCommands(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
+    @utils.checks.is_config_set('command_data', 'invite_command_enabled')
     async def invite(self, ctx:utils.Context):
         """Gives you an invite link for the bot"""
 
@@ -63,14 +64,16 @@ class MiscCommands(utils.Cog):
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def echo(self, ctx:utils.Context, *, content:commands.clean_content):
-        """Echos a saying"""
+    @utils.checks.is_config_set('command_data', 'echo_command_enabled')
+    async def echo(self, ctx:utils.Context, *, content:str):
+        """Echos the given content into the channel"""
 
         await ctx.send(content, embeddify=False)
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
+    @utils.checks.is_config_set('command_data', 'stats_command_enabled')
     async def perks(self, ctx:utils.Context):
         """Shows you the perks associated with different support tiers"""
 
