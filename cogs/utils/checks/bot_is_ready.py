@@ -1,4 +1,3 @@
-# from discord.ext.commands import CheckFailure, Context, check
 from discord.ext import commands
 
 
@@ -12,7 +11,7 @@ def bot_is_ready():
     """The check for whether the bot has cached all of its data yet"""
 
     async def predicate(ctx:commands.Context):
-        if ctx.bot.is_ready():
+        if ctx.bot.is_ready() and ctx.bot.startup_method.done():
             return True
-        raise BotNotReady
+        raise BotNotReady()
     return commands.check(predicate)

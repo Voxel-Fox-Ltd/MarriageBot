@@ -235,13 +235,10 @@ class CustomBot(commands.AutoShardedBot):
         # Disconnect from the database
         await db.disconnect()
 
-        # Save all available names to redis
-        async with self.redis() as re:
-            for user in self.users:
-                await re.set(f'UserName-{user.id}', str(user))
-
-        # And update DBL
-        await self.post_guild_count()
+        # # Save all available names to redis
+        # async with self.redis() as re:
+        #     for user in self.users:
+        #         await re.set(f'UserName-{user.id}', str(user))
 
     async def get_all_table_data(self, db, table_name):
         """Get all data from a table"""
