@@ -3,6 +3,7 @@ import random
 import string
 from datetime import datetime as dt
 import enum
+import typing
 
 import aioneo4j
 import discord
@@ -11,21 +12,35 @@ from discord.ext import commands
 from cogs import utils
 
 
+try:
+    import uvloop
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+except ImportError:
+    pass
+
 bot = commands.Bot(command_prefix='m,')
 bot.neo4j = aioneo4j.Neo4j(host='127.0.0.1', port=7474, user='neo4j', password='compression', database='marriagebottest')
 
 
 class RelationshipType(enum.Enum):
-    MARRIED_TO = 1
-    PARENT_OF = 2
+    """The different valid kinds of relationship"""
+
+    MARRIED_TO = enum.auto()
+    PARENT_OF = enum.auto()
+    CHILD_OF = enum.auto()
 
 
 class FamilyRelationship(object):
+    """A helper object dataclass for cypher outputs to store two users and their relationship"""
 
-    def __init__(self, user:int, relationship:RelationshipType, user2:int):
+    __slots__ = ('user', 'user_name', 'relationship', 'user2', 'user2_name',)
+
+    def __init__(self, user:int, user_name:str, relationship:RelationshipType, user2:int, user2_name:str):
         self.user = user
+        self.user_name = user_name
         self.relationship = relationship
         self.user2 = user2
+        self.user2_name = user2_name
 
     def __eq__(self, other):
         return all([
@@ -40,7 +55,10 @@ def get_random_string(k=10):
     return ''.join(random.choices(string.ascii_letters, k=10))
 
 
-async def is_related(user, user2, guild_id:int=0):
+async def is_related(user, user2, guild_id:int=0) -> typing.List[dict]:
+    """A cypher to grab the shortest path from one user to another user
+    If there is no relationship between the two users, an empty list will be returned (falsy)"""
+
     data = await bot.neo4j.cypher(
         r"""MATCH (n:FamilyTreeMember {user_id: $author_id, guild_id: $guild_id}), (m:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})
         CALL gds.alpha.shortestPath.stream({
@@ -59,7 +77,9 @@ async def is_related(user, user2, guild_id:int=0):
     return matches
 
 
-async def get_tree_root_user_id(user, guild_id:int=0):
+async def get_tree_root_user_id(user, guild_id:int=0) -> int:
+    """A cypher to grab the root user of a given member's family tree when spanned up through their parentage line"""
+
     data = await bot.neo4j.cypher(
         r"""MATCH (n:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})-[:CHILD_OF*]->(m:FamilyTreeMember {guild_id: $guild_id}) RETURN m""",
         user_id=user.id, guild_id=guild_id
@@ -70,7 +90,10 @@ async def get_tree_root_user_id(user, guild_id:int=0):
     return user.id
 
 
-async def get_tree_expanded_from_root(root_user, guild_id:int=0):
+async def get_tree_expanded_from_root(root_user, guild_id:int=0) -> typing.List[FamilyRelationship]:
+    """A cypher that will take a root user and expand _downwards_ from them to give a tree of blood
+    relations as a list of FamilyRelationships"""
+
     output_data = []
     processed_users = []
     uids = [root_user.id]
@@ -83,7 +106,7 @@ async def get_tree_expanded_from_root(root_user, guild_id:int=0):
         uids.clear()
         for return_value in data['results'][0]['data']:
             n, r, m = return_value['row']
-            relationship = FamilyRelationship(n['user_id'], RelationshipType[r], m['user_id'])
+            relationship = FamilyRelationship(n['user_id'], n.get('username'), RelationshipType[r], m['user_id'], m.get('username'))
             if relationship not in output_data:
                 output_data.append(relationship)
             if n['user_id'] not in processed_users:
@@ -93,7 +116,10 @@ async def get_tree_expanded_from_root(root_user, guild_id:int=0):
     return output_data
 
 
-async def get_all_family_member_nodes(user, guild_id:int=0):
+async def get_all_family_member_nodes(user, guild_id:int=0) -> typing.List[dict]:
+    """A cypher that calls the deltaStepping algorithm to grab all the users in a
+    given family's tree"""
+
     data = await bot.neo4j.cypher(
         r"""MATCH (u:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})
         CALL gds.alpha.shortestPath.deltaStepping.stream({
@@ -114,7 +140,10 @@ async def get_all_family_member_nodes(user, guild_id:int=0):
     return matches
 
 
-async def get_blood_family_member_nodes(user, guild_id:int=0):
+async def get_blood_family_member_nodes(user, guild_id:int=0) -> typing.List[dict]:
+    """A cypher that'll call the deltaStepping algorithm to be able to grab every node from
+    a give user's family tree"""
+
     data = await bot.neo4j.cypher(
         r"""MATCH (u:FamilyTreeMember {user_id: $user_id, guild_id: $guild_id})
         CALL gds.alpha.shortestPath.deltaStepping.stream({
@@ -134,21 +163,28 @@ async def get_blood_family_member_nodes(user, guild_id:int=0):
     return matches
 
 
-async def get_family_size(user):
+async def get_family_size(user) -> int:
+    """A cypher returning the size of a user's family"""
+
     return len(await get_all_family_member_nodes(user))
 
 
-async def get_blood_family_size(user):
+async def get_blood_family_size(user) -> int:
+    """A cypher returning the size of a user's family when only considering blood relatives"""
+
     return len(await get_blood_family_member_nodes(user))
 
 
-async def get_relationship(user, user2, guild_id:int=0):
+async def get_relationship(user, user2, guild_id:int=0) -> typing.Optional[typing.List[str]]:
+    """A cypher that will return a list of MARRIED_TO, CHILD_OF, and PARENT_OF between two users
+    If there's no relationship, the value None will be returned"""
+
     formatable_string = "(:FamilyTreeMember {{user_id: {0}, guild_id: {1}}})"
     tree_member_nodes = []
     uids = []
     data = await is_related(user, user2, guild_id)
     if not data:
-        return "nonesadjkhf"
+        return None
 
     # Create all the nodes to match
     for row in data:
@@ -172,10 +208,107 @@ async def get_relationship(user, user2, guild_id:int=0):
     return matches
 
 
+class FamilyMemberDotGenerator(object):
+    """A helper class for the generation of DOT code from a family member object"""
+
+    @staticmethod
+    async def join_married_users(user_rank:list) -> str:
+        """Join two married node users together"""
+
+        added_relationships = []
+        output_string = "{rank=same;"
+        for user in user_rank:
+            if user.partner:
+                if user.relationship_string not in added_relationships and user.relationship_string.split("_")[-1] == str(user.user_id):
+                    output_string += f"{user.user_id} -> {user.relationship_string} -> {user.partner.user_id};"
+                    output_string += f"""{user.relationship_string}[shape=circle, label="", height=0.001, width=0.001];"""
+                    added_relationships.append(user._relationship_string)
+        output_string += "}"
+        return output_string
+
+    @staticmethod
+    async def join_parents_to_child_handler(user_rank:list) -> str:
+        """Join a parent/relationship node to a child handler node"""
+
+        output_string = ""
+        added_relationships = []
+        for user in user_rank:
+            if not user.children:
+                continue
+            if user.relationship_string not in added_relationships:
+                output_string += f"{user.relationship_string} -> h{user.relationship_string};"
+                added_relationships.append(user._relationship_string)
+        return output_string
+
+    @staticmethod
+    async def join_children_to_child_handler(user_rank:list) -> str:
+        """Join a child handler node to a list of children"""
+
+        output_string = ""
+        added_relationships = []
+        for user in user_rank:
+            for child in user.children:
+                output_string += f"h{user.relationship_string} -> {child.user_id};"
+            if user.children and user._relationship_string not in added_relationships:
+                output_string += f"""h{user.relationship_string}[shape=circle, label="", height=0.001, width=0.001];"""
+                added_relationships.append(user._relationship_string)
+        return output_string
+
+    @classmethod
+    async def expand_downwards_to_dot(cls, root_user) -> str:
+        """Expand this tree downwards into a dot script"""
+
+        added_users = 0
+        output_string = (
+            """digraph{rankdir="LR";"""
+            """node [shape=box, fontcolor="#FFFFFF", color="#000000", fillcolor="#000000", style=filled];"""
+            """edge [dir=none, color="#000000"];"""
+        )
+
+        # Loop through every user and append their partners
+        this_rank_of_users = [root_user]
+        for user in this_rank_of_users.copy():
+            if user.partner:
+                this_rank_of_users.append(user.partner)
+
+        # Add these users to the output string
+        while this_rank_of_users:
+
+            # Add every user and user label
+            for user in this_rank_of_users:
+                output_string += f"""{user.user_id}[label="{user.name}"];"""
+                added_users += 1
+
+            gathered_strings = await asyncio.gather(
+                cls.join_married_users(this_rank_of_users),
+                cls.join_parents_to_child_handler(this_rank_of_users),
+                cls.join_children_to_child_handler(this_rank_of_users),
+            )
+            # gathered_strings = await asyncio.wait_for(gathered_methods, timeout=None)
+            married_users_string, parents_to_child_handler_string, child_handler_to_child_string = gathered_strings
+            output_string += married_users_string + parents_to_child_handler_string + child_handler_to_child_string
+
+            # Change the list of users to be the current rank's children and their partners
+            old_rank_of_users = this_rank_of_users.copy()
+            this_rank_of_users = []
+            [this_rank_of_users.extend(i.children) for i in old_rank_of_users]
+            for user in this_rank_of_users.copy():
+                if user.partner:
+                    this_rank_of_users.append(user.partner)
+
+        # Return stuff
+        output_string += "}"
+        return output_string, added_users
+
+
 class FamilyMember(object):
+    """An object to hold a given node from the database including all of its relationships"""
+
+    __slots__ = ('user_id', '_name', 'parent', 'children', 'partner', '_relationship_string',)
 
     def __init__(self, user_id:int):
         self.user_id = user_id
+        self._name = None
         self.parent = None
         self.children = []
         self.partner = None
@@ -195,70 +328,9 @@ class FamilyMember(object):
             self._relationship_string = f"{self.user_id}"
         return self._relationship_string
 
-    def expand_downwards_to_dot(self) -> str:
-        """Expand this tree downwards into a dot script"""
-
-        added_users = 0
-        output_string = (
-            """digraph{rankdir="LR";"""
-            """node [shape=box, fontcolor="#FFFFFF", color="#000000", fillcolor="#000000", style=filled];"""
-            """edge [dir=none, color="#000000"];"""
-        )
-
-        # Loop through every user and append their partners
-        this_rank_of_users = [self]
-        for user in this_rank_of_users.copy():
-            if user.partner:
-                this_rank_of_users.append(user.partner)
-
-        # Add these users to the output string
-        while this_rank_of_users:
-
-            # Add every user and user label
-            for user in this_rank_of_users:
-                output_string += f"""{user.user_id}[label="{user.user_id}"];"""
-                added_users += 1
-
-            # Join married users together
-            added_relationships = []
-            output_string += "{rank=same;"
-            for user in this_rank_of_users:
-                if user.partner:
-                    if user.relationship_string not in added_relationships and user.relationship_string.split("_")[-1] == str(user.user_id):
-                        output_string += f"{user.user_id} -> {user.relationship_string} -> {user.partner.user_id};"
-                        output_string += f"""{user.relationship_string}[shape=circle, label="", height=0.001, width=0.001];"""
-                        added_relationships.append(user._relationship_string)
-            output_string += "}"
-
-            # Join parents to their child root node
-            added_relationships = []
-            for user in this_rank_of_users:
-                if not user.children:
-                    continue
-                if user.relationship_string not in added_relationships:
-                    output_string += f"{user.relationship_string} -> h{user.relationship_string};"
-                    added_relationships.append(user._relationship_string)
-
-            # Join children to their parent root node
-            added_relationships = []
-            for user in this_rank_of_users:
-                for child in user.children:
-                    output_string += f"h{user.relationship_string} -> {child.user_id};"
-                if user.children and user._relationship_string not in added_relationships:
-                    output_string += f"""h{user.relationship_string}[shape=circle, label="", height=0.001, width=0.001];"""
-                    added_relationships.append(user._relationship_string)
-
-            # Change the list of users to be the current rank's children and their partners
-            old_rank_of_users = this_rank_of_users.copy()
-            this_rank_of_users = []
-            [this_rank_of_users.extend(i.children) for i in old_rank_of_users]
-            for user in this_rank_of_users.copy():
-                if user.partner:
-                    this_rank_of_users.append(user.partner)
-
-        # Return stuff
-        output_string += "}"
-        return output_string, added_users
+    @property
+    def name(self):
+        return self._name or self.user_id
 
     @classmethod
     def get_family_from_cypher(cls, cypher_output:list, root_user_id:int=None):
@@ -268,13 +340,16 @@ class FamilyMember(object):
         family_objects = {}
         for relationship in cypher_output:
             node = family_objects.get(relationship.user, FamilyMember(relationship.user))
+            node._name = relationship.user_name
             family_objects[relationship.user] = node
             if relationship.relationship == RelationshipType.MARRIED_TO:
                 node.partner = family_objects.get(relationship.user2, FamilyMember(relationship.user2))
+                node.partner._name = relationship.user2_name
                 node.partner.partner = node
                 family_objects[relationship.user2] = node.partner
             elif relationship.relationship == RelationshipType.PARENT_OF:
                 new_object = family_objects.get(relationship.user2, FamilyMember(relationship.user2))
+                new_object._name = relationship.user2_name
                 if new_object not in node.children:
                     node.children.append(new_object)
                     node.children[-1].parent = node
@@ -496,7 +571,7 @@ class FamilyCommands(commands.Cog):
     async def relationship(self, ctx:utils.Context, user:discord.Member):
         """Tells you if you're related to a user"""
 
-        return await ctx.send(await get_relationship(ctx.author, user))
+        return await ctx.send(await get_relationship(ctx.author, user) or "You aren't related.")
 
     @commands.command(cls=utils.Command)
     async def familysize(self, ctx:utils.Context, user_id:utils.converters.UserID=None):
@@ -516,11 +591,14 @@ class FamilyCommands(commands.Cog):
         start_time = dt.utcnow()
         root_user_id = await get_tree_root_user_id(discord.Object(user_id))
         root_found_time = dt.utcnow()
-        family = await get_tree_expanded_from_root(discord.Object(root_user_id))
+        root_user = discord.Object(root_user_id)
+        family = await get_tree_expanded_from_root(root_user)
         family_spanned_time = dt.utcnow()
-        root_user = FamilyMember.get_family_from_cypher(family, root_user_id=root_user_id)
+        root_family_member_object = FamilyMember.get_family_from_cypher(family, root_user_id=root_user_id)
+        if root_family_member_object is None:
+            return await ctx.send("You have no family which I can graph.")
         cached_time = dt.utcnow()
-        dot, user_count = root_user.expand_downwards_to_dot()
+        dot, user_count = await FamilyMemberDotGenerator.expand_downwards_to_dot(root_family_member_object)
         dot_generated_time = dt.utcnow()
 
         # Write to file
@@ -537,7 +615,7 @@ class FamilyCommands(commands.Cog):
             'dot', '-Tpng', f'{ctx.author.id}.gz', '-o', f'{ctx.author.id}.png', '-Gcharset=UTF-8',
         ])
         try:
-            await asyncio.wait_for(dot_process.wait(), 10)
+            await asyncio.wait_for(dot_process.wait(), 15)
         except asyncio.TimeoutError:
             pass
         try:
@@ -548,6 +626,10 @@ class FamilyCommands(commands.Cog):
             raise e
         output_as_image_time = dt.utcnow()
 
+        # Generate flavourtext
+        flavourtext = f"Showing {await get_blood_family_size(root_user)} of {await get_family_size(root_user)} family members."
+        flavourtext_generation_time = dt.utcnow()
+
         # Generate debug string
         output_string = [
             f"Time taken to get root: {(root_found_time - start_time).total_seconds() * 1000:.2f}ms",
@@ -556,7 +638,9 @@ class FamilyCommands(commands.Cog):
             f"Time taken to generate dot: {(dot_generated_time - cached_time).total_seconds() * 1000:.2f}ms",
             f"Time taken to write to file: {(written_to_file_time - dot_generated_time).total_seconds() * 1000:.2f}ms",
             f"Time taken to interpret dot: {(output_as_image_time - written_to_file_time).total_seconds() * 1000:.2f}ms",
+            f"Time taken to make family size flavourtext: {(flavourtext_generation_time - output_as_image_time).total_seconds() * 1000:.2f}ms",
             f"**Total time taken: {(dt.utcnow() - start_time).total_seconds() * 1000:.2f}ms**",
+            flavourtext,
         ]
 
         # Output file
@@ -576,9 +660,17 @@ class FamilyCommands(commands.Cog):
             return await ctx.send(str(e))
         return await ctx.send(data['results'][0]['data'])
 
+    @utils.Cog.listener()
+    async def on_message(self, message):
+        """Store usernames in their family tree nodes"""
 
-# get_tree_expanded_from_root
+        await self.bot.neo4j.cypher(
+            r"""MATCH (n:FamilyTreeMember {user_id: $user_id}) SET n.username=$username""",
+            user_id=message.author.id, username=str(message.author)
+        )
+
+
 bot.add_cog(FamilyCommands(bot))
-# from cogs import error_handler
-# error_handler.setup(bot)
+from cogs import error_handler
+error_handler.setup(bot)
 bot.run("NDg4MjI3NzMyMDU3MjI3MjY1.Xv0XyA.ogegLsYZS3B2vvTgL18yxL1jkhY")
