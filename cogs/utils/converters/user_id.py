@@ -14,12 +14,6 @@ class UserID(commands.IDConverter):
     async def convert(self, ctx:commands.Context, value:str) -> int:
         """Converts the given value to a valid user ID"""
 
-        # Maybe they gave a straight?
-        try:
-            return int(value)
-        except ValueError:
-            pass
-
         # They pinged the user
         match = self.USER_ID_REGEX.search(value)
         if match is not None:

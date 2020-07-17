@@ -112,7 +112,7 @@ class Information(utils.Cog):
 
         # Check against themselves
         if (user == ctx.author and other is None) or (user == other):
-            return await ctx.send(f"Unsurprisingly, you're pretty closely related to yourself.")
+            return await ctx.send("Unsurprisingly, you're pretty closely related to yourself.")
         await ctx.channel.trigger_typing()
 
         # Get their relation
@@ -210,14 +210,16 @@ class Information(utils.Cog):
             return await ctx.send(f"`{username}` has no family to put into a tree .-.")
 
         # Write their treemaker code to a file
-        start_time = dt.now()
+        start_time = dt.utcnow()
         async with self.bot.database() as db:
             ctu = await utils.CustomisedTreeUser.get(ctx.author.id, db)
+        customisation_found_time = dt.utcnow()
         async with ctx.channel.typing():
             if stupid_tree:
                 dot_code = await tree.to_full_dot_script(self.bot, ctu)
             else:
                 dot_code = await tree.to_dot_script(self.bot, None if all_guilds else ctx.guild, ctu)
+        dot_generated_time = dt.utcnow()
 
         try:
             with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:
@@ -225,6 +227,7 @@ class Information(utils.Cog):
         except Exception as e:
             self.logger.error(f"Could not write to {self.bot.config['tree_file_location']}/{ctx.author.id}.gz")
             raise e
+        written_to_file_time = dt.utcnow()
 
         # Convert to an image
         dot = await asyncio.create_subprocess_exec(*[
@@ -246,8 +249,17 @@ class Information(utils.Cog):
             raise e
 
         # Get time taken
-        end_time = dt.now()
-        time_taken = (end_time - start_time).total_seconds()
+        output_as_image_time = dt.utcnow()
+        time_taken = (output_as_image_time - start_time).total_seconds()
+
+        # Generate debug string
+        output_string = [
+            f"Time taken to get customisations: {(customisation_found_time - start_time).total_seconds() * 1000:.2f}ms",
+            f"Time taken to generate dot: {(dot_generated_time - customisation_found_time).total_seconds() * 1000:.2f}ms",
+            f"Time taken to write to file: {(written_to_file_time - dot_generated_time).total_seconds() * 1000:.2f}ms",
+            f"Time taken to interpret dot: {(output_as_image_time - written_to_file_time).total_seconds() * 1000:.2f}ms",
+            f"**Total time taken: {(dt.utcnow() - start_time).total_seconds() * 1000:.2f}ms**",
+        ]
 
         # Send file and delete cached
         file = discord.File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
@@ -256,6 +268,8 @@ class Information(utils.Cog):
             text += f"showing {len(tree.span(expand_upwards=True, add_parent=True))} family members."
         else:
             text += f"showing {len(tree.span())} blood relatives out of {len(tree.span(expand_upwards=True, add_parent=True))} total family members (see `{ctx.prefix}perks` for your full family)."
+        if ctx.original_author_id in self.bot.owner_ids:
+            text += '\n\n' + '\n'.join(output_string)
         await ctx.send(text, file=file)
 
 
