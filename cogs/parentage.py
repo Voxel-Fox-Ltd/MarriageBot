@@ -37,26 +37,28 @@ class Parentage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Manage children
-        if self.bot.is_server_specific:
-            guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
-            if guild_max_children:
-                gold_children_amount = max([
-                    amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
-                ])
+        if ctx.original_author_id not in self.bot.owner_ids:
+            if self.bot.is_server_specific:
+                guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
+                if guild_max_children:
+                    gold_children_amount = max([
+                        amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
+                    ])
+                else:
+                    gold_children_amount = 0
             else:
                 gold_children_amount = 0
-        else:
-            gold_children_amount = 0
-        normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, target)]
-        children_amount = min([max([gold_children_amount, normal_children_amount, min(self.bot.config['max_children'])]), max(self.bot.config['max_children'])])
-        if len(target_tree._children) >= children_amount:
-            return await ctx.send(f"They're currently at the maximum amount of children you can have - see `m!perks` for more information.")
+            normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, target)]
+            children_amount = min([max([gold_children_amount, normal_children_amount, min(self.bot.config['max_children'])]), max(self.bot.config['max_children'])])
+            if len(target_tree._children) >= children_amount:
+                return await ctx.send(f"They're currently at the maximum amount of children you can have - see `m!perks` for more information.")
 
         # Check the size of their trees
-        max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members'] if self.bot.is_server_specific else self.bot.config['max_family_members']
-        async with ctx.channel.typing():
-            if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
-                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
+        if ctx.original_author_id not in self.bot.owner_ids:
+            max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members'] if self.bot.is_server_specific else self.bot.config['max_family_members']
+            async with ctx.channel.typing():
+                if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
+                    return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
 
         # Valid request - ask the other person
         if not target.bot:
@@ -126,26 +128,28 @@ class Parentage(utils.Cog):
             return await ctx.send(text_processor.target_is_family())
 
         # Manage children
-        if self.bot.is_server_specific:
-            guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
-            if guild_max_children:
-                gold_children_amount = max([
-                    amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
-                ])
+        if ctx.original_author_id not in self.bot.owner_ids:
+            if self.bot.is_server_specific:
+                guild_max_children = self.bot.guild_settings[ctx.guild.id]['max_children']
+                if guild_max_children:
+                    gold_children_amount = max([
+                        amount if int(role_id) in ctx.author._roles else 0 for role_id, amount in guild_max_children.items()
+                    ])
+                else:
+                    gold_children_amount = 0
             else:
                 gold_children_amount = 0
-        else:
-            gold_children_amount = 0
-        normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, ctx.author)]
-        children_amount = min([max([gold_children_amount, normal_children_amount, min(self.bot.config['max_children'])]), max(self.bot.config['max_children'])])
-        if len(instigator_tree._children) >= children_amount:
-            return await ctx.send(f"You're currently at the maximum amount of children you can have - see `m!perks` for more information.")
+            normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, ctx.author)]
+            children_amount = min([max([gold_children_amount, normal_children_amount, min(self.bot.config['max_children'])]), max(self.bot.config['max_children'])])
+            if len(instigator_tree._children) >= children_amount:
+                return await ctx.send(f"You're currently at the maximum amount of children you can have - see `m!perks` for more information.")
 
         # Check the size of their trees
-        max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members'] if self.bot.is_server_specific else self.bot.config['max_family_members']
-        async with ctx.channel.typing():
-            if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
-                return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
+        if ctx.original_author_id not in self.bot.owner_ids:
+            max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members'] if self.bot.is_server_specific else self.bot.config['max_family_members']
+            async with ctx.channel.typing():
+                if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
+                    return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
 
         # No parent, send request
         await ctx.send(text_processor.valid_target())

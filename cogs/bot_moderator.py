@@ -10,7 +10,7 @@ from cogs import utils
 class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def uncache(self, ctx:utils.Context, user:utils.converters.UserID):
         """Removes a user from the propsal cache."""
@@ -19,7 +19,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Sent Redis request to remove user from cache.")
 
     @commands.command(cls=utils.Command, hidden=True)
-    # @utils.checks.is_bot_administrator()
+    # @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def cachename(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Removes a user from the propsal cache."""
@@ -32,7 +32,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Donezo babey.")
 
     @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def recache(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object"""
@@ -63,7 +63,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Published update.")
 
     @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def recachefamily(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object, but through their whole family"""
@@ -214,7 +214,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Consider it done.")
 
     @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def addvoter(self, ctx:utils.Context, user:utils.converters.UserID):
         """Adds a voter to the database"""
@@ -225,7 +225,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send("Consider it done.")
 
     @commands.command(aliases=['addblogpost'], cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
         """Adds a blog post to the database"""
@@ -242,7 +242,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"{verb} blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
 
     @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def createredirect(self, ctx:utils.Context, code:str, redirect:str):
         """Adds a redirect to the database"""
@@ -252,7 +252,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Created redirect: https://marriagebot.xyz/r/{code}", embeddify=False)
 
     @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_administrator()
+    @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def randomisetreecolours(self, ctx:utils.Context, user:utils.converters.UserID):
         """Adds a redirect to the database"""

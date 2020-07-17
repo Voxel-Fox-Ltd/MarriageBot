@@ -45,7 +45,8 @@ class ErrorHandler(utils.Cog):
             utils.errors.IsNotDonator, utils.errors.IsNotPatreon, utils.errors.IsNotPaypal,
             utils.errors.IsNotVoter, commands.MissingAnyRole, commands.MissingPermissions,
             commands.MissingRole, commands.CommandOnCooldown, commands.DisabledCommand,
-            utils.errors.BlockedUserError, utils.errors.BotNotReady,
+            utils.errors.BlockedUserError, utils.errors.BotNotReady, utils.errors.NotBotModerator,
+            utils.errors.NotBotSupport, utils.errors.NotServerSpecific
         )
         if ctx.original_author_id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
@@ -78,7 +79,7 @@ class ErrorHandler(utils.Cog):
             return await ctx.send(f"This instance of the bot is not set to server specific.")
 
         # Not a bot administrator
-        elif isinstance(error, utils.errors.NotBotAdministrator):
+        elif isinstance(error, utils.errors.NotBotSupport):
             return await ctx.send(f"You need to be registered as MarriageBot support to run this command.")
 
         # Not set to server specific

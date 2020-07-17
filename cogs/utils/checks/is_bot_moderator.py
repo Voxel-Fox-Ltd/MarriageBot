@@ -10,13 +10,13 @@ class NotBotModerator(commands.CommandError):
     pass
 
 
-class NotBotAdministrator(NotBotModerator):
+class NotBotSupport(NotBotModerator):
     """Thrown when the user isn't set as a bot administrator"""
 
     pass
 
 
-async def is_bot_administrator_predicate(ctx:commands.Context):
+async def is_bot_support_predicate(ctx:commands.Context):
     """Returns True if the user is on the support guild with the bot moderator role"""
 
     # Make sure both settings are set
@@ -41,13 +41,13 @@ async def is_bot_administrator_predicate(ctx:commands.Context):
     return False
 
 
-def is_bot_administrator():
+def is_bot_support():
     """Checks whether the bot is set as an administrator"""
 
     async def predicate(ctx:commands.Context):
-        if await is_bot_administrator_predicate(ctx):
+        if await is_bot_support_predicate(ctx):
             return True
-        raise NotBotAdministrator()
+        raise NotBotSupport()
     return commands.check(predicate)
 
 
@@ -55,7 +55,7 @@ def is_server_specific_bot_moderator():
     """Check to see if the user has a role either called 'MarriageBot Moderator' or 'SSF MarriageBot Moderator'"""
 
     async def predicate(ctx:commands.Context):
-        if await is_bot_administrator_predicate(ctx):
+        if await is_bot_support_predicate(ctx):
             return True  # If they're MB support
         if not ctx.bot.config['server_specific']:
             raise NotServerSpecific()  # If it's not server specific
