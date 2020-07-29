@@ -437,7 +437,7 @@ class SettingsMenu(object):
         # Delete all the processing stuff
         try:
             await message.delete()
-        except discord.NotFound:
+        except (discord.NotFound, discord.Forbidden, discord.HTTPException):
             pass
 
     def get_sendable_data(self, ctx:commands.Context):
