@@ -433,6 +433,8 @@ class SettingsMenu(object):
                     await reaction.message.remove_reaction(picked_emoji, ctx.author)
             except discord.Forbidden:
                 pass
+            except discord.NotFound:
+                break
 
         # Delete all the processing stuff
         try:
