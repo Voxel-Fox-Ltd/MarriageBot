@@ -444,7 +444,7 @@ class FamilyTreeMember(object):
         my_depth: int = None
         for depth, depth_list in gen_span.items():
             if self in depth_list:
-                my_depth = depth
+                my_depth = depth or 0
                 break
 
         # Add my partner and parent
