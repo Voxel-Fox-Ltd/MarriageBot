@@ -1,8 +1,5 @@
-import typing
-
 import asyncpg
 
-# from cogs.utils.custom_bot import CustomBot
 from cogs.utils.database import DatabaseConnection
 
 
@@ -43,37 +40,37 @@ class CustomisedTreeUser(object):
 
         # Edgs
         if self.edge is not None:
-            edge =  f'"#{self.edge:06X}"' if self.edge >= 0 else 'transparent'
+            edge = f'"#{self.edge:06X}"' if self.edge >= 0 else 'transparent'
         else:
             edge = default_hex['edge']
 
         # Font colour
         if self.font is not None:
-            font =  f'"#{self.font:06X}"' if self.font >= 0 else 'transparent'
+            font = f'"#{self.font:06X}"' if self.font >= 0 else 'transparent'
         else:
             font = default_hex['font']
 
         # Node background colour
         if self.node is not None:
-            node =  f'"#{self.node:06X}"' if self.node >= 0 else 'transparent'
+            node = f'"#{self.node:06X}"' if self.node >= 0 else 'transparent'
         else:
             node = default_hex['node']
 
         # Highlighted node font colour
         if self.highlighted_font is not None:
-            highlighted_font =  f'"#{self.highlighted_font:06X}"' if self.highlighted_font >= 0 else 'transparent'
+            highlighted_font = f'"#{self.highlighted_font:06X}"' if self.highlighted_font >= 0 else 'transparent'
         else:
             highlighted_font = default_hex['highlighted_font']
 
         # Highlighted node background colour
         if self.highlighted_node is not None:
-            highlighted_node =  f'"#{self.highlighted_node:06X}"' if self.highlighted_node >= 0 else 'transparent'
+            highlighted_node = f'"#{self.highlighted_node:06X}"' if self.highlighted_node >= 0 else 'transparent'
         else:
             highlighted_node = default_hex['highlighted_node']
 
         # Background colour
         if self.background is not None:
-            background =  f'"#{self.background:06X}"' if self.background >= 0 else 'transparent'
+            background = f'"#{self.background:06X}"' if self.background >= 0 else 'transparent'
         else:
             background = default_hex['background']
 

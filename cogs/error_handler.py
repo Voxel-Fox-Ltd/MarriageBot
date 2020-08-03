@@ -53,102 +53,101 @@ class ErrorHandler(utils.Cog):
 
         # Can't send files
         if isinstance(error, utils.errors.CantSendFiles):
-            return await self.send_to_ctx_or_author(ctx,
-                "I'm not able to send files into this channel.",
-                "I'm unable to send messages into that channel."
+            return await self.send_to_ctx_or_author(
+                ctx, "I'm not able to send files into this channel.", "I'm unable to send messages into that channel."
             )
 
         # Cooldown
         elif isinstance(error, commands.CommandOnCooldown):
             if ctx.command.name in ['familytree']:
                 return await self.tree_timeout_handler(ctx, error)
-            return await ctx.send(f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
+            return await self.send_to_ctx_or_author(ctx, f"You can only use this command once every `{error.cooldown.per:.0f} seconds` per server. You may use this again in `{error.retry_after:.2f} seconds`.")
 
         # Voter
         elif isinstance(error, utils.errors.IsNotVoter):
-            return await ctx.send(f"You need to vote on DBL (`m!vote`) to be able to run this command.")
+            return await self.send_to_ctx_or_author(ctx, "You need to vote on DBL (`m!vote`) to be able to run this command.")
 
         # Donator
         elif isinstance(error, utils.errors.IsNotDonator):
-            return await ctx.send(f"You need to be a Patreon subscriber (`m!perks`) to be able to run this command.")
+            return await self.send_to_ctx_or_author(ctx, "You need to be a Patreon subscriber (`m!perks`) to be able to run this command.")
 
         # Not a server specific bot moderator
         elif isinstance(error, utils.errors.NotBotModerator):
             if self.bot.is_server_specific:
-                return await ctx.send(f"You're missing the `MarriageBot Moderator` role required for this command.")
-            return await ctx.send(f"This instance of the bot is not set to server specific.")
+                return await self.send_to_ctx_or_author(ctx, "You're missing the `MarriageBot Moderator` role required for this command.")
+            return await self.send_to_ctx_or_author(ctx, "This instance of the bot is not set to server specific.")
 
         # Not a bot administrator
         elif isinstance(error, utils.errors.NotBotSupport):
-            return await ctx.send(f"You need to be registered as MarriageBot support to run this command.")
+            return await self.send_to_ctx_or_author(ctx, "You need to be registered as MarriageBot support to run this command.")
 
         # Not set to server specific
         elif isinstance(error, utils.errors.NotServerSpecific):
-            return await ctx.send(f"You need to be using MarriageBot Gold to run this command - see (`m!perks`).")
+            return await self.send_to_ctx_or_author(ctx, "You need to be using MarriageBot Gold to run this command - see (`m!perks`).")
 
         # User is blocked
         elif isinstance(error, utils.errors.BlockedUserError):
-            return await ctx.send(str(error))
+            return await self.send_to_ctx_or_author(ctx, str(error))
 
         # Bot ready
         elif isinstance(error, utils.errors.BotNotReady):
-            return await ctx.send("The bot isn't ready to start processing that command yet - please wait.")
+            return await self.send_to_ctx_or_author(ctx, "The bot isn't ready to start processing that command yet - please wait.")
 
         # Missing argument (string)
         elif isinstance(error, utils.errors.MissingRequiredArgumentString):
-            return await ctx.send(f"You're missing the `{error.param}` argument, which is required for this command to work properly.")
+            return await self.send_to_ctx_or_author(ctx, f"You're missing the `{error.param}` argument, which is required for this command to work properly.")
 
         # Did the quotemarks wrong
         elif isinstance(error, (commands.UnexpectedQuoteError, commands.InvalidEndOfQuotedStringError, commands.ExpectedClosingQuoteError)):
-            return await ctx.send(f"You've done your quote marks there wrong somewhere mate.")
+            return await self.send_to_ctx_or_author(ctx, "You've done your quote marks there wrong somewhere mate.")
 
         # Missing argument
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await ctx.send(f"You're missing the `{error.param.name}` argument, which is required for this command to work properly.")
+            return await self.send_to_ctx_or_author(ctx, f"You're missing the `{error.param.name}` argument, which is required for this command to work properly.")
 
         # Cooldown
         elif isinstance(error, commands.CommandOnCooldown):
-            return await ctx.send(f"You can't use this command again for another {utils.TimeValue(error.retry_after).clean_spaced}.")
+            return await self.send_to_ctx_or_author(ctx, f"You can't use this command again for another {utils.TimeValue(error.retry_after).clean_spaced}.")
 
         # NSFW channel
         elif isinstance(error, commands.NSFWChannelRequired):
-            return await ctx.send("This command can't be run in a non-NSFW channel.")
+            return await self.send_to_ctx_or_author(ctx, "This command can't be run in a non-NSFW channel.")
 
         # Disabled command
         elif isinstance(error, commands.DisabledCommand):
-            return await ctx.send("This command has been disabled. Apologies for any inconvenience.")
+            return await self.send_to_ctx_or_author(ctx, "This command has been disabled. Apologies for any inconvenience.")
 
         # User is missing a role
         elif isinstance(error, commands.MissingAnyRole):
-            return await ctx.send(f"You need to have one of the {', '.join(['`' + i + '`' for i in error.missing_roles])} roles to run this command.")
+            return await self.send_to_ctx_or_author(ctx, f"You need to have one of the {', '.join(['`' + i + '`' for i in error.missing_roles])} roles to run this command.")
 
         # Bot is missing a given permission
         elif isinstance(error, commands.BotMissingPermissions):
-            return await ctx.send(f"I'm missing the `{error.missing_perms[0]}` permission, which is needed for me to run this command.")
+            return await self.send_to_ctx_or_author(ctx, f"I'm missing the `{error.missing_perms[0]}` permission, which is needed for me to run this command.")
 
         # Missing permission
         elif isinstance(error, commands.MissingPermissions):
-            return await ctx.send(f"You need the `{error.missing_perms[0]}` permission to run this command.")
+            return await self.send_to_ctx_or_author(ctx, f"You need the `{error.missing_perms[0]}` permission to run this command.")
 
         # Missing role
         elif isinstance(error, commands.MissingRole):
-            return await ctx.send(f"You need to have the `{error.missing_role}` role to run this command.")
+            return await self.send_to_ctx_or_author(ctx, f"You need to have the `{error.missing_role}` role to run this command.")
 
         # Guild only
         elif isinstance(error, commands.NoPrivateMessage):
-            return await ctx.send(f"This command can't be run in DMs.")
+            return await self.send_to_ctx_or_author(ctx, "This command can't be run in DMs.")
 
         # DMs only
         elif isinstance(error, commands.PrivateMessageOnly):
-            return await ctx.send(f"This command can only be run in DMs.")
+            return await self.send_to_ctx_or_author(ctx, "This command can only be run in DMs.")
 
         # Not owner
         elif isinstance(error, commands.NotOwner):
-            return await ctx.send("You need to be registered as an owner to run this command.")
+            return await self.send_to_ctx_or_author(ctx, "You need to be registered as an owner to run this command.")
 
         # Argument conversion error
         elif isinstance(error, commands.BadArgument):
-            return await ctx.send(str(error))
+            return await self.send_to_ctx_or_author(ctx, str(error))
 
         # I'm trying to do something that doesn't exist
         elif isinstance(error, discord.NotFound):
@@ -165,13 +164,13 @@ class ErrorHandler(utils.Cog):
         # Discord hecked up
         elif isinstance(error, (discord.HTTPException, aiohttp.ClientOSError)):
             try:
-                return await ctx.send(f"Discord messed up there somewhere - do you mind trying again? I received a {error.status} error.")
+                return await self.send_to_ctx_or_author(ctx, f"Discord messed up there somewhere - do you mind trying again? I received a {error.status} error.")
             except Exception:
                 return
 
         # Can't tell what it is? Ah well.
         try:
-            await ctx.send(f'```py\n{error}```')
+            await self.send_to_ctx_or_author(ctx, f'```py\n{error}```')
         except (discord.Forbidden, discord.NotFound):
             pass
 
