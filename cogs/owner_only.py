@@ -11,7 +11,7 @@ from discord.ext import commands
 from cogs import utils
 
 
-class OwnerOnly(utils.Cog):
+class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
     """Handles commands that only the owner should be able to run"""
 
     @commands.command(aliases=['pm', 'dm'], cls=utils.Command)

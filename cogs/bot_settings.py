@@ -14,7 +14,7 @@ class BotSettings(utils.Cog):
 
         # Validate prefix
         if len(new_prefix) > 30:
-            return await ctx.send(f"The maximum length a prefix can be is 30 characters.")
+            return await ctx.send("The maximum length a prefix can be is 30 characters.")
 
         # Store setting
         self.bot.guild_settings[ctx.guild.id]['prefix'] = new_prefix

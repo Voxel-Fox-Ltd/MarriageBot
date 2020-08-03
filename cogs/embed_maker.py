@@ -7,7 +7,7 @@ from discord.ext import commands
 from cogs import utils
 
 
-class EmbedMaker(utils.Cog):
+class EmbedMaker(utils.Cog, command_attrs={'hidden': True}):
 
     def __init__(self, bot:utils.Bot):
         super().__init__(bot)
@@ -216,7 +216,7 @@ class EmbedMaker(utils.Cog):
                 return await user.send("Alright, skpping.")
             return await user.send("I can't work out where you want to send that. Sorry about that. Cancelled.")
         if channel is None:
-            return await user.send(f"Found an error sending that. Sorry about that. Cancelled.")
+            return await user.send("Found an error sending that. Sorry about that. Cancelled.")
 
         # Send it out
         if embed and embed != {"fields": []}:

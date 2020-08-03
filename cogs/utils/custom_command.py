@@ -24,13 +24,6 @@ class CustomCommand(commands.Command):
             raise ValueError("No mapping found for cooldown")
         self._buckets = mapping(cooldown)  # Wrap the cooldown in the mapping
 
-    async def can_run(self, ctx:commands.Context):
-        """The normal Command.can_run but it ignores cooldowns"""
-
-        if self.ignore_checks_in_help:
-            return True
-        return await super().can_run(ctx)
-
     def get_remaining_cooldown(self, ctx:commands.Context, current:float=None) -> typing.Optional[float]:
         """Gets the remaining cooldown for a given command"""
 
@@ -53,9 +46,7 @@ class CustomCommand(commands.Command):
             current = ctx.message.created_at.replace(tzinfo=datetime.timezone.utc).timestamp()
             bucket = self._buckets.get_bucket(ctx.message, current)
             try:
-                predicate = bucket.predicate(ctx)
-                # if asyncio.iscoroutine(predicate):
-                #     predicate = await predicate
+                bucket.predicate(ctx)
             except AttributeError:
                 ctx.bot.logger.critical(f"Invalid cooldown set on command {ctx.invoked_with}")
                 raise commands.CheckFailure("Invalid cooldown set for this command")

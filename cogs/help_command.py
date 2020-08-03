@@ -9,6 +9,13 @@ from cogs import utils
 
 class CustomHelpCommand(commands.MinimalHelpCommand):
 
+    async def filter_commands(self, commands:typing.List[utils.Command]) -> typing.List[utils.Command]:
+        """Filter the command list down into a list of _runnable_ commands"""
+
+        if self.context.author.id in self.context.bot.owner_ids:
+            return commands
+        return [i for i in commands if i.hidden is False and i.enabled is True]
+
     def get_command_signature(self, command:commands.Command):
         return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
 
