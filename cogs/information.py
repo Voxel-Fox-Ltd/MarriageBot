@@ -232,7 +232,7 @@ class Information(utils.Cog):
         # Convert to an image
         dot = await asyncio.create_subprocess_exec(*[
             'dot',
-            '-Tpng',
+            '-Tpng:gd',
             f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.gz',
             '-o',
             f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png',
