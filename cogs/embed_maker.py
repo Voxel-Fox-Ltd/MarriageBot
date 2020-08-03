@@ -13,7 +13,7 @@ class EmbedMaker(utils.Cog):
         super().__init__(bot)
         self.last_made_embed = {}
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
     async def makeembed(self, ctx, *, data:str=None):
@@ -216,7 +216,7 @@ class EmbedMaker(utils.Cog):
                 return await user.send("Alright, skpping.")
             return await user.send("I can't work out where you want to send that. Sorry about that. Cancelled.")
         if channel is None:
-            return await user.send(f"Found an error sending that. Sorry about that. Cancelled.")
+            return await user.send("Found an error sending that. Sorry about that. Cancelled.")
 
         # Send it out
         if embed and embed != {"fields": []}:

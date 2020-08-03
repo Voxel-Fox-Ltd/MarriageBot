@@ -1,7 +1,6 @@
 import asyncio
 import collections
 import glob
-import json
 import logging
 import typing
 import copy
@@ -92,7 +91,7 @@ class CustomBot(commands.AutoShardedBot):
         self.proposal_cache: typing.Dict[int, tuple] = ProposalCache()
         self.blacklisted_guilds: typing.List[int] = []  # List of blacklisted guid IDs
         self.blocked_users: typing.Dict[int, typing.List[int]] = collections.defaultdict(list)  # uid: [blocked uids]
-        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(self.DEFAULT_GUILD_SETTINGS.copy)
+        self.guild_settings: typing.Dict[int, dict] = collections.defaultdict(lambda: copy.deepcopy(self.DEFAULT_GUILD_SETTINGS))
         # self.user_settings = collections.defaultdict(self.DEFAULT_USER_SETTINGS.copy)
         self.dbl_votes: typing.Dict[int, dt] = {}
 

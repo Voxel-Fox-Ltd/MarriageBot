@@ -53,7 +53,7 @@ class CustomCommand(commands.Command):
             current = ctx.message.created_at.replace(tzinfo=datetime.timezone.utc).timestamp()
             bucket = self._buckets.get_bucket(ctx.message, current)
             try:
-                predicate = bucket.predicate(ctx)
+                bucket.predicate(ctx)
                 # if asyncio.iscoroutine(predicate):
                 #     predicate = await predicate
             except AttributeError:

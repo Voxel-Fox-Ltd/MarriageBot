@@ -142,7 +142,7 @@ class Parentage(utils.Cog):
             normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, ctx.author)]
             children_amount = min([max([gold_children_amount, normal_children_amount, min(self.bot.config['max_children'])]), max(self.bot.config['max_children'])])
             if len(instigator_tree._children) >= children_amount:
-                return await ctx.send(f"You're currently at the maximum amount of children you can have - see `m!perks` for more information.")
+                return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.prefix}perks` for more information.")
 
         # Check the size of their trees
         if ctx.original_author_id not in self.bot.owner_ids:

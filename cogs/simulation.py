@@ -17,7 +17,7 @@ class Simulation(utils.Cog):
         """Hugs a mentioned user"""
 
         if user == ctx.author:
-            return await ctx.send(f"*You hug yourself... and start crying.*")
+            return await ctx.send("*You hug yourself... and start crying.*")
         image_url = await utils.get_reaction_gif(ctx.bot, "hug") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Hugs {user.mention}*", image_url=image_url)
 
@@ -30,7 +30,7 @@ class Simulation(utils.Cog):
 
         # Check if they're themself
         if user == ctx.author:
-            return await ctx.send(f"How would you even manage to do that?")
+            return await ctx.send("How would you even manage to do that?")
 
         # Check if they're related
         x = utils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
@@ -47,9 +47,9 @@ class Simulation(utils.Cog):
             image_url = await utils.get_reaction_gif(ctx.bot, "kiss") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         else:
             responses = [
-                f"Woah woah, you two are family!",
+                "Woah woah, you two are family!",
                 # f"Incest is wincest, I guess.",
-                f"You two are related but go off I guess.",
+                "You two are related but go off I guess.",
             ]
         await ctx.send(random.choice(responses), image_url=image_url)
 
@@ -60,7 +60,7 @@ class Simulation(utils.Cog):
         """Slaps a mentioned user"""
 
         if user == ctx.author:
-            return await ctx.send(f"*You slapped yourself... for some reason.*")
+            return await ctx.send("*You slapped yourself... for some reason.*")
         image_url = await utils.get_reaction_gif(ctx.bot, "slap") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Slaps {user.mention}*", image_url=image_url)
 
@@ -75,7 +75,7 @@ class Simulation(utils.Cog):
         image_url = await utils.get_reaction_gif(ctx.bot, "punch") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Punches {user.mention} right in the nose*", image_url=image_url)
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def cookie(self, ctx:utils.Context, user:discord.Member):
@@ -85,7 +85,7 @@ class Simulation(utils.Cog):
             return await ctx.send("*You gave yourself a cookie.*")
         await ctx.send(f"*Gives {user.mention} a cookie*")
 
-    @commands.command(aliases=['nunget', 'nuggie'], cls=utils.Command)
+    @commands.command(aliases=['nunget', 'nuggie'], cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def nugget(self, ctx:utils.Context, user:discord.Member):
@@ -95,7 +95,7 @@ class Simulation(utils.Cog):
             return await ctx.send(f"*You give yourself a {ctx.invoked_with}* <:nugget:585626539605884950>")
         await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
 
-    @commands.command(aliases=['borger', 'borg'], cls=utils.Command)
+    @commands.command(aliases=['borger', 'borg'], cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def burger(self, ctx:utils.Context, user:discord.Member):
@@ -105,7 +105,7 @@ class Simulation(utils.Cog):
             return await ctx.send(f"*You give yourself a {ctx.invoked_with}* 🍔")
         await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def tea(self, ctx:utils.Context, user:discord.Member):
@@ -115,17 +115,17 @@ class Simulation(utils.Cog):
             return await ctx.send("*You gave yourself tea.*")
         await ctx.send(f"*Gives {user.mention} tea*")
 
-    @commands.command(aliases=['dumpster'], hidden=True, cls=utils.Command)
+    @commands.command(aliases=['dumpster'], cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def garbage(self, ctx:utils.Context, user:discord.Member):
         """Throws a user in the garbage"""
 
         if user == ctx.author:
-            return await ctx.send(f"*You climb right into the trash can, where you belong*")
+            return await ctx.send("*You climb right into the trash can, where you belong*")
         await ctx.send(f"*Throws {user.mention} into the dumpster*")
 
-    @commands.command(hidden=True, cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def insult(self, ctx:utils.Context, user:discord.Member):
@@ -136,7 +136,7 @@ class Simulation(utils.Cog):
         data = json.loads(text)
         await ctx.send(data['insult'])
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def poke(self, ctx:utils.Context, user:discord.Member):
@@ -147,7 +147,7 @@ class Simulation(utils.Cog):
         image_url = await utils.get_reaction_gif(ctx.bot, "poke") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Pokes {user.mention}.*", image_url=image_url)
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def stab(self, ctx:utils.Context, user:discord.Member):
@@ -155,23 +155,23 @@ class Simulation(utils.Cog):
 
         if user == ctx.author:
             responses = [
-                f"You stab yourself.",
-                f"Looks like you don't have a knife, oops!",
-                f"No.",
+                "You stab yourself.",
+                "Looks like you don't have a knife, oops!",
+                "No.",
             ]
         else:
             responses = [
                 f"You stab {user.mention}.",
                 f"{user.mention} has been stabbed.",
                 f"*stabs {user.mention}.*",
-                f"Looks like you don't have a knife, oops!",
+                "Looks like you don't have a knife, oops!",
                 "You can't legally stab someone without thier consent.",
                 "Stab? Isn't that, like, illegal?",
                 "I wouldn't recommend doing that tbh.",
             ]
         await ctx.send(random.choice(responses))
 
-    @commands.command(hidden=True, aliases=['murder'], cls=utils.Command)
+    @commands.command(cls=utils.Command, aliases=['murder'], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
     async def kill(self, ctx:utils.Context, user:discord.Member=None):
         """Kills a person :/"""
@@ -186,7 +186,7 @@ class Simulation(utils.Cog):
         ]
         await ctx.send(random.choice(responses))
 
-    @commands.command(aliases=['vore'], hidden=True, cls=utils.Command)
+    @commands.command(cls=utils.Command, aliases=['vore'], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
     async def eat(self, ctx:utils.Context, user:discord.Member):
         """Eats a person OwO"""
@@ -200,7 +200,7 @@ class Simulation(utils.Cog):
         ]
         await ctx.send(random.choice(responses))
 
-    @commands.command(hidden=True, cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @commands.bot_has_permissions(send_messages=True)
     async def sleep(self, ctx:utils.Context):
         """Todd Howard strikes once more"""
@@ -209,7 +209,7 @@ class Simulation(utils.Cog):
                        "with your hands bound. A man says \"Hey, you. You're finally "
                        "awake. You were trying to cross the border, right?\"")
 
-    @commands.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], cls=utils.Command)
+    @commands.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()

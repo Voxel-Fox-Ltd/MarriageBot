@@ -1,4 +1,3 @@
-import random
 from datetime import datetime as dt
 
 import asyncpg
@@ -9,7 +8,7 @@ from cogs import utils
 
 class ModeratorOnly(utils.Cog):
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def uncache(self, ctx:utils.Context, user:utils.converters.UserID):
@@ -20,7 +19,7 @@ class ModeratorOnly(utils.Cog):
 
     @commands.command(cls=utils.Command, hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    @utils.cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     async def cachename(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Removes a user from the propsal cache."""
 
@@ -31,7 +30,7 @@ class ModeratorOnly(utils.Cog):
         self.bot.shallow_users.pop(user.id, None)
         await ctx.send(f"Saved the name `{user!s}` into the database for user ID `{user.id}`.")
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def recache(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
@@ -62,7 +61,7 @@ class ModeratorOnly(utils.Cog):
         # Output to user
         await ctx.send("Published update for user.")
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def recachefamily(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
@@ -210,7 +209,7 @@ class ModeratorOnly(utils.Cog):
             await re.publish_json('TreeMemberUpdate', parent.to_json())
         await ctx.send("Consider it done.")
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def addvoter(self, ctx:utils.Context, user:utils.converters.UserID):
@@ -221,7 +220,7 @@ class ModeratorOnly(utils.Cog):
             await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=$2', user, self.bot.dbl_votes[user])
         await ctx.send("Consider it done.")
 
-    @commands.command(aliases=['addblogpost'], cls=utils.Command)
+    @commands.command(aliases=['addblogpost'], cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
@@ -238,7 +237,7 @@ class ModeratorOnly(utils.Cog):
                 verb = "Updated"
         await ctx.send(f"{verb} blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def createredirect(self, ctx:utils.Context, code:str, redirect:str):
@@ -247,26 +246,6 @@ class ModeratorOnly(utils.Cog):
         async with self.bot.database() as db:
             await db("INSERT INTO redirects VALUES ($1, $2)", code, redirect)
         await ctx.send(f"Created redirect: https://marriagebot.xyz/r/{code}", embeddify=False)
-
-    @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(send_messages=True)
-    async def randomisetreecolours(self, ctx:utils.Context, user:utils.converters.UserID):
-        """Adds a redirect to the database"""
-
-        ctu = utils.CustomisedTreeUser(
-            user,
-            edge=random.randint(0, 0xffffff),
-            node=random.randint(0, 0xffffff),
-            font=random.randint(0, 0xffffff),
-            highlighted_font=random.randint(0, 0xffffff),
-            highlighted_node=random.randint(0, 0xffffff),
-            background=random.randint(0, 0xffffff),
-        )
-        async with self.bot.database() as db:
-            await ctu.save(db)
-        await ctx.send("Done.")
-
 
 def setup(bot:utils.Bot):
     x = ModeratorOnly(bot)
