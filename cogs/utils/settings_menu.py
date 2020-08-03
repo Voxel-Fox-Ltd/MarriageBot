@@ -433,11 +433,13 @@ class SettingsMenu(object):
                     await reaction.message.remove_reaction(picked_emoji, ctx.author)
             except discord.Forbidden:
                 pass
+            except discord.NotFound:
+                break
 
         # Delete all the processing stuff
         try:
             await message.delete()
-        except discord.NotFound:
+        except (discord.NotFound, discord.Forbidden, discord.HTTPException):
             pass
 
     def get_sendable_data(self, ctx:commands.Context):
