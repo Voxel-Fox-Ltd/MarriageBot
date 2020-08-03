@@ -80,19 +80,22 @@ class RedisHandler(utils.Cog):
             return
 
         # Get message
-        channel: discord.TextChannel = self.bot.get_channel(data['channel_id'])
-        if channel is None:
-            channel: discord.TextChannel = await self.bot.fetch_channel(data['channel_id'])
-            channel.guild = await self.bot.fetch_guild(channel.guild.id)
+        channel: discord.TextChannel = await self.bot.fetch_channel(data['channel_id'])
+        channel.guild = await self.bot.fetch_guild(data['guild_id'])
         message: discord.Message = await channel.fetch_message(data['message_id'])
-        content = f"{self.bot.config['prefix']['default_prefix']}ev {data.get('content', self.DEFAULT_EV_MESSAGE)}"
-        message._handle_content(content)
+        content = f"<@{self.bot.user.id}> ev {data.get('content', self.DEFAULT_EV_MESSAGE)}"
 
         # Invoke command
         ctx: utils.Context = await self.bot.get_context(message, cls=utils.Context)
+        ctx.command = self.bot.get_command('ev')
         ctx.invoked_with = 'ev'
+        ctx.prefix = f'<@{self.bot.user.id}>'
         self.logger.info(f"Invoking evall - {content}")
-        await ctx.command.invoke(ctx)
+        try:
+            await ctx.reinvoke()
+        except Exception as e:
+            self.logger.exception(e)
+            raise e
 
     def update_guild_prefix(self, data):
         """Updates the prefix for the guild"""
