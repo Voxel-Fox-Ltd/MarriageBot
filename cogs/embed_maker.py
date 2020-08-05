@@ -7,7 +7,7 @@ from discord.ext import commands
 from cogs import utils
 
 
-class EmbedMaker(utils.Cog):
+class EmbedMaker(utils.Cog, command_attrs={'hidden': True}):
 
     def __init__(self, bot:utils.Bot):
         super().__init__(bot)

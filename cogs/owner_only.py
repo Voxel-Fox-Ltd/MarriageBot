@@ -12,6 +12,7 @@ from cogs import utils
 
 
 class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
+    """Handles commands that only the owner should be able to run"""
 
     @commands.command(aliases=['pm', 'dm'], cls=utils.Command)
     @commands.is_owner()

@@ -16,7 +16,7 @@ class BotSettings(utils.Cog):
         if not new_prefix:
             new_prefix = self.bot.config['prefix']['default_prefix']
         if len(new_prefix) > 30:
-            return await ctx.send("Your prefix can't be longer than 30 characters.")
+            return await ctx.send("The maximum length a prefix can be is 30 characters.")
 
         # Update db
         prefix_key = 'gold_prefix' if self.bot.is_server_specific else 'prefix'
