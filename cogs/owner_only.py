@@ -66,12 +66,18 @@ class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
         content = self._cleanup_code(content)
         code = f'async def func():\n{textwrap.indent(content, "  ")}'
 
+        # Grab our extra
+        if getattr(ctx, 'include_shards', False):
+            extra_text = f"Shard IDs: {self.bot.shard_ids}\n"
+        else:
+            extra_text = ""
+
         # Make the function into existence
         stdout = io.StringIO()
         try:
             exec(code, env)
         except Exception as e:
-            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            return await ctx.send(f'{extra_text}```py\n{e.__class__.__name__}: {e}\n```')
 
         # Grab the function we just made and run it
         func = env['func']
@@ -82,7 +88,7 @@ class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
         except Exception:
             # Oh no it caused an error
             stdout_value = stdout.getvalue() or None
-            await ctx.send(f'```py\n{stdout_value}\n{traceback.format_exc()}\n```')
+            await ctx.send(f'{extra_text}```py\n{stdout_value}\n{traceback.format_exc()}\n```')
         else:
             # Oh no it didn't cause an error
             stdout_value = stdout.getvalue() or None
@@ -94,7 +100,7 @@ class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
             if ret is None:
                 # It might have printed something
                 if stdout_value is not None:
-                    await ctx.send(f'```py\n{stdout_value}\n```')
+                    await ctx.send(f'{extra_text}```py\n{stdout_value}\n```')
                 return
 
             # If the function did return a value
@@ -109,9 +115,9 @@ class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
                 except Exception:
                     pass
                 else:
-                    text = f'```json\n{result}\n```'
+                    text = f'{extra_text}```json\n{result}\n```'
             if len(text) > 2000:
-                await ctx.send(file=discord.File(io.StringIO(result), filename='ev.txt'))
+                await ctx.send(extra_text, file=discord.File(io.StringIO(result), filename='ev.txt'))
             else:
                 await ctx.send(text)
 
@@ -252,23 +258,10 @@ class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
 
         async with self.bot.redis() as re:
             await re.publish_json('EvalAll', {
-                'content': f"await ctx.invoke(self.bot.get_command('sudo'), '{ctx.author.id}', command='{command}')",
+                'author_id': ctx.author.id,
                 'channel_id': ctx.channel.id,
                 'message_id': ctx.message.id,
-                'exempt': [],
-            })
-
-    @commands.command(cls=utils.Command)
-    @commands.is_owner()
-    @commands.bot_has_permissions(send_messages=True)
-    async def rldall(self, ctx, *cog_name:str):
-        """Reloads all of a given cog"""
-
-        async with self.bot.redis() as re:
-            await re.publish_json('EvalAll', {
-                'content': f"await ctx.invoke(self.bot.get_command('rld'), *{str(cog_name)})",
-                'channel_id': ctx.channel.id,
-                'message_id': ctx.message.id,
+                'content': command,
                 'exempt': [],
             })
 

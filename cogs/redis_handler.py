@@ -43,7 +43,7 @@ class RedisHandler(utils.Cog):
         for handler in self.handlers:
             handler.cancel()
         for channel in self._channels.copy():
-            self.bot.loop.run_until_complete(self.bot.redis.pool.unsubscribe(channel))
+            asyncio.ensure_future(asyncio.wait_for(self.bot.redis.pool.unsubscribe(channel), timeout=None), loop=self.bot.loop)
             self._channels.remove(channel)
             self.logger.info(f"Unsubscribing from Redis channel {channel}")
 
@@ -81,18 +81,21 @@ class RedisHandler(utils.Cog):
 
         # Get message
         channel: discord.TextChannel = await self.bot.fetch_channel(data['channel_id'])
-        channel.guild = await self.bot.fetch_guild(data['guild_id'])
+        channel.guild = await self.bot.fetch_guild(channel.guild.id)
         message: discord.Message = await channel.fetch_message(data['message_id'])
-        content = f"<@{self.bot.user.id}> ev {data.get('content', self.DEFAULT_EV_MESSAGE)}"
+        message.author = await channel.guild.fetch_member(data['author_id'])
+        ev_content = data.get('content', self.DEFAULT_EV_MESSAGE)
+        message.content = f"<@{self.bot.user.id}> {ev_content}"
 
         # Invoke command
         ctx: utils.Context = await self.bot.get_context(message, cls=utils.Context)
         ctx.command = self.bot.get_command('ev')
         ctx.invoked_with = 'ev'
         ctx.prefix = f'<@{self.bot.user.id}>'
-        self.logger.info(f"Invoking evall - {content}")
+        ctx.include_shards = True
+        self.logger.info(f"Invoking evall - {message.content}")
         try:
-            await ctx.reinvoke()
+            await ctx.invoke(ctx.command, content=ev_content.split(' ', 1)[1])
         except Exception as e:
             self.logger.exception(e)
             raise e
