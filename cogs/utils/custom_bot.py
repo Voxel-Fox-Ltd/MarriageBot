@@ -343,6 +343,11 @@ class CustomBot(commands.AutoShardedBot):
 
         return self.config['server_specific']
 
+    def get_max_family_members(self, guild:discord.Guild) -> int:
+        """Whether or not the BOT is running the server specific version"""
+
+        return self.guild_settings[guild.id]['max_family_members'] if self.is_server_specific else self.config['max_family_members']
+
     def allows_incest(self, guild:typing.Union[discord.Guild, int]) -> bool:
         """Returns if a given GUILD allows incest or not
 

@@ -40,7 +40,7 @@ class Marriage(utils.Cog):
 
         # Check the size of their trees
         if ctx.original_author_id not in self.bot.owner_ids:
-            max_family_members = self.bot.guild_settings[ctx.guild.id]['max_family_members'] if self.bot.is_server_specific else self.bot.config['max_family_members']
+            max_family_members = self.bot.get_max_family_members(ctx.guild)
             async with ctx.channel.typing():
                 if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
                     return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
@@ -69,11 +69,9 @@ class Marriage(utils.Cog):
                 return await ctx.send("I ran into an error saving your family data - please try again later.")
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
-        # Cache values locally
+        # Ping over redis
         instigator_tree._partner = target.id
         target_tree._partner = instigator.id
-
-        # Ping em off over redis
         async with self.bot.redis() as re:
             await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
@@ -113,11 +111,9 @@ class Marriage(utils.Cog):
             )
         await ctx.send(text_processor.valid_target())
 
-        # Remove from cache
+        # Ping over redis
         instigator_tree._partner = None
         target_tree._partner = None
-
-        # Ping over redis
         async with self.bot.redis() as re:
             await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
