@@ -133,12 +133,12 @@ class ErrorHandler(utils.Cog):
         if getattr(self.bot, "config", {}).get('dm_uncaught_errors', False):
             try:
                 raise error
-            except Exception:
+            except Exception as e:
                 exc = traceback.format_exc()
                 data = io.StringIO(exc)
                 owner_id = self.bot.config['owners'][0]
                 owner = self.bot.get_user(owner_id) or await self.bot.fetch_user(owner_id)
-                text = f"Error found: Guild `{ctx.guild.id}`, channel `{ctx.channel.id}`, user `{ctx.author.id}` ```\n{ctx.message.content}\n```"
+                text = f"Error `{e}` found: Guild `{ctx.guild.id}`, channel `{ctx.channel.id}`, user `{ctx.author.id}` ```\n{ctx.message.content}\n```"
                 await owner.send(text, file=discord.File(data, filename="error_log.py"))
 
         # And throw it into the console
