@@ -51,12 +51,6 @@ class ErrorHandler(utils.Cog):
         if ctx.original_author_id in self.bot.owner_ids and isinstance(error, owner_reinvoke_errors):
             return await ctx.reinvoke()
 
-        # Can't send files
-        if isinstance(error, utils.errors.CantSendFiles):
-            return await self.send_to_ctx_or_author(
-                ctx, "I'm not able to send files into this channel.", "I'm unable to send messages into that channel."
-            )
-
         # Cooldown
         elif isinstance(error, commands.CommandOnCooldown):
             if ctx.command.name in ['familytree']:
