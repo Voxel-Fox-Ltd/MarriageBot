@@ -131,7 +131,7 @@ class MiscCommands(utils.Cog):
         e.add_field(name=f'T1 Patreon Donation ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
         e.add_field(name=f'T2 Patreon Donation ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
         e.add_field(name=f'T3 Patreon Donation ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
-        e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gvies you access to:\n* " + '\n* '.join(gold_perks), inline=False)
+        e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gives you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
     @commands.command(aliases=['status'], cls=utils.Command)
