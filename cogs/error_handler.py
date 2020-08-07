@@ -101,7 +101,7 @@ class ErrorHandler(utils.Cog):
             return await self.send_to_ctx_or_author(ctx, "You need to be registered as an owner to run this command.")
 
         # Argument conversion error
-        elif isinstance(error, commands.BadArgument):
+        elif isinstance(error, (commands.BadArgument, commands.BadUnionArgument)):
             return await self.send_to_ctx_or_author(ctx, str(error))
 
         # I'm trying to do something that doesn't exist
