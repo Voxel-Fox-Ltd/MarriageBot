@@ -26,10 +26,7 @@ async def is_bot_support_predicate(ctx:commands.Context):
 
     # Set the support guild if we have to
     if not ctx.bot.support_guild:
-        try:
-            await ctx.bot.fetch_support_guild()
-        except (discord.NotFound, discord.Forbidden, discord.HTTPException):
-            return False
+        await ctx.bot.fetch_support_guild()
 
     # Get member and look for role
     try:

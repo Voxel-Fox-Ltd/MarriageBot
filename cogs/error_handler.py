@@ -42,7 +42,7 @@ class ErrorHandler(utils.Cog):
 
         # Set up some errors that the owners are able to bypass
         owner_reinvoke_errors = (
-            utils.errors.IsNotDonator, utils.errors.IsNotPatreon, utils.errors.IsNotPaypal,
+            utils.errors.IsNotDonator,
             utils.errors.IsNotVoter, commands.MissingAnyRole, commands.MissingPermissions,
             commands.MissingRole, commands.CommandOnCooldown, commands.DisabledCommand,
             utils.errors.BlockedUserError, utils.errors.BotNotReady, utils.errors.NotBotModerator,
@@ -187,21 +187,13 @@ class ErrorHandler(utils.Cog):
         """Handles errors for the tree commands"""
 
         # Get user perks
+        VOTER_COOLDOWN_TIME = 30
         if self.bot.is_server_specific:
-            perk_index = -2
+            cooldown_time = 5
         else:
-            perk_index = await utils.checks.get_patreon_tier(self.bot, ctx.author)
-            if utils.checks.is_voter_predicate(ctx) and perk_index == 0:
-                perk_index = -1
-        cooldown_time = {
-            -2: 5,  # Server Specific
-            -1: 30,  # Voter
-            0: error.cooldown.per,  # 60s
-            1: 15,  # Patreon T1
-            2: 15,  # Patreon T2
-            3: 5,  # Patreon T3
-            4: 5,  # Booster
-        }.get(perk_index)  # perk_index = range(-2, 3) = server_specific, voter, none, patron...
+            cooldown_time = await utils.checks.has_donator_perks_predicate(self.bot, "tree_cooldown_time", ctx.author)
+        if utils.checks.is_voter_predicate(ctx):
+            cooldown_time = min([cooldown_time, VOTER_COOLDOWN_TIME])
 
         # See if they're able to call the command
         if (error.cooldown.per - cooldown_time) > error.retry_after:

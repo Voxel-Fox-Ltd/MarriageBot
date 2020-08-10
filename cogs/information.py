@@ -182,7 +182,7 @@ class Information(utils.Cog):
 
     @commands.command(aliases=['st'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
-    @utils.checks.is_patreon(tier=2)
+    @utils.checks.has_donator_perks("stupidtree_command")
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def stupidtree(self, ctx:utils.Context, root:utils.converters.UserID=None):

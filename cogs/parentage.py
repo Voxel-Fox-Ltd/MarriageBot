@@ -22,16 +22,16 @@ class Parentage(utils.Cog):
                 ])
 
         # See how many children they're allowed normally (in regard to Patreon tier)
-        normal_children_amount = self.bot.config['max_children'][await utils.checks.get_patreon_tier(self.bot, user)]
+        normal_children_amount = await utils.checks.has_donator_perks_predicate(self.bot, "max_children", user)
 
         # Return the largest amount of children they've been assigned that's UNDER the global max children as set in the config
         return min([
             max([
                 gold_children_amount,
                 normal_children_amount,
-                min(self.bot.config['max_children'])
+                min([i['max_children'] for i in self.bot.config['role_perks'].values()])
             ]),
-            max(self.bot.config['max_children'])
+            max([i['max_children'] for i in self.bot.config['role_perks'].values()])
         ])
 
     @commands.command(cls=utils.Command)
@@ -262,7 +262,7 @@ class Parentage(utils.Cog):
         await ctx.send(text_processor.valid_target())
 
     @commands.command(cls=utils.Command)
-    @utils.checks.is_patreon(tier=1)
+    @utils.checks.has_donator_perks("disownall_command")
     @commands.bot_has_permissions(send_messages=True)
     async def disownall(self, ctx:utils.Context):
         """Disowns all of your children"""
