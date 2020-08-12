@@ -441,10 +441,10 @@ class FamilyTreeMember(object):
         gen_span: typing.Dict[int, typing.List[self.__class__]] = gen_span  # Just set up some type hinting
 
         # Find my own depth
-        my_depth: int = None
+        my_depth: int = None or 0
         for depth, depth_list in gen_span.items():
             if self in depth_list:
-                my_depth = depth or 0
+                my_depth = depth
                 break
 
         # Add my partner and parent
