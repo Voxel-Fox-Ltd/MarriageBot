@@ -135,7 +135,7 @@ class ErrorHandler(utils.Cog):
         except Exception as e:
             exc = traceback.format_exc()
             data = io.StringIO(exc)
-            error_text = text = f"Error `{e}` encountered.\nGuild `{ctx.guild.id}`, channel `{ctx.channel.id}`, user `{ctx.author.id}`\n```\n{ctx.message.content}\n```"
+            error_text = f"Error `{e}` encountered.\nGuild `{ctx.guild.id}`, channel `{ctx.channel.id}`, user `{ctx.author.id}`\n```\n{ctx.message.content}\n```"
 
             # DM to owners
             if getattr(self.bot, "config", {}).get('dm_uncaught_errors', False):
@@ -147,13 +147,13 @@ class ErrorHandler(utils.Cog):
             # Ping to the webook
             if self.bot.config.get("event_webhook_url"):
                 webhook = discord.Webhook.from_url(
-                    self.bot.config['event_webhook_url'], 
+                    self.bot.config['event_webhook_url'],
                     adapter=discord.AsyncWebhookAdapter(self.bot.session)
                 )
                 data.seek(0)
                 await webhook.send(
-                    error_text, 
-                    file=discord.File(data, filename="error_log.py"), 
+                    error_text,
+                    file=discord.File(data, filename="error_log.py"),
                     username=f"{self.bot.user.name} - Error"
                 )
 

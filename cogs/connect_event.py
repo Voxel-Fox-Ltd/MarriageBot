@@ -1,3 +1,5 @@
+import discord
+
 from cogs import utils
 
 
