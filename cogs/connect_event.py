@@ -17,7 +17,7 @@ class ConnectEvent(utils.Cog):
                 adapter=discord.AsyncWebhookAdapter(self.bot.session)
             )
             await webhook.send(
-                f"Shard connect event just pinged for shard ID `{shard_id}` - {dt.utcnow('%X.%f')}",
+                f"Shard connect event just pinged for shard ID `{shard_id}` - {dt.utcnow().strftime('%X.%f')}",
                 username=f"{self.bot.user.name} - Shard Connect"
             )
             self.logger.info(f"Sent webhook for on_shard_connect event in shard `{shard_id}`")
@@ -32,7 +32,7 @@ class ConnectEvent(utils.Cog):
                 adapter=discord.AsyncWebhookAdapter(self.bot.session)
             )
             await webhook.send(
-                f"Shard ready event just pinged for shard ID `{shard_id}` - {dt.utcnow('%X.%f')}",
+                f"Shard ready event just pinged for shard ID `{shard_id}` - {dt.utcnow().strftime('%X.%f')}",
                 username=f"{self.bot.user.name} - Shard Ready"
             )
             self.logger.info(f"Sent webhook for on_shard_ready event in shard `{shard_id}`")
@@ -47,7 +47,7 @@ class ConnectEvent(utils.Cog):
                 adapter=discord.AsyncWebhookAdapter(self.bot.session)
             )
             await webhook.send(
-                f"Bot ready event just pinged for instance with shards `{self.bot.shard_ids}` - {dt.utcnow('%X.%f')}",
+                f"Bot ready event just pinged for instance with shards `{self.bot.shard_ids}` - {dt.utcnow().strftime('%X.%f')}",
                 username=f"{self.bot.user.name} - Ready"
             )
             self.logger.info("Sent webhook for on_ready event")
@@ -62,7 +62,7 @@ class ConnectEvent(utils.Cog):
                 adapter=discord.AsyncWebhookAdapter(self.bot.session)
             )
             await webhook.send(
-                f"Shard disconnect event just pinged for shard ID `{shard_id}` - {dt.utcnow('%X.%f')}",
+                f"Shard disconnect event just pinged for shard ID `{shard_id}` - {dt.utcnow().strftime('%X.%f')}",
                 username=f"{self.bot.user.name} - Shard Disconnect"
             )
             self.logger.info(f"Sent webhook for on_shard_disconnect event in shard `{shard_id}`")
@@ -77,7 +77,7 @@ class ConnectEvent(utils.Cog):
                 adapter=discord.AsyncWebhookAdapter(self.bot.session)
             )
             await webhook.send(
-                f"Bot disconnect event just pinged for instance with shards `{self.bot.shard_ids}` - {dt.utcnow('%X.%f')}",
+                f"Bot disconnect event just pinged for instance with shards `{self.bot.shard_ids}` - {dt.utcnow().strftime('%X.%f')}",
                 username=f"{self.bot.user.name} - Disconnect"
             )
             self.logger.info("Sent webhook for on_disconnect event")
