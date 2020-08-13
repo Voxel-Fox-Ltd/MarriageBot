@@ -10,6 +10,7 @@ dbl_vainity = ""  # The vainity link that goes on the 'vote' command
 guild_id = 1  # The ID for the support guild - used to find the bot admin and Patreon roles
 server_specific = false  # Bool flag for whether the bot uses global or server specific trees
 dm_uncaught_errors = false
+event_webhook_url = ""
 
 # List out the role perks that each role should have
 [role_perks.default]
