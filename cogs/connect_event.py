@@ -21,21 +21,6 @@ class ConnectEvent(utils.Cog):
             self.logger.info(f"Sent webhook for on_shard_connect event in shard {shard_id}")
 
     @utils.Cog.listener()
-    async def on_connect(self):
-        """Ping a given webhook when the bot is connected"""
-
-        if self.bot.config.get("event_webhook_url"):
-            webhook = discord.Webhook.from_url(
-                self.bot.config['event_webhook_url'],
-                adapter=discord.AsyncWebhookAdapter(self.bot.session)
-            )
-            await webhook.send(
-                f"Bot connect event just pinged for instance with shards {self.bot.shard_ids}",
-                username=f"{self.bot.user.name} - Connect"
-            )
-            self.logger.info("Sent webhook for on_connect event")
-
-    @utils.Cog.listener()
     async def on_shard_ready(self, shard_id:int):
         """Ping a given webhook when the shard ID becomes ready"""
 
