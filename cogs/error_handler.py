@@ -129,17 +129,33 @@ class ErrorHandler(utils.Cog):
         except (discord.Forbidden, discord.NotFound):
             pass
 
-        # Can't tell what it is and we wanna DM the owner about it? Nice.
-        if getattr(self.bot, "config", {}).get('dm_uncaught_errors', False):
-            try:
-                raise error
-            except Exception as e:
-                exc = traceback.format_exc()
-                data = io.StringIO(exc)
-                owner_id = self.bot.config['owners'][0]
-                owner = self.bot.get_user(owner_id) or await self.bot.fetch_user(owner_id)
-                text = f"Error `{e}` found: Guild `{ctx.guild.id}`, channel `{ctx.channel.id}`, user `{ctx.author.id}` ```\n{ctx.message.content}\n```"
-                await owner.send(text, file=discord.File(data, filename="error_log.py"))
+        # Can't tell what it is? Let's ping the owner and the relevant webhook
+        try:
+            raise error
+        except Exception as e:
+            exc = traceback.format_exc()
+            data = io.StringIO(exc)
+            error_text = text = f"Error `{e}` encountered.\nGuild `{ctx.guild.id}`, channel `{ctx.channel.id}`, user `{ctx.author.id}`\n```\n{ctx.message.content}\n```"
+
+            # DM to owners
+            if getattr(self.bot, "config", {}).get('dm_uncaught_errors', False):
+                for owner_id in self.bot.config['owners']:
+                    owner = self.bot.get_user(owner_id) or await self.bot.fetch_user(owner_id)
+                    data.seek(0)
+                    await owner.send(error_text, file=discord.File(data, filename="error_log.py"))
+
+            # Ping to the webook
+            if self.bot.config.get("event_webhook_url"):
+                webhook = discord.Webhook.from_url(
+                    self.bot.config['event_webhook_url'], 
+                    adapter=discord.AsyncWebhookAdapter(self.bot.session)
+                )
+                data.seek(0)
+                await webhook.send(
+                    error_text, 
+                    file=discord.File(data, filename="error_log.py"), 
+                    username=f"{self.bot.user.name} - Error"
+                )
 
         # And throw it into the console
         raise error
