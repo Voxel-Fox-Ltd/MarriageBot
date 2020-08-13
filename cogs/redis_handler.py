@@ -171,10 +171,10 @@ class RedisHandler(utils.Cog):
             member = await guild.fetch_member(data['user_id'])
             roles = []
             self.logger.info("Adding Patreon roles to gold user")
-            for role_id in self.bot.config['patreon_roles'][:-1] + [self.bot.config['guild_specific_role']]:
+            for role_id in [self.bot.config['guild_specific_role']]:
                 roles.append(guild.get_role(role_id))
             await member.add_roles(*roles, reason='MarriageBot Gold purchase')
-            self.logger.info("Added Patreon roles to gold user")
+            self.logger.info("Added donation roles to gold user")
         except Exception as e:
             self.logger.error(e)
             pass

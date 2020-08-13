@@ -63,7 +63,7 @@ class ErrorHandler(utils.Cog):
 
         # Donator
         elif isinstance(error, utils.errors.IsNotDonator):
-            return await self.send_to_ctx_or_author(ctx, "You need to be a Patreon subscriber (`m!perks`) to be able to run this command.")
+            return await self.send_to_ctx_or_author(ctx, "You need to be a donator (`m!perks`) to be able to run this command.")
 
         # Not a server specific bot moderator
         elif isinstance(error, utils.errors.NotBotModerator):

@@ -40,7 +40,7 @@ class MiscCommands(utils.Cog):
     async def donate(self, ctx:utils.Context):
         """Gives you the creator's donation links"""
 
-        await ctx.send(f"See `{ctx.prefix}perks` for more information!\n{self.bot.config['command_data']['patreon']}", embeddify=False)
+        await ctx.send(f"See `{ctx.prefix}perks` for more information!\n<{self.bot.config['command_data']['patreon']}>", embeddify=False)
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -128,9 +128,9 @@ class MiscCommands(utils.Cog):
         e = discord.Embed()
         e.add_field(name='Normal Users', value="Gives you access to:\n* " + '\n* '.join(normal_users), inline=False)
         e.add_field(name=f'Voting ({ctx.prefix}vote)', value="Gives you access to:\n* " + '\n* '.join(voting_perks), inline=False)
-        e.add_field(name=f'T1 Patreon Donation ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
-        e.add_field(name=f'T2 Patreon Donation ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
-        e.add_field(name=f'T3 Patreon Donation ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
+        e.add_field(name=f'T1 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
+        e.add_field(name=f'T2 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
+        e.add_field(name=f'T3 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
         e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gives you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
