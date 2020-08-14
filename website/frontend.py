@@ -310,8 +310,8 @@ async def guild_settings_get_paypal(request:Request):
         'roles': roles,  # The role objects for the guild
         'max_children_amount': max_children_amount,  # Children amounts for this guild
         'gifs_enabled': guild_settings[0]['gifs_enabled'],  # Children amounts for this guild
-        'max_children_hard_cap': max(request.app['config']['max_children']),  # Hard cap on children for all users
-        'min_children_hard_cap': min(request.app['config']['max_children']),  # Hard minimum on children for all users
+        'max_children_hard_cap': max([i['max_children'] for i in request.app['config']['role_perks'].values()]),  # Hard cap on children for all users
+        'min_children_hard_cap': min([i['max_children'] for i in request.app['config']['role_perks'].values()]),  # Hard minimum on children for all users
     }
     return page_data
 
