@@ -7,13 +7,6 @@ from aiohttp.web import HTTPFound, Request, Response, RouteTableDef
 from cogs import utils
 from website import utils as webutils
 
-"""
-All pages on this website that implement the base.j2 file should return two things:
-Firstly, the original request itself under the name 'request'.
-Secondly, it should return the user info from the user as gotten from the login under 'user_info'
-This is all handled by a decorator below, but I'm just putting it here as a note
-"""
-
 
 routes = RouteTableDef()
 
@@ -30,47 +23,38 @@ async def redirect(request:Request):
     return HTTPFound(location=data[0]['location'])
 
 
-# @routes.get("/discord_oauth_login/jacket_poll")
-# async def jacket_poll(request:Request):
-#     """Handles redirects using codes stored in the db"""
-
-#     # See if they're logged in
-#     await webutils.process_discord_login(request)
-#     session = await aiohttp_session.get_session(request)
-#     if not session.get('user_id'):
-#         return HTTPFound(location='/')
-#     url = "https://docs.google.com/forms/d/e/1FAIpQLScu9Wya__di-Ke2jnkG5XO3OSaWB7Sj6Z2Hd2U1wnnKUWkZ4w/viewform?"  # usp=pp_url&entry.865916339={username}&entry.1362434111={user_id}"
-#     return HTTPFound(location=url + urlencode({
-#         'usp': 'pp_url',
-#         'entry.710546805': f"{session['user_info']['username']}#{session['user_info']['discriminator']}",
-#         'entry.1788377605': session['user_id'],
-#     }))
-
-
 @routes.post('/colour_settings')
+@webutils.requires_login()
 async def colour_settings_post_handler(request:Request):
     """Handles when people submit their new colours"""
 
+    # Grab the colours from their post request
     try:
         colours_raw = await request.post()
     except Exception as e:
         raise e
     colours_raw = dict(colours_raw)
+
+    # Fix up the attributes
     direction = colours_raw.pop("direction")
     colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in colours_raw.items()}
     colours['direction'] = direction
+
+    # Save the data to the database
     session = await aiohttp_session.get_session(request)
     user_id = session['user_id']
     async with request.app['database']() as db:
         ctu = await utils.CustomisedTreeUser.get(user_id, db)
-    for i, o in colours.items():
-        setattr(ctu, i, o)
-    async with request.app['database']() as db:
+        for i, o in colours.items():
+            setattr(ctu, i, o)
         await ctu.save(db)
+
+    # Redirect back to user settings
     return HTTPFound(location='/user_settings')
 
 
 @routes.post('/unblock_user')
+@webutils.requires_login()
 async def unblock_user_post_handler(request:Request):
     """Handles when people submit their new colours"""
 
@@ -98,10 +82,13 @@ async def unblock_user_post_handler(request:Request):
         )
     async with request.app['redis']() as re:
         await re.publish_json("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
+
+    # Redirect back to user settings
     return HTTPFound(location='/user_settings')
 
 
 @routes.post('/set_prefix')
+@webutils.requires_login()
 async def set_prefix(request:Request):
     """Sets the prefix for a given guild"""
 
@@ -148,6 +135,7 @@ async def set_prefix(request:Request):
 
 
 @routes.post('/set_max_family_members')
+@webutils.requires_login()
 async def set_max_family_members(request:Request):
     """Sets the maximum family members for a given guild"""
 
@@ -189,6 +177,7 @@ async def set_max_family_members(request:Request):
 
 
 @routes.post('/set_gifs_enabled')
+@webutils.requires_login()
 async def set_gifs_enabled(request:Request):
     """Sets whether or not gifs are enabled for a given guild"""
 
@@ -227,6 +216,7 @@ async def set_gifs_enabled(request:Request):
 
 
 @routes.post('/set_incest_enabled')
+@webutils.requires_login()
 async def set_incest_enabled(request:Request):
     """Sets the whether or not incest is enabled for a given guild"""
 
@@ -267,6 +257,7 @@ async def set_incest_enabled(request:Request):
 
 
 @routes.post('/set_max_allowed_children')
+@webutils.requires_login()
 async def set_max_allowed_children(request:Request):
     """Sets the max children for the guild"""
 
@@ -361,49 +352,3 @@ async def login_redirect(request:Request):
     await webutils.process_discord_login(request, ['identify', 'guilds'])
     session = await aiohttp_session.get_session(request)
     return HTTPFound(location=session.pop('redirect_on_login', '/'))
-
-
-@routes.post('/webhooks/voxel_fox/paypal_purchase')
-async def paypal_purchase_complete(request:Request):
-    """Handles Paypal throwing data my way"""
-
-    # Check the headers
-    if request.headers.get("Authorization", None) != request.app['config']['authorization_tokens']['paypal']:
-        return Response(status=200)
-    data = await request.json()
-    custom_data = json.loads(data['custom'])
-
-    async with request.app['database']() as db:
-        if data['refunded'] is False:
-            pass
-        else:
-            pass
-
-    # Let the user get redirected
-    return Response(status=200)
-
-
-@routes.post('/webhooks/voxel_fox/topgg')
-async def webhook_handler(request:Request):
-    """Sends a PM to the user with the webhook attached if user in owners"""
-
-    if request.headers.get('Authorization', None) != request.app['config']['topgg_authorization']:
-        return Response(400)
-    data = await request.json()
-    time = dt.utcnow()
-
-    # Send proper thanks to the user
-    text = {
-        'upvote': 'Thank you for upvoting!',
-        'test': 'Thanks for the test ping boss.',
-    }.get(data['type'], 'Invalid webhook type from DBL')
-
-    # Redis thanks to user
-    async with request.app['redis']() as re:
-        await re.publish_json("SendUserMessage", {"user_id": data['user_id'], "content": text})
-        await re.publish_json('DBLVote', {'user_id': data['user_id'], 'datetime': time.isoformat()})
-
-    # DB vote
-    async with request.app['database']() as db:
-        await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=excluded.timestamp', data['user_id'], time)
-    return Response(status=200)

@@ -1,11 +1,14 @@
+import copy
+
 import aiohttp_session
 import discord
 from aiohttp.web import HTTPFound, Request, RouteTableDef, json_response
 from aiohttp_jinja2 import template
-
 import markdown2
+
 from cogs import utils
 from website import utils as webutils
+
 
 routes = RouteTableDef()
 
@@ -17,14 +20,7 @@ async def index(request:Request):
     """Index of the website, has "login with Discord" button
     If not logged in, all pages should redirect here"""
 
-    bot = request.app['bot']
-    login_url = bot.get_invite_link(
-        redirect_uri='https://marriagebot.xyz/discord_oauth_login',
-        response_type='code',
-        scope='identify guilds guilds.join',
-    )
-
-    return {'login_url': login_url}
+    return {}
 
 
 @routes.get("/blog/{code}")
@@ -33,11 +29,14 @@ async def index(request:Request):
 async def blog(request:Request):
     """Blog post handler"""
 
+    # Grab the blog post from database
     url_code = request.match_info['code']
     async with request.app['database']() as db:
         data = await db("SELECT * FROM blog_posts WHERE url=$1", url_code)
     if not data:
         return {'title': 'Post not found'}
+
+    # Return the article and the opengraph stuff
     text = data[0]['body']
     return {
         'text': markdown2.markdown(text),
@@ -137,9 +136,9 @@ async def guild_picker(request:Request):
     except TypeError:
         # No guilds provided - did they remove the scope? who knows
         guilds = []
-
-    # Get the guilds that have gold
     guild_ids = [int(i['id']) for i in guilds]
+
+    # Add a gold attribute to the guilds
     async with request.app['database']() as db:
         gold_guild_data = await db("SELECT * FROM guild_specific_families WHERE guild_id=ANY($1::BIGINT[])", guild_ids)
     gold_guild_ids = [str(i['guild_id']) for i in gold_guild_data]
@@ -149,17 +148,17 @@ async def guild_picker(request:Request):
         else:
             i['gold'] = False
 
+    # See if they bought any of the gold instances
     session = await aiohttp_session.get_session(request)
-    if session.get('user_id'):
-        user_id = session['user_id']
-        async with request.app['database']() as db:
-            request.app['logger'].info("Getting user data")
-            rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
-            if rows:
-                await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
-                async with request.app['redis']() as re:
-                    await re.publish_json("AddGoldUser", {'user_id': user_id})
+    user_id = session['user_id']
+    request.app['logger'].info("Getting user data")
+    rows = [i for i in gold_guild_data if i['purchased_by'] == user_id]
+    if rows:
+        await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
+        async with request.app['redis']() as re:
+            await re.publish_json("AddGoldUser", {'user_id': user_id})
 
+    # Send off guilds to the page
     return {'guilds': guilds}
 
 
@@ -169,6 +168,7 @@ async def guild_picker(request:Request):
 async def tree_preview(request:Request):
     """Tree preview for the bot"""
 
+    # Grab the colours from the params
     colours_raw = {
         'edge': request.query.get('edge'),
         'node': request.query.get('node'),
@@ -178,9 +178,11 @@ async def tree_preview(request:Request):
         'background': request.query.get('background'),
         'direction': request.query.get('direction'),
     }
+
+    # Fix it up to be usable values
     colours = {}
     for i, o in colours_raw.items():
-        if o == None or o == 'transparent':
+        if o is None or o == 'transparent':
             o = 'transparent'
         elif i == 'direction':
             pass
@@ -188,6 +190,7 @@ async def tree_preview(request:Request):
             o = f'#{o.strip("#")}'
         colours[i] = o
 
+    # Return it to the page
     return {
         'hex_strings': colours,
     }
@@ -229,7 +232,7 @@ async def guild_settings_get_paypal(request:Request):
         )
         return HTTPFound(location=location)
 
-    # Get the guilds they're valid to alter
+    # Get the guilds they're able to alter
     all_guilds = await webutils.get_user_guilds(request)
     if all_guilds is None:
         return HTTPFound(location='/discord_oauth_login')
@@ -241,9 +244,7 @@ async def guild_settings_get_paypal(request:Request):
     async with request.app['database']() as db:
 
         # Get guild settings
-        guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id))
-        if not guild_settings:
-            guild_settings = [request.app['bot'].DEFAULT_GUILD_SETTINGS.copy()]
+        guild_settings = await db('SELECT * FROM guild_settings WHERE guild_id=$1', int(guild_id)) or [request.app['bot'].DEFAULT_GUILD_SETTINGS.copy()]
 
         # Get gold allowance
         if not gold_param:
@@ -258,17 +259,6 @@ async def guild_settings_get_paypal(request:Request):
         # Get children amount
         max_children_data = await db('SELECT * FROM max_children_amount WHERE guild_id=$1', int(guild_id))
         max_children_amount = {i['role_id']: i['amount'] for i in max_children_data}
-
-        # See if we need to add them to the support guild
-        session = await aiohttp_session.get_session(request)
-        user_id = session['user_id']
-        async with request.app['database']() as db:
-            request.app['logger'].info("Getting user data")
-            rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
-            if rows:
-                await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
-                async with request.app['redis']() as re:
-                    await re.publish_json("AddGoldUser", {'user_id': user_id})
 
     # Get prefix
     try:
@@ -316,17 +306,9 @@ async def guild_settings_get_paypal(request:Request):
     return page_data
 
 
-@routes.get('/get_session')
-async def get_session(request:Request):
-    """Gets your session data and throws it in your face"""
-
-    session = await aiohttp_session.get_session(request)
-    return json_response(dict(session))
-
-
 @routes.get("/discord_oauth_login")
 async def login(request:Request):
-    """Index of the website"""
+    """The redirect to the actual oauth login"""
 
     bot = request.app['bot']
     login_url = bot.get_invite_link(
