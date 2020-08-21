@@ -134,7 +134,7 @@ class MiscCommands(utils.Cog):
         e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gives you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
-    @commands.command(aliases=['status'], cls=utils.Command)
+    @commands.command(aliases=['status','botinfo'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def stats(self, ctx:utils.Context):
