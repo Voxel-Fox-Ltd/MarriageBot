@@ -17,11 +17,12 @@ MarriageBot - {{ guild.name }} Settings
     {% if normal == true %}<h2>This guild has <a href="/guild_settings?guild_id={{ guild.id }}">MarriageBot</a> - click for settings</h2>{% elif normal == false %}<h2><a href="/r/invite">Click here</a> to invite normal MarriageBot for this guild</h2>{% endif %}
     {% if gold == true %}<h2>This guild has <a href="/guild_settings?guild_id={{ guild.id }}&gold=1">MarriageBot Gold</a> - click for settings</h2>{% elif gold == false %}<h2>Click here to buy MarriageBot Gold for this guild </h2>
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-    <input type="hidden" name="cmd" value="_s-xclick">
-    <input type="hidden" name="hosted_button_id" value="83N4P9WB294EL">
-    <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
-    <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
-    <input type="hidden" name="custom" value='{"discord_user_id": {{ user_info.id }}, "discord_guild_id": {{ guild.id }}}'></form>
+        <input type="hidden" name="cmd" value="_s-xclick">
+        <input type="hidden" name="hosted_button_id" value="83N4P9WB294EL">
+        <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
+        <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+        <input type="hidden" name="custom" value='{"discord_user_id": {{ user_info.id }}, "discord_guild_id": {{ guild.id }}}'>
+    </form>
     {% endif %}
 </div>
 <form id="prefix" class="boxed">

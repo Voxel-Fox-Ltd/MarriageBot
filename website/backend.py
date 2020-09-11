@@ -279,7 +279,11 @@ async def set_max_allowed_children(request:Request):
         return HTTPFound(location='/')
 
     # Get the maximum members
-    max_children_data = {int(i): min([max([int(o), 0]), request.app['config']['max_children'][-1]]) for i, o in post_data.items() if i.isdigit() and len(o) > 0}
+    hard_maximum_children = max([i['max_children'] for i in request.app['config']['role_perks'].values()])
+    hard_minimum_children = min([i['max_children'] for i in request.app['config']['role_perks'].values()])
+    max_children_data = {
+        int(i): min([max([int(o), hard_minimum_children]), hard_maximum_children]) for i, o in post_data.items() if i.isdigit() and len(o) > 0
+    }  # user ID: amount
 
     # Get current prefix
     async with request.app['database']() as db:
