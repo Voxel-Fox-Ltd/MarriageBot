@@ -244,7 +244,7 @@ class MiscCommands(utils.Cog):
         """Gives you some cats innit"""
 
         await ctx.channel.trigger_typing()
-        headers = {"User-Agent": "MarriageBot/1.0.0 - Discord@Caleb#2831"}
+        headers = {"User-Agent": "MarriageBot/1.0.0 - Discord@Kae#0004"}
         async with self.bot.session.get("https://api.thecatapi.com/v1/images/search", headers=headers) as r:
             data = await r.json()
         with utils.Embed(use_random_colour=True) as embed:

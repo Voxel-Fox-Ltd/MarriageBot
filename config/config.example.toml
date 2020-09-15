@@ -92,7 +92,7 @@ event_webhook_url = ""
         text = "MarriageBot"
         amount = 1
     [[embed.footer]]
-        text = "MarriageBot - Made by Caleb#2831"
+        text = "MarriageBot - Made by Kae#0004"
         amount = 3
     [[embed.footer]]
         text = "MarriageBot - Add a vote on Discord Bot List! ({prefix}vote)"

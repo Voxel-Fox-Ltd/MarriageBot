@@ -25,7 +25,7 @@ async def get_reaction_gif(bot, reaction_type:str):
         bot.logger.debug(f"Invalid reaction {reaction_type} passed to get_reaction_gif")
         return None
     headers = {
-        "User-Agent": "MarriageBot/1.0.0 ~ Discord@Caleb#2831",
+        "User-Agent": "MarriageBot/1.0.0 ~ Discord@Kae#0004",
         "Authorization": f"Wolke {bot.config['api_keys']['weebsh']}"
     }
     params = {

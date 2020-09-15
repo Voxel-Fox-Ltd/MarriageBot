@@ -8,7 +8,7 @@ This is a small Discord bot intended to bring love to your Discord servers. What
 
 ## Me
 
-I'm `Caleb#2831`. Feel free to ask for help at any time. If you like what I do, then [feel free to help out](https://patreon.com/join/CalebB).
+I'm `Kae#0004`. Feel free to ask for help at any time. If you like what I do, then [feel free to help out](https://patreon.com/join/CalebB).
 
 ## Thanks
 
