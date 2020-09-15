@@ -233,10 +233,11 @@ class MiscCommands(utils.Cog):
     @commands.command(cls=utils.Command)
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True)
-    async def shard(self, ctx:utils.Context):
+    async def shard(self, ctx:utils.Context, guild_id:int=None):
         """Gives you the shard that your server is running on"""
 
-        await ctx.send(f"The shard that your server is on is shard `{ctx.guild.shard_id}`.")
+        guild_id = guild_id or ctx.guild.id
+        await ctx.send(f"The shard for server ID `{guild_id}` is `{(guild_id >> 22) % self.bot.shard_count}`. If all instances have `{len(self.bot.shard_ids)}` shards, that guild would be on instance `{((guild_id >> 22) % self.bot.shard_count) // len(self.bot.shard_ids)}`")
 
     @commands.command(cls=utils.Command, aliases=['kitty'], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
