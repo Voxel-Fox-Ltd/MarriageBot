@@ -22,8 +22,12 @@ class ErrorHandler(utils.Cog):
                 return await ctx.author.send(author_text or text)
             except discord.Forbidden:
                 pass
+            except discord.HTTPException as e:
+                self.logger.error(f"discord.HTTPException on sending error message - {e.response}")
         except discord.NotFound:
             pass
+        except discord.HTTPException as e:
+            self.logger.error(f"discord.HTTPException on sending error message - {e.response}")
         return None
 
     @utils.Cog.listener()
