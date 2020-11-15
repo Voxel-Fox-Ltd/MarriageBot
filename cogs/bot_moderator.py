@@ -98,8 +98,6 @@ class ModeratorOnly(utils.Cog):
 
         async with self.bot.database() as db:
             await db('INSERT INTO guild_specific_families (guild_id, purchased_by) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET purchased_by=excluded.purchased_by', guild_id, user_id)
-        user = self.bot.get_user(user_id) or await self.bot.fetch_user(user_id)
-        await user.send(f"Here's the link to invite MB Gold.\n<https://discordapp.com/oauth2/authorize?client_id=603608141434716171&scope=bot&permissions=49152>", embeddify=False)
         await ctx.okay(ignore_error=True)
 
     @commands.command(cls=utils.Command)
