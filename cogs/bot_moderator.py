@@ -33,7 +33,15 @@ class ModeratorOnly(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    async def runstartupmethod(self, ctx:utils.Context):
+        """Runs the bot startup method, reacching everything of interest"""
+
+        await self.bot.startup()
+
+    @commands.command(cls=utils.Command)
+    @utils.checks.is_bot_support()
+    @commands.bot_has_permissions(send_messages=True)
+    async def copyfamilytoguildwithdelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
@@ -63,7 +71,7 @@ class ModeratorOnly(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguildnodelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
