@@ -21,7 +21,7 @@ class Simulation(utils.Cog):
         image_url = await utils.get_reaction_gif(ctx.bot, "hug") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Hugs {user.mention}*", image_url=image_url)
 
-    @commands.command(cls=utils.Command)
+    @commands.command(aliases=['smooch'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
@@ -63,7 +63,17 @@ class Simulation(utils.Cog):
             return await ctx.send("*You slapped yourself... for some reason.*")
         image_url = await utils.get_reaction_gif(ctx.bot, "slap") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
         await ctx.send(f"*Slaps {user.mention}*", image_url=image_url)
+    
+    @commands.command(cls=utils.Command)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def coffee(self, ctx:utils.Context, user:discord.Member):
+        """Gives coffee to a mentioned user"""
 
+        if user == ctx.author:
+            return await ctx.send("*You spilled coffee all over yourself... for some reason.*")
+        await ctx.send(f"*Gives coffee to {user.mention}*")
+        
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
