@@ -121,6 +121,36 @@ class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
             else:
                 await ctx.send(text)
 
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
+    async def load(self, ctx, *cog_names):
+        """ Unloads a Cog. """
+
+        cog_name = 'cogs.' + '_'.join([i for i in cog_names])
+
+        try:
+            self.bot.load_extension(cog_name)
+        except:
+            await ctx.send('```py\n' + traceback.format_exc() + '```')
+            return
+        await ctx.send('Cog loaded.')
+
+    @commands.command(cls=utils.Command)
+    @commands.is_owner()
+    @commands.bot_has_permissions(send_messages=True)
+    async def unload(self, ctx, *cog_names):
+        """ Unloads a Cog. """
+
+        cog_name = 'cogs.' + '_'.join([i for i in cog_names])
+
+        try:
+            self.bot.unload_extension(cog_name)
+        except:
+            await ctx.send('```py\n' + traceback.format_exc() + '```')
+            return
+        await ctx.send('Cog unloaded.')
+
     @commands.command(aliases=['rld'], cls=utils.Command)
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
@@ -133,13 +163,11 @@ class OwnerOnly(utils.Cog, command_attrs={'hidden': True}):
             self.bot.load_extension(cog_name)
         except commands.ExtensionAlreadyLoaded:
             try:
-                # self.bot.unload_extension(cog_name)
-                # self.bot.load_extension(cog_name)
                 self.bot.reload_extension(cog_name)
-            except Exception:
+            except:
                 await ctx.send('```py\n' + traceback.format_exc() + '```')
                 return
-        except Exception:
+        except:
             await ctx.send('```py\n' + traceback.format_exc() + '```')
             return
         await ctx.send('Cog reloaded.')
