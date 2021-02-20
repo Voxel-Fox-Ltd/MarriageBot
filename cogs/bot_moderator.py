@@ -30,10 +30,19 @@ class ModeratorOnly(utils.Cog):
         self.bot.shallow_users.pop(user.id, None)
         await ctx.send(f"Saved the name `{user!s}` into the database for user ID `{user.id}`.")
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    async def runstartupmethod(self, ctx:utils.Context):
+        """Runs the bot startup method, reacching everything of interest"""
+
+        await self.bot.startup()
+        await ctx.okay()
+
+    @commands.command(cls=utils.Command, hidden=True)
+    @utils.checks.is_bot_support()
+    @commands.bot_has_permissions(send_messages=True)
+    async def copyfamilytoguildwithdelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
@@ -60,10 +69,10 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguildnodelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
@@ -90,7 +99,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    @commands.command(cls=utils.Command)
+    @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def addserverspecific(self, ctx:utils.Context, guild_id:int, user_id:utils.converters.UserID):
@@ -110,7 +119,7 @@ class ModeratorOnly(utils.Cog):
             await db('DELETE FROM guild_specific_families WHERE guild_id=$1', guild_id)
         await ctx.okay(ignore_error=True)
 
-    @commands.command(cls=utils.Command, aliases=['getgoldpurchases'])
+    @commands.command(cls=utils.Command, aliases=['getgoldpurchases'], hidden=True)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def getgoldpurchase(self, ctx:utils.Context, user:utils.converters.UserID):

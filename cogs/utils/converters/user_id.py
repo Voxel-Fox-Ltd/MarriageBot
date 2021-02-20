@@ -18,4 +18,4 @@ class UserID(commands.IDConverter):
         match = cls.USER_ID_REGEX.search(value)
         if match is not None:
             return int(match.group(1))
-        raise commands.BadArgument()
+        raise commands.BadArgument(f"I couldn't convert `{value}` into a user! Try pinging them, or giving their ID.")

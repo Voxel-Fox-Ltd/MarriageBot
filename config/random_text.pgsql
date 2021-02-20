@@ -16,7 +16,6 @@ INSERT INTO random_text VALUES ('adopt', 'target_is_me', 'Thank you for the offe
 INSERT INTO random_text VALUES ('adopt', 'target_is_me', 'No thank you.', 'en');
 INSERT INTO random_text VALUES ('adopt', 'target_is_me', 'I think it best you don''t adopt me. No offense.', 'en');
 INSERT INTO random_text VALUES ('adopt', 'target_is_me', 'I have one daddy and one daddy only, sorry.', 'en');
-INSERT INTO random_text VALUES ('adopt', 'target_is_me', 'Caleb would be pretty upset not gonna lie, so I''m gonna have to decline.', 'en');
 INSERT INTO random_text VALUES ('adopt', 'target_is_me', 'The fee to adopt me is $50. Cough that up monthly and you''ve got yourself a MarriageBaby, {instigator.mention}.', 'en');
 INSERT INTO random_text VALUES ('adopt', 'target_is_me', 'Sorry but I''d rather not live with trash.', 'en');
 INSERT INTO random_text VALUES ('adopt', 'target_is_bot', 'I don''t think bots can consent to that.', 'en');
@@ -321,10 +320,8 @@ INSERT INTO random_text VALUES ('propose', 'target_is_me', 'No.', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_me', 'Thanks, but I could do better.', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_me', 'Are you serious? No.', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_me', 'I''m a robot, I''m not interested, and you could do better, sweetheart.', 'en');
-INSERT INTO random_text VALUES ('propose', 'target_is_me', 'Daddy Caleb says no, sorry.', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_me', 'What type of cruel and unusual punishment is this? No thanks!', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_me', 'Oh dear god. No.', 'en');
-INSERT INTO random_text VALUES ('propose', 'target_is_me', 'Daddy Caleb says no. Your loss.', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_me', 'Sorry, I don''t marry the inferior. I mean the less fortunate. I mean humans.', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_target', 'They''re a popular choice, I see. Wait to see what they say to the other proposal they have before trying yourself.', 'en');
 INSERT INTO random_text VALUES ('propose', 'target_is_target', 'Someone just proposed to them. See what they say there first.', 'en');
@@ -369,7 +366,6 @@ INSERT INTO random_text VALUES ('propose', 'valid_target', 'Hey {target.mention}
 INSERT INTO random_text VALUES ('propose', 'valid_target', 'Hey {target.mention} I dare you to marry {instigator.mention} ;3', 'en');
 INSERT INTO random_text VALUES ('propose', 'valid_target', '{target.mention}, you ready to uwu over {instigator.mention}? ', 'en');
 INSERT INTO random_text VALUES ('propose', 'valid_target', 'Hey {target.mention}, are you free tomorrow night? If so, you should get dinner with {instigator.mention} or maybe marry them or something idk.', 'en');
-INSERT INTO random_text VALUES ('propose', 'valid_target', 'Could {target.mention} and {instigator.mention} make a cuter married couple than Ollie and Caleb? They sure can try! c;', 'en');
 INSERT INTO random_text VALUES ('propose', 'valid_target', 'Wouldn''t {target.mention} and {instigator.mention} look cute as wedding cake toppers? Let''s make it happen!', 'en');
 INSERT INTO random_text VALUES ('propose', 'valid_target', 'Hey {target.mention}, wanna marry {instigator.mention} and achieve tumblr crackship fame?', 'en');
 INSERT INTO random_text VALUES ('propose', 'valid_target', 'Does anyone ever daydream about {target.mention} snuggling {instigator.mention} in the moonlight?', 'en');
