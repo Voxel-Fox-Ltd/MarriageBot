@@ -9,7 +9,7 @@ import voxelbotutils as utils
 from cogs import utils as localutils
 
 
-class Simulation(utils.Cog):
+class SimulationCommands(utils.Cog):
 
     async def get_reaction_gif(self, ctx:utils.Context, reaction_type:str=None) -> typing.Optional[str]:
         """
@@ -320,5 +320,5 @@ class Simulation(utils.Cog):
 
 
 def setup(bot:utils.Bot):
-    x = Simulation(bot)
+    x = SimulationCommands(bot)
     bot.add_cog(x)
