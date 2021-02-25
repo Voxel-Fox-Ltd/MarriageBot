@@ -10,12 +10,6 @@ class NotBotModerator(commands.CommandError):
     pass
 
 
-class NotBotSupport(NotBotModerator):
-    """Thrown when the user isn't set as a bot administrator"""
-
-    pass
-
-
 async def is_bot_support_predicate(ctx:commands.Context):
     """Returns True if the user is on the support guild with the bot moderator role"""
 
@@ -36,16 +30,6 @@ async def is_bot_support_predicate(ctx:commands.Context):
     except (discord.NotFound, discord.HTTPException):
         pass
     return False
-
-
-def is_bot_support():
-    """Checks whether the bot is set as an administrator"""
-
-    async def predicate(ctx:commands.Context):
-        if await is_bot_support_predicate(ctx):
-            return True
-        raise NotBotSupport()
-    return commands.check(predicate)
 
 
 def is_server_specific_bot_moderator():

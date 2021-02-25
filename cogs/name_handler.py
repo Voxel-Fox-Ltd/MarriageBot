@@ -1,3 +1,5 @@
+import discord
+
 from cogs import utils
 
 
@@ -15,6 +17,15 @@ class NameHandler(utils.Cog):
         user.age += 1
         if user.age >= utils.ShallowUser.LIFETIME_THRESHOLD:
             await self.bot.get_name(ctx.author.id, fetch_from_api=True)
+
+    @utils.Cog.listener()
+    async def on_user_update(self, before:discord.User, after:discord.User):
+        """Caches a username change into the redis cache"""
+
+        if before.name == after.name:
+            return
+        async with self.bot.redis() as re:
+            await re.set(f'UserName-{after.id}', str(after))
 
 
 def setup(bot:utils.Bot):

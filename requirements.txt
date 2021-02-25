@@ -1,18 +1,2 @@
-# Discord and config handling
-git+https://github.com/4Kaylum/discord.py@master
-toml
-git+https://github.com/Rapptz/discord-ext-menus
-
-# Utils
-psutil
+voxelbotutils[web]
 markdown2
-
-# Storage handling
-asyncpg
-aioredis
-
-# Website handling
-aiohttp
-aiohttp_jinja2
-aiohttp_session[secure]
-jinja2
