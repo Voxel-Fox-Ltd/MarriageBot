@@ -1,46 +1,31 @@
-import discord
 from discord.ext import commands
+import voxelbotutils as utils
 
-from cogs.utils.checks.is_server_specific import NotServerSpecific
-
-
-class NotBotModerator(commands.CommandError):
-    """Thrown when the user isn't set as a bot moderator"""
-
-    pass
+from cogs.utils.checks.is_server_specific import is_server_specific
 
 
-async def is_bot_support_predicate(ctx:commands.Context):
-    """Returns True if the user is on the support guild with the bot moderator role"""
+class NotBotModerator(commands.MissingRole):
+    """
+    The specified user doesn't have the MarriageBot Moderator role.
+    """
 
-    # Make sure both settings are set
-    if ctx.bot.config.get('bot_admin_role') in [None, '']:
-        ctx.bot.logger.warn("No bot admin role set in the config")
-        return False
-
-    # Set the support guild if we have to
-    if not ctx.bot.support_guild:
-        await ctx.bot.fetch_support_guild()
-
-    # Get member and look for role
-    try:
-        member = await ctx.bot.support_guild.fetch_member(ctx.author.id)
-        if ctx.bot.config['bot_admin_role'] in member._roles:
-            return True
-    except (discord.NotFound, discord.HTTPException):
-        pass
-    return False
+    def __init__(self):
+        super().__init__("MarriageBot Moderator")
 
 
 def is_server_specific_bot_moderator():
-    """Check to see if the user has a role either called 'MarriageBot Moderator' or 'SSF MarriageBot Moderator'"""
+    """
+    Check to see if the user has a role called 'MarriageBot Moderator'.
+    """
 
     async def predicate(ctx:commands.Context):
-        if await is_bot_support_predicate(ctx):
-            return True  # If they're MB support
-        if not ctx.bot.config['server_specific']:
-            raise NotServerSpecific()  # If it's not server specific
-        if any([i for i in ctx.author.roles if i.name.casefold() in ('ssf marriagebot moderator', 'marriagebot moderator')]):
-            return True  # Ye it's all good
-        raise NotBotModerator()
+        try:
+            await utils.checks.is_bot_support().predicate(ctx)
+            return True
+        except Exception:
+            pass
+        await is_server_specific().predicate(ctx)
+        if any([i for i in ctx.author.roles if i.name.casefold() in 'marriagebot moderator']):
+            return True
+        raise commands.NotBotModerator()
     return commands.check(predicate)
