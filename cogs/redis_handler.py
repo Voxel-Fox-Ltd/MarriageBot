@@ -34,54 +34,50 @@ class RedisHandler(utils.Cog):
         self.redis_handler_TreeMemberUpdate.stop()
 
     @utils.redis_channel_handler("UpdateGuildPrefix")
-    def update_guild_prefix(self, data):
+    def update_guild_prefix(self, payload):
         """
         Updates the prefix for the guild.
         """
 
         key = self.bot.config['guild_settings_prefix_column']
-        data = data.get(key)
-        self.bot.guild_settings[data['guild_id']][key] = data
+        data = payload.get(key)
+        self.bot.guild_settings[payload['guild_id']][key] = data
 
     @utils.redis_channel_handler("UpdateFamilyMaxMembers")
-    def update_max_family_members(self, data):
+    def update_max_family_members(self, payload):
         """
         Updates the max number of family members for the guild.
         """
 
-        data = data.get('max_family_members')
-        self.bot.guild_settings[data['guild_id']]['max_family_members'] = data
+        data = payload.get('max_family_members')
+        self.bot.guild_settings[payload['guild_id']]['max_family_members'] = data
 
     @utils.redis_channel_handler("UpdateIncestAllowed")
-    def update_incest_alllowed(self, data):
+    def update_incest_alllowed(self, payload):
         """
         Updates whether incest is allowed on guild.
         """
 
-        data = data.get('allow_incest')
-        self.bot.guild_settings[data['guild_id']]['allow_incest'] = data
+        data = payload.get('allow_incest')
+        self.bot.guild_settings[payload['guild_id']]['allow_incest'] = data
 
     @utils.redis_channel_handler("UpdateMaxChildren")
-    def update_max_children(self, data):
+    def update_max_children(self, payload):
         """
         Updates the maximum children allowed per role in a guild.
         """
 
-        prefix = data.get('max_children')
-        if prefix is None:
-            return
-        self.bot.guild_settings[data['guild_id']]['max_children'] = prefix
+        data = payload.get('max_children')
+        self.bot.guild_settings[payload['guild_id']]['max_children'] = data
 
     @utils.redis_channel_handler("UpdateGifsEnabled")
-    def update_gifs_enabled(self, data):
+    def update_gifs_enabled(self, payload):
         """
         Updates whether or not gifs are enabled for a guild.
         """
 
-        prefix = data.get('gifs_enabled')
-        if prefix is None:
-            return
-        self.bot.guild_settings[data['guild_id']]['gifs_enabled'] = prefix
+        data = payload.get('gifs_enabled')
+        self.bot.guild_settings[payload['guild_id']]['gifs_enabled'] = data
 
     @utils.redis_channel_handler("SendUserMessage")
     async def send_user_message(self, payload):

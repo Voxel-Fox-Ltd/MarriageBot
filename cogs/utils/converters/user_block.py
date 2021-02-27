@@ -1,8 +1,8 @@
 from discord.ext import commands
 
 
-class BlockedUserError(commands.CommandError):
-    """The error raised when a given user is blocked by the author"""
+class BlockedUserError(commands.BadArgument):
+    """The error raised when a given user is blocked by the author."""
 
 
 class UnblockedMember(commands.MemberConverter):

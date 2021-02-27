@@ -71,7 +71,7 @@ class ErrorHandler(utils.Cog):
 
         # Not a server specific bot moderator
         elif isinstance(error, utils.errors.NotBotModerator):
-            if self.bot.is_server_specific:
+            if self.bot.config.get('server_specific', False):
                 return await self.send_to_ctx_or_author(ctx, "You're missing the `MarriageBot Moderator` role required for this command.")
             return await self.send_to_ctx_or_author(ctx, "This instance of the bot is not set to server specific.")
 
@@ -208,7 +208,7 @@ class ErrorHandler(utils.Cog):
 
         # Get user perks
         VOTER_COOLDOWN_TIME = 30
-        if self.bot.is_server_specific:
+        if self.bot.config.get('server_specific', False):
             cooldown_time = 5
         else:
             cooldown_time = await utils.checks.has_donator_perks_predicate(self.bot, "tree_cooldown_time", ctx.author)

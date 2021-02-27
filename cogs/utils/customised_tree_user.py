@@ -4,14 +4,18 @@ from cogs.utils.database import DatabaseConnection
 
 
 class CustomisedTreeUser(object):
-    """A class to hold the custom tree setup for a given user"""
+    """
+    A class to hold the custom tree setup for a given user.
+    """
 
     __slots__ = (
         'id', 'edge', 'node', 'font', 'highlighted_font',
-        'highlighted_node', 'background', 'direction'
+        'highlighted_node', 'background', 'direction',
     )
 
-    def __init__(self, user_id:int, *, edge:int=None, node:int=None, font:int=None, highlighted_font:int=None, highlighted_node:int=None, background:int=None, direction:str="TB"):
+    def __init__(
+            self, user_id:int, *, edge:int=None, node:int=None, font:int=None, highlighted_font:int=None,
+            highlighted_node:int=None, background:int=None, direction:str="TB"):
         self.id = user_id
         self.edge = edge
         self.node = node
@@ -22,19 +26,23 @@ class CustomisedTreeUser(object):
         self.direction = direction
 
     @classmethod
-    async def get(cls, key, database:DatabaseConnection):
-        """Grabs a user's data from the database"""
+    async def get(cls, user_id:int, database:DatabaseConnection) -> 'CustomisedTreeUser':
+        """
+        Grabs a user's data from the database.
+        """
 
-        data = await database('SELECT * FROM customisation WHERE user_id=$1', key)
+        data = await database('SELECT * FROM customisation WHERE user_id=$1', user_id)
         if data:
             return cls(**data[0])
-        return cls(key)
+        return cls(user_id)
 
     @property
     def hex(self) -> dict:
-        """The conversion of the user's data into some quotes hex strings
-        that can be passed directly to Graphviz
-        Provides deafults"""
+        """
+        The conversion of the user's data into some quotes hex strings
+        that can be passed directly to Graphviz.
+        Provides deafults.
+        """
 
         default_hex = self.get_default_hex()
 
@@ -82,20 +90,24 @@ class CustomisedTreeUser(object):
             'highlighted_font': highlighted_font,
             'highlighted_node': highlighted_node,
             'background': background,
-            'direction': f'"{self.direction}"'
+            'direction': f'"{self.direction}"',
         }
 
     @property
-    def unquoted_hex(self):
-        """The same as self.hex, but strips out the quote marks from the items
-        Pretty much directly passed into a website's CSS"""
+    def unquoted_hex(self) -> dict:
+        """
+        The same as self.hex, but strips out the quote marks from the items.
+        Pretty much directly passed into a website's CSS.
+        """
 
         # Just strip the quote marks from the items
         return {i: o.strip('"') for i, o in self.hex.items()}
 
     @classmethod
-    def get_default_hex(self):
-        """The default hex codes that are used, quoted"""
+    def get_default_hex(self) -> dict:
+        """
+        The default hex codes that are used, quoted.
+        """
 
         return {
             'edge': '"#000000"',
@@ -108,14 +120,18 @@ class CustomisedTreeUser(object):
         }
 
     @classmethod
-    def get_default_unquoted_hex(cls):
-        """The default hex codes that are used, unquoted
-        Pretty much directly passed into a website's CSS"""
+    def get_default_unquoted_hex(cls) -> dict:
+        """
+        The default hex codes that are used, unquoted.
+        Pretty much directly passed into a website's CSS.
+        """
 
         return {i: o.strip('"') for i, o in cls.get_default_hex().items()}
 
     async def save(self, db:DatabaseConnection):
-        """Saves all this lovely cached data into the database"""
+        """
+        Saves all this lovely cached data into the database.
+        """
 
         try:
             await db(

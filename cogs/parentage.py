@@ -10,11 +10,13 @@ from cogs import utils
 class Parentage(utils.Cog):
 
     async def get_max_children_for_member(self, guild:discord.Guild, user:discord.Member):
-        """Get the maximum amount of children a given member can have"""
+        """
+        Get the maximum amount of children a given member can have.
+        """
 
         # See how many children they're allowed with Gold
         gold_children_amount = 0
-        if self.bot.is_server_specific:
+        if self.bot.config.get('server_specific', False):
             guild_max_children = self.bot.guild_settings[guild.id]['max_children']
             if guild_max_children:
                 gold_children_amount = max([
@@ -29,9 +31,9 @@ class Parentage(utils.Cog):
             max([
                 gold_children_amount,
                 normal_children_amount,
-                min([i['max_children'] for i in self.bot.config['role_perks'].values()])
+                min([i['max_children'] for i in self.bot.config['role_perks'].values()]),
             ]),
-            max([i['max_children'] for i in self.bot.config['role_perks'].values()])
+            max([i['max_children'] for i in self.bot.config['role_perks'].values()]),
         ])
 
     @commands.command(cls=utils.Command)

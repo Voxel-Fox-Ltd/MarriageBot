@@ -4,7 +4,7 @@ import voxelbotutils as utils
 from cogs.utils.checks.is_server_specific import is_server_specific
 
 
-class NotBotModerator(commands.MissingRole):
+class NotServerSpecificBotModerator(commands.MissingRole):
     """
     The specified user doesn't have the MarriageBot Moderator role.
     """
@@ -27,5 +27,5 @@ def is_server_specific_bot_moderator():
         await is_server_specific().predicate(ctx)
         if any([i for i in ctx.author.roles if i.name.casefold() in 'marriagebot moderator']):
             return True
-        raise commands.NotBotModerator()
+        raise commands.NotServerSpecificBotModerator()
     return commands.check(predicate)

@@ -30,7 +30,7 @@ class Information(utils.Cog):
 
         # Get timestamp
         async with self.bot.database() as db:
-            if self.bot.is_server_specific:
+            if self.bot.config.get('server_specific', False):
                 data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id<>0", user)
             else:
                 data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", user)
