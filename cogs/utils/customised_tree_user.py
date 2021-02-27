@@ -1,5 +1,3 @@
-import asyncpg
-
 from cogs.utils.database import DatabaseConnection
 
 
@@ -26,12 +24,12 @@ class CustomisedTreeUser(object):
         self.direction = direction
 
     @classmethod
-    async def get(cls, user_id:int, database:DatabaseConnection) -> 'CustomisedTreeUser':
+    async def get(cls, db:DatabaseConnection, user_id:int) -> 'CustomisedTreeUser':
         """
         Grabs a user's data from the database.
         """
 
-        data = await database('SELECT * FROM customisation WHERE user_id=$1', user_id)
+        data = await db('SELECT * FROM customisation WHERE user_id=$1', user_id)
         if data:
             return cls(**data[0])
         return cls(user_id)
@@ -122,25 +120,20 @@ class CustomisedTreeUser(object):
     @classmethod
     def get_default_unquoted_hex(cls) -> dict:
         """
-        The default hex codes that are used, unquoted.
-        Pretty much directly passed into a website's CSS.
+        The default hex codes that are used, unquoted. Pretty much directly passed into a website's CSS.
         """
 
         return {i: o.strip('"') for i, o in cls.get_default_hex().items()}
 
     async def save(self, db:DatabaseConnection):
         """
-        Saves all this lovely cached data into the database.
+        Saves the cached data from this object into the database.
         """
 
-        try:
-            await db(
-                '''INSERT INTO customisation (user_id, edge, node, font, highlighted_font, highlighted_node, background, direction)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)''',
-                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background, self.direction
-            )
-        except asyncpg.UniqueViolationError:
-            await db(
-                '''UPDATE customisation SET edge=$2, node=$3, font=$4, highlighted_font=$5, highlighted_node=$6, background=$7, direction=$8 WHERE user_id=$1''',
-                self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background, self.direction
-            )
+        await db(
+            """INSERT INTO customisation (user_id, edge, node, font, highlighted_font, highlighted_node, background, direction)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (user_id) DO UPDATE SET edge=excluded.edge, node=excluded.node,
+            font=excluded.font, highlighted_font=excluded.highlighted_font, highlighted_node=excluded.highlighted_node,
+            background=excluded.background, direction=excluded.direction""",
+            self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background, self.direction,
+        )
