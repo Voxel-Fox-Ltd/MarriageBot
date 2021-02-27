@@ -1,7 +1,7 @@
 import re
 
 
-class Simplifier(object):
+class RelationshipStringSimplifier(object):
     """
     A general static class for simplifying a list of relations from
     a set of two users.
