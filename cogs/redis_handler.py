@@ -8,6 +8,31 @@ from cogs import utils as localutils
 
 class RedisHandler(utils.Cog):
 
+    def __init__(self, bot:utils.Bot):
+        super().__init__(bot)
+        self.update_guild_prefix.start()
+        self.update_max_family_members.start()
+        self.update_incest_alllowed.start()
+        self.update_max_children.start()
+        self.update_gifs_enabled.start()
+        self.send_user_message.start()
+        self.redis_handler_DBLVote.start()
+        self.redis_handler_ProposalCacheAdd.start()
+        self.redis_handler_ProposalCacheRemove.start()
+        self.redis_handler_TreeMemberUpdate.start()
+
+    def cog_unload(self):
+        self.update_guild_prefix.stop()
+        self.update_max_family_members.stop()
+        self.update_incest_alllowed.stop()
+        self.update_max_children.stop()
+        self.update_gifs_enabled.stop()
+        self.send_user_message.stop()
+        self.redis_handler_DBLVote.stop()
+        self.redis_handler_ProposalCacheAdd.stop()
+        self.redis_handler_ProposalCacheRemove.stop()
+        self.redis_handler_TreeMemberUpdate.stop()
+
     @utils.redis_channel_handler("UpdateGuildPrefix")
     def update_guild_prefix(self, data):
         """
@@ -59,37 +84,37 @@ class RedisHandler(utils.Cog):
         self.bot.guild_settings[data['guild_id']]['gifs_enabled'] = prefix
 
     @utils.redis_channel_handler("SendUserMessage")
-    async def send_user_message(self, data):
+    async def send_user_message(self, payload):
         """
         Sends a message to a given user.
         """
 
-        if self.bot.shards is None or 0 in self.bot.shard_ids:
-            pass
-        else:
+        if self.bot.user.id != payload.get('bot_id', None):
             return
+        if 0 not in (self.bot.shard_ids or [0]):
+            pass
         try:
-            user = await self.bot.fetch_user(data['user_id'])
-            await user.send(data['content'])
-            self.logger.info(f"Sent a DM to user ID {data['user_id']}")
+            user = await self.bot.fetch_user(payload['user_id'])
+            await user.send(payload['content'])
+            self.logger.info(f"Sent a DM to user ID {payload['user_id']}")
         except (discord.NotFound, discord.Forbidden, AttributeError):
             pass
 
     @utils.redis_channel_handler("DBLVote")
-    def redis_handler_DBLVote(self, data):
-        self.bot.dbl_votes.__setitem__(data['user_id'], dt.strptime(data['datetime'], "%Y-%m-%dT%H:%M:%S.%f"))
+    def redis_handler_DBLVote(self, payload):
+        self.bot.dbl_votes.__setitem__(payload['user_id'], dt.strptime(payload['datetime'], "%Y-%m-%dT%H:%M:%S.%f"))
 
     @utils.redis_channel_handler("ProposalCacheAdd")
-    def redis_handler_ProposalCacheAdd(self, data):
-        self.bot.proposal_cache.raw_add(**data)
+    def redis_handler_ProposalCacheAdd(self, payload):
+        self.bot.proposal_cache.raw_add(**payload)
 
     @utils.redis_channel_handler("ProposalCacheRemove")
-    def redis_handler_ProposalCacheRemove(self, data):
-        self.bot.proposal_cache.raw_remove(*data)
+    def redis_handler_ProposalCacheRemove(self, payload):
+        self.bot.proposal_cache.raw_remove(*payload)
 
     @utils.redis_channel_handler("TreeMemberUpdate")
-    def redis_handler_TreeMemberUpdate(self, data):
-        localutils.FamilyTreeMember(**data)
+    def redis_handler_TreeMemberUpdate(self, payload):
+        localutils.FamilyTreeMember(**payload)
 
 
 def setup(bot:utils.Bot):
