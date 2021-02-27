@@ -4,81 +4,103 @@ from datetime import datetime as dt, timedelta
 import discord
 
 
-class ProposalCache(dict):
-    """A helper class to wrap around a dictionary so I can easily
-    work out how to deal with what I'm given here instead of repeatedly
-    in every cog
+class ProposalCacheUser(object):
 
-    Generally the setup of things here is self[user_id] = (ROLE, COG, TIMEOUT)
+    __slots__ = ("user_id", "timestamp",)
+
+    def __init__(self, user_id:int, timestamp:dt):
+        self.user_id = user_id
+        self.timestamp = timestamp
+
+    @classmethod
+    def from_json(cls, data:dict):
+        return cls(
+            data.pop("user_id"),
+            dt.fromtimestamp(data.pop("timestamp")),
+        )
+
+    def to_json(self):
+        return {
+            "user_id": self.user_id,
+            "timestamp": self.timestamp.timestmap(),
+        }
+
+
+class ProposalCache(dict):
+    """
+    A helper class to wrap around a dictionary so I can easily
+    work out how to deal with what I'm given here instead of repeatedly
+    in every cog.
     """
 
-    bot: 'cogs.utils.custom_bot.CustomBot' = None
+    bot = None
 
-    def get(self, key, *args, d=None, ignore_timeout:bool=False, **kwargs):
-        """Gets a key from self, as a normal dict would - but here we check
-        if the timeout time has passed, in which case we return d
-
-        Params:
-            ignore_timeout: bool = False
-                Whether we should ignore the timeout time and return the item anyway
+    def get(self, key, *args, **kwargs):
+        """
+        Gets a key from self, as a normal dict would - but here we check
+        if the timeout time has passed.
         """
 
-        # Get the item
-        item = super().get(key, d, *args, **kwargs)
+        cached_user: ProposalCacheUser = super().get(key, *args, **kwargs)
+        if cached_user is None:
+            return cached_user
+        if dt.now() > cached_user.timestamp:
+            return None
+        return cached_user
 
-        # If it's nothing anyway
-        if item in [None, d]:
-            return item
+    async def redis_add(self, user:discord.User, expiry_seconds:int=60):
+        """
+        Add a user to the cache (as a rudimentary lock) with a given expiry time.
 
-        # If it's timed out
-        if dt.now() > item[2] and ignore_timeout is False:
-            return d
-
-        # Return as normal
-        return item
-
-    async def add(self, instigator:typing.Union[int, discord.User], target:typing.Union[int, discord.User], cog:str):
-        """Adds two users to the cache with the current time in tow
-
-        Params:
-            intigator
-            target
-                The two users who need to be cached
-            cog: str
-                The cog where the users need to be cached from
+        Args:
+            user (discord.User): The user who we want to add.
+            expiry_seconds (int, optional): How long the expiry time on the cache should be.
         """
 
-        timeout_time = dt.now() + timedelta(seconds=60)
+        timeout_time = dt.now() + timedelta(seconds=expiry_seconds)
         async with self.bot.redis() as re:
             await re.publish_json('ProposalCacheAdd', {
-                'instigator': getattr(instigator, 'id', instigator),
-                'target': getattr(target, 'id', target),
-                'cog': cog,
-                'timeout_time': timeout_time.isoformat()
+                'user': user.id,
+                'timeout_time': timeout_time.timestamp()
             })
-        self.raw_add(instigator, target, cog, timeout_time)
+        self.raw_add(user, timeout_time)
 
-    def raw_add(self, instigator:typing.Union[int, discord.User], target:typing.Union[int, discord.User], cog:str, timeout_time:dt):
-        """Adds a user to the cache without pinging the redis channel"""
+    def raw_add(self, user:discord.User, timeout_time:typing.Union[dt, float]):
+        """
+        Adds a user to the cache without pinging the redis channel.
+
+        Args:
+            user (discord.User): The user who we want to add.
+            timeout_time (typing.Union[dt, float]): The time (as a datetime object or a timestamp) when this
+                cached item should expire.
+        """
 
         # Add to cache
         if isinstance(timeout_time, str):
-            timeout_time = dt.strptime(timeout_time, "%Y-%m-%dT%H:%M:%S.%f")  # Parse the time from string to DT
-        self[getattr(instigator, 'id', instigator)] = ('INSTIGATOR', cog, timeout_time)
-        self[getattr(target, 'id', target)] = ('TARGET', cog, timeout_time)
+            timeout_time = dt.fromtimestamp(timeout_time)  # Parse the time from string to DT
+        self[user.id] = ProposalCacheUser(user.id, timeout_time)
 
-    async def remove(self, *elements) -> list:
-        """Removes some given elements (proably discord.Users or IDs) via redis"""
+    async def redis_remove(self, *users:discord.User):
+        """
+        Removes the given users via redis.
+
+        Args:
+            *users (discord.User): The users who we want to remove.
+        """
 
         async with self.bot.redis() as re:
-            await re.publish_json('ProposalCacheRemove', [getattr(i, 'id', i) for i in elements])
-        return self.raw_remove(*elements)
+            await re.publish_json('ProposalCacheRemove', users)
 
-    def raw_remove(self, *elements) -> list:
-        """Pops some elements from the cache"""
+    def raw_remove(self, *users:discord.User) -> list:
+        """
+        Pops some users from the cache
 
-        for i in elements:
+        Args:
+            *users (discord.User): The users who we want to remove.
+        """
+
+        for i in users:
             try:
-                self.pop(getattr(i, 'id', i))
+                self.pop(i.id)
             except KeyError:
                 pass
