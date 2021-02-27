@@ -4,14 +4,14 @@ import typing
 
 import discord
 from discord.ext import commands
-import voxelbotutils as utils
+import voxelbotutils
 
 from cogs import utils as localutils
 
 
-class SimulationCommands(utils.Cog):
+class SimulationCommands(voxelbotutils.Cog):
 
-    async def get_reaction_gif(self, ctx:utils.Context, reaction_type:str=None) -> typing.Optional[str]:
+    async def get_reaction_gif(self, ctx:voxelbotutils.Context, reaction_type:str=None) -> typing.Optional[str]:
         """
         Gets a reaction gif from the Weeb.sh API.
         """
@@ -47,10 +47,10 @@ class SimulationCommands(utils.Cog):
                 return data['url']
         return None
 
-    @utils.command(aliases=['snuggle', 'cuddle'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(aliases=['snuggle', 'cuddle'])
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def hug(self, ctx:utils.Context, user:discord.Member):
+    async def hug(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Hugs a mentioned user.
         """
@@ -60,11 +60,11 @@ class SimulationCommands(utils.Cog):
         image_url = await self.get_reaction_gif(ctx)
         await ctx.send(f"*Hugs {user.mention}*", image_url=image_url)
 
-    @utils.command(aliases=['smooch'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @voxelbotutils.command(aliases=['smooch'])
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def kiss(self, ctx:utils.Context, user:discord.Member):
+    async def kiss(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Kisses a mentioned user.
         """
@@ -93,10 +93,10 @@ class SimulationCommands(utils.Cog):
             ]
         await ctx.send(random.choice(responses), image_url=image_url)
 
-    @utils.command(aliases=['smack'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(aliases=['smack'])
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def slap(self, ctx:utils.Context, user:discord.Member):
+    async def slap(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Slaps a mentioned user.
         """
@@ -106,10 +106,10 @@ class SimulationCommands(utils.Cog):
         image_url = await self.get_reaction_gif(ctx)
         await ctx.send(f"*Slaps {user.mention}*", image_url=image_url)
 
-    @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command()
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def coffee(self, ctx:utils.Context, user:discord.Member):
+    async def coffee(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Gives coffee to a mentioned user.
         """
@@ -118,10 +118,10 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("*You spilled coffee all over yourself... for some reason.*")
         await ctx.send(f"*Gives coffee to {user.mention}*")
 
-    @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command()
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def punch(self, ctx:utils.Context, user:discord.Member):
+    async def punch(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Punches a mentioned user.
         """
@@ -131,10 +131,10 @@ class SimulationCommands(utils.Cog):
         image_url = await self.get_reaction_gif(ctx)
         await ctx.send(f"*Punches {user.mention} right in the nose*", image_url=image_url)
 
-    @utils.command(hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def cookie(self, ctx:utils.Context, user:discord.Member):
+    async def cookie(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Gives a cookie to a mentioned user.
         """
@@ -143,10 +143,10 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("*You gave yourself a cookie.*")
         await ctx.send(f"*Gives {user.mention} a cookie*")
 
-    @utils.command(aliases=['nunget', 'nuggie'], hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(aliases=['nunget', 'nuggie'], hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True, use_external_emojis=True)
-    async def nugget(self, ctx:utils.Context, user:discord.Member):
+    async def nugget(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Gives a nugget to a mentioned user.
         """
@@ -155,10 +155,10 @@ class SimulationCommands(utils.Cog):
             return await ctx.send(f"*You give yourself a {ctx.invoked_with}* <:nugget:585626539605884950>")
         await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
 
-    @utils.command(aliases=['borger', 'borg'], hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(aliases=['borger', 'borg'], hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def burger(self, ctx:utils.Context, user:discord.Member):
+    async def burger(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Gives a burger to a mentioned user.
         """
@@ -167,10 +167,10 @@ class SimulationCommands(utils.Cog):
             return await ctx.send(f"*You give yourself a {ctx.invoked_with}* 🍔")
         await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
 
-    @utils.command(hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def tea(self, ctx:utils.Context, user:discord.Member):
+    async def tea(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Gives tea to a mentioned user.
         """
@@ -179,10 +179,10 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("*You gave yourself tea.*")
         await ctx.send(f"*Gives {user.mention} tea*")
 
-    @utils.command(aliases=['dumpster'], hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(aliases=['dumpster'], hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def garbage(self, ctx:utils.Context, user:discord.Member):
+    async def garbage(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Throws a user in the garbage.
         """
@@ -191,10 +191,10 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("*You climb right into the trash can, where you belong*")
         await ctx.send(f"*Throws {user.mention} into the dumpster*")
 
-    @utils.command(hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def poke(self, ctx:utils.Context, user:discord.Member):
+    async def poke(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Pokes a given user.
         """
@@ -204,10 +204,10 @@ class SimulationCommands(utils.Cog):
         image_url = await self.get_reaction_gif(ctx)
         await ctx.send(f"*Pokes {user.mention}.*", image_url=image_url)
 
-    @utils.command(hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def stab(self, ctx:utils.Context, user:discord.Member):
+    async def stab(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Stabs a mentioned user.
         """
@@ -230,9 +230,9 @@ class SimulationCommands(utils.Cog):
             ]
         await ctx.send(random.choice(responses))
 
-    @utils.command(aliases=['murder'], hidden=True)
+    @voxelbotutils.command(aliases=['murder'], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def kill(self, ctx:utils.Context, user:discord.Member=None):
+    async def kill(self, ctx:voxelbotutils.Context, user:discord.Member=None):
         """
         Kills a person :/
         """
@@ -247,9 +247,9 @@ class SimulationCommands(utils.Cog):
         ]
         await ctx.send(random.choice(responses))
 
-    @utils.command(aliases=['vore'], hidden=True)
+    @voxelbotutils.command(aliases=['vore'], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def eat(self, ctx:utils.Context, user:discord.Member):
+    async def eat(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Eats a person OwO
         """
@@ -263,9 +263,9 @@ class SimulationCommands(utils.Cog):
         ]
         await ctx.send(random.choice(responses))
 
-    @utils.command(hidden=True)
+    @voxelbotutils.command(hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def sleep(self, ctx:utils.Context):
+    async def sleep(self, ctx:voxelbotutils.Context):
         """
         Todd Howard strikes once more.
         """
@@ -276,12 +276,12 @@ class SimulationCommands(utils.Cog):
             "awake. You were trying to cross the border, right?\""
         ))
 
-    @utils.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], hidden=True)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], hidden=True)
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
-    @utils.checks.bot_is_ready()
+    @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def copulate(self, ctx:utils.Context, user:discord.Member):
+    async def copulate(self, ctx:voxelbotutils.Context, user:discord.Member):
         """
         Lets you... um... heck someone.
         """
@@ -319,6 +319,6 @@ class SimulationCommands(utils.Cog):
         await ctx.send(text_processor.request_accepted())
 
 
-def setup(bot:utils.Bot):
+def setup(bot:voxelbotutils.Bot):
     x = SimulationCommands(bot)
     bot.add_cog(x)

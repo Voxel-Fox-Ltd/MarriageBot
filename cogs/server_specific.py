@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import voxelbotutils as utils
+import voxelbotutils
 
 from cogs import utils as localutils
 
@@ -26,9 +26,9 @@ Please feel free to direct any questions to the team at `m!server`.
 """.strip()
 
 
-class ServerSpecific(utils.Cog):
+class ServerSpecific(voxelbotutils.Cog):
 
-    @utils.Cog.listener()
+    @voxelbotutils.Cog.listener()
     async def on_guild_join(self, guild:discord.Guild):
         """
         Looks for when the bot is added to a guild, leaving if it's not whitelisted.
@@ -43,11 +43,11 @@ class ServerSpecific(utils.Cog):
         self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
         await guild.leave()
 
-    @utils.command()
+    @voxelbotutils.command()
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
-    async def allowincest(self, ctx:utils.Context):
+    async def allowincest(self, ctx:voxelbotutils.Context):
         """
         Toggles allowing incest on your guild.
         """
@@ -60,11 +60,11 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
-    @utils.command()
+    @voxelbotutils.command()
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
-    async def disallowincest(self, ctx:utils.Context):
+    async def disallowincest(self, ctx:voxelbotutils.Context):
         """
         Toggles allowing incest on your guild.
         """
@@ -77,9 +77,9 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @utils.command(aliases=['ssf', 'incest'])
+    @voxelbotutils.command(aliases=['ssf', 'incest'])
     @commands.bot_has_permissions(send_messages=True)
-    async def gold(self, ctx:utils.Context):
+    async def gold(self, ctx:voxelbotutils.Context):
         """
         Gives you the information about server specific families and MarriageBot Gold.
         """
@@ -91,6 +91,6 @@ class ServerSpecific(utils.Cog):
             await ctx.send("I couldn't send you a DM :c")
 
 
-def setup(bot:utils.Bot):
+def setup(bot:voxelbotutils.Bot):
     x = ServerSpecific(bot)
     bot.add_cog(x)
