@@ -200,14 +200,24 @@ class Simulation(utils.Cog):
     @commands.bot_has_permissions(send_messages=True)
     async def eat(self, ctx:utils.Context, user:discord.Member):
         """Eats a person OwO"""
-
-        responses = [
-            f"You swallowed {user.mention}... through the wrong hole.",
-            f"You've eaten {user.mention}. Gross.",
-            f"Are you into this or something? You've eaten {user.mention}.",
-            f"I guess lunch wasnt good enough. You eat {user.mention}.",
-            f"You insert {user.mention} into your mouth and proceed to digest them.",
-        ]
+        
+        if user == ctx.author:
+            responses = [
+                "You swalled your finger... through the wrong hole."
+                "You've eaten yourself. Gross.",
+                "Are you into this or something? You've eaten yourself.",
+                f"You take a massive bite out of your left arm.",
+                f"You proceed to insert the entirety of your leg into your mouth, slowly chewing... disgraceful."
+            ]
+        else:
+            responses = [
+                f"You swallowed {user.mention}... through the wrong hole.",
+                f"You've eaten {user.mention}. Gross.",
+                f"Are you into this or something? You've eaten {user.mention}.",
+                f"I guess lunch wasnt good enough. You eat {user.mention}.",
+                f"You insert {user.mention} into your mouth and proceed to digest them.",
+            ]
+            
         await ctx.send(random.choice(responses))
 
     @commands.command(cls=utils.Command, hidden=True)
