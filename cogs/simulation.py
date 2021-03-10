@@ -350,6 +350,7 @@ class Simulation(utils.Cog):
             "a raw potato",
             "toothpaste",
             "salt",
+            "a burge",
         ])
         await ctx.send(f"You give {user.mention} {present}.")
 
