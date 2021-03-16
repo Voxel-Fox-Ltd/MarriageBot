@@ -81,7 +81,7 @@ class Simulation(utils.Cog):
         """Gives pasta to a mentioned user"""
 
         if user == ctx.author:
-            return await ctx.send("You make pasta, then eat it.eat it, then ")
+            return await ctx.send("You make pasta, then eat it.")
         await ctx.send(f"*You give the pasta to {user.mention}.*")
 
     @commands.command(cls=utils.Command)
