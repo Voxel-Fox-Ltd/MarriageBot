@@ -15,14 +15,14 @@ MARRIAGEBOT_GOLD_INFORMATION = """
 **"force" Commands**
 > Users with a role named "MarriageBot Moderator" will be able to run commands like `forceadopt` and `forcemarry` in order to construct trees exactly how you want them.
 **Configurable Max Family Members**
-> Via the MarriageBot website, you're able to set the maximum number of members in a family to a number up to 2000 people, putting it far above the amount offered normally.
+> Via the MarriageBot website, you're able to set the maximum number of members in a family to a number up to 2,000 people, putting it far above the amount offered normally.
 **Configurable Max Children Amount**
 > Stuck with only 5 children? Using the MarriageBot website, you're able to set the maximum number of children that a given role can have, allowing you to tier your users.
 **Togglable Incest**
 > You love your family? With Gold you're able to show them... a lot _more_ love.
 
 MarriageBot Gold is a one-time purchase available per server on the MarriageBot website (<https://marriagebot.xyz/guilds>).
-Please feel free to direct any questions to the team at `m!server`.
+Please feel free to direct any questions to the team at `m!support`.
 """.strip()
 
 
@@ -54,7 +54,8 @@ class ServerSpecific(voxelbotutils.Cog):
 
         async with self.bot.database() as db:
             await db(
-                "INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET allow_incest=$3",
+                """INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id)
+                DO UPDATE SET allow_incest=excluded.allow_incest""",
                 ctx.guild.id, True,
             )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
@@ -71,7 +72,8 @@ class ServerSpecific(voxelbotutils.Cog):
 
         async with self.bot.database() as db:
             await db(
-                'INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET allow_incest=$3',
+                """INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id)
+                DO UPDATE SET allow_incest=excluded.allow_incest""",
                 ctx.guild.id, False,
             )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False

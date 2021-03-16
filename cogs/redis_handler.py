@@ -96,10 +96,6 @@ class RedisHandler(voxelbotutils.Cog):
         except (discord.NotFound, discord.Forbidden, AttributeError):
             pass
 
-    @voxelbotutils.redis_channel_handler("DBLVote")
-    def redis_handler_DBLVote(self, payload):
-        self.bot.dbl_votes.__setitem__(payload['user_id'], dt.strptime(payload['datetime'], "%Y-%m-%dT%H:%M:%S.%f"))
-
     @voxelbotutils.redis_channel_handler("ProposalCacheAdd")
     def redis_handler_ProposalCacheAdd(self, payload):
         self.bot.proposal_cache.raw_add(**payload)

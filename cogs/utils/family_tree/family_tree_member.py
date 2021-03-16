@@ -51,6 +51,15 @@ class FamilyTreeMember(object):
             return v
         return cls(discord_id=discord_id, guild_id=guild_id)
 
+    @classmethod
+    def get_multiple(cls, *discord_ids:int, guild_id:int=0) -> typing.List['FamilyTreeMember']:
+        """
+        Gets multiple objects from the cache.
+        """
+
+        for i in discord_ids:
+            yield cls.get(i, guild_id)
+
     def to_json(self) -> dict:
         """
         Converts the object to JSON format so you can throw it through Redis.
@@ -115,9 +124,10 @@ class FamilyTreeMember(object):
         Gets you the list of children instances for this user.
         """
 
-        if self._children:
-            return [self.get(i, self._guild_id) for i in self._children]
-        return []
+        for i in self._children:
+            # return [self.get(i, self._guild_id) for i in self._children]
+            yield self.get(i, self._guild_id)
+        # return []
 
     def get_direct_relations(self) -> typing.List[int]:
         """

@@ -276,7 +276,7 @@ class SimulationCommands(voxelbotutils.Cog):
             "awake. You were trying to cross the border, right?\""
         ))
 
-    @voxelbotutils.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], hidden=True)
+    @voxelbotutils.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], hidden=True, enabled=False)
     @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
     @voxelbotutils.checks.bot_is_ready()

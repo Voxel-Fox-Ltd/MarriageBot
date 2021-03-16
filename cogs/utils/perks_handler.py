@@ -1,3 +1,5 @@
+import asyncio
+
 import voxelbotutils
 
 
@@ -18,20 +20,20 @@ class MarriageBotPerks(object):
         self.tree_command_cooldown = tree_command_cooldown
 
 
-async def get_marriagebot_perks(bot:voxelbotutils.Bot, ctx:voxelbotutils.Context) -> MarriageBotPerks:
+async def get_marriagebot_perks(bot:voxelbotutils.Bot, user_id:int) -> MarriageBotPerks:
     """
     Get the specific perks that any given user has.
 
     Args:
         bot (voxelbotutils.Bot): The bot instance that will be used to fetch data from Upgrade.Chat.
-        ctx (voxelbotutils.Context): The context object for the command that is being called.
+        user_id (int): The ID of the user we want to get the perks of.
 
     Returns:
         MarriageBotPerks: All of the perks that the calling user has.
     """
 
     # Override stuff for owners
-    if ctx.author.id in bot.owner_ids:
+    if user_id in bot.owner_ids:
         return MarriageBotPerks(
             max_children=30,
             can_run_stupidtree=True,
@@ -40,7 +42,10 @@ async def get_marriagebot_perks(bot:voxelbotutils.Bot, ctx:voxelbotutils.Context
         )
 
     # Check UpgradeChat purchases
-    purchases = await bot.upgrade_chat.get_orders(discord_id=ctx.author.id)
+    try:
+        purchases = await asyncio.wait_for(bot.upgrade_chat.get_orders(discord_id=user_id), timeout=3)
+    except asyncio.TimeoutError:
+        purchases = []
     purchased_item_names = []
     [purchased_item_names.extend(i.order_item_names) for i in purchases]
     if "MarriageBot Subscription Tier 3" in purchased_item_names:
@@ -66,11 +71,12 @@ async def get_marriagebot_perks(bot:voxelbotutils.Bot, ctx:voxelbotutils.Context
 
     # Check Top.gg votes
     try:
-        await voxelbotutils.checks.is_voter().predicate(ctx)
-        return MarriageBotPerks(
-            tree_command_cooldown=30,
-        )
-    except Exception:
+        data = await asyncio.wait_for(bot.get_user_topgg_vote(user_id), timeout=3)
+        if data:
+            return MarriageBotPerks(
+                tree_command_cooldown=30,
+            )
+    except asyncio.TimeoutError:
         pass
 
     # Return default

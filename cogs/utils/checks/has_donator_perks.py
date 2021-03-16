@@ -1,0 +1,14 @@
+from discord.ext import commands
+import voxelbotutils
+
+from cogs.utils.perks_handler import get_marriagebot_perks
+
+
+def has_donator_perks(perk_name:str):
+    async def predicate(ctx):
+        perks = await get_marriagebot_perks(ctx.bot, ctx.author.id)
+        v = getattr(perks, perk_name, False)
+        if v:
+            return v
+        raise voxelbotutils.errors.IsNotUpgradeChatSubscriber()
+    return commands.check(predicate)
