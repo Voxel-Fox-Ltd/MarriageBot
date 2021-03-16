@@ -74,6 +74,16 @@ class Simulation(utils.Cog):
             return await ctx.send("*You spilled coffee all over yourself... for some reason.*")
         await ctx.send(f"*Gives coffee to {user.mention}*")
         
+    @commands.command(cls=utils.Command, hidden=True)
+    @utils.cooldown.cooldown(1, 4, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def pasta(self, ctx:utils.Context, user:discord.Member):
+        """Gives pasta to a mentioned user"""
+
+        if user == ctx.author:
+            return await ctx.send("You make pasta, then eat it.eat it, then ")
+        await ctx.send(f"*You give the pasta to {user.mention}.*")
+
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
