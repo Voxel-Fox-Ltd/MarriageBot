@@ -150,3 +150,10 @@ CREATE TABLE role_list(
     value VARCHAR(50),
     PRIMARY KEY (guild_id, role_id, key)
 );
+
+CREATE TABLE IF NOT EXISTS ship_percentages(
+    user_id_1 BIGINT,
+    user_id_2 BIGINT,
+    percentage SMALLINT,
+    PRIMARY KEY (user_id_1, user_id_2)
+);
