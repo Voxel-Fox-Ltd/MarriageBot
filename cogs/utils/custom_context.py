@@ -61,7 +61,10 @@ class CustomContext(commands.Context):
         embed.set_footer(**footer)
         return embed
 
-    async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True, embed_image:bool=True, ignore_error:bool=False, image_url:str=None):
+    async def send(
+            self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None, embeddify:bool=True,
+            embed_image:bool=True, ignore_error:bool=False, image_url:str=None,
+            allowed_mentions:discord.AllowedMentions=discord.AllowedMentions.none()):
         """A custom version of Context that changes .send to embed things for me"""
 
         # Check the permissions we have
@@ -87,6 +90,7 @@ class CustomContext(commands.Context):
                     files=files,
                     delete_after=delete_after,
                     nonce=nonce,
+                    allowed_mentions=allowed_mentions,
                 )
             except Exception as e:
                 if not ignore_error:
