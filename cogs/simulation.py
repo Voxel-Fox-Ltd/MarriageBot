@@ -74,6 +74,16 @@ class Simulation(utils.Cog):
             return await ctx.send("*You spilled coffee all over yourself... for some reason.*")
         await ctx.send(f"*Gives coffee to {user.mention}*")
         
+    @commands.command(cls=utils.Command, hidden=True)
+    @utils.cooldown.cooldown(1, 4, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def pasta(self, ctx:utils.Context, user:discord.Member):
+        """Gives pasta to a mentioned user"""
+
+        if user == ctx.author:
+            return await ctx.send("You make pasta, then eat it.")
+        await ctx.send(f"*You give the pasta to {user.mention}.*")
+
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
@@ -134,6 +144,32 @@ class Simulation(utils.Cog):
         if user == ctx.author:
             return await ctx.send("*You climb right into the trash can, where you belong*")
         await ctx.send(f"*Throws {user.mention} into the dumpster*")
+
+    @commands.command(cls=utils.Command)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def ship(self, ctx:utils.Context, user:discord.Member, user2:discord.Member=None):
+        """
+        Gives you a ship percentage between two users.
+        """
+
+        # Fix attrs
+        if user2 is None:
+            user, user2 = ctx.author, user
+
+        # Add response for yourself
+        if user == user2:
+            return await ctx.send("-.-")
+
+        # Get percentage
+        async with self.bot.database() as db:
+            rows = await db("SELECT * FROM ship_percentages WHERE user_id_1=ANY($1::BIGINT[]) AND user_id_2=ANY($1::BIGINT[])", [user.id, user2.id])
+        if rows and rows[0]['percentage']:
+            percentage = rows[0]['percentage'] / 100
+        else:
+            percentage = ((user.id + user2.id + 4500) % 10001) / 100
+        return await ctx.send(f"{user.mention} \N{REVOLVING HEARTS} **{percentage:.2f}%** \N{REVOLVING HEARTS} {user2.mention}", allowed_mentions=discord.AllowedMentions(users=False))
+
 
     @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
