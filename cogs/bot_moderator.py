@@ -99,7 +99,7 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    @utils.command(hidden=True)
+    @commands.command(cls=utils.Command)
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(add_reactions=True)
     async def addship(self, ctx:utils.Context, user1:discord.Member, user2:typing.Optional[discord.Member]=None, percentage:float=0):
