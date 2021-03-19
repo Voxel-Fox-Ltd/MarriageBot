@@ -10,7 +10,7 @@ class NotServerSpecific(commands.CheckFailure):
         super().__init__("This command can only be run with MarriageBot Gold.")
 
 
-def is_server_specific():
+def guild_is_server_specific():
     """
     A check to make sure that the bot is set to server specific.
     """
