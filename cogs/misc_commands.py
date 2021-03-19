@@ -5,7 +5,8 @@ import discord
 import psutil
 from discord.ext import commands
 
-from cogs import utils
+from cogs import localutils
+import voxelbotutils as utils
 
 
 class MiscCommands(utils.Cog):
@@ -15,7 +16,7 @@ class MiscCommands(utils.Cog):
         self.process = psutil.Process(os.getpid())
         self.process.cpu_percent()
 
-    @commands.command(aliases=['upvote'], cls=utils.Command)
+    @utils.command(aliases=['upvote'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def vote(self, ctx:utils.Context):
@@ -24,7 +25,7 @@ class MiscCommands(utils.Cog):
         url = f"https://discordbots.org/bot/{self.bot.config.get('dbl_vainity', None) or self.bot.user.id}/vote"
         await ctx.send(f"[Add a DBL vote]({url})!\nSee `m!perks` for more information.")
 
-    @commands.command(aliases=['git', 'code'], cls=utils.Command)
+    @utils.command(aliases=['git', 'code'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.is_config_set('command_data', 'github')
     @commands.bot_has_permissions(send_messages=True)
@@ -33,7 +34,7 @@ class MiscCommands(utils.Cog):
 
         await ctx.send(f"<{self.bot.config['command_data']['github']}>", embeddify=False)
 
-    @commands.command(aliases=['patreon'], cls=utils.Command)
+    @utils.command(aliases=['patreon'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.is_config_set('command_data', 'patreon')
     @commands.bot_has_permissions(send_messages=True)
@@ -42,7 +43,7 @@ class MiscCommands(utils.Cog):
 
         await ctx.send(f"See `{ctx.prefix}perks` for more information!\n<{self.bot.config['command_data']['patreon']}>", embeddify=False)
 
-    @commands.command(cls=utils.Command)
+    @utils.command()
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     @utils.checks.is_config_set('command_data', 'invite_command_enabled')
@@ -51,7 +52,7 @@ class MiscCommands(utils.Cog):
 
         await ctx.send(f"<{self.bot.get_invite_link(embed_links=True, attach_files=True)}>", embeddify=False)
 
-    @commands.command(aliases=['guild', 'support'], cls=utils.Command)
+    @utils.command(aliases=['guild', 'support'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.is_config_set('command_data', 'guild_invite')
     @commands.bot_has_permissions(send_messages=True)
@@ -60,7 +61,7 @@ class MiscCommands(utils.Cog):
 
         await ctx.send(self.bot.config['command_data']['guild_invite'], embeddify=False)
 
-    @commands.command(hidden=True, cls=utils.Command)
+    @utils.command(hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(send_messages=True)
@@ -70,7 +71,7 @@ class MiscCommands(utils.Cog):
 
         await ctx.send(content, embeddify=False)
 
-    @commands.command(cls=utils.Command)
+    @utils.command()
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     @utils.checks.is_config_set('command_data', 'stats_command_enabled')
@@ -134,7 +135,7 @@ class MiscCommands(utils.Cog):
         e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gives you access to:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
-    @commands.command(aliases=['status','botinfo'], cls=utils.Command)
+    @utils.command(aliases=['status','botinfo'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def stats(self, ctx:utils.Context):
@@ -171,7 +172,7 @@ class MiscCommands(utils.Cog):
         except Exception:
             await ctx.send("I tried to send an embed, but I couldn't.")
 
-    @commands.command(aliases=['clean'], cls=utils.Command)
+    @utils.command(aliases=['clean'])
     @commands.has_permissions(manage_messages=True)
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True)
@@ -184,7 +185,7 @@ class MiscCommands(utils.Cog):
             _ = await ctx.channel.purge(limit=100, check=lambda m: m.author.id == self.bot.user.id, bulk=False)
         await ctx.send(f"Cleared `{len(_)}` messages from chat.", delete_after=3.0)
 
-    @commands.command(cls=utils.Command)
+    @utils.command()
     @commands.bot_has_permissions(send_messages=True)
     async def block(self, ctx:utils.Context, user_id:utils.converters.UserID):
         """Blocks a user from being able to adopt/makeparent/whatever you"""
@@ -207,7 +208,7 @@ class MiscCommands(utils.Cog):
         # Tell user
         await ctx.send("That user is now blocked.")
 
-    @commands.command(cls=utils.Command)
+    @utils.command()
     @commands.bot_has_permissions(send_messages=True)
     async def unblock(self, ctx:utils.Context, user:utils.converters.UserID):
         """Unblocks a user and allows them to adopt/makeparent/whatever you"""
@@ -230,7 +231,7 @@ class MiscCommands(utils.Cog):
         # Tell user
         await ctx.send("That user is now unblocked.")
 
-    @commands.command(cls=utils.Command)
+    @utils.command()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True)
     async def shard(self, ctx:utils.Context, guild_id:int=None):
@@ -239,7 +240,7 @@ class MiscCommands(utils.Cog):
         guild_id = guild_id or ctx.guild.id
         await ctx.send(f"The shard for server ID `{guild_id}` is `{(guild_id >> 22) % self.bot.shard_count}`. If all instances have `{len(self.bot.shard_ids)}` shards, that guild would be on instance `{((guild_id >> 22) % self.bot.shard_count) // len(self.bot.shard_ids)}`")
 
-    @commands.command(cls=utils.Command, aliases=['kitty'], hidden=True)
+    @utils.command(aliases=['kitty'], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
     async def cat(self, ctx:utils.Context):
         """Gives you some cats innit"""
