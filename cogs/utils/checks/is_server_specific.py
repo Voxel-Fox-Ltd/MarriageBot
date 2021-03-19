@@ -16,7 +16,7 @@ def is_server_specific():
     """
 
     def predicate(ctx):
-        if ctx.bot.config['server_specific']:
+        if ctx.bot.config['is_server_specific']:
             return True
         raise NotServerSpecific()
     return commands.check(predicate)
