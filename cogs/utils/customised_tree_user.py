@@ -1,5 +1,4 @@
-from cogs.utils.database import DatabaseConnection
-
+from voxelbotutils.cogs.utils.database import DatabaseConnection
 
 class CustomisedTreeUser(object):
     """
