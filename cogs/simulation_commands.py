@@ -11,7 +11,7 @@ from cogs import utils as localutils
 
 class SimulationCommands(voxelbotutils.Cog):
 
-    async def get_reaction_gif(self, ctx:voxelbotutils.Context, reaction_type:str=None) -> typing.Optional[str]:
+    async def get_reaction_gif(self, ctx:voxelbotutils.Context, reaction_type:str=None, *, nsfw:bool=False) -> typing.Optional[str]:
         """
         Gets a reaction gif from the Weeb.sh API.
         """
@@ -32,7 +32,7 @@ class SimulationCommands(voxelbotutils.Cog):
         }
         params = {
             "type": reaction_type or ctx.command_name,
-            "nsfw": "false",
+            "nsfw": str(nsfw).lower(),
         }
 
         # Make the request
