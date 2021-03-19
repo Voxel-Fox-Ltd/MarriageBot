@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS redirects(
 );
 
 
-CREATE TABLE random_text(
+CREATE TABLE IF NOT EXISTS random_text(
     command_name VARCHAR(50),
     event_name VARCHAR(50),
     string VARCHAR(2000),
@@ -127,7 +127,7 @@ CREATE TABLE random_text(
 );
 
 
-CREATE TABLE disabled_commands(
+CREATE TABLE IF NOT EXISTS disabled_commands(
     command_name VARCHAR(50) NOT NULL,
     guild_id BIGINT NOT NULL,
     disabled BOOLEAN DEFAULT TRUE,
@@ -135,7 +135,7 @@ CREATE TABLE disabled_commands(
 );
 
 
-CREATE TABLE max_children_amount(
+CREATE TABLE IF NOT EXISTS max_children_amount(
     guild_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
     amount INTEGER DEFAULT 5,
@@ -143,12 +143,12 @@ CREATE TABLE max_children_amount(
 );
 
 
-CREATE TABLE user_settings(
+CREATE TABLE IF NOT EXISTS user_settings(
     user_id BIGINT PRIMARY KEY
 );
 
 
-CREATE TABLE role_list(
+CREATE TABLE IF NOT EXISTS role_list(
     guild_id BIGINT,
     role_id BIGINT,
     key VARCHAR(50),
