@@ -5,7 +5,7 @@ import discord
 import psutil
 from discord.ext import commands
 
-from cogs import localutils
+from cogs import utils as localutils
 import voxelbotutils as utils
 
 
