@@ -1,4 +1,4 @@
-CREATE TABLE marriages(
+CREATE TABLE IF NOT EXISTS marriages(
     user_id BIGINT NOT NULL,
     partner_id BIGINT NOT NULL,
     guild_id BIGINT NOT NULL DEFAULT 0,
@@ -10,7 +10,7 @@ CREATE TABLE marriages(
 -- user_id will be one of the users involved (the other user will get an entry with an identical marriage_id)
 
 
-CREATE TABLE parents(
+CREATE TABLE IF NOT EXISTS parents(
     child_id BIGINT NOT NULL,
     parent_id BIGINT NOT NULL,
     guild_id BIGINT NOT NULL DEFAULT 0,
@@ -21,14 +21,14 @@ CREATE TABLE parents(
 -- A parent can have many children, a child will have only one parent
 
 
-CREATE TABLE blacklisted_guilds(
+CREATE TABLE IF NOT EXISTS blacklisted_guilds(
     guild_id BIGINT NOT NULL,
     PRIMARY KEY (guild_id)
 );
 -- Basically a big ol' list of blacklisted guild IDs
 
 
-CREATE TABLE guild_specific_families(
+CREATE TABLE IF NOT EXISTS guild_specific_families(
     guild_id BIGINT NOT NULL,
     purchased_by BIGINT,
     PRIMARY KEY (guild_id)
@@ -36,7 +36,7 @@ CREATE TABLE guild_specific_families(
 -- A big ol' list of guild IDs of people who've paid
 
 
-CREATE TABLE guild_settings(
+CREATE TABLE IF NOT EXISTS guild_settings(
     guild_id BIGINT NOT NULL,
     prefix VARCHAR(30) DEFAULT 'm!',
     gold_prefix VARCHAR(30) DEFAULT 'm.',
@@ -48,8 +48,13 @@ CREATE TABLE guild_settings(
 -- A config for a guild to change their prefix or other bot settings
 
 
-CREATE TYPE direction AS ENUM('TB', 'LR');
-CREATE TABLE customisation(
+DO $$ BEGIN
+    CREATE TYPE direction AS ENUM ('TB', 'LR');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+CREATE TABLE IF NOT EXISTS customisation(
     user_id BIGINT NOT NULL,
     edge INTEGER DEFAULT NULL,
     node INTEGER DEFAULT NULL,
@@ -63,7 +68,7 @@ CREATE TABLE customisation(
 -- A table for user tree customisations
 
 
-CREATE TABLE blocked_user(
+CREATE TABLE IF NOT EXISTS blocked_user(
     user_id BIGINT,
     blocked_user_id BIGINT,
     PRIMARY KEY (user_id, blocked_user_id)
@@ -71,14 +76,14 @@ CREATE TABLE blocked_user(
 -- A user and how they're blocked ie user_id is the person who blocks blocked_user_id
 
 
-CREATE TABLE dbl_votes(
+CREATE TABLE IF NOT EXISTS dbl_votes(
     user_id BIGINT PRIMARY KEY,
     timestamp TIMESTAMP
 );
 -- A table to track the last time a user voted for the bot
 
 
-CREATE TABLE blog_posts(
+CREATE TABLE IF NOT EXISTS blog_posts(
     url VARCHAR(50) PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     body TEXT NOT NULL,
@@ -87,7 +92,7 @@ CREATE TABLE blog_posts(
 );
 
 
-CREATE TABLE paypal_purchases(
+CREATE TABLE IF NOT EXISTS paypal_purchases(
     id VARCHAR(64) NOT NULL PRIMARY KEY,
     customer_id VARCHAR(18),
     payment_amount INTEGER NOT NULL,
@@ -98,7 +103,7 @@ CREATE TABLE paypal_purchases(
 );
 
 
-CREATE TABLE channel_list(
+CREATE TABLE IF NOT EXISTS channel_list(
     guild_id BIGINT,
     channel_id BIGINT,
     key VARCHAR(50),
@@ -107,7 +112,7 @@ CREATE TABLE channel_list(
 );
 
 
-CREATE TABLE redirects(
+CREATE TABLE IF NOT EXISTS redirects(
     code VARCHAR(50) PRIMARY KEY,
     location VARCHAR(2000)
 );

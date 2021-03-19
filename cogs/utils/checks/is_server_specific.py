@@ -10,13 +10,13 @@ class NotServerSpecific(commands.CheckFailure):
         super().__init__("This command can only be run with MarriageBot Gold.")
 
 
-def guild_is_server_specific():
+def is_server_specific():
     """
     A check to make sure that the bot is set to server specific.
     """
 
     def predicate(ctx):
-        if ctx.bot.config['is_server_specific']:
+        if ctx.bot.config['server_specific']:
             return True
         raise NotServerSpecific()
     return commands.check(predicate)
