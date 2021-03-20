@@ -1,5 +1,5 @@
 from discord.ext import commands
-import voxelbotutils
+import voxelbotutils as utils
 
 from cogs.utils.checks.is_server_specific import is_server_specific
 
@@ -18,9 +18,9 @@ def is_server_specific_bot_moderator():
     Check to see if the user has a role called 'MarriageBot Moderator'.
     """
 
-    async def predicate(ctx:voxelbotutils.Context):
+    async def predicate(ctx:utils.Context):
         try:
-            await voxelbotutils.checks.is_bot_support().predicate(ctx)
+            await utils.checks.is_bot_support().predicate(ctx)
             return True
         except Exception:
             pass

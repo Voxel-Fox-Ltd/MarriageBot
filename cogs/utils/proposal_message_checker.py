@@ -44,7 +44,7 @@ async def send_proposal_message(ctx, user:discord.Member, text:str) -> TickPaylo
     Send a proposal message out to the user to see if they want to say yes or no.
 
     Args:
-        ctx (voxelbotutils.Context): The context object for the called command.
+        ctx (utils.Context): The context object for the called command.
         user (discord.Member): The user who the calling user wants to ask out.
         text (str): The text to be sent when the user's proposal is started.
 
