@@ -43,7 +43,7 @@ class ServerSpecific(voxelbotutils.Cog):
         self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
         await guild.leave()
 
-    @voxelbotutils.command()
+    @voxelbotutils.command(hidden=True)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
@@ -61,11 +61,57 @@ class ServerSpecific(voxelbotutils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
-    @voxelbotutils.command()
+    @voxelbotutils.command(hidden=True)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
     async def disallowincest(self, ctx:voxelbotutils.Context):
+        """
+        Toggles allowing incest on your guild.
+        """
+
+        async with self.bot.database() as db:
+            await db(
+                """INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id)
+                DO UPDATE SET allow_incest=excluded.allow_incest""",
+                ctx.guild.id, False,
+            )
+        self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
+        await ctx.send("Incest is now **DISALLOWED** on your guild.")
+
+    @voxelbotutils.group()
+    @commands.bot_has_permissions(send_messages=True)
+    async def incest(self, ctx:voxelbotutils.Context):
+        """
+        Toggles allowing incest on your guild.
+        """
+
+        if ctx.invoked_subcommand is None:
+            return await ctx.send_help(ctx.command)
+
+    @incest.command(name="allow", aliases=['enable', 'on'])
+    @localutils.checks.is_server_specific_bot_moderator()
+    @localutils.checks.guild_is_server_specific()
+    @commands.bot_has_permissions(send_messages=True)
+    async def incest_allow(self, ctx:voxelbotutils.Context):
+        """
+        Toggles allowing incest on your guild.
+        """
+
+        async with self.bot.database() as db:
+            await db(
+                """INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id)
+                DO UPDATE SET allow_incest=excluded.allow_incest""",
+                ctx.guild.id, True,
+            )
+        self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
+        await ctx.send("Incest is now **ALLOWED** on your guild.")
+
+    @incest.command(name="disallow", aliases=['disable', 'off'])
+    @localutils.checks.is_server_specific_bot_moderator()
+    @localutils.checks.guild_is_server_specific()
+    @commands.bot_has_permissions(send_messages=True)
+    async def incest_disallow(self, ctx:voxelbotutils.Context):
         """
         Toggles allowing incest on your guild.
         """
