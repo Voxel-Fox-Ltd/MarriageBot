@@ -367,6 +367,6 @@ class ModeratorOnly(voxelbotutils.Cog):
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
 
-def setup(bot:utils.Bot):
+def setup(bot:voxelbotutils.Bot):
     x = ModeratorOnly(bot)
     bot.add_cog(x)
