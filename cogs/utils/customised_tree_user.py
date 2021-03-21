@@ -1,5 +1,4 @@
-from cogs.utils.database import DatabaseConnection
-
+import voxelbotutils as utils
 
 class CustomisedTreeUser(object):
     """
@@ -24,7 +23,7 @@ class CustomisedTreeUser(object):
         self.direction = direction
 
     @classmethod
-    async def get(cls, db:DatabaseConnection, user_id:int) -> 'CustomisedTreeUser':
+    async def get(cls, db:utils.DatabaseConnection, user_id:int) -> 'CustomisedTreeUser':
         """
         Grabs a user's data from the database.
         """
@@ -125,7 +124,7 @@ class CustomisedTreeUser(object):
 
         return {i: o.strip('"') for i, o in cls.get_default_hex().items()}
 
-    async def save(self, db:DatabaseConnection):
+    async def save(self, db:utils.DatabaseConnection):
         """
         Saves the cached data from this object into the database.
         """

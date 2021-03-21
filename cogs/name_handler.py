@@ -1,6 +1,5 @@
 import discord
-
-from cogs import utils
+import voxelbotutils as utils
 
 
 class NameHandler(utils.Cog):
@@ -16,7 +15,9 @@ class NameHandler(utils.Cog):
 
     @utils.Cog.listener()
     async def on_user_update(self, before:discord.User, after:discord.User):
-        """Caches a username change into the redis cache"""
+        """
+        Caches a username change into the redis cache.
+        """
 
         if before.name == after.name:
             return

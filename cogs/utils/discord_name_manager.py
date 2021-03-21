@@ -1,6 +1,6 @@
 import typing
 
-import voxelbotutils
+import voxelbotutils as utils
 
 
 class DiscordNameManager(object):
@@ -29,7 +29,7 @@ class DiscordNameManager(object):
     def name_is_valid(self):
         return self.age <= 3
 
-    async def fetch_name(self, bot:voxelbotutils.Bot) -> str:
+    async def fetch_name(self, bot:utils.Bot) -> str:
         """
         Fetch the name of the current user - first trying from Redis, then trying from the
         API (if we couldn't get from Redis the first time then we add it after fetching from
@@ -52,12 +52,12 @@ class DiscordNameManager(object):
         return name
 
     @classmethod
-    async def get_name(cls, bot:voxelbotutils.Bot, user_id:int) -> str:
+    async def get_name(cls, bot:utils.Bot, user_id:int) -> str:
         """
         Get the name for a user given their ID.
 
         Args:
-            bot (voxelbotutils.Bot): The bot instance that we can use to fetch from the API/Redis with.
+            bot (utils.Bot): The bot instance that we can use to fetch from the API/Redis with.
             user_id (int): The ID of the user we want to grab the name of.
 
         Returns:

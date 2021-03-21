@@ -2,7 +2,7 @@ import random
 import string
 import typing
 
-import voxelbotutils
+import voxelbotutils as utils
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relation_simplifier import Simplifier
@@ -302,14 +302,14 @@ class FamilyTreeMember(object):
 
         return None
 
-    async def generate_gedcom_script(self, bot:voxelbotutils.Bot) -> str:
+    async def generate_gedcom_script(self, bot:utils.Bot) -> str:
         """
         Gives you the INDI and FAM gedcom strings for this family tree.
         Includes their spouse, if they have one, and any children.
         Small bit of redundancy: a family will be added twice if they have a spouse.
 
         Args:
-            bot (voxelbotutils.Bot): The bot instance that should be used to get the names of users.
+            bot (utils.Bot): The bot instance that should be used to get the names of users.
 
         Returns:
             str: The generated GEDCOM script.
@@ -424,12 +424,12 @@ class FamilyTreeMember(object):
         # Remove dupes, should they be in there
         return people_dict
 
-    async def to_dot_script(self, bot:voxelbotutils.Bot, customised_tree_user:CustomisedTreeUser=None) -> str:
+    async def to_dot_script(self, bot:utils.Bot, customised_tree_user:CustomisedTreeUser=None) -> str:
         """
         Gives you a string of the current family tree that will go through DOT.
 
         Args:
-            bot (voxelbotutils.Bot): The bot instance that should be used to get the names of users.
+            bot (utils.Bot): The bot instance that should be used to get the names of users.
             customised_tree_user (CustomisedTreeUser, optional): The customised tree object that should be used to alter how the
                 dot script looks.
 
@@ -441,12 +441,12 @@ class FamilyTreeMember(object):
         gen_span = root_user.generational_span()
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
-    async def to_full_dot_script(self, bot:voxelbotutils.Bot, customised_tree_user:CustomisedTreeUser=None) -> str:
+    async def to_full_dot_script(self, bot:utils.Bot, customised_tree_user:CustomisedTreeUser=None) -> str:
         """
         Gives you the string of the FULL current family.
 
         Args:
-            bot (voxelbotutils.Bot): The bot instance that should be used to get the names of users.
+            bot (utils.Bot): The bot instance that should be used to get the names of users.
             customised_tree_user (CustomisedTreeUser, optional): The customised tree object that should be used to alter how the
                 dot script looks.
 
@@ -458,12 +458,12 @@ class FamilyTreeMember(object):
         gen_span = root_user.generational_span(expand_upwards=True, add_parent=True)
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
-    async def to_dot_script_from_generational_span(self, bot:voxelbotutils.Bot, gen_span:dict, customised_tree_user:CustomisedTreeUser) -> str:
+    async def to_dot_script_from_generational_span(self, bot:utils.Bot, gen_span:dict, customised_tree_user:CustomisedTreeUser) -> str:
         """
         Generates the DOT script from a given generational span.
 
         Args:
-            bot (voxelbotutils.Bot): The bot instance that should be used to get the names of users.
+            bot (utils.Bot): The bot instance that should be used to get the names of users.
             gen_span (dict): The generational span.
             customised_tree_user (CustomisedTreeUser, optional): The customised tree object that should be used to alter how the
                 dot script looks.

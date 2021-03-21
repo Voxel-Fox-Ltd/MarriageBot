@@ -1,6 +1,6 @@
 import asyncio
 
-import voxelbotutils
+import voxelbotutils as utils
 
 
 class MarriageBotPerks(object):
@@ -20,12 +20,12 @@ class MarriageBotPerks(object):
         self.tree_command_cooldown = tree_command_cooldown
 
 
-async def get_marriagebot_perks(bot:voxelbotutils.Bot, user_id:int) -> MarriageBotPerks:
+async def get_marriagebot_perks(bot:utils.Bot, user_id:int) -> MarriageBotPerks:
     """
     Get the specific perks that any given user has.
 
     Args:
-        bot (voxelbotutils.Bot): The bot instance that will be used to fetch data from Upgrade.Chat.
+        bot (utils.Bot): The bot instance that will be used to fetch data from Upgrade.Chat.
         user_id (int): The ID of the user we want to get the perks of.
 
     Returns:
