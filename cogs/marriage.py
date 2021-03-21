@@ -14,7 +14,7 @@ class Marriage(voxelbotutils.Cog):
     @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def propose(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
+    async def propose(self, ctx:voxelbotutils.Context, *, target:utils.converters.UnblockedMember):
         """Lets you propose to another Discord user"""
 
         # Variables we're gonna need for later
@@ -87,7 +87,7 @@ class Marriage(voxelbotutils.Cog):
     @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def divorce(self, ctx:utils.Context):
+    async def divorce(self, ctx:voxelbotutils.Context):
         """Divorces you from your current spouse"""
 
         # Variables we're gonna need for later
