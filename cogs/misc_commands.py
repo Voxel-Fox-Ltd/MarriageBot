@@ -4,6 +4,9 @@ import voxelbotutils as utils
 
 
 class MiscCommands(utils.Cog):
+    """
+    Misc commands, pretty much just stuff that VBU doesnt handle and doesnt go into any other category.
+    """
 
     @utils.command()
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)

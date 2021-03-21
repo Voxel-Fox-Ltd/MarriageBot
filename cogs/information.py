@@ -10,6 +10,9 @@ from cogs import utils
 
 
 class Information(utils.Cog):
+    """
+    Name explains it, gives you... information on the user's family (this also contains the tree command)
+    """
 
     @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)

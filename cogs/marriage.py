@@ -5,6 +5,9 @@ from cogs import utils
 
 
 class Marriage(utils.Cog):
+    """
+    Handles.. well marriage, marry and divorce.
+    """
 
     @commands.command(aliases=['marry'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)

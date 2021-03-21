@@ -7,6 +7,9 @@ from cogs import utils
 
 
 class ModeratorOnly(utils.Cog):
+    """
+    This cog just contains all of the bot support commands that VBU doesn't cover.
+    """
 
     @commands.command(cls=utils.Command, hidden=True)
     @utils.checks.is_bot_support()

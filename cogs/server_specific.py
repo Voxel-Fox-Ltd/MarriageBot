@@ -27,6 +27,9 @@ Please feel free to direct any questions to the team at `m!support`.
 
 
 class ServerSpecific(utils.Cog):
+    """
+    Handles mostly marriagebot gold commands
+    """
 
     @utils.Cog.listener()
     async def on_guild_join(self, guild:discord.Guild):
