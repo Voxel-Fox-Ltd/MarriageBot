@@ -237,7 +237,7 @@ class Parentage(utils.Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def emancipate(self, ctx:utils.Context):
