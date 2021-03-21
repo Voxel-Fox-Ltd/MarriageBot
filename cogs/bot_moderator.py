@@ -15,7 +15,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def uncache(self, ctx:voxelbotutils.Context, user:utils.converters.UserID):
+    async def uncache(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Removes a user from the propsal cache."""
 
         await self.bot.proposal_cache.remove(user)
@@ -24,7 +24,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @commands.bot_has_permissions(send_messages=True)
     @utils.cooldown.cooldown(1, 15, commands.BucketType.user)
-    async def cachename(self, ctx:voxelbotutils.Context, user:utils.converters.UserID=None):
+    async def cachename(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID=None):
         """Removes a user from the propsal cache."""
 
         user = ctx.author.id or user
@@ -46,7 +46,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguildwithdelete(self, ctx:voxelbotutils.Context, user:utils.converters.UserID, guild_id:int):
+    async def copyfamilytoguildwithdelete(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
@@ -76,7 +76,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguild(self, ctx:voxelbotutils.Context, user:utils.converters.UserID, guild_id:int):
+    async def copyfamilytoguild(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
@@ -106,7 +106,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def addserverspecific(self, ctx:voxelbotutils.Context, guild_id:int, user_id:utils.converters.UserID):
+    async def addserverspecific(self, ctx:voxelbotutils.Context, guild_id:int, user_id:voxelbotutils.converters.UserID):
         """Adds a guild to the MarriageBot Gold whitelist"""
 
         async with self.bot.database() as db:
@@ -126,7 +126,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(aliases=['getgoldpurchases'], hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def getgoldpurchase(self, ctx:voxelbotutils.Context, user:utils.converters.UserID):
+    async def getgoldpurchase(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Remove a guild from the MarriageBot Gold whitelist"""
 
         async with self.bot.database() as db:
@@ -138,7 +138,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def recache(self, ctx:voxelbotutils.Context, user:utils.converters.UserID, guild_id:int=0):
+    async def recache(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object"""
 
         # Read data from DB
@@ -169,7 +169,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def recachefamily(self, ctx:voxelbotutils.Context, user:utils.converters.UserID, guild_id:int=0):
+    async def recachefamily(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object, but through their whole family"""
 
         # Get connections
@@ -208,7 +208,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command()
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forcemarry(self, ctx:voxelbotutils.Context, user_a:utils.converters.UserID, user_b:utils.converters.UserID=None):
+    async def forcemarry(self, ctx:voxelbotutils.Context, user_a:voxelbotutils.converters.UserID, user_b:voxelbotutils.converters.UserID=None):
         """Marries the two specified users"""
 
         # Correct params
@@ -240,7 +240,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command()
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forcedivorce(self, ctx:voxelbotutils.Context, user:utils.converters.UserID):
+    async def forcedivorce(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Divorces a user from their spouse"""
 
         # Get user
@@ -264,7 +264,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command()
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forceadopt(self, ctx:voxelbotutils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
+    async def forceadopt(self, ctx:voxelbotutils.Context, parent:voxelbotutils.converters.UserID, child:voxelbotutils.converters.UserID=None):
         """Adds the child to the specified parent"""
 
         # Correct params
@@ -293,7 +293,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(aliases=['forceeman'])
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forceemancipate(self, ctx:voxelbotutils.Context, user:utils.converters.UserID):
+    async def forceemancipate(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Force emancipates a child"""
 
         # Run checks
@@ -317,7 +317,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.command(hidden=True)
     @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def addvoter(self, ctx:voxelbotutils.Context, user:utils.converters.UserID):
+    async def addvoter(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Adds a voter to the database"""
 
         self.bot.dbl_votes[user] = dt.now()
@@ -357,7 +357,7 @@ class ModeratorOnly(voxelbotutils.Cog):
     @voxelbotutils.checks.is_bot_support()
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def treefile(self, ctx:voxelbotutils.Context, root:utils.converters.UserID=None):
+    async def treefile(self, ctx:voxelbotutils.Context, root:voxelbotutils.converters.UserID=None):
         """Gives you the full family tree of a user"""
 
         root_user_id = root or ctx.author.id
