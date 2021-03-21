@@ -2,14 +2,15 @@ import asyncpg
 from discord.ext import commands
 
 from cogs import utils
+import voxelbotutils
 
 
-class Marriage(utils.Cog):
+class Marriage(voxelbotutils.Cog):
     """
     Handles.. well marriage, marry and divorce.
     """
 
-    @commands.command(aliases=['marry'], cls=utils.Command)
+    @voxelbotutils.command(aliases=['marry'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
@@ -82,7 +83,7 @@ class Marriage(utils.Cog):
         # Remove users from proposal cache
         await self.bot.proposal_cache.remove(instigator, target)
 
-    @commands.command(cls=utils.Command)
+    @voxelbotutils.command()
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
