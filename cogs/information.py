@@ -151,18 +151,6 @@ class Information(utils.Cog):
         username = await self.bot.get_name(user)
         await ctx.send(f"There are `{size}` people in `{username}`'s family tree.")
 
-    @commands.command(enabled=False, cls=utils.Command)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None):
-        """Gives you the full family tree of a user"""
-
-        root_user_id = root or ctx.author.id
-        async with ctx.channel.typing():
-            text = await utils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
-        file_bytes = io.BytesIO(text.encode())
-        await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
     @commands.command(aliases=['tree', 't'], cls=utils.Command)
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
