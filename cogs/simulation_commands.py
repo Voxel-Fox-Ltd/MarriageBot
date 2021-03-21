@@ -340,6 +340,18 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("*You bought some choclate.*")
         await ctx.send(f"*Gives {user.mention} chocolate*")
 
+    @utils.command(hidden=True)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def wave(self, ctx:utils.Context, user:discord.Member=None):
+        """
+        Waves to someone
+        """
+        if user is None:
+            return await ctx.send("*You wave to yourself...consider getting some friends.*")
+        if user == ctx.author:
+            return await ctx.send("*You wave to yourself...consider getting some friends.*")
+        await ctx.send(f"*Waves to {user.mention} :wave:")
 
 def setup(bot:utils.Bot):
     x = SimulationCommands(bot)
