@@ -355,7 +355,7 @@ class ModeratorOnly(voxelbotutils.Cog):
 
     @voxelbotutils.command()
     @voxelbotutils.checks.is_bot_support()
-    @utils.checks.bot_is_ready()
+    @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def treefile(self, ctx:voxelbotutils.Context, root:voxelbotutils.converters.UserID=None):
         """Gives you the full family tree of a user"""
