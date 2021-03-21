@@ -19,7 +19,7 @@ class Information(voxelbotutils.Cog):
     @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def partner(self, ctx:voxelbotutils.Context, user:typing.Optional[utils.converters.UserID]):
+    async def partner(self, ctx:voxelbotutils.Context, user:typing.Optional[voxelbotutils.converters.UserID]):
         """Tells you who a user is married to"""
 
         # Get the user's info
