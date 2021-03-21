@@ -44,7 +44,7 @@ class Parentage(utils.Cog):
         ])
 
     @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def makeparent(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -121,7 +121,7 @@ class Parentage(utils.Cog):
         await self.bot.proposal_cache.remove(instigator, target)
 
     @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCommandOnCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def adopt(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -205,7 +205,7 @@ class Parentage(utils.Cog):
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
     @utils.command(aliases=['abort'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
