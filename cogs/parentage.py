@@ -274,7 +274,7 @@ class Parentage(utils.Cog):
         await ctx.send(text_processor.valid_target())
 
     @utils.command()
-    @utils.checks.has_donator_perks("disownall_command")
+    @localutils.checks.has_donator_perks("disownall_command")
     @commands.bot_has_permissions(send_messages=True)
     async def disownall(self, ctx:utils.Context):
         """
