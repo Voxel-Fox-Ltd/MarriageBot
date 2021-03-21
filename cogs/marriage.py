@@ -123,6 +123,6 @@ class Marriage(voxelbotutils.Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
 
-def setup(bot:utils.Bot):
+def setup(bot:voxelbotutils.Bot):
     x = Marriage(bot)
     bot.add_cog(x)
