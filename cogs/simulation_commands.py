@@ -109,13 +109,23 @@ class SimulationCommands(utils.Cog):
     @utils.command()
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def coffee(self, ctx:utils.Context, user:discord.Member):
+    async def coffee(self, ctx:utils.Context, user:discord.Member=None):
         """
         Gives coffee to a mentioned user.
         """
 
         if user == ctx.author:
             return await ctx.send("*You spilled coffee all over yourself... for some reason.*")
+
+        if user is None:
+            responses = [
+                "You make coffee.",
+                "You try to make coffee, but forgot the cup.",
+                "You make coffee... then cry.",
+                "This is awkward... You forgot to pay the water bill.",
+                "You made coffee. Congrats.",
+            ]
+            return await ctx.send(random.choice(responses))   
         await ctx.send(f"*Gives coffee to {user.mention}*")
 
     @utils.command()
@@ -317,6 +327,18 @@ class SimulationCommands(utils.Cog):
         if response == "NO":
             return await ctx.send(text_processor.request_denied())
         await ctx.send(text_processor.request_accepted())
+
+    @utils.command(hidden=True)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def chocolate(self, ctx:utils.Context, user:discord.Member):
+        """
+        Gives chocolate to a mentioned user.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("*You bought some choclate.*")
+        await ctx.send(f"*Gives {user.mention} chocolate*")
 
 
 def setup(bot:utils.Bot):
