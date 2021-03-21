@@ -46,6 +46,42 @@ class ServerSpecific(utils.Cog):
         self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
         await guild.leave()
 
+    @utils.command(hidden=True)
+    @localutils.checks.is_server_specific_bot_moderator()
+    @localutils.checks.guild_is_server_specific()
+    @commands.bot_has_permissions(send_messages=True)
+    async def allowincest(self, ctx:utils.Context):
+        """
+        Toggles allowing incest on your guild.
+        """
+
+        async with self.bot.database() as db:
+            await db(
+                """INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id)
+                DO UPDATE SET allow_incest=excluded.allow_incest""",
+                ctx.guild.id, True,
+            )
+        self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
+        await ctx.send("Incest is now **ALLOWED** on your guild.")
+
+    @utils.command(hidden=True)
+    @localutils.checks.is_server_specific_bot_moderator()
+    @localutils.checks.guild_is_server_specific()
+    @commands.bot_has_permissions(send_messages=True)
+    async def disallowincest(self, ctx:utils.Context):
+        """
+        Toggles allowing incest on your guild.
+        """
+
+        async with self.bot.database() as db:
+            await db(
+                """INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id)
+                DO UPDATE SET allow_incest=excluded.allow_incest""",
+                ctx.guild.id, False,
+            )
+        self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
+        await ctx.send("Incest is now **DISALLOWED** on your guild.")
+
     @utils.group()
     @commands.bot_has_permissions(send_messages=True)
     async def incest(self, ctx:utils.Context):
@@ -92,7 +128,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @utils.command(aliases=['ssf', 'incest'])
+    @utils.command(aliases=['ssf'])
     @commands.bot_has_permissions(send_messages=True)
     async def gold(self, ctx:utils.Context):
         """
