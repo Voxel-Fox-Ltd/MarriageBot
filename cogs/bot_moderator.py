@@ -23,7 +23,7 @@ class ModeratorOnly(voxelbotutils.Cog):
 
     @voxelbotutils.command(hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    @utils.cooldown.cooldown(1, 15, commands.BucketType.user)
+    @voxelbotutils.cooldown.cooldown(1, 15, commands.BucketType.user)
     async def cachename(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID=None):
         """Removes a user from the propsal cache."""
 
