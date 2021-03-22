@@ -10,6 +10,9 @@ from cogs import utils as localutils
 
 
 class SimulationCommands(utils.Cog):
+    """
+    This cog is pretty much just a command and a response, it handles the GIF commands (m!kiss, slap, etc), but otherwise this is just some fun commands.
+    """
 
     async def get_reaction_gif(self, ctx:utils.Context, reaction_type:str=None, *, nsfw:bool=False) -> typing.Optional[str]:
         """
@@ -352,6 +355,19 @@ class SimulationCommands(utils.Cog):
         if user == ctx.author:
             return await ctx.send("*You wave to yourself...consider getting some friends.*")
         await ctx.send(f"*Waves to {user.mention} :wave:")
+
+    @utils.command(hidden=True)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def apple(self, ctx:utils.Context, user:discord.Member):
+        """
+        Gives a apple to a mentioned user.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("*You eat an apple*")
+        await ctx.send(f"*Gives {user.mention} an apple*")
+
 
 def setup(bot:utils.Bot):
     x = SimulationCommands(bot)

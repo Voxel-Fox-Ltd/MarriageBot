@@ -4,23 +4,27 @@ import asyncpg
 from discord.ext import commands
 
 from cogs import utils
+import voxelbotutils
 
 
-class ModeratorOnly(utils.Cog):
+class ModeratorOnly(voxelbotutils.Cog):
+    """
+    This cog just contains all of the bot support commands that VBU doesn't cover.
+    """
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def uncache(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def uncache(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Removes a user from the propsal cache."""
 
         await self.bot.proposal_cache.remove(user)
         await ctx.send("Sent Redis request to remove user from cache.")
 
-    @commands.command(cls=utils.Command, hidden=True)
+    @voxelbotutils.command(hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    @utils.cooldown.cooldown(1, 15, commands.BucketType.user)
-    async def cachename(self, ctx:utils.Context, user:utils.converters.UserID=None):
+    @voxelbotutils.cooldown.cooldown(1, 15, commands.BucketType.user)
+    async def cachename(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID=None):
         """Removes a user from the propsal cache."""
 
         user = ctx.author.id or user
@@ -30,19 +34,19 @@ class ModeratorOnly(utils.Cog):
         self.bot.shallow_users.pop(user.id, None)
         await ctx.send(f"Saved the name `{user!s}` into the database for user ID `{user.id}`.")
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def runstartupmethod(self, ctx:utils.Context):
+    async def runstartupmethod(self, ctx:voxelbotutils.Context):
         """Runs the bot startup method, reacching everything of interest"""
 
         await self.bot.startup()
         await ctx.okay()
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguildwithdelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    async def copyfamilytoguildwithdelete(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
@@ -69,10 +73,10 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    async def copyfamilytoguild(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int):
         """Copies a family's span to a given guild ID for server specific families"""
 
         # Get their current family
@@ -99,30 +103,30 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Copied over `{len(users)}` users.")
         await db.disconnect()
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def addserverspecific(self, ctx:utils.Context, guild_id:int, user_id:utils.converters.UserID):
+    async def addserverspecific(self, ctx:voxelbotutils.Context, guild_id:int, user_id:voxelbotutils.converters.UserID):
         """Adds a guild to the MarriageBot Gold whitelist"""
 
         async with self.bot.database() as db:
             await db('INSERT INTO guild_specific_families (guild_id, purchased_by) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET purchased_by=excluded.purchased_by', guild_id, user_id)
         await ctx.okay(ignore_error=True)
 
-    @commands.command(cls=utils.Command)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command()
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def removeserverspecific(self, ctx:utils.Context, guild_id:int):
+    async def removeserverspecific(self, ctx:voxelbotutils.Context, guild_id:int):
         """Remove a guild from the MarriageBot Gold whitelist"""
 
         async with self.bot.database() as db:
             await db('DELETE FROM guild_specific_families WHERE guild_id=$1', guild_id)
         await ctx.okay(ignore_error=True)
 
-    @commands.command(cls=utils.Command, aliases=['getgoldpurchases'], hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(aliases=['getgoldpurchases'], hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def getgoldpurchase(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def getgoldpurchase(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Remove a guild from the MarriageBot Gold whitelist"""
 
         async with self.bot.database() as db:
@@ -131,10 +135,10 @@ class ModeratorOnly(utils.Cog):
             return await ctx.send("That user has purchased no instances of MarriageBot Gold.")
         return await ctx.invoke(self.bot.get_command("runsql"), content="SELECT * FROM guild_specific_families WHERE purchased_by={}".format(user))
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def recache(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
+    async def recache(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object"""
 
         # Read data from DB
@@ -162,10 +166,10 @@ class ModeratorOnly(utils.Cog):
         # Output to user
         await ctx.send("Published update for user.")
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def recachefamily(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int=0):
+    async def recachefamily(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, guild_id:int=0):
         """Recaches a user's family tree member object, but through their whole family"""
 
         # Get connections
@@ -201,10 +205,10 @@ class ModeratorOnly(utils.Cog):
         # Output to user
         await ctx.send(f"Published `{len(family)}` updates.")
 
-    @commands.command(cls=utils.Command)
+    @voxelbotutils.command()
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forcemarry(self, ctx:utils.Context, user_a:utils.converters.UserID, user_b:utils.converters.UserID=None):
+    async def forcemarry(self, ctx:voxelbotutils.Context, user_a:voxelbotutils.converters.UserID, user_b:voxelbotutils.converters.UserID=None):
         """Marries the two specified users"""
 
         # Correct params
@@ -233,10 +237,10 @@ class ModeratorOnly(utils.Cog):
             await re.publish_json('TreeMemberUpdate', them.to_json())
         await ctx.send(f"Married <@{me.id}> and <@{them.id}>.")
 
-    @commands.command(cls=utils.Command)
+    @voxelbotutils.command()
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forcedivorce(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def forcedivorce(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Divorces a user from their spouse"""
 
         # Get user
@@ -257,10 +261,10 @@ class ModeratorOnly(utils.Cog):
             await re.publish_json('TreeMemberUpdate', them.to_json())
         await ctx.send("Consider it done.")
 
-    @commands.command(cls=utils.Command)
+    @voxelbotutils.command()
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forceadopt(self, ctx:utils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
+    async def forceadopt(self, ctx:voxelbotutils.Context, parent:voxelbotutils.converters.UserID, child:voxelbotutils.converters.UserID=None):
         """Adds the child to the specified parent"""
 
         # Correct params
@@ -286,10 +290,10 @@ class ModeratorOnly(utils.Cog):
             await re.publish_json('TreeMemberUpdate', them.to_json())
         await ctx.send(f"Added <@{child}> to <@{parent}>'s children list.")
 
-    @commands.command(aliases=['forceeman'], cls=utils.Command)
+    @voxelbotutils.command(aliases=['forceeman'])
     @utils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forceemancipate(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def forceemancipate(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Force emancipates a child"""
 
         # Run checks
@@ -310,10 +314,10 @@ class ModeratorOnly(utils.Cog):
             await re.publish_json('TreeMemberUpdate', parent.to_json())
         await ctx.send("Consider it done.")
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def addvoter(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def addvoter(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID):
         """Adds a voter to the database"""
 
         self.bot.dbl_votes[user] = dt.now()
@@ -321,10 +325,10 @@ class ModeratorOnly(utils.Cog):
             await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=$2', user, self.bot.dbl_votes[user])
         await ctx.send("Consider it done.")
 
-    @commands.command(aliases=['addblogpost'], cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(aliases=['addblogpost'], hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
+    async def createblogpost(self, ctx:voxelbotutils.Context, url:str, title:str, *, content:str=None):
         """Adds a blog post to the database"""
 
         if content is None:
@@ -338,10 +342,10 @@ class ModeratorOnly(utils.Cog):
                 verb = "Updated"
         await ctx.send(f"{verb} blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
 
-    @commands.command(cls=utils.Command, hidden=True)
-    @utils.checks.is_bot_support()
+    @voxelbotutils.command(hidden=True)
+    @voxelbotutils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def createredirect(self, ctx:utils.Context, code:str, redirect:str):
+    async def createredirect(self, ctx:voxelbotutils.Context, code:str, redirect:str):
         """Adds a redirect to the database"""
 
         async with self.bot.database() as db:
@@ -349,6 +353,20 @@ class ModeratorOnly(utils.Cog):
         await ctx.send(f"Created redirect: https://marriagebot.xyz/r/{code}", embeddify=False)
 
 
-def setup(bot:utils.Bot):
+    @voxelbotutils.command()
+    @voxelbotutils.checks.is_bot_support()
+    @voxelbotutils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True, attach_files=True)
+    async def treefile(self, ctx:voxelbotutils.Context, root:voxelbotutils.converters.UserID=None):
+        """Gives you the full family tree of a user"""
+
+        root_user_id = root or ctx.author.id
+        async with ctx.channel.typing():
+            text = await utils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
+        file_bytes = io.BytesIO(text.encode())
+        await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
+
+
+def setup(bot:voxelbotutils.Bot):
     x = ModeratorOnly(bot)
     bot.add_cog(x)

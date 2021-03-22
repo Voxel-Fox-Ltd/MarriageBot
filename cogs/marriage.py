@@ -2,15 +2,19 @@ import asyncpg
 from discord.ext import commands
 
 from cogs import utils
+import voxelbotutils
 
 
-class Marriage(utils.Cog):
+class Marriage(voxelbotutils.Cog):
+    """
+    Handles.. well marriage, marry and divorce.
+    """
 
-    @commands.command(aliases=['marry'], cls=utils.Command)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @voxelbotutils.command(aliases=['marry'])
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def propose(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
+    async def propose(self, ctx:voxelbotutils.Context, *, target:utils.converters.UnblockedMember):
         """Lets you propose to another Discord user"""
 
         # Variables we're gonna need for later
@@ -79,11 +83,11 @@ class Marriage(utils.Cog):
         # Remove users from proposal cache
         await self.bot.proposal_cache.remove(instigator, target)
 
-    @commands.command(cls=utils.Command)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @voxelbotutils.command()
+    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @voxelbotutils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def divorce(self, ctx:utils.Context):
+    async def divorce(self, ctx:voxelbotutils.Context):
         """Divorces you from your current spouse"""
 
         # Variables we're gonna need for later
@@ -119,6 +123,6 @@ class Marriage(utils.Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
 
-def setup(bot:utils.Bot):
+def setup(bot:voxelbotutils.Bot):
     x = Marriage(bot)
     bot.add_cog(x)

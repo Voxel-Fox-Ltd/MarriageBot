@@ -9,6 +9,9 @@ from cogs import utils as localutils
 
 
 class Parentage(utils.Cog):
+    """
+    Parentage, handles parent commands.
+    """
 
     async def get_max_children_for_member(self, guild:discord.Guild, user:discord.Member):
         """
@@ -41,7 +44,7 @@ class Parentage(utils.Cog):
         ])
 
     @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def makeparent(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -118,7 +121,7 @@ class Parentage(utils.Cog):
         await self.bot.proposal_cache.remove(instigator, target)
 
     @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCommandOnCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def adopt(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -202,7 +205,7 @@ class Parentage(utils.Cog):
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
     @utils.command(aliases=['abort'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
@@ -234,7 +237,7 @@ class Parentage(utils.Cog):
             await re.publish_json('TreeMemberUpdate', target_tree.to_json())
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def emancipate(self, ctx:utils.Context):
@@ -271,7 +274,7 @@ class Parentage(utils.Cog):
         await ctx.send(text_processor.valid_target())
 
     @utils.command()
-    @utils.checks.has_donator_perks("disownall_command")
+    @localutils.checks.has_donator_perks("disownall_command")
     @commands.bot_has_permissions(send_messages=True)
     async def disownall(self, ctx:utils.Context):
         """

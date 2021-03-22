@@ -5,7 +5,8 @@ import typing
 import voxelbotutils as utils
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
-from cogs.utils.family_tree.relation_simplifier import Simplifier
+from cogs.utils.family_tree.relationship_string_simplifier import RelationshipStringSimplifier as Simplifier
+
 
 
 def get_random_string(length:int=10) -> str:

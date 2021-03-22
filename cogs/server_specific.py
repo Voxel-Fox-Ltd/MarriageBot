@@ -27,6 +27,9 @@ Please feel free to direct any questions to the team at `m!support`.
 
 
 class ServerSpecific(utils.Cog):
+    """
+    Handles mostly marriagebot gold commands
+    """
 
     @utils.Cog.listener()
     async def on_guild_join(self, guild:discord.Guild):
@@ -125,7 +128,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @utils.command(aliases=['ssf', 'incest'])
+    @utils.command(aliases=['ssf'])
     @commands.bot_has_permissions(send_messages=True)
     async def gold(self, ctx:utils.Context):
         """

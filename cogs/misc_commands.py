@@ -4,9 +4,12 @@ import voxelbotutils as utils
 
 
 class MiscCommands(utils.Cog):
+    """
+    Misc commands, pretty much just stuff that VBU doesnt handle and doesnt go into any other category.
+    """
 
     @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user, cls=utils.cooldown.NoRaiseCooldown)
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     @utils.checks.is_config_set('command_data', 'stats_command_enabled')
     async def perks(self, ctx:utils.Context):

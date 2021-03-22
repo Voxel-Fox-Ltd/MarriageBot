@@ -7,11 +7,14 @@ import discord
 from discord.ext import commands
 
 from cogs import utils
+import voxelbotutils
 
+class ErrorHandler(voxelbotutils.Cog):
+    """
+    Error Handler... handles errors (helps out with the VBU error handler for MB-specific errors)
+    """
 
-class ErrorHandler(utils.Cog):
-
-    async def send_to_ctx_or_author(self, ctx:utils.Context, text:str, author_text:str=None) -> typing.Optional[discord.Message]:
+    async def send_to_ctx_or_author(self, ctx:voxelbotutils.Context, text:str, author_text:str=None) -> typing.Optional[discord.Message]:
         """Tries to send the given text to ctx, but failing that, tries to send it to the author
         instead. If it fails that too, it just stays silent."""
 
@@ -30,8 +33,8 @@ class ErrorHandler(utils.Cog):
             self.logger.error(f"discord.HTTPException on sending error message - {e.response}")
         return None
 
-    @utils.Cog.listener()
-    async def on_command_error(self, ctx:utils.Context, error:commands.CommandError):
+    @voxelbotutils.Cog.listener()
+    async def on_command_error(self, ctx:voxelbotutils.Context, error:commands.CommandError):
         """Global error handler for all the commands around wew"""
 
         # Set up some errors that are just straight up ignored
@@ -203,7 +206,7 @@ class ErrorHandler(utils.Cog):
         # And throw it into the console
         raise error
 
-    async def tree_timeout_handler(self, ctx:utils.Context, error):
+    async def tree_timeout_handler(self, ctx:voxelbotutils.Context, error):
         """Handles errors for the tree commands"""
 
         # Get user perks
@@ -229,6 +232,6 @@ class ErrorHandler(utils.Cog):
         await ctx.send(f"You can only use this command once every {cooldown_display} (see `m!perks` for more information) per server. You may use this again in {time_remaining:.1f} seconds.")
 
 
-def setup(bot:utils.Bot):
+def setup(bot:voxelbotutils.Bot):
     x = ErrorHandler(bot)
     bot.add_cog(x)

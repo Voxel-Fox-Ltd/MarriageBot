@@ -1,7 +1,7 @@
 from discord.ext import commands
 import voxelbotutils as utils
 
-from cogs.utils.checks.is_server_specific import is_server_specific
+from cogs.utils.checks.guild_is_server_specific import guild_is_server_specific
 
 
 class NotServerSpecificBotModerator(commands.MissingRole):
