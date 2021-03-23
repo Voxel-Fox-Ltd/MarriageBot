@@ -93,7 +93,7 @@ class MiscCommands(utils.Cog):
                 ctx.author.id, user_id
             )
         async with self.bot.redis() as re:
-            await re.publish_json("BlockedUserAdd", {"user_id": ctx.author.id, "blocked_user_id": user_id})
+            await re.publish("BlockedUserAdd", {"user_id": ctx.author.id, "blocked_user_id": user_id})
         return await ctx.send("That user is now blocked.")
 
     @utils.command()
@@ -115,7 +115,7 @@ class MiscCommands(utils.Cog):
                 ctx.author.id, user
             )
         async with self.bot.redis() as re:
-            await re.publish_json("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user})
+            await re.publish("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user})
         return await ctx.send("That user is now unblocked.")
 
     @utils.command()

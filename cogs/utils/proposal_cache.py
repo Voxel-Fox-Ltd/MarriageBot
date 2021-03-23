@@ -59,7 +59,7 @@ class ProposalCache(dict):
 
         timeout_time = dt.now() + timedelta(seconds=expiry_seconds)
         async with self.bot.redis() as re:
-            await re.publish_json('ProposalCacheAdd', {
+            await re.publish('ProposalCacheAdd', {
                 'user': user.id,
                 'timeout_time': timeout_time.timestamp()
             })
@@ -89,7 +89,7 @@ class ProposalCache(dict):
         """
 
         async with self.bot.redis() as re:
-            await re.publish_json('ProposalCacheRemove', users)
+            await re.publish('ProposalCacheRemove', users)
 
     def raw_remove(self, *users:discord.User) -> list:
         """
