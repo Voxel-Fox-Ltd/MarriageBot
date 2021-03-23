@@ -156,7 +156,7 @@ async def guild_picker(request:Request):
     if rows:
         await webutils.add_user_to_guild(request, request.app['config']['guild_id'])
         async with request.app['redis']() as re:
-            await re.publish_json("AddGoldUser", {'user_id': user_id})
+            await re.publish("AddGoldUser", {'user_id': user_id})
 
     # Send off guilds to the page
     return {'guilds': guilds}

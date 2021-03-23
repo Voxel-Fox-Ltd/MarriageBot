@@ -81,7 +81,7 @@ async def unblock_user_post_handler(request:Request):
             logged_in_user, blocked_user
         )
     async with request.app['redis']() as re:
-        await re.publish_json("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
+        await re.publish("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
 
     # Redirect back to user settings
     return HTTPFound(location='/user_settings')
@@ -127,7 +127,7 @@ async def set_prefix(request:Request):
     async with request.app['redis']() as re:
         redis_data = {'guild_id': int(guild_id)}
         redis_data[{True: 'gold_prefix', False: 'prefix'}[bool(post_data['gold'])]] = prefix
-        await re.publish_json('UpdateGuildPrefix', redis_data)
+        await re.publish('UpdateGuildPrefix', redis_data)
 
     # Redirect to page
     location = f'/guild_settings?guild_id={guild_id}&gold=1' if post_data['gold'] else f'/guild_settings?guild_id={guild_id}'
@@ -167,7 +167,7 @@ async def set_max_family_members(request:Request):
     async with request.app['database']() as db:
         await db('INSERT INTO guild_settings (guild_id, max_family_members) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET max_family_members=$2', int(guild_id), max_members)
     async with request.app['redis']() as re:
-        await re.publish_json('UpdateFamilyMaxMembers', {
+        await re.publish('UpdateFamilyMaxMembers', {
             'guild_id': int(guild_id),
             'max_family_members': max_members,
         })
@@ -205,7 +205,7 @@ async def set_gifs_enabled(request:Request):
     async with request.app['database']() as db:
         await db('INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET gifs_enabled=$2', int(guild_id), enabled is True)
     async with request.app['redis']() as re:
-        await re.publish_json('UpdateGifsEnabled', {
+        await re.publish('UpdateGifsEnabled', {
             'guild_id': int(guild_id),
             'gifs_enabled': enabled is True,
         })
@@ -247,7 +247,7 @@ async def set_incest_enabled(request:Request):
     async with request.app['database']() as db:
         await db('INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET allow_incest=$2', int(guild_id), enabled)
     async with request.app['redis']() as re:
-        await re.publish_json('UpdateIncestAllowed', {
+        await re.publish('UpdateIncestAllowed', {
             'guild_id': int(guild_id),
             'allow_incest': enabled,
         })
@@ -294,7 +294,7 @@ async def set_max_allowed_children(request:Request):
                 int(guild_id), role_id, amount,
             )
     async with request.app['redis']() as re:
-        await re.publish_json('UpdateMaxChildren', {
+        await re.publish('UpdateMaxChildren', {
             'guild_id': int(guild_id),
             'max_children': max_children_data,
         })
@@ -340,8 +340,8 @@ async def webhook_handler(request:Request):
 
     # Redis thanks to user
     async with request.app['redis']() as re:
-        await re.publish_json("SendUserMessage", {"user_id": data['user_id'], "content": text})
-        await re.publish_json('DBLVote', {'user_id': data['user_id'], 'datetime': time.isoformat()})
+        await re.publish("SendUserMessage", {"user_id": data['user_id'], "content": text})
+        await re.publish('DBLVote', {'user_id': data['user_id'], 'datetime': time.isoformat()})
 
     # DB vote
     async with request.app['database']() as db:

@@ -114,8 +114,8 @@ class Parentage(utils.Cog):
 
         # Ping em off over redis
         async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish('TreeMemberUpdate', target_tree.to_json())
 
         # Uncache
         await self.bot.proposal_cache.remove(instigator, target)
@@ -195,8 +195,8 @@ class Parentage(utils.Cog):
 
         # Ping em off over redis
         async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish('TreeMemberUpdate', target_tree.to_json())
 
         # Uncache
         await self.bot.proposal_cache.remove(instigator, target)
@@ -233,8 +233,8 @@ class Parentage(utils.Cog):
 
         # Ping em off over redis
         async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish('TreeMemberUpdate', target_tree.to_json())
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -265,8 +265,8 @@ class Parentage(utils.Cog):
 
         # Ping em off over redis
         async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish('TreeMemberUpdate', target_tree.to_json())
 
         # Oh hey they are - remove from database
         async with self.bot.database() as db:
@@ -300,7 +300,7 @@ class Parentage(utils.Cog):
         # Redis em
         async with self.bot.redis() as re:
             for person in children + [user_tree]:
-                await re.publish_json('TreeMemberUpdate', person.to_json())
+                await re.publish('TreeMemberUpdate', person.to_json())
 
         # Output to user
         await ctx.send("You've sucessfully disowned all of your children.")
