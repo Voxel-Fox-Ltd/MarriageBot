@@ -10,6 +10,7 @@ guild_settings_prefix_column = "prefix"  # Used if multiple bots connect to the 
 # MarriageBot-specific config items
 max_family_members = 750  # The maximum amount of people you can have in a family
 tree_file_location = "/var/www/images"  # The location where the tree files are to be output
+is_server_specific = false
 
 # Event webhook information - some of the events (noted) will be sent to the specified url
 [event_webhook]
