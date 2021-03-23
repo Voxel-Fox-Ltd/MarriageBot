@@ -1,136 +1,135 @@
-token = "bot_token"
-owners = [ 141231597155385344, ]
-dm_uncaught_errors = false
-bot_admin_role = 1  # The role ID for bot admins
-default_prefix = "m!" # The default prefix
-guild_specific_role = 603656806853771264
-disableable_commands = ["hug", "kiss", "slap", "punch", "cookie", "nugget", "burger", "poke", "stab", "copulate"]
-max_family_members = 500  # The maximum amount of people you can have in a family
-tree_file_location = "./trees"  # The location where the tree files are to be output
-dbl_vainity = ""  # The vainity link that goes on the 'vote' command
-guild_id = 1  # The ID for the support guild - used to find the bot admin and Patreon roles
-is_server_specific = false  # Bool flag for whether the bot uses global or server specific trees
-topgg_token = ""  # The API token for discordbots.org - probably best left blank
-topgg_authorization = ""
-event_webhook_url = ""
+token = "bot_token"  # The token for the bot
+owners = [ 141231597155385344 ]  # List of owner IDs - these people override all permission checks
+dm_uncaught_errors = false  # Whether or not to DM the owners when unhandled errors are encountered
+user_agent = ""  # A custom string to populate Bot.user_agent with
+default_prefix = "m!"  # The prefix for the bot's commands
+support_guild_id = 208895639164026880  # The ID for the support guild - used by `Bot.fetch_support_guild()`
+bot_support_role_id = 522072743273824262  # The ID used to determine whether or not the user is part of the bot's support team - used for `.checks.is_bot_support()` check
+guild_settings_prefix_column = "prefix"  # Used if multiple bots connect to the same database and need to seperate their prefixes
 
-# List out the role perks that each role should have
-[role_perks.default]
-    max_children = 5
-    tree_cooldown_time = 60
-    disownall_command = false
-    stupidtree_command = false
-[role_perks.383706619189657600]
-    max_children = 10
-    tree_cooldown_time = 15
-    disownall_command = true
-[role_perks.597009593574490114]
-    max_children = 15
-    tree_cooldown_time = 15
-    disownall_command = true
-    stupidtree_command = true
-[role_perks.578350401305182254]
-    max_children = 20
-    tree_cooldown_time = 5
-    disownall_command = true
-    stupidtree_command = true
-[role_perks.586495239166885889]
-    max_children = 10
-    tree_cooldown_time = 30
-[role_perks.603656806853771264]  # mbg purchaser
-    max_children = 20
-    tree_cooldown_time = 5
-    disownall_command = true
-    stupidtree_command = true
+# MarriageBot-specific config items
+max_family_members = 750  # The maximum amount of people you can have in a family
+tree_file_location = "/var/www/images"  # The location where the tree files are to be output
 
-# Data that's copied directly over to a command without processing
+# Event webhook information - some of the events (noted) will be sent to the specified url
+[event_webhook]
+    event_webhook_url = ""
+    [event_webhook.events]  # If you use true then your `event_webhook_url` will be used. If it's a string it'll assume that's a different webhook
+        guild_join = false
+        guild_remove = false
+        shard_connect = false
+        shard_disconnect = false
+        shard_ready = false
+        bot_ready = false
+        unhandled_error = false
+
+# The intents that the bot should start with
+[intents]
+    guilds = true  # Guilds - Used for guild join/remove, channel create/delete/update, Bot.get_channel, Bot.guilds, Bot.get_guild.
+    members = false  # Members (privileged intent) - Used for member join/remove/update, Member.roles, Member.nick, User.name, Bot.get_user, Guild.get_member etc.
+    bans = false  # Bans - Used for member ban/unban.
+    emojis = false  # Emojis - Used for guild emojis update, Bot.get_emoji, Guild.emojis.
+    integrations = false  # Integrations - Used for guild integrations update.
+    webhooks = false  # Webhooks - Used for guild webhooks update.
+    invites = false  # Invites - Used for invite create/delete.
+    voice_states = false  # Voice states - Used for voice state update, VoiceChannel.members, Member.voice.
+    presences = false  # Presences (privileged intent) - Used for member update (for activities and status), Member.status.
+    guild_messages = true  # Guild messages - Used for message events in guilds.
+    dm_messages = true  # DM messages - Used for message events in DMs.
+    guild_reactions = true  # Guild reactions - Used for [raw] reaction add/remove/clear events in guilds.
+    dm_reactions = true  # DM reactions - Used for [raw] reaction add/remove/clear events in DMs.
+    guild_typing = false  # Guild typing - Used for the typing event in guilds.
+    dm_typing = false  # DM typing - Used for the typing event in Dms.
+
+# Content to be included in the help command
+[help_command]
+    dm_help = true  # Whether or not the help embed should be DMd to the user
+    content = ""  # Additional content to be sent with the embed
+
+# Data used to send API requests to whatever service
+[bot_listing_api_keys]
+    topgg_token = ""  # The token used to post data to top.gg
+    discordbotlist_token = ""  # The token used to post data to discordbotlist.com
+
+# Data that's copied directly over to a command
 [command_data]
-    guild_invite = ""
-    github = ""
-    patreon = ""
-    invite_command_enabled = true
-    echo_command_enabled = true
-    stats_command_enabled = true
+    website_link = "https://marriagebot.xyz"  # A link to be used on !website
+    guild_invite = "https://discord.gg/vfl"  # A link to be used on !support
+    github_link = "https://github.com/Voxel-Fox-Ltd/MarriageBot"  # A link to be used on !git
+    donate_link = "https://upgrade.chat/checkout/208895639164026880"  # A link to be used on !donate
+    echo_command_enabled = true  # Whether or not the echo command is enabled
+    stats_command_enabled = true  # Whether or not the stats command is enabled
+    vote_command_enabled = true  # Whether or not the top.gg vote command is enabled
+    updates_channel_id = 634196652529418240  # The ID of the news channel for the bot
+    info = ""  # The text passed out with the !info command
 
-# API keys for various commands etc yknow
-[api_keys]
-    weebsh = ""  # An API key for Weeb.sh. I don't expect you to have one of these.
+# Used to generate the invite link
+[oauth]
+    enabled = true
+    client_id = "468281173072805889"  #  If not set then will use the bot's ID, which is correct as of around 2017 I think
+    scope = "bot applications.commands"  # The scope that will be generated with the invite link, space seperated (applications.commands for slash)
+    permissions = [ "send_messages", "attach_files", "embed_links", ]  # args here are passed directly to discord.Permissions as True
 
-# This data is passed directly over to asyncpg
+# This data is passed directly over to asyncpg.connect()
 [database]
+    enabled = true
     user = "database_username"
     password = "database_password"
     database = "database_name"
     host = "127.0.0.1"
     port = 5432
-    enabled = false
 
-# This data is passed directly over to aioredis
+# This data is passed directly over to aioredis.connect()
 [redis]
+    enabled = true
     host = "127.0.0.1"
     port = 6379
     db = 0
-    enabled = false
+
+# The data that gets shoves into custom context for the embed
+[embed]
+    enabled = true  # whether or not to embed messages by default
+    content = ""  # default content to be added to the embed message
+    colour = 0  # a specific colour for the embed - 0 means random
+    [embed.author]
+        enabled = false
+        name = "{ctx.bot.user}"
+        url = ""  # the url added to the author
+    [[embed.footer]]  # an array of possible footers
+        text = "Add the bot to your server! ({ctx.clean_prefix}invite)"  # text to appear in the footer
+        amount = 3  # the amount of times this particular text is added to the pool
+    [[embed.footer]]
+        text = "Learn how to get more children ({prefix}perks)"
+        amount = 3
+    [[embed.footer]]
+        text = "Join the official Discord server ({prefix}server)"
+        amount = 3
+    [[embed.footer]]
+        text = "Learn more about MarriageBot Gold ({prefix}gold)"
+        amount = 3
+    [[embed.footer]]
+        text = "Donate to keep MarriageBot alive ({prefix}donate)"
+        amount = 10
 
 # What the bot is playing
 [presence]
-    activity_type = "playing"  # Should be one of 'playing', 'listening', 'watching'
-    text = "Game playing text"
+    activity_type = "m!help"  # Should be one of 'playing', 'listening', 'watching', 'competing'
+    text = "playing"
     status = "online"  # Should be one of 'online', 'invisible', 'idle', 'dnd'
+    include_shard_id = true  # Whether or not to append "(shard N)" to the presence; only present if there's more than 1 shard
+    [presence.streaming]  # This is used to automatically set the bot's status to your Twitch stream when you go live
+        twitch_usernames = []  # The username of your Twitch.tv channel
+        twitch_client_id = ""  # Your client ID - https://dev.twitch.tv/console/apps
+        twitch_client_secret = ""  # Your client secret
 
-[embed]
-    content = ""  # The content of messages the bot outputs by default with the embeds
-    add_footer = true  # Whether or not to add the custom footer
-    [embed.author]
-        name = ""  # The name of the author put into embeds
-        url = ""  # The url of the author put into embeds
-    # A list of footer texts for the embeds
-    # 'text' is the text for the footer
-    # 'amount' is the amount of that text to be put into the shuffle
-    # The actual footer is picked at random from the mix
-    # Text can include '{prefix}' to be formatted into the bot's command prefix
-    [[embed.footer]]
-        text = "MarriageBot"
-        amount = 1
-    [[embed.footer]]
-        text = "MarriageBot - Made by Kae#0004"
-        amount = 3
-    [[embed.footer]]
-        text = "MarriageBot - Add a vote on Discord Bot List! ({prefix}vote)"
-        amount = 3
-    [[embed.footer]]
-        text = "MarriageBot - Support me on Patreon! ({prefix}donate)"
-        amount = 3
-    [[embed.footer]]
-        text = "MarriageBot - Please help keep me alive ({prefix}donate)"
-        amount = 10
-    [[embed.footer]]
-        text = "MarriageBot - Join the official Discord server! ({prefix}server)"
-        amount = 3
-
-# Used to generate the invite link - client ID only necessary for webserver
-[oauth]
+# UpgradeChat API key data - https://upgrade.chat/developers
+[upgrade_chat]
     client_id = ""
     client_secret = ""
 
-# This is where you can set the prefix for the bot to use
-# 'defaut_prefix' is the prefix that the bot'll use when it joins a server anew
-# 'respect_custom' is whether the bot will respect custom prefixes that've been
-# set or not
-[prefix]
-    default_prefix = "m!"
-    respect_custom = true
-
-# This is where you can set up all of your analytics to be sent to GA
-# 'tracking_id' is the tracking ID for your GA instance
-# 'app_name' is the name of this particular bot - where you want it to say the traffic is from
-# 'document_host' is the URL the traffic should be from - you can put any fake website you want really
-[google_analytics]
-    tracking_id = ""
-    app_name = ""
-    document_host = ""
-
-# Woah it's the payment info
-# This is all the data to do with purchasing MBG
-[payment_info]
-    authorization = ""
+# Statsd analytics port using the aiodogstatsd package
+[statsd]
+    host = "127.0.0.1"
+    port = 8125  # This is the DataDog default, 9125 is the general statsd default
+    [statsd.constant_tags]
+        service = ""  # Put your bot name here - leave blank to disable stats collection
