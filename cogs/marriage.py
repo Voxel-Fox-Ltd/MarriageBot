@@ -1,93 +1,120 @@
 import asyncpg
 from discord.ext import commands
 
-from cogs import utils
-import voxelbotutils
+import voxelbotutils as utils
+
+from cogs import utils as localutils
 
 
-class Marriage(voxelbotutils.Cog):
+class Marriage(utils.Cog):
     """
-    Handles.. well marriage, marry and divorce.
+    Handles marry and divorce commands.
     """
 
-    @voxelbotutils.command(aliases=['marry'])
-    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
-    async def propose(self, ctx:voxelbotutils.Context, *, target:utils.converters.UnblockedMember):
-        """Lets you propose to another Discord user"""
+    @utils.command(aliases=['marry'])
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True, external_emojis=True)
+    async def propose(self, ctx:utils.Context, *, target:utils.converters.UnblockedMember):
+        """
+        Lets you propose to another Discord user.
+        """
 
-        # Variables we're gonna need for later
-        instigator = ctx.author
-        instigator_tree = utils.FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
-        target_tree = utils.FamilyTreeMember.get(target.id, ctx.family_guild_id)
+        # Get the family tree member objects
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
 
-        # Manage output strings
-        text_processor = utils.random_text.RandomText('propose', instigator, target)
-        text = text_processor.process()
-        if text:
-            return await ctx.send(text)
+        # Lock those users
+        re = await self.bot.redis.get_connection()
+        try:
+            lock = await localutils.ProposalLock.lock(re, ctx.author.id, targer.id)
+        except localutils.ProposalInProgress:
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
-        # See if our user is already married
-        if instigator_tree._partner:
-            return await ctx.send(text_processor.instigator_is_unqualified())
+        # See if we're already married
+        if author_tree._partner:
+            await lock.unlock()
+            return await ctx.send(
+                f"Hey, {ctx.author.mention}, you're already married! Try divorcing your partner first \N{FACE WITH ROLLING EYES}",
+                allowed_mentions=localutils.only_mention(ctx.author),
+            )
 
         # See if the *target* is already married
         if target_tree._partner:
-            return await ctx.send(text_processor.target_is_unqualified())
+            await lock.unlock()
+            return await ctx.send(
+                f"Sorry, {ctx.author.mention}, it look like {target.mention} is already married \N{PENSIVE FACE}",
+                allowed_mentions=localutils.only_mention(ctx.author),
+            )
 
         # See if they're already related
         async with ctx.channel.typing():
-            relation = instigator_tree.get_relation(target_tree)
-        if relation and not self.bot.allows_incest(ctx.guild.id):
-            return await ctx.send(text_processor.target_is_family())
+            relation = author_tree.get_relation(target_tree)
+        if relation and localutils.guild_allows_incest(ctx) is False:
+            await lock.unlock()
+            return await ctx.send(
+                f"Woah woah woah, it looks like you guys are already related! You're {target.mention}'s {relation}!",
+                allowed_mentions=localutils.only_mention(ctx.author),
+            )
 
         # Check the size of their trees
+        # TODO I can make this a util because I'm going to use it a couple times
         if ctx.original_author_id not in self.bot.owner_ids:
-            max_family_members = self.bot.get_max_family_members(ctx.guild)
+            max_family_members = localutils.get_max_family_members(ctx)
             async with ctx.channel.typing():
-                if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
-                    return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
+                family_member_count = 0
+                for i in author_tree.span(add_parent=True, expand_upwards=True):
+                    if family_member_count >= max_family_members:
+                        break
+                    family_member_count += 1
+                for i in target_tree.span(add_parent=True, expand_upwards=True):
+                    if family_member_count >= max_family_members:
+                        break
+                    family_member_count += 1
+                if family_member_count >= max_family_members:
+                    await lock.unlock()
+                    return await ctx.send(
+                        f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
+                        allowed_mentions=localutils.only_mention(ctx.author),
+                    )
 
-        # Neither are married, set up the proposal
-        await ctx.send(text_processor.valid_target())
-        await self.bot.proposal_cache.add(instigator, target, 'MARRIAGE')
-
-        # Wait for a response
-        check = utils.AcceptanceCheck(target.id, ctx.channel.id)
+        # Set up the proposal
         try:
-            await check.wait_for_response(self.bot)
-        except utils.AcceptanceCheck.TIMEOUT:
-            return await ctx.send(text_processor.request_timeout(), ignore_error=True)
-
-        # They said no
-        if check.response == 'NO':
-            await self.bot.proposal_cache.remove(instigator, target)
-            return await ctx.send(text_processor.request_denied(), ignore_error=True)
+            result = await localutils.send_proposal_message(
+                ctx, target,
+                f"Hey, {target.mention}, it would make {ctx.author.mention} really happy if you would marry them. What do you say?",
+            )
+        except Exception:
+            result = None
+        if result is None:
+            return await lock.unlock()
 
         # They said yes!
         async with self.bot.database() as db:
             try:
-                await db.marry(instigator, target, ctx.family_guild_id)
+                await db.start_transaction()
+                await db(
+                    "INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3), ($2, $1, $3)",
+                    ctx.author.id, target.id, family_guild_id,
+                )
+                await db.commit_transaction()
             except asyncpg.UniqueViolationError:
-                return await ctx.send("I ran into an error saving your family data - please try again later.")
-        await ctx.send(text_processor.request_accepted(), ignore_error=True)
+                await lock.unlock()
+                return await ctx.send("I ran into an error saving your family data.")
+        await ctx.send(f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!")
 
         # Ping over redis
-        instigator_tree._partner = target.id
+        author_tree._partner = target.id
         target_tree._partner = instigator.id
-        async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+        await re.publish('TreeMemberUpdate', author_tree.to_json())
+        await re.publish('TreeMemberUpdate', target_tree.to_json())
+        await lock.unlock()
 
-        # Remove users from proposal cache
-        await self.bot.proposal_cache.remove(instigator, target)
-
-    @voxelbotutils.command()
-    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
-    async def divorce(self, ctx:voxelbotutils.Context):
+    @utils.command()
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True, external_emojis=True)
+    async def divorce(self, ctx:utils.Context):
         """Divorces you from your current spouse"""
 
         # Variables we're gonna need for later
@@ -119,8 +146,8 @@ class Marriage(voxelbotutils.Cog):
         instigator_tree._partner = None
         target_tree._partner = None
         async with self.bot.redis() as re:
-            await re.publish_json('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish_json('TreeMemberUpdate', target_tree.to_json())
+            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish('TreeMemberUpdate', target_tree.to_json())
 
 
 def setup(bot:voxelbotutils.Bot):

@@ -1,6 +1,7 @@
 import asyncio
 
 import discord
+from discord.ext import commands
 
 
 def only_mention(user:discord.User) -> discord.AllowedMentions:
@@ -37,6 +38,38 @@ class TickPayloadCheckResult(object):
 
     def __bool__(self):
         return self.emoji in self.BOOLEAN_EMOJIS.values()
+
+
+class ProposalInProgress(commands.CommandError):
+    """Raised when a user is currently in a proposal."""
+
+
+class ProposalLock(object):
+
+    def __init__(self, redis, *locks):
+        self.redis = redis
+        self.locks = locks
+
+    @classmethod
+    async def lock(cls, redis, *user_ids):
+        locks = []
+        if any([await redis.lock_manager.is_locked(str(uid))] for i in user_ids):
+            raise ProposalInProgress()
+        for uid in user_ids:
+            locks.append(await redis.lock_manager.lock(str(uid)))
+        return cls(redis, *locks)
+
+    async def unlock(self, *, disconnect_redis:bool=True):
+        for i in self.locks:
+            await self.redis.lock_manager.unlock(i)
+        if disconnect_redis:
+            await self.redis.disconnect()
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *_):
+        await self.unlock()
 
 
 async def send_proposal_message(ctx, user:discord.Member, text:str) -> TickPayloadCheckResult:
