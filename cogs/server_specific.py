@@ -47,6 +47,7 @@ class ServerSpecific(utils.Cog):
         await guild.leave()
 
     @utils.command(hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
@@ -65,6 +66,7 @@ class ServerSpecific(utils.Cog):
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
     @utils.command(hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
@@ -83,6 +85,7 @@ class ServerSpecific(utils.Cog):
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
     @utils.group()
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def incest(self, ctx:utils.Context):
         """
@@ -93,6 +96,7 @@ class ServerSpecific(utils.Cog):
             return await ctx.send_help(ctx.command)
 
     @incest.command(name="allow", aliases=['enable', 'on'])
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
@@ -111,6 +115,7 @@ class ServerSpecific(utils.Cog):
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
     @incest.command(name="disallow", aliases=['disable', 'off'])
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
     @commands.bot_has_permissions(send_messages=True)
@@ -129,6 +134,7 @@ class ServerSpecific(utils.Cog):
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
     @utils.command(aliases=['ssf'])
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def gold(self, ctx:utils.Context):
         """
