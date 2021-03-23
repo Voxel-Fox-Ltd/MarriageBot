@@ -62,7 +62,7 @@ class SimulationCommands(utils.Cog):
         if user == ctx.author:
             return await ctx.send("*You hug yourself... and start crying.*")
         image_url = await self.get_reaction_gif(ctx)
-        await ctx.send(f"*Hugs {user.mention}*", image_url=image_url)
+        await ctx.send(f"*Hugs {user.mention}.*", image_url=image_url)
 
     @utils.command(aliases=['smooch'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -73,29 +73,10 @@ class SimulationCommands(utils.Cog):
         Kisses a mentioned user.
         """
 
-        # Check if they're themself
         if user == ctx.author:
             return await ctx.send("How would you even manage to do that?")
-
-        # Check if they're related
-        x = localutils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
-        y = localutils.FamilyTreeMember.get(user.id, ctx.family_guild_id)
-        async with ctx.channel.typing():
-            relationship = x.get_relation(y)
-
-        # Generate responses
-        image_url = None
-        if relationship is None or relationship.casefold() == 'partner' or self.bot.allows_incest(ctx.guild.id):
-            responses = [
-                f"*Kisses {user.mention}*"
-            ]
-            image_url = await self.get_reaction_gif(ctx)
-        else:
-            responses = [
-                "Woah woah, you two are family!",
-                "You two are related but go off I guess.",
-            ]
-        await ctx.send(random.choice(responses), image_url=image_url)
+        image_url = await self.get_reaction_gif(ctx)
+        await ctx.send(f"*Kisses {user.mention}.*", image_url=image_url)
 
     @utils.command(aliases=['smack'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -108,7 +89,7 @@ class SimulationCommands(utils.Cog):
         if user == ctx.author:
             return await ctx.send("*You slapped yourself... for some reason.*")
         image_url = await self.get_reaction_gif(ctx)
-        await ctx.send(f"*Slaps {user.mention}*", image_url=image_url)
+        await ctx.send(f"*Slaps {user.mention}.*", image_url=image_url)
 
     @utils.command()
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -120,7 +101,6 @@ class SimulationCommands(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send("*You spilled coffee all over yourself... for some reason.*")
-
         if user is None:
             responses = [
                 "You make coffee.",
@@ -130,7 +110,7 @@ class SimulationCommands(utils.Cog):
                 "You made coffee. Congrats.",
             ]
             return await ctx.send(random.choice(responses))
-        await ctx.send(f"*Gives coffee to {user.mention}*")
+        await ctx.send(f"*Gives coffee to {user.mention}.*")
 
     @utils.command()
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -143,7 +123,7 @@ class SimulationCommands(utils.Cog):
         if user == ctx.author:
             return await ctx.send("*You punched yourself... for some reason.*")
         image_url = await self.get_reaction_gif(ctx)
-        await ctx.send(f"*Punches {user.mention} right in the nose*", image_url=image_url)
+        await ctx.send(f"*Punches {user.mention} right in the nose.*", image_url=image_url)
 
     @utils.command(hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -155,7 +135,7 @@ class SimulationCommands(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send("*You gave yourself a cookie.*")
-        await ctx.send(f"*Gives {user.mention} a cookie*")
+        await ctx.send(f"*Gives {user.mention} a cookie.*")
 
     @utils.command(aliases=['nunget', 'nuggie'], hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -191,7 +171,7 @@ class SimulationCommands(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send("*You gave yourself tea.*")
-        await ctx.send(f"*Gives {user.mention} tea*")
+        await ctx.send(f"*Gives {user.mention} tea.*")
 
     @utils.command(aliases=['dumpster'], hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -202,8 +182,8 @@ class SimulationCommands(utils.Cog):
         """
 
         if user == ctx.author:
-            return await ctx.send("*You climb right into the trash can, where you belong*")
-        await ctx.send(f"*Throws {user.mention} into the dumpster*")
+            return await ctx.send("*You climb right into the trash can, where you belong.*")
+        await ctx.send(f"*Throws {user.mention} into the dumpster.*")
 
     @utils.command(hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -342,7 +322,7 @@ class SimulationCommands(utils.Cog):
 
         if user == ctx.author:
             return await ctx.send("*You bought some choclate.*")
-        await ctx.send(f"*Gives {user.mention} chocolate*")
+        await ctx.send(f"*Gives {user.mention} chocolate.*")
 
     @utils.command(hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
@@ -351,10 +331,9 @@ class SimulationCommands(utils.Cog):
         """
         Waves to someone
         """
-        if user is None:
-            return await ctx.send("*You wave to yourself...consider getting some friends.*")
-        if user == ctx.author:
-            return await ctx.send("*You wave to yourself...consider getting some friends.*")
+
+        if user is None or user == ctx.author:
+            return await ctx.send("*You wave to yourself... consider getting some friends.*")
         await ctx.send(f"*Waves to {user.mention} :wave:")
 
     @utils.command(hidden=True)
@@ -366,8 +345,8 @@ class SimulationCommands(utils.Cog):
         """
 
         if user == ctx.author:
-            return await ctx.send("*You eat an apple*")
-        await ctx.send(f"*Gives {user.mention} an apple*")
+            return await ctx.send("*You eat an apple.*")
+        await ctx.send(f"*Gives {user.mention} an apple.*")
 
 
 def setup(bot:utils.Bot):
