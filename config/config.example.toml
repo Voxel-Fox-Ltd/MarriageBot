@@ -69,7 +69,7 @@ is_server_specific = false
     enabled = true
     client_id = "468281173072805889"  #  If not set then will use the bot's ID, which is correct as of around 2017 I think
     scope = "bot applications.commands"  # The scope that will be generated with the invite link, space seperated (applications.commands for slash)
-    permissions = [ "send_messages", "attach_files", "embed_links", ]  # args here are passed directly to discord.Permissions as True
+    permissions = [ "send_messages", "attach_files", "embed_links", "add_reactions", "external_emojis"]  # args here are passed directly to discord.Permissions as True
 
 # This data is passed directly over to asyncpg.connect()
 [database]
