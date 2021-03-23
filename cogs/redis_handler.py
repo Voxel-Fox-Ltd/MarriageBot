@@ -14,9 +14,9 @@ class RedisHandler(utils.Cog):
         self.update_max_children.start()
         self.update_gifs_enabled.start()
         self.send_user_message.start()
-        self.redis_handler_ProposalCacheAdd.start()
-        self.redis_handler_ProposalCacheRemove.start()
-        self.redis_handler_TreeMemberUpdate.start()
+        self.proposal_cache_add.start()
+        self.proposal_cache_remove.start()
+        self.tree_member_update.start()
 
     def cog_unload(self):
         self.update_guild_prefix.stop()
@@ -25,9 +25,9 @@ class RedisHandler(utils.Cog):
         self.update_max_children.stop()
         self.update_gifs_enabled.stop()
         self.send_user_message.stop()
-        self.redis_handler_ProposalCacheAdd.stop()
-        self.redis_handler_ProposalCacheRemove.stop()
-        self.redis_handler_TreeMemberUpdate.stop()
+        self.proposal_cache_add.stop()
+        self.proposal_cache_remove.stop()
+        self.tree_member_update.stop()
 
     @utils.redis_channel_handler("UpdateGuildPrefix")
     def update_guild_prefix(self, payload):
@@ -93,15 +93,15 @@ class RedisHandler(utils.Cog):
             pass
 
     @utils.redis_channel_handler("ProposalCacheAdd")
-    def redis_handler_ProposalCacheAdd(self, payload):
+    def proposal_cache_add(self, payload):
         self.bot.proposal_cache.raw_add(**payload)
 
     @utils.redis_channel_handler("ProposalCacheRemove")
-    def redis_handler_ProposalCacheRemove(self, payload):
+    def proposal_cache_remove(self, payload):
         self.bot.proposal_cache.raw_remove(*payload)
 
     @utils.redis_channel_handler("TreeMemberUpdate")
-    def redis_handler_TreeMemberUpdate(self, payload):
+    def tree_member_update(self, payload):
         localutils.FamilyTreeMember(**payload)
 
 

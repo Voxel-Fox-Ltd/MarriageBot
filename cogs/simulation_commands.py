@@ -11,7 +11,8 @@ from cogs import utils as localutils
 
 class SimulationCommands(utils.Cog):
     """
-    This cog is pretty much just a command and a response, it handles the GIF commands (m!kiss, slap, etc), but otherwise this is just some fun commands.
+    This cog is pretty much just a command and a response, it handles the GIF commands (m!kiss, slap, etc),
+    but otherwise this is just some fun commands.
     """
 
     async def get_reaction_gif(self, ctx:utils.Context, reaction_type:str=None, *, nsfw:bool=False) -> typing.Optional[str]:
@@ -128,7 +129,7 @@ class SimulationCommands(utils.Cog):
                 "This is awkward... You forgot to pay the water bill.",
                 "You made coffee. Congrats.",
             ]
-            return await ctx.send(random.choice(responses))   
+            return await ctx.send(random.choice(responses))
         await ctx.send(f"*Gives coffee to {user.mention}*")
 
     @utils.command()
