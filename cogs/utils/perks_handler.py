@@ -20,6 +20,28 @@ class MarriageBotPerks(object):
         self.tree_command_cooldown = tree_command_cooldown
 
 
+TIER_THREE = MarriageBotPerks(
+    max_children=20,
+    can_run_stupidtree=True,
+    can_run_disownall=True,
+    tree_command_cooldown=5,
+)
+TIER_TWO = MarriageBotPerks(
+    max_children=15,
+    can_run_stupidtree=True,
+    can_run_disownall=True,
+    tree_command_cooldown=15,
+)
+TIER_ONE = MarriageBotPerks(
+    max_children=10,
+    can_run_disownall=True,
+    tree_command_cooldown=15,
+)
+TIER_VOTER = MarriageBotPerks(
+    tree_command_cooldown=30,
+)
+
+
 async def get_marriagebot_perks(bot:utils.Bot, user_id:int) -> MarriageBotPerks:
     """
     Get the specific perks that any given user has.
@@ -34,12 +56,13 @@ async def get_marriagebot_perks(bot:utils.Bot, user_id:int) -> MarriageBotPerks:
 
     # Override stuff for owners
     if user_id in bot.owner_ids:
-        return MarriageBotPerks(
-            max_children=30,
-            can_run_stupidtree=True,
-            can_run_disownall=True,
-            tree_command_cooldown=5,
-        )
+        return TIER_THREE
+
+    # Check if they have a purchase
+    async with bot.database() as db:
+        rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
+    if rows:
+        return TIER_THREE
 
     # Check UpgradeChat purchases
     try:
@@ -49,33 +72,17 @@ async def get_marriagebot_perks(bot:utils.Bot, user_id:int) -> MarriageBotPerks:
     purchased_item_names = []
     [purchased_item_names.extend(i.order_item_names) for i in purchases]
     if "MarriageBot Subscription Tier 3" in purchased_item_names:
-        return MarriageBotPerks(
-            max_children=20,
-            can_run_stupidtree=True,
-            can_run_disownall=True,
-            tree_command_cooldown=5,
-        )
+        return TIER_THREE
     elif "MarriageBot Subscription Tier 2" in purchased_item_names:
-        return MarriageBotPerks(
-            max_children=15,
-            can_run_stupidtree=True,
-            can_run_disownall=True,
-            tree_command_cooldown=15,
-        )
+        return TIER_TWO
     elif "MarriageBot Subscription Tier 1" in purchased_item_names:
-        return MarriageBotPerks(
-            max_children=10,
-            can_run_disownall=True,
-            tree_command_cooldown=15,
-        )
+        return TIER_ONE
 
     # Check Top.gg votes
     try:
         data = await asyncio.wait_for(bot.get_user_topgg_vote(user_id), timeout=3)
         if data:
-            return MarriageBotPerks(
-                tree_command_cooldown=30,
-            )
+            return TIER_VOTER
     except asyncio.TimeoutError:
         pass
 
