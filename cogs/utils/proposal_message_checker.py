@@ -72,7 +72,7 @@ class ProposalLock(object):
         await self.unlock()
 
 
-async def send_proposal_message(ctx, user:discord.Member, text:str) -> TickPayloadCheckResult:
+async def send_proposal_message(ctx, user:discord.Member, text:str, *, timeout_message:str=None, cancel_message:str=None) -> TickPayloadCheckResult:
     """
     Send a proposal message out to the user to see if they want to say yes or no.
 
@@ -84,6 +84,9 @@ async def send_proposal_message(ctx, user:discord.Member, text:str) -> TickPaylo
     Returns:
         TickPayloadCheckResult: The resulting reaction that either the user or the author gave.
     """
+
+    timeout_message = timeout_message or f"Sorry, {ctx.author.mention}; your proposal to {user.mention} timed out - they didn't respond in time :<"
+    cancel_message = cancel_message or f"Alright, {ctx.author.mention}; your proposal to {user.mention} has been cancelled.",
 
     # See if they want to say yes
     message = await ctx.send(text)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
@@ -102,20 +105,14 @@ async def send_proposal_message(ctx, user:discord.Member, text:str) -> TickPaylo
             return False
         payload = await ctx.bot.wait_for("raw_reaction_add", check=check, timeout=60)
     except asyncio.TimeoutError:
-        await ctx.send(
-            f"Sorry, {ctx.author.mention}; your proposal to {user.mention} timed out - they didn't respond in time :<",
-            allowed_mentions=only_mention(ctx.author)
-        )
+        await ctx.send(timeout_message, allowed_mentions=only_mention(ctx.author))
         return None
 
     # Check what they said
     result = TickPayloadCheckResult.from_payload(payload)
     if not result.is_tick:
         if payload.user_id == ctx.author.id:
-            await ctx.send(
-                f"Alright, {ctx.author.mention}; your proposal to {user.mention} has been cancelled.",
-                allowed_mentions=only_mention(ctx.author)
-            )
+            await ctx.send(cancel_message, allowed_mentions=only_mention(ctx.author))
             return None
         await ctx.send(f"Sorry, {ctx.author.mention}; they said no :<")
         return None

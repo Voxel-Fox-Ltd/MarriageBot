@@ -105,7 +105,7 @@ class Marriage(utils.Cog):
 
         # Ping over redis
         author_tree._partner = target.id
-        target_tree._partner = instigator.id
+        target_tree._partner = ctx.author.id
         await re.publish('TreeMemberUpdate', author_tree.to_json())
         await re.publish('TreeMemberUpdate', target_tree.to_json())
         await lock.unlock()
@@ -115,38 +115,45 @@ class Marriage(utils.Cog):
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True, external_emojis=True)
     async def divorce(self, ctx:utils.Context):
-        """Divorces you from your current spouse"""
+        """
+        Divorces you from your current partner.
+        """
 
-        # Variables we're gonna need for later
-        instigator = ctx.author
-        instigator_tree = utils.FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
+        # Get the family tree member objects
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        author_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=ctx.family_guild_id)
 
-        # Manage output strings
-        text_processor = utils.random_text.RandomText('divorce', instigator, self.bot.get_user(instigator_tree._partner))
+        # See if they're married
+        target_tree = author_tree.partner
+        if not target_tree:
+            return await ctx.send("It doens't look like you're married yet!")
 
-        # See if they have a partner to divorce
-        if instigator_tree._partner is None:
-            await ctx.send(text_processor.instigator_is_unqualified())
+        # See if they're sure
+        try:
+            result = await localutils.send_proposal_message(
+                ctx, ctx.author,
+                f"Are you sure you want to divorce your partner, {ctx.author.mention}?",
+                timeout_message=f"Timed out making sure you want to divorce, {ctx.author.mention} :<",
+                cancel_message="Alright, I've cancelled your divorce!",
+            )
+        except Exception:
+            result = None
+        if result is None:
             return
-
-        # They have a partner - fetch their data
-        target_tree = instigator_tree.partner
 
         # Remove them from the database
         async with self.bot.database() as db:
             await db(
-                'DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3',
-                instigator.id,
-                target_tree.id,
-                ctx.family_guild_id
+                """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
+                ctx.author.id, target_tree.id, family_guild_id,
             )
         await ctx.send(text_processor.valid_target())
 
         # Ping over redis
-        instigator_tree._partner = None
+        author_tree._partner = None
         target_tree._partner = None
         async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
+            await re.publish('TreeMemberUpdate', author_tree.to_json())
             await re.publish('TreeMemberUpdate', target_tree.to_json())
 
 
