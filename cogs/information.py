@@ -10,6 +10,12 @@ from discord.ext import commands
 from cogs import utils as localutils
 
 
+class TreeCommandCooldown(utils.cooldown.Cooldown):
+    async def predicate(self, ctx):
+        perks = await localutils.get_marriagebot_perks(ctx.bot, ctx.author.id)
+        self.per = perks.tree_command_cooldown
+
+
 class Information(utils.Cog):
     """
     Shows information about the given user's family.
@@ -175,7 +181,7 @@ class Information(utils.Cog):
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['tree', 't'])
-    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def familytree(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -189,7 +195,7 @@ class Information(utils.Cog):
             raise
 
     @utils.command(aliases=['st', 'stupidtree'])
-    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @localutils.checks.has_donator_perks("stupidtree_command")
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
