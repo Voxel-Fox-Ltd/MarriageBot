@@ -16,7 +16,7 @@ class Information(utils.Cog):
     """
 
     @utils.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def partner(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -48,16 +48,15 @@ class Information(utils.Cog):
             timestamp = None
 
         # Output
+        text = f"**{user_name}** is currently married to **{partner_name}** (`{user_info._partner}`). "
         if user_id == ctx.author.id:
             text = f"You're currently married to **{partner_name}** (`{user_info._partner}`). "
-        else:
-            text = f"**{user_name}** is currently married to **{partner_name}** (`{user_info._partner}`). "
         if timestamp:
             text += f"{'You' if user_id == ctx.author.id else 'They'}'ve been married since {timestamp.strftime('%B %d %Y')}."
         await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['child', 'kids'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def children(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -72,35 +71,19 @@ class Information(utils.Cog):
 
         # Get user's children
         if len(user_info._children) == 0:
+            output = f"**{user_name}** has no children right now."
             if user_id == ctx.author.id:
                 output = f"You have no children right now."
-            else:
-                output = f"**{user_name}** has no children right now."
         else:
             output = f"**{user_name}** has {len(user_info._children)} {'child' len(user_info._children) == 1 else 'children'}:\n"
             children = [(await localutils.DiscordNameManager.fetch_name_by_id(self.bot, i), i) for i in user_info._children]
             output += "\n".join([f"* **{i[0]}** (`{i[1]}`)" for i in children])
 
-        # # Do they have a partner?
-        # if user_info._partner is None:
-        #     return await ctx.send(output)
-
-        # # Get their partner's children
-        # user_info = user_info.partner
-        # user_name = await self.bot.get_name(user_info.id)
-        # if len(user_info._children) == 0:
-        #     output += f"\n\nTheir partner, `{user_name}`, has no children right now."
-        # else:
-        #     ren = {False:"ren", True:""}[len(user_info._children) == 1]
-        #     output += f"\n\nTheir partner, `{user_name}`, has `{len(user_info._children)}` child{ren}: "
-        #     children = [(await self.bot.get_name(i), i) for i in user_info._children]
-        #     output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
-
         # Return all output
         await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['parents'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def parent(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -121,63 +104,78 @@ class Information(utils.Cog):
         parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._parent)
 
         # Output parent
+        output = f"**{user_name}**'s parent is **{parent_name}** (`{user_info._parent}`)."
         if user_id == ctx.author.id:
             output = f"Your parent is `{parent_name}` (`{user_info._parent}`)."
-        else:
-            output = f"**{user_name}**'s parent is **{parent_name}** (`{user_info._parent}`)."
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
-    @utils.command(aliases=['relation'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
-    async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:utils.converters.UserID=None):
-        """Gets the relationship between the two specified users"""
-
-        # Check against themselves
-        if (user == ctx.author and other is None) or (user == other):
-            return await ctx.send("Unsurprisingly, you're pretty closely related to yourself.")
-        await ctx.channel.trigger_typing()
-
-        # Get their relation
-        if other is None:
-            user, other = ctx.author.id, user
-        user_tree = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
-        other_tree = localutils.FamilyTreeMember.get(other, ctx.family_guild_id)
-        async with ctx.channel.typing():
-            relation = user_tree.get_relation(other_tree)
-
-        # Get names
-        user_name = await self.bot.get_name(user)
-        other_name = await self.bot.get_name(other)
-
-        # Output
-        if relation is None:
-            return await ctx.send(f"`{user_name}` is not related to `{other_name}`.")
-        await ctx.send(f"`{other_name}` is `{user_name}`'s {relation}.")
-
     @utils.command(aliases=['treesize', 'fs', 'ts'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def familysize(self, ctx:utils.Context, user:utils.converters.UserID=None):
-        """Gives you the size of your family tree"""
+        """
+        Gives you the size of your family tree.
+        """
 
-        # Get user info
-        user = user or ctx.author.id
-        user_tree = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        # Get the user's info
+        user_id = user or ctx.author.id
+        user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
+        user_info = localutils.FamilyTreeMember.get(user_id, localutils.get_family_guild_id(ctx))
 
         # Get size
         async with ctx.channel.typing():
             size = user_tree.family_member_count
 
         # Output
-        username = await self.bot.get_name(user)
-        await ctx.send(f"There are `{size}` people in `{username}`'s family tree.")
+        output = f"There are {size} people in **{user_name}**'s family tree."
+        if user_id == ctx.author.id:
+            output = f"There are {size} people in your family tree."
+        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
+    @utils.command(aliases=['relation'])
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
+    async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:utils.converters.UserID=None):
+        """
+        Gets the relationship between the two specified users.
+        """
+
+        # Fix up the arguments
+        if other is None:
+            user_id, other_id = ctx.author.id, user
+        else:
+            user_id, other_id = user, other
+
+        # See if they're the same person
+        if user_id == other_id:
+            if user_id == ctx.author.id:
+                return await ctx.send("Unsurprisingly, you're pretty closely related to yourself.")
+            return await ctx.send("Unsurprisingly, they're pretty closely related to themselves.")
+
+        # Get their relation
+        user_info, other_info = localutils.FamilyTreeMember.get_multiple(user_id, other_id, localutils.get_family_guild_id(ctx))
+        async with ctx.channel.typing():
+            relation = user_tree.get_relation(other_tree)
+
+        # Get names
+        user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
+        other_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, other_id)
+
+        # Output
+        if relation is None:
+            output = f"**{user_name}** is not related to **{other_name}**."
+            if user_id == ctx.author.id:
+                output = f"You're is not related to **{other_name}**."
+        else:
+            output = f"**{other_name}** is **{user_name}**'s {relation}."
+            if user_id == ctx.author.id:
+                output = f"**{other_name}** is your {relation}."
+        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['tree', 't'])
-    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 60, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def familytree(self, ctx:utils.Context, root:utils.converters.UserID=None):
@@ -193,7 +191,7 @@ class Information(utils.Cog):
             raise e
 
     @utils.command(aliases=['st'])
-    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 60, commands.BucketType.user)
     @localutils.checks.has_donator_perks("stupidtree_command")
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)

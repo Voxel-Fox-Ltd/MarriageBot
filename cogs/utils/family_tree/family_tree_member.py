@@ -175,7 +175,10 @@ class FamilyTreeMember(object):
         Returns the number of people in the family.
         """
 
-        return len(self.span(add_parent=True, expand_upwards=True))
+        family_member_count = 0
+        for i in self.span(add_parent=True, expand_upwards=True):
+            family_member_count += 1
+        return family_member_count
 
     def span(self, people_list:set=None, add_parent:bool=False, expand_upwards:bool=False) -> typing.Iterable['FamilyTreeMember']:
         """
