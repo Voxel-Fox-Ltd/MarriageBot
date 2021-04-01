@@ -293,29 +293,45 @@ class Parentage(utils.Cog):
         Disowns all of your children.
         """
 
-        # Get their children
-        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
-        children = user_tree.children[:]
-        if not children:
+        # Get the family tree member objects
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=ctx.family_guild_id)
+        child_trees = user_tree.children.copy()
+        if not child_trees:
             return await ctx.send("You don't have any children to disown .-.")
 
+        # See if they're sure
+        try:
+            result = await localutils.send_proposal_message(
+                ctx, ctx.author,
+                f"Are you sure you want to disown all your children, {ctx.author.mention}?",
+                timeout_message=f"Timed out making sure you want to disownall, {ctx.author.mention} :<",
+                cancel_message="Alright, I've cancelled your disownall!",
+            )
+        except Exception:
+            result = None
+        if result is None:
+            return
+
         # Disown em
-        for child in children:
+        for child in child_trees:
             child._parent = None
         user_tree._children = []
 
         # Save em
         async with self.bot.database() as db:
-            for child in children:
-                await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3', user_tree.id, child.id, user_tree._guild_id)
+            await db(
+                """DELETE FROM parents WHERE parent_id=$1 AND guild_id=$2 AND child_id=ANY($3::BIGINT[])""",
+                ctx.author.id, family_guild_id, [child.id for child in child_trees],
+            )
 
         # Redis em
         async with self.bot.redis() as re:
-            for person in children + [user_tree]:
+            for person in child_trees + [user_tree]:
                 await re.publish('TreeMemberUpdate', person.to_json())
 
         # Output to user
-        await ctx.send("You've sucessfully disowned all of your children.")
+        await ctx.send("You've sucessfully disowned all of your children :c")
 
 
 def setup(bot:utils.Bot):
