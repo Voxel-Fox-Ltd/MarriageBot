@@ -18,11 +18,9 @@ class Parentage(utils.Cog):
         Get the maximum amount of children a given member can have.
         """
 
-        # TODO this method
-
         # See how many children they're allowed with Gold
         gold_children_amount = 0
-        if self.bot.config.get('server_specific', False):
+        if self.bot.config.get('is_server_specific', False):
             guild_max_children = self.bot.guild_settings[guild.id]['max_children']
             if guild_max_children:
                 gold_children_amount = max([
@@ -30,7 +28,7 @@ class Parentage(utils.Cog):
                 ])
 
         # See how many children they're allowed normally (in regard to Patreon tier)
-        marriagebot_perks = await localutils.checks.get_marriagebot_perks(self.bot, user.id)
+        marriagebot_perks = await localutils.get_marriagebot_perks(self.bot, user.id)
         normal_children_amount = marriagebot_perks.max_children
 
         # Return the largest amount of children they've been assigned that's UNDER the global max children as set in the config
@@ -44,7 +42,7 @@ class Parentage(utils.Cog):
         ])
 
     @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def makeparent(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -53,11 +51,11 @@ class Parentage(utils.Cog):
         """
 
         # Variables we're gonna need for later
-        instigator = ctx.author
-        instigator_tree, target_tree = localutils.FamilyTreeMember.get_multiple(instigator.id, target.id, guild_id=ctx.family_guild_id)
+        ctx.author = ctx.author
+        instigator_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
 
         # Manage output strings
-        text_processor = localutils.random_text.RandomText('makeparent', instigator, target)
+        text_processor = localutils.random_text.RandomText('makeparent', ctx.author, target)
         text = text_processor.process()
         if text:
             return await ctx.send(text)
@@ -88,7 +86,7 @@ class Parentage(utils.Cog):
         # Valid request - ask the other person
         if not target.bot:
             await ctx.send(text_processor.valid_target())
-        await self.bot.proposal_cache.add(instigator, target, 'MAKEPARENT')
+        await self.bot.proposal_cache.add(ctx.author, target, 'MAKEPARENT')
         check = utils.AcceptanceCheck(target.id, ctx.channel.id)
         try:
             await check.wait_for_response(self.bot)
@@ -103,14 +101,14 @@ class Parentage(utils.Cog):
         # They said yes
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (child_id, parent_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
+                await db('INSERT INTO parents (child_id, parent_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', ctx.author.id, target.id, ctx.family_guild_id, dt.utcnow())
             except asyncpg.UniqueViolationError:
                 return await ctx.send("I ran into an error saving your family data - please try again later.")
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
         # Cache
         instigator_tree._parent = target.id
-        target_tree._children.append(instigator.id)
+        target_tree._children.append(ctx.author.id)
 
         # Ping em off over redis
         async with self.bot.redis() as re:
@@ -118,10 +116,10 @@ class Parentage(utils.Cog):
             await re.publish('TreeMemberUpdate', target_tree.to_json())
 
         # Uncache
-        await self.bot.proposal_cache.remove(instigator, target)
+        await self.bot.proposal_cache.remove(ctx.author, target)
 
     @utils.command()
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def adopt(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -205,7 +203,7 @@ class Parentage(utils.Cog):
         await ctx.send(text_processor.request_accepted(), ignore_error=True)
 
     @utils.command(aliases=['abort'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
@@ -237,7 +235,7 @@ class Parentage(utils.Cog):
             await re.publish('TreeMemberUpdate', target_tree.to_json())
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def emancipate(self, ctx:utils.Context):
@@ -245,33 +243,34 @@ class Parentage(utils.Cog):
         Removes your parent.
         """
 
-        # Variables we're gonna need for later
-        instigator = ctx.author
-        instigator_tree = localutils.FamilyTreeMember.get(instigator.id, ctx.family_guild_id)
-
-        # Manage output strings
-        text_processor = utils.random_text.RandomText('emancipate', ctx.author, self.bot.get_user(instigator_tree._parent))
+        # Get the family tree member objects
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=ctx.family_guild_id)
 
         # Make sure they're the child of the instigator
-        if not instigator_tree._parent:
-            return await ctx.send(text_processor.instigator_is_unqualified())
-
-        # They do have a parent, yes
-        target_tree = instigator_tree.parent
+        parent_tree = user_tree.parent
+        if not parent_tree:
+            return await ctx.send("You don't have a parent right now :<")
 
         # Remove family caching
-        instigator_tree._parent = None
-        target_tree._children.remove(instigator.id)
+        user_tree._parent = None
+        parent_tree._children.remove(ctx.author.id)
 
-        # Ping em off over redis
+        # Ping them off over reids
         async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish('TreeMemberUpdate', target_tree.to_json())
+            await re.publish('TreeMemberUpdate', user_tree.to_json())
+            await re.publish('TreeMemberUpdate', parent_tree.to_json())
 
-        # Oh hey they are - remove from database
+        # Remove their relationship from the database
         async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3', target_tree.id, instigator.id, instigator_tree._guild_id)
-        await ctx.send(text_processor.valid_target())
+            await db(
+                """DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3""",
+                parent_tree.id, ctx.author.id, family_guild_id,
+            )
+
+        # And we're done
+        parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
+        return await ctx.send(f"You no longer have **{parent_name}** as a parent :c")
 
     @utils.command()
     @localutils.checks.has_donator_perks("disownall_command")
