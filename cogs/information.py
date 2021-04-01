@@ -68,7 +68,7 @@ class Information(utils.Cog):
         # Get the user's info
         user_id = user or ctx.author.id
         user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
-        user_info = localutils.FamilyTreeMember.get(user, localutils.get_family_guild_id(ctx))
+        user_info = localutils.FamilyTreeMember.get(user_id, localutils.get_family_guild_id(ctx))
 
         # Get user's children
         if len(user_info._children) == 0:
@@ -104,16 +104,28 @@ class Information(utils.Cog):
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def parent(self, ctx:utils.Context, user:utils.converters.UserID=None):
-        """Tells you who someone's parent is"""
+        """
+        Tells you who someone's parent is.
+        """
 
-        user = user or ctx.author.id
-        user_info = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
-        user_name = await self.bot.get_name(user)
+        # Get the user's info
+        user_id = user or ctx.author.id
+        user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
+        user_info = localutils.FamilyTreeMember.get(user_id, localutils.get_family_guild_id(ctx))
+
+        # Make sure they have a parent
         if user_info._parent is None:
-            await ctx.send(f"`{user_name}` has no parent.")
-            return
-        name = await self.bot.get_name(user_info._parent)
-        await ctx.send(f"`{user_name}`'s parent is `{name}` (`{user_info._parent}`).")
+            if user_id == ctx.author.id:
+                return await ctx.send("You have no parent.")
+            return await ctx.send(f"**{user_name}** has no parent.", allowed_mentions=discord.AllowedMentions.none())
+        parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._parent)
+
+        # Output parent
+        if user_id == ctx.author.id:
+            output = f"Your parent is `{parent_name}` (`{user_info._parent}`)."
+        else:
+            output = f"**{user_name}**'s parent is **{parent_name}** (`{user_info._parent}`)."
+        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['relation'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
