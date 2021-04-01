@@ -52,7 +52,7 @@ class DiscordNameManager(object):
         return name
 
     @classmethod
-    async def get_name(cls, bot:utils.Bot, user_id:int) -> str:
+    async def fetch_name_by_id(cls, bot:utils.Bot, user_id:int) -> str:
         """
         Get the name for a user given their ID.
 
@@ -74,4 +74,4 @@ class DiscordNameManager(object):
             return v.name
 
         # Grab a new name from the cache for them
-        return v.fetch_name(bot)
+        return await v.fetch_name(bot)

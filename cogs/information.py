@@ -2,62 +2,68 @@ import asyncio
 import typing
 import io
 from datetime import datetime as dt
-import voxelbotutils
+import voxelbotutils as utils
 
 import discord
 from discord.ext import commands
 
-from cogs import utils
+from cogs import utils as localutils
 
 
-class Information(voxelbotutils.Cog):
+class Information(utils.Cog):
     """
-    Name explains it, gives you... information on the user's family (this also contains the tree command)
+    Shows information about the given user's family.
     """
 
-    @voxelbotutils.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
-    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
+    @utils.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def partner(self, ctx:voxelbotutils.Context, user:typing.Optional[voxelbotutils.converters.UserID]):
-        """Tells you who a user is married to"""
+    async def partner(self, ctx:utils.Context, user:utils.converters.UserID=None):
+        """
+        Tells you who a user is married to.
+        """
 
         # Get the user's info
-        user = user or ctx.author.id
-        user_name = await self.bot.get_name(user)
-        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_id = user or ctx.author.id
+        user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
+        user_info = localutils.FamilyTreeMember.get(user, localutils.get_family_guild_id(ctx))
 
         # Check they have a partner
         if user_info._partner is None:
-            return await ctx.send(f"`{user_name}` is not currently married.")
-        partner_name = await self.bot.get_name(user_info._partner)
+            if user_id == ctx.author.id:
+                return await ctx.send(f"You're not currently married.", allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(f"**{user_name}** is not currently married.", allowed_mentions=discord.AllowedMentions.none())
+        partner_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._partner)
 
         # Get timestamp
         async with self.bot.database() as db:
-            if self.bot.config.get('server_specific', False):
+            if self.bot.config.get('is_server_specific', False):
                 data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id<>0", user)
             else:
                 data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", user)
         try:
             timestamp = data[0]['timestamp']
-        except IndexError:
+        except Exception:
             timestamp = None
 
         # Output
-        if timestamp:
-            await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`). They've been married since {timestamp.strftime('%B %d %Y')}.")
+        if user_id == ctx.author.id:
+            text = f"You're currently married to **{partner_name}** (`{user_info._partner}`). "
         else:
-            await ctx.send(f"`{user_name}` is currently married to `{partner_name}` (`{user_info._partner}`).")
+            text = f"**{user_name}** is currently married to **{partner_name}** (`{user_info._partner}`). "
+        if timestamp:
+            text += f"{'You' if user_id == ctx.author.id else 'They'}'ve been married since {timestamp.strftime('%B %d %Y')}."
+        await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
 
-    @voxelbotutils.command(aliases=['child', 'kids'])
-    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
+    @utils.command(aliases=['child', 'kids'])
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def children(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID=None):
-        """Tells you who a user's children are"""
-
-        # Setup output variable
-        output = ''
+    async def children(self, ctx:utils.Context, user:utils.converters.UserID=None):
+        """
+        Tells you who a user's children are.
+        """
 
         # Get the user's info
         user = user or ctx.author.id
@@ -91,15 +97,15 @@ class Information(voxelbotutils.Cog):
         # Return all output
         await ctx.send(output)
 
-    @voxelbotutils.command(aliases=['parents'])
-    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
+    @utils.command(aliases=['parents'])
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def parent(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID=None):
+    async def parent(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Tells you who someone's parent is"""
 
         user = user or ctx.author.id
-        user_info = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_info = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
         user_name = await self.bot.get_name(user)
         if user_info._parent is None:
             await ctx.send(f"`{user_name}` has no parent.")
@@ -107,11 +113,11 @@ class Information(voxelbotutils.Cog):
         name = await self.bot.get_name(user_info._parent)
         await ctx.send(f"`{user_name}`'s parent is `{name}` (`{user_info._parent}`).")
 
-    @voxelbotutils.command(aliases=['relation'])
-    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
+    @utils.command(aliases=['relation'])
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def relationship(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID, other:voxelbotutils.converters.UserID=None):
+    async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:utils.converters.UserID=None):
         """Gets the relationship between the two specified users"""
 
         # Check against themselves
@@ -122,8 +128,8 @@ class Information(voxelbotutils.Cog):
         # Get their relation
         if other is None:
             user, other = ctx.author.id, user
-        user_tree = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
-        other_tree = utils.FamilyTreeMember.get(other, ctx.family_guild_id)
+        user_tree = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        other_tree = localutils.FamilyTreeMember.get(other, ctx.family_guild_id)
         async with ctx.channel.typing():
             relation = user_tree.get_relation(other_tree)
 
@@ -136,16 +142,16 @@ class Information(voxelbotutils.Cog):
             return await ctx.send(f"`{user_name}` is not related to `{other_name}`.")
         await ctx.send(f"`{other_name}` is `{user_name}`'s {relation}.")
 
-    @voxelbotutils.command(aliases=['treesize', 'fs', 'ts'])
-    @voxelbotutils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
+    @utils.command(aliases=['treesize', 'fs', 'ts'])
+    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def familysize(self, ctx:voxelbotutils.Context, user:voxelbotutils.converters.UserID=None):
+    async def familysize(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """Gives you the size of your family tree"""
 
         # Get user info
         user = user or ctx.author.id
-        user_tree = utils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_tree = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
 
         # Get size
         async with ctx.channel.typing():
@@ -156,11 +162,11 @@ class Information(voxelbotutils.Cog):
         await ctx.send(f"There are `{size}` people in `{username}`'s family tree.")
 
 
-    @voxelbotutils.command(aliases=['tree', 't'])
-    @voxelbotutils.cooldown.cooldown(1, 60, commands.BucketType.user)
-    @voxelbotutils.checks.bot_is_ready()
+    @utils.command(aliases=['tree', 't'])
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def familytree(self, ctx:voxelbotutils.Context, root:voxelbotutils.converters.UserID=None):
+    async def familytree(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gets the family tree of a given user"""
 
         try:
@@ -172,12 +178,12 @@ class Information(voxelbotutils.Cog):
         except Exception as e:
             raise e
 
-    @voxelbotutils.command(aliases=['st'])
-    @voxelbotutils.cooldown.cooldown(1, 60, commands.BucketType.user)
-    @utils.checks.has_donator_perks("stupidtree_command")
-    @voxelbotutils.checks.bot_is_ready()
+    @utils.command(aliases=['st'])
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
+    @localutils.checks.has_donator_perks("stupidtree_command")
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def stupidtree(self, ctx:voxelbotutils.Context, root:voxelbotutils.converters.UserID=None):
+    async def stupidtree(self, ctx:utils.Context, root:utils.converters.UserID=None):
         """Gets the family tree of a given user"""
 
         try:
@@ -189,12 +195,12 @@ class Information(voxelbotutils.Cog):
         except Exception as e:
             raise e
 
-    async def treemaker(self, ctx:voxelbotutils.Context, root_user_id:int, all_guilds:bool=False, stupid_tree:bool=False):
+    async def treemaker(self, ctx:utils.Context, root_user_id:int, all_guilds:bool=False, stupid_tree:bool=False):
         """Handles the generation and sending of the tree to the user"""
 
         # Get their family tree
         root_user_id = root_user_id or ctx.author.id
-        tree = utils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id)
+        tree = localutils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id)
 
         # Make sure they have one
         if tree.is_empty:
@@ -204,7 +210,7 @@ class Information(voxelbotutils.Cog):
         # Write their treemaker code to a file
         start_time = dt.utcnow()
         async with self.bot.database() as db:
-            ctu = await utils.CustomisedTreeUser.get(ctx.author.id, db)
+            ctu = await localutils.CustomisedTreeUser.get(ctx.author.id, db)
         customisation_found_time = dt.utcnow()
         async with ctx.channel.typing():
             if stupid_tree:
@@ -265,6 +271,6 @@ class Information(voxelbotutils.Cog):
         await ctx.send(text, file=file)
 
 
-def setup(bot:voxelbotutils.Bot):
+def setup(bot:utils.Bot):
     x = Information(bot)
     bot.add_cog(x)

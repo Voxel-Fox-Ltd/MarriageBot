@@ -4,6 +4,7 @@ from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.family_tree.relationship_string_simplifier import RelationshipStringSimplifier
 from cogs.utils.proposal_cache import ProposalCache
+from cogs.utils.discord_name_manager import DiscordNameManager
 
 
 def get_family_guild_id(ctx) -> int:
