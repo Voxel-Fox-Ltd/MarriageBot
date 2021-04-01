@@ -252,6 +252,19 @@ class Parentage(utils.Cog):
         if not parent_tree:
             return await ctx.send("You don't have a parent right now :<")
 
+        # See if they're sure
+        try:
+            result = await localutils.send_proposal_message(
+                ctx, ctx.author,
+                f"Are you sure you want to leave your parent, {ctx.author.mention}?",
+                timeout_message=f"Timed out making sure you want to emancipate, {ctx.author.mention} :<",
+                cancel_message="Alright, I've cancelled your emancipation!",
+            )
+        except Exception:
+            result = None
+        if result is None:
+            return
+
         # Remove family caching
         user_tree._parent = None
         parent_tree._children.remove(ctx.author.id)
