@@ -23,7 +23,7 @@ class CustomisedTreeUser(object):
         self.direction = direction
 
     @classmethod
-    async def get(cls, db:utils.DatabaseConnection, user_id:int) -> 'CustomisedTreeUser':
+    async def fetch_by_id(cls, db:utils.DatabaseConnection, user_id:int) -> 'CustomisedTreeUser':
         """
         Grabs a user's data from the database.
         """

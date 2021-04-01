@@ -175,79 +175,73 @@ class Information(utils.Cog):
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['tree', 't'])
-    @utils.cooldown.no_raise_cooldown(1, 60, commands.BucketType.user)
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def familytree(self, ctx:utils.Context, root:utils.converters.UserID=None):
-        """Gets the family tree of a given user"""
+    async def familytree(self, ctx:utils.Context, user:utils.converters.UserID=None):
+        """
+        Gets the family tree of a given user.
+        """
 
         try:
-            return await self.treemaker(
-                ctx=ctx,
-                root_user_id=root,
-                all_guilds=True,
-            )
-        except Exception as e:
-            raise e
+            return await self.treemaker(ctx=ctx, user_id=user)
+        except Exception:
+            raise
 
-    @utils.command(aliases=['st'])
-    @utils.cooldown.no_raise_cooldown(1, 60, commands.BucketType.user)
+    @utils.command(aliases=['st', 'stupidtree'])
+    @utils.cooldown.cooldown(1, 60, commands.BucketType.user)
     @localutils.checks.has_donator_perks("stupidtree_command")
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def stupidtree(self, ctx:utils.Context, root:utils.converters.UserID=None):
-        """Gets the family tree of a given user"""
+    async def fulltree(self, ctx:utils.Context, user:utils.converters.UserID=None):
+        """
+        Gets the family tree of a given user.
+        """
 
         try:
-            return await self.treemaker(
-                ctx=ctx,
-                root_user_id=root,
-                stupid_tree=True
-            )
-        except Exception as e:
-            raise e
+            return await self.treemaker(ctx=ctx, user_id=user, stupid_tree=True)
+        except Exception:
+            raise
 
-    async def treemaker(self, ctx:utils.Context, root_user_id:int, all_guilds:bool=False, stupid_tree:bool=False):
-        """Handles the generation and sending of the tree to the user"""
+    async def treemaker(self, ctx:utils.Context, user_id:int, stupid_tree:bool=False):
+        """
+        Handles the generation and sending of the tree to the user.
+        """
 
         # Get their family tree
-        root_user_id = root_user_id or ctx.author.id
-        tree = localutils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id)
+        user_id = user_id or ctx.author.id
+        user_info = localutils.FamilyTreeMember.get(user_id, localutils.get_family_guild_id(ctx))
+        user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
 
         # Make sure they have one
         if tree.is_empty:
-            username = await self.bot.get_name(root_user_id)
-            return await ctx.send(f"`{username}` has no family to put into a tree .-.")
+            if user_id == ctx.author.id:
+                return await ctx.send(f"You have no family to put into a tree .-.")
+            return await ctx.send(f"**{user_name}** has no family to put into a tree .-.", allowed_mentions=discord.AllowedMentions.none())
 
-        # Write their treemaker code to a file
-        start_time = dt.utcnow()
+        # Get their customisations
         async with self.bot.database() as db:
-            ctu = await localutils.CustomisedTreeUser.get(ctx.author.id, db)
-        customisation_found_time = dt.utcnow()
+            ctu = await localutils.CustomisedTreeUser.fetch_by_id(ctx.author.id, db)
+
+        # Get their dot script
         async with ctx.channel.typing():
             if stupid_tree:
                 dot_code = await tree.to_full_dot_script(self.bot, ctu)
             else:
-                dot_code = await tree.to_dot_script(self.bot, None if all_guilds else ctx.guild, ctu)
-        dot_generated_time = dt.utcnow()
+                dot_code = await tree.to_dot_script(self.bot, ctu)
 
+        # Write the dot to a file
+        dot_filename = f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz'
         try:
-            with open(f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz', 'w', encoding='utf-8') as a:
+            with open(dot_filename, 'w', encoding='utf-8') as a:
                 a.write(dot_code)
         except Exception as e:
-            self.logger.error(f"Could not write to {self.bot.config['tree_file_location']}/{ctx.author.id}.gz")
+            self.logger.error(f"Could not write to {dot_filename}")
             raise e
-        written_to_file_time = dt.utcnow()
 
         # Convert to an image
-        dot = await asyncio.create_subprocess_exec(*[
-            'dot',
-            '-Tpng:gd',
-            f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.gz',
-            '-o',
-            f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png',
-            '-Gcharset=UTF-8',
-        ], loop=self.bot.loop)
+        image_filename = f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png',
+        dot = await asyncio.create_subprocess_exec('dot', '-Tpng:gd', dot_filename '-o', image_filename '-Gcharset=UTF-8')
         await asyncio.wait_for(dot.wait(), 10.0, loop=self.bot.loop)
 
         # Kill subprocess
@@ -255,32 +249,19 @@ class Information(utils.Cog):
             dot.kill()
         except ProcessLookupError:
             pass  # It already died
-        except Exception as e:
-            raise e
+        except Exception:
+            raise
 
-        # Get time taken
-        output_as_image_time = dt.utcnow()
-        time_taken = (output_as_image_time - start_time).total_seconds()
-
-        # Generate debug string
-        output_string = [
-            f"Time taken to get customisations: {(customisation_found_time - start_time).total_seconds() * 1000:.2f}ms",
-            f"Time taken to generate dot: {(dot_generated_time - customisation_found_time).total_seconds() * 1000:.2f}ms",
-            f"Time taken to write to file: {(written_to_file_time - dot_generated_time).total_seconds() * 1000:.2f}ms",
-            f"Time taken to interpret dot: {(output_as_image_time - written_to_file_time).total_seconds() * 1000:.2f}ms",
-            f"**Total time taken: {(dt.utcnow() - start_time).total_seconds() * 1000:.2f}ms**",
-        ]
-
-        # Send file and delete cached
-        file = discord.File(fp=f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.png')
-        text = f"[Click here](https://marriagebot.xyz/) to customise your tree. Generated in `{time_taken:.2f}` seconds from `{len(dot_code)}` bytes of DOT code, "
-        if stupid_tree:
-            text += f"showing {len(tree.span(expand_upwards=True, add_parent=True))} family members."
-        else:
-            text += f"showing {len(tree.span())} blood relatives out of {len(tree.span(expand_upwards=True, add_parent=True))} total family members (see `{ctx.prefix}perks` for your full family)."
-        if ctx.original_author_id in self.bot.owner_ids:
-            text += '\n\n' + '\n'.join(output_string)
+        # Send file
+        file = discord.File(image_filename)
+        text = f"[Click here](https://marriagebot.xyz/) to customise your tree."
+        if not stupid_tree:
+            text += f" Use `{ctx.prefix}fulltree` for your _entire_ family, including non-blood relatives."
         await ctx.send(text, file=file)
+
+        # Delete the files
+        self.bot.loop.create_task(asyncio.create_subprocess_exec('rm', dot_filename))
+        self.bot.loop.create_task(asyncio.create_subprocess_exec('rm', image_filename))
 
 
 def setup(bot:utils.Bot):
