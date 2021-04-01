@@ -66,36 +66,38 @@ class Information(utils.Cog):
         """
 
         # Get the user's info
-        user = user or ctx.author.id
-        user_name = await self.bot.get_name(user)
-        user_info = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        user_id = user or ctx.author.id
+        user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
+        user_info = localutils.FamilyTreeMember.get(user, localutils.get_family_guild_id(ctx))
 
         # Get user's children
         if len(user_info._children) == 0:
-            output += f"`{user_name}` has no children right now."
+            if user_id == ctx.author.id:
+                output = f"You have no children right now."
+            else:
+                output = f"**{user_name}** has no children right now."
         else:
-            ren = {False:"ren", True:""}[len(user_info._children) == 1]
-            output += f"`{user_name}` has `{len(user_info._children)}` child{ren}: "
-            children = [(await self.bot.get_name(i), i) for i in user_info._children]
-            output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
+            output = f"**{user_name}** has {len(user_info._children)} {'child' len(user_info._children) == 1 else 'children'}:\n"
+            children = [(await localutils.DiscordNameManager.fetch_name_by_id(self.bot, i), i) for i in user_info._children]
+            output += "\n".join([f"* **{i[0]}** (`{i[1]}`)" for i in children])
 
-        # Do they have a partner?
-        if user_info._partner is None:
-            return await ctx.send(output)
+        # # Do they have a partner?
+        # if user_info._partner is None:
+        #     return await ctx.send(output)
 
-        # Get their partner's children
-        user_info = user_info.partner
-        user_name = await self.bot.get_name(user_info.id)
-        if len(user_info._children) == 0:
-            output += f"\n\nTheir partner, `{user_name}`, has no children right now."
-        else:
-            ren = {False:"ren", True:""}[len(user_info._children) == 1]
-            output += f"\n\nTheir partner, `{user_name}`, has `{len(user_info._children)}` child{ren}: "
-            children = [(await self.bot.get_name(i), i) for i in user_info._children]
-            output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
+        # # Get their partner's children
+        # user_info = user_info.partner
+        # user_name = await self.bot.get_name(user_info.id)
+        # if len(user_info._children) == 0:
+        #     output += f"\n\nTheir partner, `{user_name}`, has no children right now."
+        # else:
+        #     ren = {False:"ren", True:""}[len(user_info._children) == 1]
+        #     output += f"\n\nTheir partner, `{user_name}`, has `{len(user_info._children)}` child{ren}: "
+        #     children = [(await self.bot.get_name(i), i) for i in user_info._children]
+        #     output += ", ".join([f"`{i[0]}` (`{i[1]}`)" for i in children]) + "."
 
         # Return all output
-        await ctx.send(output)
+        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['parents'])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
