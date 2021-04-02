@@ -266,7 +266,7 @@ class Parentage(utils.Cog):
 
         # Get the family tree member objects
         family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree, child_tree = localutils.FamilyTreeMember.get(ctx.author.id, target, guild_id=ctx.family_guild_id)
+        user_tree, child_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target, guild_id=ctx.family_guild_id)
         child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
 
         # Make sure they're actually children

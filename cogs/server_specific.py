@@ -150,61 +150,80 @@ class ServerSpecific(utils.Cog):
     @utils.command()
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forcemarry(self, ctx:utils.Context, user_a:utils.converters.UserID, user_b:utils.converters.UserID=None):
+    async def forcemarry(self, ctx:utils.Context, usera:utils.converters.UserID, userb:utils.converters.UserID=None):
         """
         Marries the two specified users.
         """
 
         # Correct params
-        if user_b is None:
-            user_a, user_b = ctx.author.id, user_a
-        if user_a == user_b:
+        if userb is None:
+            usera, userb = ctx.author.id, usera
+        if usera == userb:
             return await ctx.send("You can't marry yourself.")
 
         # Get users
-        me = localutils.FamilyTreeMember.get(user_a, ctx.family_guild_id)
-        them = localutils.FamilyTreeMember.get(user_b, ctx.family_guild_id)
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        usera_tree, userb_tree = localutils.FamilyTreeMember.get_multiple(usera, userb, guild_id=ctx.family_guild_id)
 
         # See if they have partners
-        if me.partner is not None:
-            return await ctx.send(f"<@{me.id}> already has a partner.")
-        if them.partner is not None:
-            return await ctx.send(f"<@{them.id}> already has a partner.")
+        if usera_tree._partner is not None:
+            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
+            return await ctx.send(f"**{user_name}** already has a partner.", allowed_mentions=discord.AllowedMentions.none())
+        if userb_tree._partner is not None:
+            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, userb_tree.id)
+            return await ctx.send(f"**{user_name}** already has a partner.", allowed_mentions=discord.AllowedMentions.none())
 
         # Update database
         async with self.bot.database() as db:
-            await db.marry(user_a, user_b, ctx.family_guild_id)
-        me._partner = user_b
-        them._partner = user_a
+            try:
+                await db.start_transaction()
+                await db(
+                    "INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3), ($2, $1, $3)",
+                    usera_tree.id, userb_tree.id, family_guild_id,
+                )
+                await db.commit_transaction()
+            except asyncpg.UniqueViolationError:
+                return await ctx.send("I ran into an error saving your family data.")
+        usera_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
+        userb_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, userb_tree.id)
+        await ctx.send(f"Married **{usera_name}** and **{userb_name}**.", allowed_mentions=discord.AllowedMentions.none())
+
+        # Update cache
+        usera_tree._partner = userb
+        userb_tree._partner = usera
         async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', me.to_json())
-            await re.publish('TreeMemberUpdate', them.to_json())
-        await ctx.send(f"Married <@{me.id}> and <@{them.id}>.")
+            await re.publish('TreeMemberUpdate', usera_tree.to_json())
+            await re.publish('TreeMemberUpdate', userb_tree.to_json())
 
     @utils.command()
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forcedivorce(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def forcedivorce(self, ctx:utils.Context, usera:utils.converters.UserID):
         """
         Divorces a user from their spouse.
         """
 
         # Get user
-        me = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
-        if not me.partner:
-            return await ctx.send(f"<@{me.id}> isn't even married .-.")
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        usera_tree = localutils.FamilyTreeMember.get(usera, guild_id=family_guild_id)
+        usera_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
+        if not usera_tree.partner:
+            return await ctx.send(f"**{usera_name}** isn't even married .-.", allowed_mentions=discord.AllowedMentions.none())
 
         # Update database
         async with self.bot.database() as db:
-            await db('DELETE FROM marriages WHERE (user_id=$1 OR partner_id=$1) AND guild_id=$2', user, ctx.family_guild_id)
+            await db(
+                """DELETE FROM marriages WHERE (user_id=$1 OR partner_id=$1) AND guild_id=$2""",
+                user, family_guild_id,
+            )
 
         # Update cache
-        me.partner._partner = None
-        them = me.partner
-        me._partner = None
+        usera_tree.partner._partner = None
+        userb_tree = usera_tree.partner
+        usera_tree._partner = None
         async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', me.to_json())
-            await re.publish('TreeMemberUpdate', them.to_json())
+            await re.publish('TreeMemberUpdate', usera_tree.to_json())
+            await re.publish('TreeMemberUpdate', userb_tree.to_json())
         await ctx.send("Consider it done.")
 
     @utils.command()
