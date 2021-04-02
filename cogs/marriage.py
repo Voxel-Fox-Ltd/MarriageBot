@@ -65,24 +65,23 @@ class Marriage(utils.Cog):
 
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
-        if ctx.original_author_id not in self.bot.owner_ids:
-            max_family_members = localutils.get_max_family_members(ctx)
-            async with ctx.channel.typing():
-                family_member_count = 0
-                for i in author_tree.span(add_parent=True, expand_upwards=True):
-                    if family_member_count >= max_family_members:
-                        break
-                    family_member_count += 1
-                for i in target_tree.span(add_parent=True, expand_upwards=True):
-                    if family_member_count >= max_family_members:
-                        break
-                    family_member_count += 1
+        max_family_members = localutils.get_max_family_members(ctx)
+        async with ctx.channel.typing():
+            family_member_count = 0
+            for i in author_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:
-                    await lock.unlock()
-                    return await ctx.send(
-                        f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
-                        allowed_mentions=localutils.only_mention(ctx.author),
-                    )
+                    break
+                family_member_count += 1
+            for i in target_tree.span(add_parent=True, expand_upwards=True):
+                if family_member_count >= max_family_members:
+                    break
+                family_member_count += 1
+            if family_member_count >= max_family_members:
+                await lock.unlock()
+                return await ctx.send(
+                    f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
+                    allowed_mentions=localutils.only_mention(ctx.author),
+                )
 
         # Set up the proposal
         try:
