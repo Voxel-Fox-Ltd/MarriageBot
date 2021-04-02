@@ -24,10 +24,16 @@ class Marriage(utils.Cog):
         family_guild_id = localutils.get_family_guild_id(ctx)
         author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
 
+        # Check they're not a bot
+        if target.bot:
+            if target.id == self.bot.user.id:
+                return await ctx.send("I think I could do better actually, but thank you!")
+            return await ctx.send("That is a robot. Robots cannot consent to marriage.")
+
         # Lock those users
         re = await self.bot.redis.get_connection()
         try:
-            lock = await localutils.ProposalLock.lock(re, ctx.author.id, targer.id)
+            lock = await localutils.ProposalLock.lock(re, ctx.author.id, target.id)
         except localutils.ProposalInProgress:
             return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
@@ -43,7 +49,7 @@ class Marriage(utils.Cog):
         if target_tree._partner:
             await lock.unlock()
             return await ctx.send(
-                f"Sorry, {ctx.author.mention}, it look like {target.mention} is already married \N{PENSIVE FACE}",
+                f"Sorry, {ctx.author.mention}, it looks like {target.mention} is already married \N{PENSIVE FACE}",
                 allowed_mentions=localutils.only_mention(ctx.author),
             )
 
