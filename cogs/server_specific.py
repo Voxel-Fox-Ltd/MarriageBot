@@ -167,10 +167,10 @@ class ServerSpecific(utils.Cog):
 
         # See if they have partners
         if usera_tree._partner is not None:
-            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
+            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera)
             return await ctx.send(f"**{user_name}** already has a partner.", allowed_mentions=discord.AllowedMentions.none())
         if userb_tree._partner is not None:
-            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, userb_tree.id)
+            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, userb)
             return await ctx.send(f"**{user_name}** already has a partner.", allowed_mentions=discord.AllowedMentions.none())
 
         # Update database
@@ -206,7 +206,7 @@ class ServerSpecific(utils.Cog):
         # Get user
         family_guild_id = localutils.get_family_guild_id(ctx)
         usera_tree = localutils.FamilyTreeMember.get(usera, guild_id=family_guild_id)
-        usera_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
+        usera_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera)
         if not usera_tree.partner:
             return await ctx.send(f"**{usera_name}** isn't even married .-.", allowed_mentions=discord.AllowedMentions.none())
 
@@ -236,50 +236,59 @@ class ServerSpecific(utils.Cog):
 
         # Correct params
         if child is None:
-            parent, child = ctx.author.id, parent
+            parent_id, child_id = ctx.author.id, parent
 
         # Check users
-        them = localutils.FamilyTreeMember.get(child, ctx.family_guild_id)
-        child_name = await self.bot.get_name(child)
-        if them.parent:
-            return await ctx.send(f"`{child_name!s}` already has a parent.")
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        parent_tree, child_tree = localutils.FamilyTreeMember.get_multiple(parent_id, child_id, guild_id=family_guild_id)
+        child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_id)
+        if child_tree.parent:
+            return await ctx.send(f"**{child_name}** already has a parent.", allowed_mentions=discord.AllowedMentions.none())
+        parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
 
         # Update database
         async with self.bot.database() as db:
-            await db('INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', parent, child, ctx.family_guild_id, dt.utcnow())
+            await db(
+                """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
+                parnet_id, child_id, family_guild_id, dt.utcnow(),
+            )
 
         # Update cache
-        me = localutils.FamilyTreeMember.get(parent, ctx.family_guild_id)
-        me._children.append(child)
-        them._parent = parent
+        parent_tree._children.append(child_id)
+        child_tree._parent = parent
         async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', me.to_json())
-            await re.publish('TreeMemberUpdate', them.to_json())
-        await ctx.send(f"Added <@{child}> to <@{parent}>'s children list.")
+            await re.publish('TreeMemberUpdate', parent_tree.to_json())
+            await re.publish('TreeMemberUpdate', child_tree.to_json())
+        await ctx.send(f"Added **{child_name}** to **{parent_name}**'s children list.")
 
     @utils.command(aliases=['forceeman'])
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
-    async def forceemancipate(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def forceemancipate(self, ctx:utils.Context, child:utils.converters.UserID):
         """
         Force emancipates a child.
         """
 
         # Run checks
-        me = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        child_tree = localutils.FamilyTreeMember.get(child, family_guild_id)
+        child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child)
         if not me.parent:
-            return await ctx.send(f"<@{me.id}> doesn't even have a parent .-.")
+            return await ctx.send(f"**{child_name}** doesn't even have a parent .-.")
 
         # Update database
         async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', me.id, me._guild_id)
+            await db(
+                """DELETE FROM parents WHERE child_id=$1 AND guild_id=$2""",
+                child, family_guild_id,
+            )
 
         # Update cache
-        me.parent._children.remove(user)
-        parent = me.parent
-        me._parent = None
+        child_tree.parent._children.remove(child)
+        parent = child_tree.parent
+        child_tree._parent = None
         async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', me.to_json())
+            await re.publish('TreeMemberUpdate', child_tree.to_json())
             await re.publish('TreeMemberUpdate', parent.to_json())
         await ctx.send("Consider it done.")
 
