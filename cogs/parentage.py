@@ -207,32 +207,50 @@ class Parentage(utils.Cog):
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
-        """Lets you remove a user from being your child"""
+        """
+        Lets you remove a user from being your child.
+        """
 
-        # Manage output strings
-        text_processor = utils.random_text.RandomText('disown', ctx.author, self.bot.get_user(target))
+        # Get the family tree member objects
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        user_tree, child_tree = localutils.FamilyTreeMember.get(ctx.author.id, target, guild_id=ctx.family_guild_id)
+        child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
 
-        # Variables we're gonna need for later
-        instigator = ctx.author
-        instigator_tree, target_tree = localutils.FamilyTreeMember.get(instigator.id, target, guild_id=ctx.family_guild_id)
+        # Make sure they're actually children
+        if child_tree not in user_tree._children:
+            return await ctx.send(f"It doesn't look like **{child_name}** is one of your children!", allowed_mentions=discord.AllowedMentions.none())
 
-        # Make sure they're the child of the instigator
-        if target_tree.id not in instigator_tree._children:
-            return await ctx.send(text_processor.instigator_is_unqualified())
+        # See if they're sure
+        try:
+            result = await localutils.send_proposal_message(
+                ctx, ctx.author,
+                f"Are you sure you want to disown your child, {ctx.author.mention}?",
+                timeout_message=f"Timed out making sure you want to disown, {ctx.author.mention} :<",
+                cancel_message="Alright, I've cancelled your disown!",
+            )
+        except Exception:
+            result = None
+        if result is None:
+            return
 
-        # Oh hey they are - remove from database
-        async with self.bot.database() as db:
-            await db('DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3', target_tree.id, instigator.id, instigator_tree._guild_id)
-        await ctx.send(text_processor.valid_target(), ignore_error=True)
+        # Remove from cache
+        user_tree._children.remove(child_tree.id)
+        child_tree._parent = None
 
-        # Remove family caching
-        instigator_tree._children.remove(target_tree.id)
-        target_tree._parent = None
-
-        # Ping em off over redis
+        # Remove from redis
         async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish('TreeMemberUpdate', target_tree.to_json())
+            await re.publish('TreeMemberUpdate', user_tree.to_json())
+            await re.publish('TreeMemberUpdate', child_tree.to_json())
+
+        # Remove from database
+        async with self.bot.database() as db:
+            await db(
+                """DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3""",
+                child_tree.id, ctx.author.id, family_guild_id,
+            )
+
+        # And we're done
+        await ctx.send(f"You've successfully disowned **{child_name}** :c", allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
     @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
