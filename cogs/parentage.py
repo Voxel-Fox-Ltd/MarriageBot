@@ -128,79 +128,103 @@ class Parentage(utils.Cog):
         """
 
         # Variables we're gonna need for later
-        instigator = ctx.author
-        instigator_tree, target_tree = localutils.FamilyTreeMember.get_multiple(instigator.id, target.id, guild_id=ctx.family_guild_id)
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
 
-        # Manage output strings
-        text_processor = utils.random_text.RandomText('adopt', instigator, target)
-        text = text_processor.process()
-        if text:
-            return await ctx.send(text)
-
-        # See if our user already has a parent
-        if target_tree._parent:
-            return await ctx.send(text_processor.target_is_unqualified())
-
-        # See if the target is a bot
+        # Check they're not a bot
         if target.bot:
-            return await ctx.send(text_processor.target_is_bot())
+            if target.id == self.bot.user.id:
+                return await ctx.send("I think I could do better actually, but thank you!")
+            return await ctx.send("That is a robot. Robots cannot consent to adoption.")
+
+        # Lock those users
+        re = await self.bot.redis.get_connection()
+        try:
+            lock = await localutils.ProposalLock.lock(re, ctx.author.id, target.id)
+        except localutils.ProposalInProgress:
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
+
+        # See if the *target* is already married
+        if target_tree.parent:
+            await lock.unlock()
+            return await ctx.send(
+                f"Sorry, {ctx.author.mention}, it looks like {target.mention} already has a parent \N{PENSIVE FACE}",
+                allowed_mentions=localutils.only_mention(ctx.author),
+            )
+
+        # See if we're already married
+        if target.id in author_tree._children:
+            await lock.unlock()
+            return await ctx.send(
+                f"Hey, {ctx.author.mention}, they're already your child \N{FACE WITH ROLLING EYES}",
+                allowed_mentions=localutils.only_mention(ctx.author),
+            )
 
         # See if they're already related
         async with ctx.channel.typing():
-            relation = instigator_tree.get_relation(target_tree)
-        if relation and not self.bot.allows_incest(ctx.guild.id):
-            return await ctx.send(text_processor.target_is_family())
+            relation = author_tree.get_relation(target_tree)
+        if relation and localutils.guild_allows_incest(ctx) is False:
+            await lock.unlock()
+            return await ctx.send(
+                f"Woah woah woah, it looks like you guys are already related! You're {target.mention}'s {relation}!",
+                allowed_mentions=localutils.only_mention(ctx.author),
+            )
 
         # Manage children
-        if ctx.original_author_id not in self.bot.owner_ids:
-            children_amount = await self.get_max_children_for_member(ctx.guild, ctx.author)
-            if len(instigator_tree._children) >= children_amount:
-                return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.prefix}perks` for more information.")
+        children_amount = await self.get_max_children_for_member(ctx.guild, ctx.author)
+        if len(author_tree._children) >= children_amount:
+            return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.prefix}perks` for more information.")
 
         # Check the size of their trees
+        # TODO I can make this a util because I'm going to use it a couple times
         if ctx.original_author_id not in self.bot.owner_ids:
-            max_family_members = self.bot.get_max_family_members(ctx.guild)
+            max_family_members = localutils.get_max_family_members(ctx)
             async with ctx.channel.typing():
-                if instigator_tree.family_member_count + target_tree.family_member_count > max_family_members:
-                    return await ctx.send(f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family, so I can't allow you to do that. Sorry!")
+                family_member_count = 0
+                for i in author_tree.span(add_parent=True, expand_upwards=True):
+                    if family_member_count >= max_family_members:
+                        break
+                    family_member_count += 1
+                for i in target_tree.span(add_parent=True, expand_upwards=True):
+                    if family_member_count >= max_family_members:
+                        break
+                    family_member_count += 1
+                if family_member_count >= max_family_members:
+                    await lock.unlock()
+                    return await ctx.send(
+                        f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
+                        allowed_mentions=localutils.only_mention(ctx.author),
+                    )
 
-        # No parent, send request
-        await ctx.send(text_processor.valid_target())
-        await self.bot.proposal_cache.add(instigator, target, 'ADOPT')
-
-        # Wait for a response
-        check = utils.AcceptanceCheck(target.id, ctx.channel.id)
+        # Set up the proposal
         try:
-            await check.wait_for_response(self.bot)
-        except utils.AcceptanceCheck.TIMEOUT:
-            return await ctx.send(text_processor.request_timeout(), ignore_error=True)
-
-        # Valid response recieved, see what their answer was
-        if check.response == 'NO':
-            await self.bot.proposal_cache.remove(instigator, target)
-            return await ctx.send(text_processor.request_denied(), ignore_error=True)
+            result = await localutils.send_proposal_message(
+                ctx, target,
+                f"Hey, {target.mention}, {ctx.author.mention} wants to adopt you! What do you think?",
+            )
+        except Exception:
+            result = None
+        if result is None:
+            return await lock.unlock()
 
         # Database it up
         async with self.bot.database() as db:
             try:
-                await db('INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', instigator.id, target.id, ctx.family_guild_id, dt.utcnow())
+                await db(
+                    """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
+                    ctx.author.id, target.id, ctx.family_guild_id, dt.utcnow(),
+                )
             except asyncpg.UniqueViolationError:
+                await lock.unlock()
                 return await ctx.send("I ran into an error saving your family data - please try again later.")
+        await ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!", ignore_error=True)
 
-        # Add family caching
-        instigator_tree._children.append(target.id)
-        target_tree._parent = instigator_tree.id
-
-        # Ping em off over redis
-        async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', instigator_tree.to_json())
-            await re.publish('TreeMemberUpdate', target_tree.to_json())
-
-        # Uncache
-        await self.bot.proposal_cache.remove(instigator, target)
-
-        # Output to user
-        await ctx.send(text_processor.request_accepted(), ignore_error=True)
+        # And we're done
+        author_tree._children.append(target.id)
+        target_tree._parent = author_tree.id
+        await re.publish('TreeMemberUpdate', author_tree.to_json())
+        await re.publish('TreeMemberUpdate', target_tree.to_json())
+        await re.disconnect()
 
     @utils.command(aliases=['abort'])
     @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
