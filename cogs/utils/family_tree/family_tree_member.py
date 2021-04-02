@@ -306,64 +306,64 @@ class FamilyTreeMember(object):
 
         return None
 
-    async def generate_gedcom_script(self, bot:utils.Bot) -> str:
-        """
-        Gives you the INDI and FAM gedcom strings for this family tree.
-        Includes their spouse, if they have one, and any children.
-        Small bit of redundancy: a family will be added twice if they have a spouse.
+    # async def generate_gedcom_script(self, bot:utils.Bot) -> str:
+    #     """
+    #     Gives you the INDI and FAM gedcom strings for this family tree.
+    #     Includes their spouse, if they have one, and any children.
+    #     Small bit of redundancy: a family will be added twice if they have a spouse.
 
-        Args:
-            bot (utils.Bot): The bot instance that should be used to get the names of users.
+    #     Args:
+    #         bot (utils.Bot): The bot instance that should be used to get the names of users.
 
-        Returns:
-            str: The generated GEDCOM script.
-        """
+    #     Returns:
+    #         str: The generated GEDCOM script.
+    #     """
 
-        gedcom_text = []
-        family_id_cache = {}  # id: family count
+    #     gedcom_text = []
+    #     family_id_cache = {}  # id: family count
 
-        for i in self.span(add_parent=True, expand_upwards=True):
-            name = await bot.get_name(i.id)
-            working_text = [
-                f'0 @I{i.tree_id}@ INDI',
-                f'\t1 NAME {name}'
-            ]
+    #     for i in self.span(add_parent=True, expand_upwards=True):
+    #         name = await bot.get_name(i.id)
+    #         working_text = [
+    #             f'0 @I{i.tree_id}@ INDI',
+    #             f'\t1 NAME {name}'
+    #         ]
 
-            # If you have a parent, get added to their family
-            if i._parent:
-                parent = i.parent
-                if parent.id in family_id_cache:
-                    working_text.append(f'\t1 FAMC @F{family_id_cache[parent.id]}@')
-                elif parent._partner and parent._partner in family_id_cache:
-                    working_text.append(f'\t1 FAMC @F{family_id_cache[parent._partner]}@')
-                else:
-                    working_text.append(f'\t1 FAMC @F{parent.tree_id}@')
+    #         # If you have a parent, get added to their family
+    #         if i._parent:
+    #             parent = i.parent
+    #             if parent.id in family_id_cache:
+    #                 working_text.append(f'\t1 FAMC @F{family_id_cache[parent.id]}@')
+    #             elif parent._partner and parent._partner in family_id_cache:
+    #                 working_text.append(f'\t1 FAMC @F{family_id_cache[parent._partner]}@')
+    #             else:
+    #                 working_text.append(f'\t1 FAMC @F{parent.tree_id}@')
 
-            # If you have children or a partner, generate a family
-            if i._children or i._partner:
-                children = i.children
-                partner = i.partner
+    #         # If you have children or a partner, generate a family
+    #         if i._children or i._partner:
+    #             children = i.children
+    #             partner = i.partner
 
-                # See if you need to make a new family or be added to one already made
-                try:
-                    insert_location = gedcom_text.index(f'\t1 HUSB @I{i.tree_id}@')  # This will throw error if this user is not in a tree already
-                    working_text.append(f'\t1 FAMS @F{family_id_cache[partner.id]}@')
-                    family_id_cache[i.id] = partner.tree_id
-                    for c in children:
-                        gedcom_text.insert(insert_location, f'\t1 CHIL @I{c.tree_id}@')
-                except ValueError:
-                    family_id_cache[i.id] = i.tree_id
-                    working_text.append(f'\t1 FAMS @F{i.tree_id}@')
-                    working_text.append(f'0 @F{i.tree_id}@ FAM')
-                    working_text.append(f'\t1 WIFE @I{i.tree_id}@')
-                    if i.partner:
-                        working_text.append(f'\t1 HUSB @I{partner.tree_id}@')
-                    for c in children:
-                        working_text.append(f'\t1 CHIL @I{c.tree_id}@')
+    #             # See if you need to make a new family or be added to one already made
+    #             try:
+    #                 insert_location = gedcom_text.index(f'\t1 HUSB @I{i.tree_id}@')  # This will throw error if this user is not in a tree already
+    #                 working_text.append(f'\t1 FAMS @F{family_id_cache[partner.id]}@')
+    #                 family_id_cache[i.id] = partner.tree_id
+    #                 for c in children:
+    #                     gedcom_text.insert(insert_location, f'\t1 CHIL @I{c.tree_id}@')
+    #             except ValueError:
+    #                 family_id_cache[i.id] = i.tree_id
+    #                 working_text.append(f'\t1 FAMS @F{i.tree_id}@')
+    #                 working_text.append(f'0 @F{i.tree_id}@ FAM')
+    #                 working_text.append(f'\t1 WIFE @I{i.tree_id}@')
+    #                 if i.partner:
+    #                     working_text.append(f'\t1 HUSB @I{partner.tree_id}@')
+    #                 for c in children:
+    #                     working_text.append(f'\t1 CHIL @I{c.tree_id}@')
 
-            gedcom_text.extend(working_text)
-        x = '0 HEAD\n\t1 GEDC\n\t\t2 VERS 5.5\n\t\t2 FORM LINEAGE-LINKED\n\t1 CHAR UNICODE\n' + '\n'.join(gedcom_text) + '\n0 TRLR'
-        return x
+    #         gedcom_text.extend(working_text)
+    #     x = '0 HEAD\n\t1 GEDC\n\t\t2 VERS 5.5\n\t\t2 FORM LINEAGE-LINKED\n\t1 CHAR UNICODE\n' + '\n'.join(gedcom_text) + '\n0 TRLR'
+    #     return x
 
     def generational_span(
             self, people_dict:dict=None, depth:int=0, add_parent:bool=False, expand_upwards:bool=False,

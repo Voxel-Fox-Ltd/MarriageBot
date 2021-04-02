@@ -147,6 +147,123 @@ class ServerSpecific(utils.Cog):
         except discord.Forbidden:
             await ctx.send("I couldn't send you a DM :c")
 
+    @utils.command()
+    @localutils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
+    async def forcemarry(self, ctx:utils.Context, user_a:utils.converters.UserID, user_b:utils.converters.UserID=None):
+        """
+        Marries the two specified users.
+        """
+
+        # Correct params
+        if user_b is None:
+            user_a, user_b = ctx.author.id, user_a
+        if user_a == user_b:
+            return await ctx.send("You can't marry yourself.")
+
+        # Get users
+        me = localutils.FamilyTreeMember.get(user_a, ctx.family_guild_id)
+        them = localutils.FamilyTreeMember.get(user_b, ctx.family_guild_id)
+
+        # See if they have partners
+        if me.partner is not None:
+            return await ctx.send(f"<@{me.id}> already has a partner.")
+        if them.partner is not None:
+            return await ctx.send(f"<@{them.id}> already has a partner.")
+
+        # Update database
+        async with self.bot.database() as db:
+            await db.marry(user_a, user_b, ctx.family_guild_id)
+        me._partner = user_b
+        them._partner = user_a
+        async with self.bot.redis() as re:
+            await re.publish('TreeMemberUpdate', me.to_json())
+            await re.publish('TreeMemberUpdate', them.to_json())
+        await ctx.send(f"Married <@{me.id}> and <@{them.id}>.")
+
+    @utils.command()
+    @localutils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
+    async def forcedivorce(self, ctx:utils.Context, user:utils.converters.UserID):
+        """
+        Divorces a user from their spouse.
+        """
+
+        # Get user
+        me = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        if not me.partner:
+            return await ctx.send(f"<@{me.id}> isn't even married .-.")
+
+        # Update database
+        async with self.bot.database() as db:
+            await db('DELETE FROM marriages WHERE (user_id=$1 OR partner_id=$1) AND guild_id=$2', user, ctx.family_guild_id)
+
+        # Update cache
+        me.partner._partner = None
+        them = me.partner
+        me._partner = None
+        async with self.bot.redis() as re:
+            await re.publish('TreeMemberUpdate', me.to_json())
+            await re.publish('TreeMemberUpdate', them.to_json())
+        await ctx.send("Consider it done.")
+
+    @utils.command()
+    @localutils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
+    async def forceadopt(self, ctx:utils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
+        """
+        Adds the child to the specified parent.
+        """
+
+        # Correct params
+        if child is None:
+            parent, child = ctx.author.id, parent
+
+        # Check users
+        them = localutils.FamilyTreeMember.get(child, ctx.family_guild_id)
+        child_name = await self.bot.get_name(child)
+        if them.parent:
+            return await ctx.send(f"`{child_name!s}` already has a parent.")
+
+        # Update database
+        async with self.bot.database() as db:
+            await db('INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)', parent, child, ctx.family_guild_id, dt.utcnow())
+
+        # Update cache
+        me = localutils.FamilyTreeMember.get(parent, ctx.family_guild_id)
+        me._children.append(child)
+        them._parent = parent
+        async with self.bot.redis() as re:
+            await re.publish('TreeMemberUpdate', me.to_json())
+            await re.publish('TreeMemberUpdate', them.to_json())
+        await ctx.send(f"Added <@{child}> to <@{parent}>'s children list.")
+
+    @utils.command(aliases=['forceeman'])
+    @localutils.checks.is_server_specific_bot_moderator()
+    @commands.bot_has_permissions(send_messages=True)
+    async def forceemancipate(self, ctx:utils.Context, user:utils.converters.UserID):
+        """
+        Force emancipates a child.
+        """
+
+        # Run checks
+        me = localutils.FamilyTreeMember.get(user, ctx.family_guild_id)
+        if not me.parent:
+            return await ctx.send(f"<@{me.id}> doesn't even have a parent .-.")
+
+        # Update database
+        async with self.bot.database() as db:
+            await db('DELETE FROM parents WHERE child_id=$1 AND guild_id=$2', me.id, me._guild_id)
+
+        # Update cache
+        me.parent._children.remove(user)
+        parent = me.parent
+        me._parent = None
+        async with self.bot.redis() as re:
+            await re.publish('TreeMemberUpdate', me.to_json())
+            await re.publish('TreeMemberUpdate', parent.to_json())
+        await ctx.send("Consider it done.")
+
 
 def setup(bot:utils.Bot):
     x = ServerSpecific(bot)
