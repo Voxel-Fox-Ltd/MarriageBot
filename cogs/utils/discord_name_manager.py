@@ -7,7 +7,7 @@ class DiscordNameManager(object):
 
     cached_names: typing.Dict[int, 'DiscordNameManager'] = {}
 
-    __slots__ = ("user_id", "name", "age",)
+    __slots__ = ("user_id", "_name", "age",)
 
     def __init__(self, user_id:int, name:str=None):
         self.user_id: int = user_id
