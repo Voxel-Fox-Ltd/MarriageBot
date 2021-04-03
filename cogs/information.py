@@ -81,7 +81,7 @@ class Information(utils.Cog):
             if user_id == ctx.author.id:
                 output = f"You have no children right now."
         else:
-            output = f"**{localutils.escape_markdown(user_name)}** has {len(user_info._children)} {'child' len(user_info._children) == 1 else 'children'}:\n"
+            output = f"**{localutils.escape_markdown(user_name)}** has {len(user_info._children)} {'child' if len(user_info._children) == 1 else 'children'}:\n"
             children = [(await localutils.DiscordNameManager.fetch_name_by_id(self.bot, i), i) for i in user_info._children]
             output += "\n".join([f"* **{localutils.escape_markdown(i[0])}** (`{i[1]}`)" for i in children])
 
