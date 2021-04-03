@@ -30,9 +30,9 @@ class CacheHandler(utils.Cog):
         # - children
         self.logger.info(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
-            parent = FamilyTreeMember.get(i['parent_id'], i['guild_id'])
+            parent = localutils.FamilyTreeMember.get(i['parent_id'], i['guild_id'])
             parent._children.append(i['child_id'])
-            child = FamilyTreeMember.get(i['child_id'], i['guild_id'])
+            child = localutils.FamilyTreeMember.get(i['child_id'], i['guild_id'])
             child._parent = i['parent_id']
 
         # And done
