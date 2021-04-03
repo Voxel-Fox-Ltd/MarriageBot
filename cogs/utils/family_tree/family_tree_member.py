@@ -32,6 +32,9 @@ class FamilyTreeMember(object):
         self.tree_id: str = get_random_string()  # Used purely for the dot joining two spouses in the GZ script
         self.all_users[(self.id, self._guild_id)] = self
 
+    def __hash__(self):
+        return hash((self.id, self._guild_id,))
+
     @classmethod
     def get(cls, discord_id:int, guild_id:int=0) -> 'FamilyTreeMember':
         """
