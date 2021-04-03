@@ -12,7 +12,7 @@ class DiscordNameManager(object):
     def __init__(self, user_id:int, name:str=None):
         self.user_id: int = user_id
         self._name: str = name
-        self.age: int = 0
+        self.age: int = 0 if self._name else 1_000
         self.cached_names[self.user_id] = self
 
     @property
@@ -22,6 +22,8 @@ class DiscordNameManager(object):
 
     @name.setter
     def name(self, new_name:str):
+        if new_name is None:
+            return None
         self.age = 0
         self._name = new_name
 
