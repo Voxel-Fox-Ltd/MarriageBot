@@ -58,10 +58,10 @@ class ProposalLock(object):
     @classmethod
     async def lock(cls, redis, *user_ids):
         locks = []
-        if any([await redis.lock_manager.is_locked(str(uid))] for i in user_ids):
+        if any([await redis.lock_manager.is_locked(str(i)) for i in user_ids]):
             raise ProposalInProgress()
-        for uid in user_ids:
-            locks.append(await redis.lock_manager.lock(str(uid)))
+        for i in user_ids:
+            locks.append(await redis.lock_manager.lock(str(i)))
         return cls(redis, *locks)
 
     async def unlock(self, *, disconnect_redis:bool=True):
