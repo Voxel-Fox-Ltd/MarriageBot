@@ -55,6 +55,10 @@ class Parentage(utils.Cog):
         family_guild_id = localutils.get_family_guild_id(ctx)
         author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
 
+        # Check they're not themselves
+        if target.id == ctx.author.id:
+            return await ctx.send("That's you. You can't make yourself your parent.")
+
         # Check they're not a bot
         if target.id == self.bot.user.id:
             return await ctx.send("I think I could do better actually, but thank you!")
@@ -160,6 +164,10 @@ class Parentage(utils.Cog):
         # Variables we're gonna need for later
         family_guild_id = localutils.get_family_guild_id(ctx)
         author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
+
+        # Check they're not themselves
+        if target.id == ctx.author.id:
+            return await ctx.send("That's you. You can't adopt yourself.")
 
         # Check they're not a bot
         if target.bot:
