@@ -247,7 +247,6 @@ class Information(utils.Cog):
         try:
             with open(dot_filename, 'w', encoding='utf-8') as a:
                 a.write(dot_code)
-            await ctx.send(file=discord.File(dot_filename))
         except Exception as e:
             self.logger.error(f"Could not write to {dot_filename}")
             raise e
