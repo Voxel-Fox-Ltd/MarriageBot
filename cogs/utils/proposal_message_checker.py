@@ -77,7 +77,8 @@ class ProposalLock(object):
         await self.unlock()
 
 
-async def send_proposal_message(ctx, user:discord.Member, text:str, *, timeout_message:str=None, cancel_message:str=None) -> TickPayloadCheckResult:
+async def send_proposal_message(
+        ctx, user:discord.Member, text:str, *, timeout_message:str=None, cancel_message:str=None, allow_bots:bool=False) -> TickPayloadCheckResult:
     """
     Send a proposal message out to the user to see if they want to say yes or no.
 
@@ -92,6 +93,10 @@ async def send_proposal_message(ctx, user:discord.Member, text:str, *, timeout_m
 
     timeout_message = timeout_message or f"Sorry, {ctx.author.mention}; your proposal to {user.mention} timed out - they didn't respond in time :<"
     cancel_message = cancel_message or f"Alright, {ctx.author.mention}; your proposal to {user.mention} has been cancelled.",
+
+    # Reply yes if we allow bots
+    if allow_bots and user.bot:
+        return TickPayloadCheckResult(TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"])
 
     # See if they want to say yes
     message = await ctx.send(text)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"

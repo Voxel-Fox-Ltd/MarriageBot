@@ -15,6 +15,10 @@ class Parentage(utils.Cog):
         Get the maximum amount of children a given member can have.
         """
 
+        # Bots can do what they want
+        if user.bot:
+            return 5
+
         # See how many children they're allowed with Gold
         gold_children_amount = 0
         if self.bot.config.get('is_server_specific', False):
@@ -52,10 +56,8 @@ class Parentage(utils.Cog):
         author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
 
         # Check they're not a bot
-        if target.bot:
-            if target.id == self.bot.user.id:
-                return await ctx.send("I think I could do better actually, but thank you!")
-            return await ctx.send("That is a robot. Robots cannot consent to adoption.")
+        if target.id == self.bot.user.id:
+            return await ctx.send("I think I could do better actually, but thank you!")
 
         # Lock those users
         re = await self.bot.redis.get_connection()
@@ -120,6 +122,7 @@ class Parentage(utils.Cog):
             result = await localutils.send_proposal_message(
                 ctx, target,
                 f"Hey, {target.mention}, {ctx.author.mention} wants to be your child! What do you think?",
+                allow_bots=True,
             )
         except Exception:
             result = None

@@ -1,3 +1,16 @@
+CREATE TABLE IF NOT EXISTS guild_settings(
+    guild_id BIGINT NOT NULL,
+    prefix VARCHAR(30) DEFAULT 'm!',
+    gold_prefix VARCHAR(30) DEFAULT 'm.',
+    test_prefix VARCHAR(30) DEFAULT 'm,',
+    allow_incest BOOLEAN DEFAULT FALSE,
+    max_family_members INTEGER DEFAULT 500,
+    gifs_enabled BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (guild_id)
+);
+-- A config for a guild to change their prefix or other bot settings
+
+
 CREATE TABLE IF NOT EXISTS marriages(
     user_id BIGINT NOT NULL,
     partner_id BIGINT NOT NULL,
@@ -34,18 +47,6 @@ CREATE TABLE IF NOT EXISTS guild_specific_families(
     PRIMARY KEY (guild_id)
 );
 -- A big ol' list of guild IDs of people who've paid
-
-
-CREATE TABLE IF NOT EXISTS guild_settings(
-    guild_id BIGINT NOT NULL,
-    prefix VARCHAR(30) DEFAULT 'm!',
-    gold_prefix VARCHAR(30) DEFAULT 'm.',
-    allow_incest BOOLEAN DEFAULT FALSE,
-    max_family_members INTEGER DEFAULT 500,
-    gifs_enabled BOOLEAN DEFAULT TRUE,
-    PRIMARY KEY (guild_id)
-);
--- A config for a guild to change their prefix or other bot settings
 
 
 DO $$ BEGIN
