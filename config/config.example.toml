@@ -100,22 +100,22 @@ is_server_specific = false
         text = "Add the bot to your server! ({ctx.clean_prefix}invite)"  # text to appear in the footer
         amount = 3  # the amount of times this particular text is added to the pool
     [[embed.footer]]
-        text = "Learn how to get more children ({prefix}perks)"
+        text = "Learn how to get more children ({ctx.clean_prefix}perks)"
         amount = 3
     [[embed.footer]]
-        text = "Join the official Discord server ({prefix}server)"
+        text = "Join the official Discord server ({ctx.clean_prefix}server)"
         amount = 3
     [[embed.footer]]
-        text = "Learn more about MarriageBot Gold ({prefix}gold)"
+        text = "Learn more about MarriageBot Gold ({ctx.clean_prefix}gold)"
         amount = 3
     [[embed.footer]]
-        text = "Donate to keep MarriageBot alive ({prefix}donate)"
+        text = "Donate to keep MarriageBot alive ({ctx.clean_prefix}donate)"
         amount = 10
 
 # What the bot is playing
 [presence]
-    activity_type = "m!help"  # Should be one of 'playing', 'listening', 'watching', 'competing'
-    text = "playing"
+    activity_type = "playing"  # Should be one of 'playing', 'listening', 'watching', 'competing'
+    text = "m!help"
     status = "online"  # Should be one of 'online', 'invisible', 'idle', 'dnd'
     include_shard_id = true  # Whether or not to append "(shard N)" to the presence; only present if there's more than 1 shard
     [presence.streaming]  # This is used to automatically set the bot's status to your Twitch stream when you go live
