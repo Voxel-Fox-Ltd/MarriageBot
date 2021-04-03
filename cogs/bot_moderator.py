@@ -7,7 +7,7 @@ import voxelbotutils as utils
 from cogs import utils as localutils
 
 
-class ModeratorOnly(utils.Cog, command_attrs={'hidden': True}):
+class BotModerator(utils.Cog, command_attrs={'hidden': True}):
 
     @utils.command()
     @utils.checks.is_bot_support()
@@ -158,5 +158,5 @@ class ModeratorOnly(utils.Cog, command_attrs={'hidden': True}):
 
 
 def setup(bot:utils.Bot):
-    x = ModeratorOnly(bot)
+    x = BotModerator(bot)
     bot.add_cog(x)
