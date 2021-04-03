@@ -166,7 +166,7 @@ class Information(utils.Cog):
         # Get their relation
         user_info, other_info = localutils.FamilyTreeMember.get_multiple(user_id, other_id, guild_id=localutils.get_family_guild_id(ctx))
         async with ctx.channel.typing():
-            relation = user_tree.get_relation(other_tree)
+            relation = user_info.get_relation(other_tree)
 
         # Get names
         user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
