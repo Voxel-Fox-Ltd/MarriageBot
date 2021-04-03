@@ -250,7 +250,7 @@ class Information(utils.Cog):
 
         # Convert to an image
         image_filename = f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png',
-        dot = await asyncio.create_subprocess_exec('dot', '-Tpng:gd', dot_filename '-o', image_filename '-Gcharset=UTF-8')
+        dot = await asyncio.create_subprocess_exec('dot', '-Tpng:gd', dot_filename, '-o', image_filename '-Gcharset=UTF-8')
         await asyncio.wait_for(dot.wait(), 10.0, loop=self.bot.loop)
 
         # Kill subprocess
