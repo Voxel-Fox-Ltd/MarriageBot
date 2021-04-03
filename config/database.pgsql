@@ -118,15 +118,6 @@ CREATE TABLE IF NOT EXISTS redirects(
 );
 
 
-CREATE TABLE IF NOT EXISTS random_text(
-    command_name VARCHAR(50),
-    event_name VARCHAR(50),
-    string VARCHAR(2000),
-    language_code VARCHAR(2),
-    PRIMARY KEY (command_name, event_name, string, language_code)
-);
-
-
 CREATE TABLE IF NOT EXISTS disabled_commands(
     command_name VARCHAR(50) NOT NULL,
     guild_id BIGINT NOT NULL,
