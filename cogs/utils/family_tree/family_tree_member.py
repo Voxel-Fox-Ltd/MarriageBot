@@ -20,7 +20,7 @@ class FamilyTreeMember(object):
     """
 
     all_users: typing.Dict[typing.Tuple[int, int], 'FamilyTreeMember'] = {}
-    INVISIBLE = "[shape=circle, label="", height=0.001, width=0.001]"  # For the DOT script
+    INVISIBLE = "[shape=circle, label=\"\", height=0.001, width=0.001]"  # For the DOT script
 
     __slots__ = ('id', '_children', '_parent', '_partner', 'tree_id', '_guild_id')
 
