@@ -17,9 +17,6 @@ class TreeCommandCooldown(utils.cooldown.Cooldown):
 
 
 class Information(utils.Cog):
-    """
-    Shows information about the given user's family.
-    """
 
     @utils.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
     @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)

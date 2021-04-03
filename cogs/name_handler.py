@@ -3,9 +3,6 @@ import voxelbotutils as utils
 
 
 class NameHandler(utils.Cog):
-    """
-    This cog mainly just update's people usernames as a way to avoid getting unnessacary m!cachename support requests
-    """
 
     @utils.Cog.listener()
     async def on_message(self, message:discord.Message):

@@ -8,9 +8,6 @@ from cogs import utils as localutils
 
 
 class ModeratorOnly(utils.Cog, command_attrs={'hidden': True}):
-    """
-    This cog just contains all of the bot support commands that utils doesn't cover.
-    """
 
     @utils.command()
     @utils.checks.is_bot_support()

@@ -9,9 +9,6 @@ from cogs import utils as localutils
 
 
 class Parentage(utils.Cog):
-    """
-    Parentage, handles parent commands.
-    """
 
     async def get_max_children_for_member(self, guild:discord.Guild, user:discord.Member):
         """

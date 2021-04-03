@@ -7,9 +7,6 @@ from cogs import utils as localutils
 
 
 class Marriage(utils.Cog):
-    """
-    Handles marry and divorce commands.
-    """
 
     @utils.command(aliases=['marry'])
     @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)

@@ -9,10 +9,8 @@ from discord.ext import commands
 from cogs import utils
 import voxelbotutils
 
+
 class ErrorHandler(voxelbotutils.Cog):
-    """
-    Error Handler... handles errors (helps out with the VBU error handler for MB-specific errors)
-    """
 
     async def send_to_ctx_or_author(self, ctx:voxelbotutils.Context, text:str, author_text:str=None) -> typing.Optional[discord.Message]:
         """Tries to send the given text to ctx, but failing that, tries to send it to the author
