@@ -53,7 +53,7 @@ class Parentage(utils.Cog):
 
         # Variables we're gonna need for later
         family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
+        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -163,7 +163,7 @@ class Parentage(utils.Cog):
 
         # Variables we're gonna need for later
         family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
+        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -274,7 +274,7 @@ class Parentage(utils.Cog):
 
         # Get the family tree member objects
         family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree, child_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target, guild_id=ctx.family_guild_id)
+        user_tree, child_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target, guild_id=family_guild_id)
         child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
 
         # Make sure they're actually children
@@ -330,7 +330,7 @@ class Parentage(utils.Cog):
 
         # Get the family tree member objects
         family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=ctx.family_guild_id)
+        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
         # Make sure they're the child of the instigator
         parent_tree = user_tree.parent
@@ -380,7 +380,7 @@ class Parentage(utils.Cog):
 
         # Get the family tree member objects
         family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=ctx.family_guild_id)
+        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
         child_trees = user_tree.children.copy()
         if not child_trees:
             return await ctx.send("You don't have any children to disown .-.")

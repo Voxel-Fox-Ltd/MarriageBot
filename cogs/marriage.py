@@ -19,7 +19,7 @@ class Marriage(utils.Cog):
 
         # Get the family tree member objects
         family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=ctx.family_guild_id)
+        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -127,7 +127,7 @@ class Marriage(utils.Cog):
 
         # Get the family tree member objects
         family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=ctx.family_guild_id)
+        author_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
         # See if they're married
         target_tree = author_tree.partner
