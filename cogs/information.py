@@ -223,7 +223,7 @@ class Information(utils.Cog):
         user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
 
         # Make sure they have one
-        if tree.is_empty:
+        if user_name.is_empty:
             if user_id == ctx.author.id:
                 return await ctx.send(f"You have no family to put into a tree .-.")
             return await ctx.send(
@@ -238,9 +238,9 @@ class Information(utils.Cog):
         # Get their dot script
         async with ctx.channel.typing():
             if stupid_tree:
-                dot_code = await tree.to_full_dot_script(self.bot, ctu)
+                dot_code = await user_name.to_full_dot_script(self.bot, ctu)
             else:
-                dot_code = await tree.to_dot_script(self.bot, ctu)
+                dot_code = await user_name.to_dot_script(self.bot, ctu)
 
         # Write the dot to a file
         dot_filename = f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz'
