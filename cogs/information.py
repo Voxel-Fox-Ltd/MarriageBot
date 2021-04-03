@@ -233,7 +233,7 @@ class Information(utils.Cog):
 
         # Get their customisations
         async with self.bot.database() as db:
-            ctu = await localutils.CustomisedTreeUser.fetch_by_id(ctx.author.id, db)
+            ctu = await localutils.CustomisedTreeUser.fetch_by_id(db, ctx.author.id)
 
         # Get their dot script
         async with ctx.channel.typing():
