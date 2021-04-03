@@ -14,8 +14,6 @@ class RedisHandler(utils.Cog):
         self.update_max_children.start()
         self.update_gifs_enabled.start()
         self.send_user_message.start()
-        self.proposal_cache_add.start()
-        self.proposal_cache_remove.start()
         self.tree_member_update.start()
 
     def cog_unload(self):
@@ -25,8 +23,6 @@ class RedisHandler(utils.Cog):
         self.update_max_children.stop()
         self.update_gifs_enabled.stop()
         self.send_user_message.stop()
-        self.proposal_cache_add.stop()
-        self.proposal_cache_remove.stop()
         self.tree_member_update.stop()
 
     @utils.redis_channel_handler("UpdateGuildPrefix")
@@ -91,14 +87,6 @@ class RedisHandler(utils.Cog):
             self.logger.info(f"Sent a DM to user ID {payload['user_id']}")
         except (discord.NotFound, discord.Forbidden, AttributeError):
             pass
-
-    @utils.redis_channel_handler("ProposalCacheAdd")
-    def proposal_cache_add(self, payload):
-        self.bot.proposal_cache.raw_add(**payload)
-
-    @utils.redis_channel_handler("ProposalCacheRemove")
-    def proposal_cache_remove(self, payload):
-        self.bot.proposal_cache.raw_remove(*payload)
 
     @utils.redis_channel_handler("TreeMemberUpdate")
     def tree_member_update(self, payload):
