@@ -39,7 +39,10 @@ class Information(utils.Cog):
         if user_info._partner is None:
             if user_id == ctx.author.id:
                 return await ctx.send(f"You're not currently married.", allowed_mentions=discord.AllowedMentions.none())
-            return await ctx.send(f"**{user_name}** is not currently married.", allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(
+                f"**{localutils.escape_markdown(user_name)}** is not currently married.",
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
         partner_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._partner)
 
         # Get timestamp
@@ -54,9 +57,9 @@ class Information(utils.Cog):
             timestamp = None
 
         # Output
-        text = f"**{user_name}** is currently married to **{partner_name}** (`{user_info._partner}`). "
+        text = f"**{localutils.escape_markdown(user_name)}** is currently married to **{localutils.escape_markdown(partner_name)}** (`{user_info._partner}`). "
         if user_id == ctx.author.id:
-            text = f"You're currently married to **{partner_name}** (`{user_info._partner}`). "
+            text = f"You're currently married to **{localutils.escape_markdown(partner_name)}** (`{user_info._partner}`). "
         if timestamp:
             text += f"{'You' if user_id == ctx.author.id else 'They'}'ve been married since {timestamp.strftime('%B %d %Y')}."
         await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
@@ -77,13 +80,13 @@ class Information(utils.Cog):
 
         # Get user's children
         if len(user_info._children) == 0:
-            output = f"**{user_name}** has no children right now."
+            output = f"**{localutils.escape_markdown(user_name)}** has no children right now."
             if user_id == ctx.author.id:
                 output = f"You have no children right now."
         else:
-            output = f"**{user_name}** has {len(user_info._children)} {'child' len(user_info._children) == 1 else 'children'}:\n"
+            output = f"**{localutils.escape_markdown(user_name)}** has {len(user_info._children)} {'child' len(user_info._children) == 1 else 'children'}:\n"
             children = [(await localutils.DiscordNameManager.fetch_name_by_id(self.bot, i), i) for i in user_info._children]
-            output += "\n".join([f"* **{i[0]}** (`{i[1]}`)" for i in children])
+            output += "\n".join([f"* **{localutils.escape_markdown(i[0])}** (`{i[1]}`)" for i in children])
 
         # Return all output
         await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
@@ -106,13 +109,13 @@ class Information(utils.Cog):
         if user_info._parent is None:
             if user_id == ctx.author.id:
                 return await ctx.send("You have no parent.")
-            return await ctx.send(f"**{user_name}** has no parent.", allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(f"**{localutils.escape_markdown(user_name)}** has no parent.", allowed_mentions=discord.AllowedMentions.none())
         parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._parent)
 
         # Output parent
-        output = f"**{user_name}**'s parent is **{parent_name}** (`{user_info._parent}`)."
+        output = f"**{localutils.escape_markdown(user_name)}**'s parent is **{localutils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
         if user_id == ctx.author.id:
-            output = f"Your parent is `{parent_name}` (`{user_info._parent}`)."
+            output = f"Your parent is `{localutils.escape_markdown(parent_name)}` (`{user_info._parent}`)."
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['treesize', 'fs', 'ts'])
@@ -134,7 +137,7 @@ class Information(utils.Cog):
             size = user_tree.family_member_count
 
         # Output
-        output = f"There are {size} people in **{user_name}**'s family tree."
+        output = f"There are {size} people in **{localutils.escape_markdown(user_name)}**'s family tree."
         if user_id == ctx.author.id:
             output = f"There are {size} people in your family tree."
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
@@ -171,13 +174,13 @@ class Information(utils.Cog):
 
         # Output
         if relation is None:
-            output = f"**{user_name}** is not related to **{other_name}**."
+            output = f"**{localutils.escape_markdown(user_name)}** is not related to **{localutils.escape_markdown(other_name)}**."
             if user_id == ctx.author.id:
-                output = f"You're is not related to **{other_name}**."
+                output = f"You're is not related to **{localutils.escape_markdown(other_name)}**."
         else:
-            output = f"**{other_name}** is **{user_name}**'s {relation}."
+            output = f"**{localutils.escape_markdown(other_name)}** is **{localutils.escape_markdown(user_name)}**'s {relation}."
             if user_id == ctx.author.id:
-                output = f"**{other_name}** is your {relation}."
+                output = f"**{localutils.escape_markdown(other_name)}** is your {relation}."
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['tree', 't'])
@@ -223,7 +226,10 @@ class Information(utils.Cog):
         if tree.is_empty:
             if user_id == ctx.author.id:
                 return await ctx.send(f"You have no family to put into a tree .-.")
-            return await ctx.send(f"**{user_name}** has no family to put into a tree .-.", allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(
+                f"**{localutils.escape_markdown(user_name)}** has no family to put into a tree .-.",
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
 
         # Get their customisations
         async with self.bot.database() as db:

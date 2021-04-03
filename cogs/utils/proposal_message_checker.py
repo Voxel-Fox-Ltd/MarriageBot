@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 import discord
 from discord.ext import commands
@@ -6,6 +7,10 @@ from discord.ext import commands
 
 def only_mention(user:discord.User) -> discord.AllowedMentions:
     return discord.AllowedMentions(users=[user])
+
+
+def escape_markdown(value:str) -> str:
+    return re.sub(r"([\*`_])", r"\\\g<1>", value, re.MULTILINE | re.IGNORECASE)
 
 
 class TickPayloadCheckResult(object):

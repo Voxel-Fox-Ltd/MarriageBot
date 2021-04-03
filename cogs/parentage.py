@@ -271,7 +271,10 @@ class Parentage(utils.Cog):
 
         # Make sure they're actually children
         if child_tree not in user_tree._children:
-            return await ctx.send(f"It doesn't look like **{child_name}** is one of your children!", allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(
+                f"It doesn't look like **{localutils.escape_markdown(child_name)}** is one of your children!",
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
 
         # See if they're sure
         try:
@@ -303,7 +306,10 @@ class Parentage(utils.Cog):
             )
 
         # And we're done
-        await ctx.send(f"You've successfully disowned **{child_name}** :c", allowed_mentions=discord.AllowedMentions.none())
+        await ctx.send(
+            f"You've successfully disowned **{localutils.escape_markdown(child_name)}** :c",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
     @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
@@ -354,7 +360,7 @@ class Parentage(utils.Cog):
 
         # And we're done
         parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
-        return await ctx.send(f"You no longer have **{parent_name}** as a parent :c")
+        return await ctx.send(f"You no longer have **{localutils.escape_markdown(parent_name)}** as a parent :c")
 
     @utils.command()
     @localutils.checks.has_donator_perks("disownall_command")

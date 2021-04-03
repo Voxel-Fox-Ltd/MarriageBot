@@ -152,7 +152,11 @@ class Marriage(utils.Cog):
                 """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
                 ctx.author.id, target_tree.id, family_guild_id,
             )
-        await ctx.send(text_processor.valid_target())
+        partner_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, author_tree._partner)
+        await ctx.send(
+            f"You've successfully divorced **{localutils.escape_markdown(partner_name)}** :c",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
         # Ping over redis
         author_tree._partner = None
