@@ -58,7 +58,8 @@ class Information(utils.Cog):
         if user_id == ctx.author.id:
             text = f"You're currently married to **{localutils.escape_markdown(partner_name)}** (`{user_info._partner}`). "
         if timestamp:
-            text += f"{'You' if user_id == ctx.author.id else 'They'}'ve been married since {timestamp.strftime('%B %d %Y')}."
+            duration = utils.TimeValue((dt.utcnow() - timestamp).total_seconds())
+            text += f"{'You' if user_id == ctx.author.id else 'They'}'ve been married for {duration.clean_days}."
         await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['child', 'kids'])
