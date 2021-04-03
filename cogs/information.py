@@ -164,7 +164,7 @@ class Information(utils.Cog):
             return await ctx.send("Unsurprisingly, they're pretty closely related to themselves.")
 
         # Get their relation
-        user_info, other_info = localutils.FamilyTreeMember.get_multiple(user_id, other_id, localutils.get_family_guild_id(ctx))
+        user_info, other_info = localutils.FamilyTreeMember.get_multiple(user_id, other_id, guild_id=localutils.get_family_guild_id(ctx))
         async with ctx.channel.typing():
             relation = user_tree.get_relation(other_tree)
 
