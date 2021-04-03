@@ -79,9 +79,12 @@ class Information(utils.Cog):
         if len(user_info._children) == 0:
             output = f"**{localutils.escape_markdown(user_name)}** has no children right now."
             if user_id == ctx.author.id:
-                output = f"You have no children right now."
+                output = "You have no children right now."
         else:
-            output = f"**{localutils.escape_markdown(user_name)}** has {len(user_info._children)} {'child' if len(user_info._children) == 1 else 'children'}:\n"
+            children_plural = 'child' if len(user_info._children) == 1 else 'children'
+            output = f"**{localutils.escape_markdown(user_name)}** has {len(user_info._children)} {children_plural}:\n"
+            if user_id == ctx.author.id:
+                ouptut = f"You have {len(user_info._children)} {children_plural}:\n"
             children = [(await localutils.DiscordNameManager.fetch_name_by_id(self.bot, i), i) for i in user_info._children]
             output += "\n".join([f"* **{localutils.escape_markdown(i[0])}** (`{i[1]}`)" for i in children])
 
@@ -112,7 +115,7 @@ class Information(utils.Cog):
         # Output parent
         output = f"**{localutils.escape_markdown(user_name)}**'s parent is **{localutils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
         if user_id == ctx.author.id:
-            output = f"Your parent is `{localutils.escape_markdown(parent_name)}` (`{user_info._parent}`)."
+            output = f"Your parent is **{localutils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['treesize', 'fs', 'ts'])
