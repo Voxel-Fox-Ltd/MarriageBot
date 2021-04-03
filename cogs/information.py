@@ -193,7 +193,7 @@ class Information(utils.Cog):
         """
 
         try:
-            return await self.treemaker(ctx=ctx, user_id=user)
+            return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id)
         except Exception:
             raise
 
@@ -208,7 +208,7 @@ class Information(utils.Cog):
         """
 
         try:
-            return await self.treemaker(ctx=ctx, user_id=user, stupid_tree=True)
+            return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id, stupid_tree=True)
         except Exception:
             raise
 
@@ -218,7 +218,6 @@ class Information(utils.Cog):
         """
 
         # Get their family tree
-        user_id = user_id or ctx.author.id
         user_info = localutils.FamilyTreeMember.get(user_id, localutils.get_family_guild_id(ctx))
         user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
 
@@ -247,6 +246,7 @@ class Information(utils.Cog):
         try:
             with open(dot_filename, 'w', encoding='utf-8') as a:
                 a.write(dot_code)
+            await ctx.send(file=discord.File(dot_filename))
         except Exception as e:
             self.logger.error(f"Could not write to {dot_filename}")
             raise e
