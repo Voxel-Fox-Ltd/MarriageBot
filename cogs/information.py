@@ -30,7 +30,7 @@ class Information(utils.Cog):
         # Get the user's info
         user_id = user or ctx.author.id
         user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
-        user_info = localutils.FamilyTreeMember.get(user, localutils.get_family_guild_id(ctx))
+        user_info = localutils.FamilyTreeMember.get(user_id, localutils.get_family_guild_id(ctx))
 
         # Check they have a partner
         if user_info._partner is None:
@@ -131,7 +131,7 @@ class Information(utils.Cog):
 
         # Get size
         async with ctx.channel.typing():
-            size = user_tree.family_member_count
+            size = user_info.family_member_count
 
         # Output
         output = f"There are {size} people in **{localutils.escape_markdown(user_name)}**'s family tree."

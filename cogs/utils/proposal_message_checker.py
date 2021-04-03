@@ -10,7 +10,7 @@ def only_mention(user:discord.User) -> discord.AllowedMentions:
 
 
 def escape_markdown(value:str) -> str:
-    return re.sub(r"([\*`_])", r"\\\g<1>", value, re.MULTILINE | re.IGNORECASE)
+    return re.sub(r"([\*`_])", r"\\\g<1>", value)
 
 
 class TickPayloadCheckResult(object):
