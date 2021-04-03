@@ -6,6 +6,7 @@ import voxelbotutils as utils
 
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relationship_string_simplifier import RelationshipStringSimplifier as Simplifier
+from cogs.utils.discord_name_manager import DiscordNameManager
 
 
 
@@ -517,7 +518,7 @@ class FamilyTreeMember(object):
         # Add the username for each user (from unflattened list)
         for generation in gen_span.values():
             for i in generation:
-                name = await bot.get_name(i.id)
+                name = await DiscordNameManager.fetch_name_by_id(bot, i.id)
                 if name is None:
                     continue
                 all_users.add(i)
