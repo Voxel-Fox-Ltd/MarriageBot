@@ -228,7 +228,7 @@ class ServerSpecific(utils.Cog):
 
         # Get users
         family_guild_id = localutils.get_family_guild_id(ctx)
-        usera_tree, userb_tree = localutils.FamilyTreeMember.get_multiple(usera, userb, guild_id=ctx.family_guild_id)
+        usera_tree, userb_tree = localutils.FamilyTreeMember.get_multiple(usera, userb, guild_id=family_guild_id)
 
         # See if they have partners
         if usera_tree._partner is not None:
@@ -315,7 +315,7 @@ class ServerSpecific(utils.Cog):
         async with self.bot.database() as db:
             await db(
                 """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
-                parnet_id, child_id, family_guild_id, dt.utcnow(),
+                parent_id, child_id, family_guild_id, dt.utcnow(),
             )
 
         # Update cache
