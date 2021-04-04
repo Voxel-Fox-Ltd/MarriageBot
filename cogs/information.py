@@ -19,7 +19,7 @@ class TreeCommandCooldown(utils.cooldown.Cooldown):
 class Information(utils.Cog):
 
     @utils.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def partner(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -63,7 +63,7 @@ class Information(utils.Cog):
         await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['child', 'kids'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def children(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -93,7 +93,7 @@ class Information(utils.Cog):
         await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['parents'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def parent(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -120,7 +120,7 @@ class Information(utils.Cog):
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['treesize', 'fs', 'ts'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def familysize(self, ctx:utils.Context, user:utils.converters.UserID=None):
@@ -144,7 +144,7 @@ class Information(utils.Cog):
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['relation'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def relationship(self, ctx:utils.Context, user:utils.converters.UserID, other:utils.converters.UserID=None):

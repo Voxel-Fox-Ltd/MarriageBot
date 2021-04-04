@@ -48,7 +48,7 @@ class SimulationCommands(utils.Cog):
         return None
 
     @utils.command(aliases=['snuggle', 'cuddle'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def hug(self, ctx:utils.Context, user:discord.Member):
         """
@@ -61,7 +61,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Hugs {user.mention}.*", image_url=image_url)
 
     @utils.command(aliases=['smooch'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def kiss(self, ctx:utils.Context, user:discord.Member):
         """
@@ -74,7 +74,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Kisses {user.mention}.*", image_url=image_url)
 
     @utils.command(aliases=['smack'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def slap(self, ctx:utils.Context, user:discord.Member):
         """
@@ -87,7 +87,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Slaps {user.mention}.*", image_url=image_url)
 
     @utils.command()
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def coffee(self, ctx:utils.Context, user:discord.Member=None):
         """
@@ -108,7 +108,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Gives coffee to {user.mention}.*")
 
     @utils.command()
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def punch(self, ctx:utils.Context, user:discord.Member):
         """
@@ -121,7 +121,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Punches {user.mention} right in the nose.*", image_url=image_url)
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def cookie(self, ctx:utils.Context, user:discord.Member):
         """
@@ -133,7 +133,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Gives {user.mention} a cookie.*")
 
     @utils.command(aliases=['nunget', 'nuggie'], hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True, use_external_emojis=True)
     async def nugget(self, ctx:utils.Context, user:discord.Member):
         """
@@ -145,7 +145,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
 
     @utils.command(aliases=['borger', 'borg'], hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def burger(self, ctx:utils.Context, user:discord.Member):
         """
@@ -157,7 +157,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* 🍔")
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def tea(self, ctx:utils.Context, user:discord.Member):
         """
@@ -169,7 +169,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Gives {user.mention} tea.*")
 
     @utils.command(aliases=['dumpster'], hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def garbage(self, ctx:utils.Context, user:discord.Member):
         """
@@ -181,7 +181,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Throws {user.mention} into the dumpster.*")
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def poke(self, ctx:utils.Context, user:discord.Member):
         """
@@ -194,7 +194,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Pokes {user.mention}.*", image_url=image_url)
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def stab(self, ctx:utils.Context, user:discord.Member):
         """
@@ -220,7 +220,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(random.choice(responses))
 
     @utils.command(aliases=['murder'], hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def kill(self, ctx:utils.Context, user:discord.Member=None):
         """
@@ -238,7 +238,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(random.choice(responses))
 
     @utils.command(aliases=['vore'], hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def eat(self, ctx:utils.Context, user:discord.Member):
         """
@@ -255,7 +255,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(random.choice(responses))
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def sleep(self, ctx:utils.Context):
         """
@@ -269,7 +269,7 @@ class SimulationCommands(utils.Cog):
         ))
 
     @utils.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], hidden=True, enabled=False)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
@@ -311,7 +311,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(text_processor.request_accepted())
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def chocolate(self, ctx:utils.Context, user:discord.Member):
         """
@@ -323,7 +323,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Gives {user.mention} chocolate.*")
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def wave(self, ctx:utils.Context, user:discord.Member=None):
         """
@@ -335,7 +335,7 @@ class SimulationCommands(utils.Cog):
         await ctx.send(f"*Waves to {user.mention} :wave:")
 
     @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def apple(self, ctx:utils.Context, user:discord.Member):
         """

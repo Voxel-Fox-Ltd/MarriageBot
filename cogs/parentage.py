@@ -43,7 +43,7 @@ class Parentage(utils.Cog):
         ])
 
     @utils.command()
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def makeparent(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -154,7 +154,7 @@ class Parentage(utils.Cog):
         await lock.unlock()
 
     @utils.command()
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def adopt(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
@@ -266,7 +266,7 @@ class Parentage(utils.Cog):
         await lock.unlock()
 
     @utils.command(aliases=['abort'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
@@ -322,7 +322,7 @@ class Parentage(utils.Cog):
         )
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
-    @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def emancipate(self, ctx:utils.Context):
@@ -374,6 +374,8 @@ class Parentage(utils.Cog):
 
     @utils.command()
     @localutils.checks.has_donator_perks("disownall_command")
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
     async def disownall(self, ctx:utils.Context):
         """
