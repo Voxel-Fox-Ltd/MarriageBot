@@ -114,6 +114,7 @@ class Marriage(utils.Cog):
         target_tree._partner = ctx.author.id
         await re.publish('TreeMemberUpdate', author_tree.to_json())
         await re.publish('TreeMemberUpdate', target_tree.to_json())
+        await re.disconnect()
         await lock.unlock()
 
     @utils.command()

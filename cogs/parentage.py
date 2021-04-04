@@ -151,6 +151,7 @@ class Parentage(utils.Cog):
         await re.publish('TreeMemberUpdate', author_tree.to_json())
         await re.publish('TreeMemberUpdate', target_tree.to_json())
         await re.disconnect()
+        await lock.unlock()
 
     @utils.command()
     @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
@@ -262,6 +263,7 @@ class Parentage(utils.Cog):
         await re.publish('TreeMemberUpdate', author_tree.to_json())
         await re.publish('TreeMemberUpdate', target_tree.to_json())
         await re.disconnect()
+        await lock.unlock()
 
     @utils.command(aliases=['abort'])
     @utils.cooldown.no_raise_cooldown(1, 5, commands.BucketType.user)
