@@ -105,10 +105,10 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             )
         await ctx.okay()
 
-    @utils.command(aliases=['getgoldpurchases'])
+    @utils.command(aliases=['getgoldpurchase'])
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def getgoldpurchase(self, ctx:utils.Context, user:utils.converters.UserID):
+    async def getgoldpurchases(self, ctx:utils.Context, user:utils.converters.UserID):
         """
         Remove a guild from the MarriageBot Gold whitelist.
         """
@@ -119,7 +119,7 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             return await ctx.send("That user has purchased no instances of MarriageBot Gold.")
         return await ctx.invoke(
             self.bot.get_command("runsql"),
-            content="SELECT * FROM guild_specific_families WHERE purchased_by={}".format(user),
+            sql="SELECT * FROM guild_specific_families WHERE purchased_by={}".format(user),
         )
 
     @utils.command(aliases=['addblogpost'])
