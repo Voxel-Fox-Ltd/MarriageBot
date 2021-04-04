@@ -132,7 +132,7 @@ class Marriage(utils.Cog):
         # See if they're married
         target_tree = author_tree.partner
         if not target_tree:
-            return await ctx.send("It doens't look like you're married yet!")
+            return await ctx.send("It doesn't look like you're married yet!")
 
         # See if they're sure
         try:
