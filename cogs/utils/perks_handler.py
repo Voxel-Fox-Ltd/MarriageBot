@@ -40,6 +40,7 @@ TIER_ONE = MarriageBotPerks(
 TIER_VOTER = MarriageBotPerks(
     tree_command_cooldown=30,
 )
+TIER_NONE = MarriageBotPerks()
 
 
 async def get_marriagebot_perks(bot:utils.Bot, user_id:int) -> MarriageBotPerks:

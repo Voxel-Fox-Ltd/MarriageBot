@@ -7,7 +7,7 @@ from cogs.utils.family_tree.family_tree_member import FamilyTreeMember
 from cogs.utils.family_tree.relationship_string_simplifier import RelationshipStringSimplifier
 from cogs.utils.proposal_cache import ProposalCache
 from cogs.utils.discord_name_manager import DiscordNameManager
-from cogs.utils.perks_handler import get_marriagebot_perks
+from cogs.utils.perks_handler import get_marriagebot_perks, TIER_NONE, TIER_ONE, TIER_TWO, TIER_THREE, TIER_VOTER, MarriageBotPerks
 
 
 def get_family_guild_id(ctx) -> int:

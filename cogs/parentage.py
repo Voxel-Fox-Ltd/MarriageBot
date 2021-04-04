@@ -30,16 +30,16 @@ class Parentage(utils.Cog):
 
         # See how many children they're allowed normally (in regard to Patreon tier)
         marriagebot_perks = await localutils.get_marriagebot_perks(self.bot, user.id)
-        normal_children_amount = marriagebot_perks.max_children
+        user_children_amount = marriagebot_perks.max_children
 
         # Return the largest amount of children they've been assigned that's UNDER the global max children as set in the config
         return min([
             max([
                 gold_children_amount,
-                normal_children_amount,
-                min([i['max_children'] for i in self.bot.config['role_perks'].values()]),
+                user_children_amount,
+                localutils.TIER_NONE.max_children
             ]),
-            max([i['max_children'] for i in self.bot.config['role_perks'].values()]),
+            localutils.TIER_THREE.max_children
         ])
 
     @utils.command()
