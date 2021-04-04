@@ -348,6 +348,7 @@ class SimulationCommands(utils.Cog):
         # Respond
         await ctx.send(random.choice(localutils.random_text.Copulate.VALID).format(author=ctx.author, target=user))
 
+
 def setup(bot:utils.Bot):
     x = SimulationCommands(bot)
     bot.add_cog(x)
