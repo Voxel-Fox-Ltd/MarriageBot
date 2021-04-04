@@ -177,7 +177,7 @@ class Information(utils.Cog):
         if relation is None:
             output = f"**{localutils.escape_markdown(user_name)}** is not related to **{localutils.escape_markdown(other_name)}**."
             if user_id == ctx.author.id:
-                output = f"You're is not related to **{localutils.escape_markdown(other_name)}**."
+                output = f"You're not related to **{localutils.escape_markdown(other_name)}**."
         else:
             output = f"**{localutils.escape_markdown(other_name)}** is **{localutils.escape_markdown(user_name)}**'s {relation}."
             if user_id == ctx.author.id:
