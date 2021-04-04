@@ -92,7 +92,7 @@ class Parentage(utils.Cog):
         if relation and localutils.guild_allows_incest(ctx) is False:
             await lock.unlock()
             return await ctx.send(
-                f"Woah woah woah, it looks like you guys are already related! You're {target.mention}'s {relation}!",
+                f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=localutils.only_mention(ctx.author),
             )
 
@@ -205,7 +205,7 @@ class Parentage(utils.Cog):
         if relation and localutils.guild_allows_incest(ctx) is False:
             await lock.unlock()
             return await ctx.send(
-                f"Woah woah woah, it looks like you guys are already related! You're {target.mention}'s {relation}!",
+                f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=localutils.only_mention(ctx.author),
             )
 
