@@ -24,7 +24,7 @@ def is_server_specific_bot_moderator():
             return True
         except Exception:
             pass
-        await is_server_specific().predicate(ctx)
+        await guild_is_server_specific().predicate(ctx)
         if any([i for i in ctx.author.roles if i.name.casefold() in 'marriagebot moderator']):
             return True
         raise commands.NotServerSpecificBotModerator()
