@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 import asyncpg
 import discord
 from discord.ext import commands
@@ -100,8 +102,8 @@ class Marriage(utils.Cog):
             try:
                 await db.start_transaction()
                 await db(
-                    "INSERT INTO marriages (user_id, partner_id, guild_id) VALUES ($1, $2, $3), ($2, $1, $3)",
-                    ctx.author.id, target.id, family_guild_id,
+                    "INSERT INTO marriages (user_id, partner_id, guild_id timestamp) VALUES ($1, $2, $3, $4), ($2, $1, $3, $4)",
+                    ctx.author.id, target.id, family_guild_id, dt.utcnow(),
                 )
                 await db.commit_transaction()
             except asyncpg.UniqueViolationError:
