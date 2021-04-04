@@ -1,0 +1,18 @@
+{
+  "apps" : [
+    {"name": "mb0", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 0 --max 15", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb1", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 16 --max 31", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb2", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 32 --max 47", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb3", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 48 --max 63", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb4", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 64 --max 79", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb5", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 80 --max 95", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb6", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 96 --max 111", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb7", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 112 --max 127", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb8", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 128 --max 143", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb9", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 144 --max 159", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb10", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 160 --max 175", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb11", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 176 --max 191", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "gold", "script": "python3 -m voxelbotutils run-bot . config/gold.toml", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "web", "script": "python3 webserver.py config/config.toml config/server_specific2.toml --port 8000", "cwd": "/home/kae/MarriageBot"}
+  ]
+}
