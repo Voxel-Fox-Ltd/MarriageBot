@@ -354,7 +354,10 @@ class Parentage(utils.Cog):
 
         # Remove family caching
         user_tree._parent = None
-        parent_tree._children.remove(ctx.author.id)
+        try:
+            parent_tree._children.remove(ctx.author.id)
+        except ValueError:
+            pass
 
         # Ping them off over reids
         async with self.bot.redis() as re:
