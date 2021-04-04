@@ -92,7 +92,7 @@ async def send_proposal_message(
     """
 
     timeout_message = timeout_message or f"Sorry, {ctx.author.mention}; your proposal to {user.mention} timed out - they didn't respond in time :<"
-    cancel_message = cancel_message or f"Alright, {ctx.author.mention}; your proposal to {user.mention} has been cancelled.",
+    cancel_message = cancel_message or f"Alright, {ctx.author.mention}; your proposal to {user.mention} has been cancelled."
 
     # Reply yes if we allow bots
     if allow_bots and user.bot:
