@@ -315,10 +315,13 @@ class ServerSpecific(utils.Cog):
 
         # Update database
         async with self.bot.database() as db:
-            await db(
-                """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
-                parent_id, child_id, family_guild_id, dt.utcnow(),
-            )
+            try:
+                await db(
+                    """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
+                    parent_id, child_id, family_guild_id, dt.utcnow(),
+                )
+            except asyncpg.UniqueViolationError:
+                return await ctx.send("I ran into an error saving your family data.")
 
         # Update cache
         parent_tree._children.append(child_id)
@@ -340,7 +343,7 @@ class ServerSpecific(utils.Cog):
         family_guild_id = localutils.get_family_guild_id(ctx)
         child_tree = localutils.FamilyTreeMember.get(child, family_guild_id)
         child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child)
-        if not me.parent:
+        if not child_tree._parent:
             return await ctx.send(f"**{child_name}** doesn't even have a parent .-.")
 
         # Update database
