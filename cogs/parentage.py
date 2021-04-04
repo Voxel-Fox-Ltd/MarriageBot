@@ -37,9 +37,9 @@ class Parentage(utils.Cog):
             max([
                 gold_children_amount,
                 user_children_amount,
-                localutils.TIER_NONE.max_children
+                localutils.TIER_NONE.max_children,
             ]),
-            localutils.TIER_THREE.max_children
+            localutils.TIER_THREE.max_children,
         ])
 
     @utils.command()
@@ -138,7 +138,7 @@ class Parentage(utils.Cog):
             try:
                 await db(
                     """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
-                    target.id, ctx.author.id, ctx.family_guild_id, dt.utcnow(),
+                    target.id, ctx.author.id, family_guild_id, dt.utcnow(),
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
@@ -249,7 +249,7 @@ class Parentage(utils.Cog):
             try:
                 await db(
                     """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
-                    ctx.author.id, target.id, ctx.family_guild_id, dt.utcnow(),
+                    ctx.author.id, target.id, family_guild_id, dt.utcnow(),
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
