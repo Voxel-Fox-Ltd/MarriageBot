@@ -356,7 +356,10 @@ class ServerSpecific(utils.Cog):
             )
 
         # Update cache
-        child_tree.parent._children.remove(child)
+        try:
+            child_tree.parent._children.remove(child)
+        except ValueError:
+            pass
         parent = child_tree.parent
         child_tree._parent = None
         async with self.bot.redis() as re:
