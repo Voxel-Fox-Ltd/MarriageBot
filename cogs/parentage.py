@@ -280,7 +280,7 @@ class Parentage(utils.Cog):
         child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
 
         # Make sure they're actually children
-        if child_tree not in user_tree._children:
+        if child_tree.id not in user_tree._children:
             return await ctx.send(
                 f"It doesn't look like **{localutils.escape_markdown(child_name)}** is one of your children!",
                 allowed_mentions=discord.AllowedMentions.none(),
