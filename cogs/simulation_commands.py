@@ -325,7 +325,7 @@ class SimulationCommands(utils.Cog):
         # See if they're already related
         async with ctx.channel.typing():
             relation = author_tree.get_relation(target_tree)
-        if relation and localutils.guild_allows_incest(ctx) is False:
+        if relation and relation != "partner" and localutils.guild_allows_incest(ctx) is False:
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are related! {target.mention} is your {relation}!",
                 allowed_mentions=localutils.only_mention(ctx.author),
