@@ -91,8 +91,8 @@ async def send_proposal_message(
         TickPayloadCheckResult: The resulting reaction that either the user or the author gave.
     """
 
-    timeout_message = timeout_message or f"Sorry, {ctx.author.mention}; your proposal to {user.mention} timed out - they didn't respond in time :<"
-    cancel_message = cancel_message or f"Alright, {ctx.author.mention}; your proposal to {user.mention} has been cancelled."
+    timeout_message = timeout_message or f"Sorry, {ctx.author.mention}; your request to {user.mention} timed out - they didn't respond in time :<"
+    cancel_message = cancel_message or f"Alright, {ctx.author.mention}; your request to {user.mention} has been cancelled."
 
     # Reply yes if we allow bots
     if allow_bots and user.bot:

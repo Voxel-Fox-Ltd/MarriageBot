@@ -268,48 +268,6 @@ class SimulationCommands(utils.Cog):
             "awake. You were trying to cross the border, right?\""
         ))
 
-    @utils.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], hidden=True, enabled=False)
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @commands.is_nsfw()
-    @utils.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
-    async def copulate(self, ctx:utils.Context, user:discord.Member):
-        """
-        Lets you... um... heck someone.
-        """
-
-        # Check for the most common catches
-        text_processor = localutils.random_text.RandomText('copulate', ctx.author, user)
-        text = text_processor.process(check_for_instigator=False)
-        if text:
-            return await ctx.send(text)
-
-        # Check if they are related
-        x = localutils.FamilyTreeMember.get(ctx.author.id, ctx.family_guild_id)
-        y = localutils.FamilyTreeMember.get(user.id, ctx.family_guild_id)
-        async with ctx.channel.typing():
-            relationship = x.get_relation(y)
-        if relationship is None or relationship.casefold() == 'partner' or self.bot.allows_incest(ctx.guild.id):
-            pass
-        else:
-            return await ctx.send(text_processor.target_is_family())
-
-        # Ping out a message for them
-        await ctx.send(text_processor.valid_target())
-
-        # Wait for a response
-        try:
-            check = localutils.AcceptanceCheck(user.id, ctx.channel.id).check
-            m = await self.bot.wait_for('message', check=check, timeout=60.0)
-            response = check(m)
-        except asyncio.TimeoutError:
-            return await ctx.send(text_processor.request_timeout(), ignore_error=True)
-
-        # Process response
-        if response == "NO":
-            return await ctx.send(text_processor.request_denied())
-        await ctx.send(text_processor.request_accepted())
-
     @utils.command(hidden=True)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
@@ -346,6 +304,49 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("*You eat an apple.*")
         await ctx.send(f"*Gives {user.mention} an apple.*")
 
+    @utils.command(aliases=['intercourse', 'fuck', 'smash', 'heck', 'sex'], hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.is_nsfw()
+    @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
+    async def copulate(self, ctx:utils.Context, user:discord.Member):
+        """
+        Lets you... um... heck someone.
+        """
+
+        # Variables we're gonna need for later
+        family_guild_id = localutils.get_family_guild_id(ctx)
+        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
+
+        # Check they're not a bot
+        if target.id == self.bot.user.id:
+            return await ctx.send("Ew. No. Thanks.")
+
+        # See if they're already related
+        async with ctx.channel.typing():
+            relation = author_tree.get_relation(target_tree)
+        if relation and localutils.guild_allows_incest(ctx) is False:
+            await lock.unlock()
+            return await ctx.send(
+                f"Woah woah woah, it looks like you guys are related! {target.mention} is your {relation}!",
+                allowed_mentions=localutils.only_mention(ctx.author),
+            )
+
+        # Set up the proposal
+        if target.id != ctx.author.id:
+            try:
+                result = await localutils.send_proposal_message(
+                    ctx, target,
+                    f"Hey, {target.mention}, {ctx.author.mention} do you wanna... smash? \N{SMIRKING FACE}",
+                    allow_bots=True,
+                )
+            except Exception:
+                result = None
+            if result is None:
+                return
+
+        # Respond
+        await ctx.send(random.choice(localutils.random_text.Copulate.VALID).format(author=ctx.author, target=user))
 
 def setup(bot:utils.Bot):
     x = SimulationCommands(bot)

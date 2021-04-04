@@ -1,4 +1,4 @@
-from cogs.utils import checks, converters, errors
+from cogs.utils import checks, converters, errors, random_text
 from cogs.utils.proposal_message_checker import (
     send_proposal_message, TickPayloadCheckResult, ProposalLock, ProposalInProgress, only_mention, escape_markdown,
 )
