@@ -71,7 +71,7 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             return await ctx.send("I encountered an error copying that family over.")
 
         # Send to user
-        await ctx.send(f"Copied over `{len(users)}` users.")
+        await ctx.send(f"Copied over `{len(users)}` users. Be sure to run the `runstartupmethod` command")
         await db.disconnect()
 
     @utils.command()
