@@ -214,7 +214,7 @@ class ServerSpecific(utils.Cog):
         except discord.Forbidden:
             await ctx.send("I couldn't send you a DM :c")
 
-    @utils.command()
+    @utils.command(enabled=False)
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
     async def forcemarry(self, ctx:utils.Context, usera:utils.converters.UserID, userb:utils.converters.UserID=None):
@@ -262,7 +262,7 @@ class ServerSpecific(utils.Cog):
             await re.publish('TreeMemberUpdate', usera_tree.to_json())
             await re.publish('TreeMemberUpdate', userb_tree.to_json())
 
-    @utils.command()
+    @utils.command(enabled=False)
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
     async def forcedivorce(self, ctx:utils.Context, usera:utils.converters.UserID):
@@ -293,7 +293,7 @@ class ServerSpecific(utils.Cog):
             await re.publish('TreeMemberUpdate', userb_tree.to_json())
         await ctx.send("Consider it done.")
 
-    @utils.command()
+    @utils.command(enabled=False)
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
     async def forceadopt(self, ctx:utils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
@@ -304,6 +304,8 @@ class ServerSpecific(utils.Cog):
         # Correct params
         if child is None:
             parent_id, child_id = ctx.author.id, parent
+        else:
+            parent_id, child_id = parent, child
 
         # Check users
         family_guild_id = localutils.get_family_guild_id(ctx)
