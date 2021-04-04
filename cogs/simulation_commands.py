@@ -309,7 +309,7 @@ class SimulationCommands(utils.Cog):
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def copulate(self, ctx:utils.Context, user:discord.Member):
+    async def copulate(self, ctx:utils.Context, target:discord.Member):
         """
         Lets you... um... heck someone.
         """
