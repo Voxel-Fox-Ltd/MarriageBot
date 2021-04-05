@@ -190,7 +190,7 @@ class Information(utils.Cog):
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def familytree(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """
-        Gets the family tree of a given user.
+        Gets the blood family tree of a given user.
         """
 
         try:
@@ -205,7 +205,7 @@ class Information(utils.Cog):
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def fulltree(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """
-        Gets the family tree of a given user.
+        Gets the enitre family tree of a given user.
         """
 
         try:

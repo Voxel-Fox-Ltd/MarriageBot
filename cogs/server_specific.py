@@ -45,7 +45,7 @@ class ServerSpecific(utils.Cog):
         self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
         await guild.leave()
 
-    @utils.command()
+    @utils.command(add_slash_command=False)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     @utils.checks.is_config_set('command_data', 'stats_command_enabled')
@@ -149,7 +149,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @utils.group()
+    @utils.group(add_slash_command=False)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def incest(self, ctx:utils.Context):
@@ -162,7 +162,7 @@ class ServerSpecific(utils.Cog):
         if ctx.invoked_subcommand is None:
             return await ctx.send_help(ctx.command)
 
-    @incest.command(name="allow", aliases=['enable', 'on', 'start'])
+    @incest.command(name="allow", aliases=['enable', 'on', 'start'], add_slash_command=False)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
@@ -181,7 +181,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
         await ctx.send("Incest is now **ALLOWED** on your guild.")
 
-    @incest.command(name="disallow", aliases=['disable', 'off', 'stop'])
+    @incest.command(name="disallow", aliases=['disable', 'off', 'stop'], add_slash_command=False)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @localutils.checks.is_server_specific_bot_moderator()
     @localutils.checks.guild_is_server_specific()
@@ -200,7 +200,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @utils.command(aliases=['ssf'])
+    @utils.command(aliases=['ssf'], add_slash_command=False)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def gold(self, ctx:utils.Context):
@@ -214,7 +214,7 @@ class ServerSpecific(utils.Cog):
         except discord.Forbidden:
             await ctx.send("I couldn't send you a DM :c")
 
-    @utils.command()
+    @utils.command(add_slash_command=False)
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
     async def forcemarry(self, ctx:utils.Context, usera:utils.converters.UserID, userb:utils.converters.UserID=None):
@@ -262,7 +262,7 @@ class ServerSpecific(utils.Cog):
             await re.publish('TreeMemberUpdate', usera_tree.to_json())
             await re.publish('TreeMemberUpdate', userb_tree.to_json())
 
-    @utils.command()
+    @utils.command(add_slash_command=False)
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
     async def forcedivorce(self, ctx:utils.Context, usera:utils.converters.UserID):
@@ -293,7 +293,7 @@ class ServerSpecific(utils.Cog):
             await re.publish('TreeMemberUpdate', userb_tree.to_json())
         await ctx.send("Consider it done.")
 
-    @utils.command()
+    @utils.command(add_slash_command=False)
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
     async def forceadopt(self, ctx:utils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
@@ -333,7 +333,7 @@ class ServerSpecific(utils.Cog):
             await re.publish('TreeMemberUpdate', child_tree.to_json())
         await ctx.send(f"Added **{child_name}** to **{parent_name}**'s children list.")
 
-    @utils.command(aliases=['forceeman'])
+    @utils.command(aliases=['forceeman'], add_slash_command=False)
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
     async def forceemancipate(self, ctx:utils.Context, child:utils.converters.UserID):

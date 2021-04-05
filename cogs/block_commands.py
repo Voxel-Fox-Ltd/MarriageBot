@@ -9,7 +9,7 @@ class BlockCommands(utils.Cog):
     @commands.bot_has_permissions(send_messages=True)
     async def block(self, ctx:utils.Context, user:utils.converters.UserID):
         """
-        Blocks a user from being able to adopt/makeparent/whatever you.
+        Blocks a user from being able to adopt/makeparent/etc you.
         """
 
         # Add to list
@@ -27,7 +27,7 @@ class BlockCommands(utils.Cog):
     @commands.bot_has_permissions(send_messages=True)
     async def unblock(self, ctx:utils.Context, user:utils.converters.UserID):
         """
-        Unblocks a user and allows them to adopt/makeparent/whatever you.
+        Unblocks a user and allows them to adopt/makeparent/etc you.
         """
 
         # Remove from list

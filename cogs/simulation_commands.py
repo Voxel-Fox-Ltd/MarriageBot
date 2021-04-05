@@ -86,7 +86,7 @@ class SimulationCommands(utils.Cog):
         image_url = await self.get_reaction_gif(ctx)
         await ctx.send(f"*Slaps {user.mention}.*", image_url=image_url)
 
-    @utils.command()
+    @utils.command(hidden=True)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def coffee(self, ctx:utils.Context, user:discord.Member=None):
@@ -346,12 +346,11 @@ class SimulationCommands(utils.Cog):
         # Get percentage
         async with self.bot.database() as db:
             rows = await db("SELECT * FROM ship_percentages WHERE user_id_1=ANY($1::BIGINT[]) AND user_id_2=ANY($1::BIGINT[])", [user.id, user2.id])
-        if rows and rows[0]['percentage']:  
+        if rows and rows[0]['percentage']:
             percentage = rows[0]['percentage'] / 100
         else:
             percentage = ((user.id + user2.id + 4500) % 10001) / 100
         return await ctx.send(f"{user.mention} \N{REVOLVING HEARTS} **{percentage:.2f}%** \N{REVOLVING HEARTS} {user2.mention}", allowed_mentions=discord.AllowedMentions(users=False))
-
 
     @utils.command(aliases=['intercourse', 'fuck', 'smash', 'heck', 'sex'], hidden=True)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
