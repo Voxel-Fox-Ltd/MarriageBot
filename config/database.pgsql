@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS channel_list(
     PRIMARY KEY (guild_id, channel_id, key)
 );
 
-
+    
 CREATE TABLE IF NOT EXISTS redirects(
     code VARCHAR(50) PRIMARY KEY,
     location VARCHAR(2000)
@@ -146,4 +146,11 @@ CREATE TABLE IF NOT EXISTS role_list(
     key VARCHAR(50),
     value VARCHAR(50),
     PRIMARY KEY (guild_id, role_id, key)
+);
+
+CREATE TABLE IF NOT EXISTS ship_percentages(
+    user_id_1 BIGINT,
+    user_id_2 BIGINT,
+    percentage SMALLINT,
+    PRIMARY KEY (user_id_1, user_id_2)
 );
