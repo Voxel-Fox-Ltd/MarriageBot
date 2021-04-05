@@ -4,13 +4,13 @@ import voxelbotutils as utils
 from cogs.utils.checks.guild_is_server_specific import guild_is_server_specific
 
 
-class NotServerSpecificBotModerator(commands.CheckFailure):
+class NotServerSpecificBotModerator(commands.MissingRole):
     """
     The specified user doesn't have the MarriageBot Moderator role.
     """
 
     def __init__(self):
-        super().__init__("You need the `MarriageBot Moderator` role to be able to run this command.")
+        super().__init__("MarriageBot Moderator")
 
 
 def is_server_specific_bot_moderator():
@@ -30,7 +30,7 @@ def is_server_specific_bot_moderator():
         try:
             await guild_is_server_specific().predicate(ctx)
         except Exception:
-            raise NotServerSpecificBotModerator()
+            raise
 
         # Make sure they have the role
         if any([i for i in ctx.author.roles if i.name.casefold() in 'marriagebot moderator']):
