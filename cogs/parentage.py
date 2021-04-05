@@ -300,7 +300,10 @@ class Parentage(utils.Cog):
             return
 
         # Remove from cache
-        user_tree._children.remove(child_tree.id)
+        try:
+            user_tree._children.remove(child_tree.id)
+        except ValueError:
+            pass
         child_tree._parent = None
 
         # Remove from redis
