@@ -5,7 +5,7 @@ from discord.ext import commands
 import voxelbotutils as utils
 
 from cogs import utils as localutils
-
+import discord
 
 class BotModerator(utils.Cog, command_attrs={'hidden': True}):
 
@@ -122,7 +122,7 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
                 *sorted([user1.id, user2.id]), percentage,
             )
         await ctx.okay()
-        
+
     @utils.command(aliases=['getgoldpurchase'])
     @utils.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
