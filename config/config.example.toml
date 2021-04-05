@@ -52,6 +52,10 @@ is_server_specific = false
     topgg_token = ""  # The token used to post data to top.gg
     discordbotlist_token = ""  # The token used to post data to discordbotlist.com
 
+# Add our API keys
+[api_keys]
+    weebsh = ""
+
 # Data that's copied directly over to a command
 [command_data]
     website_link = "https://marriagebot.xyz"  # A link to be used on !website

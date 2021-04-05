@@ -31,7 +31,7 @@ class SimulationCommands(utils.Cog):
             "Authorization": f"Wolke {self.bot.config['api_keys']['weebsh']}"
         }
         params = {
-            "type": reaction_type or ctx.command_name,
+            "type": reaction_type or ctx.command.name,
             "nsfw": str(nsfw).lower(),
         }
 
