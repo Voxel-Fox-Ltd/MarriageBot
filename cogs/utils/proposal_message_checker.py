@@ -28,14 +28,6 @@ class TickPayloadCheckResult(object):
     def __init__(self, emoji):
         self.emoji = emoji
 
-    @classmethod
-    async def add_tick_emojis(cls, message):
-        for emoji in cls.BOOLEAN_EMOJIS.values():
-            external_emoji_bool = return message.channel.permissions_for(guild.me).external_emojis
-            if external_emoji_bool:
-                    x = await message.add_reaction(emoji)
-            else:
-                    
 
     @classmethod
     async def add_tick_emojis(cls, message):
@@ -46,12 +38,7 @@ class TickPayloadCheckResult(object):
             else:
                     for emoji in cls.BOOLEAN_ALT_EMOJIS.values():
                         await message.add_reaction(emoji)
-                        
-
-      
-            
-            
-
+  
     @classmethod
     def add_tick_emojis_non_async(cls, message):
         return asyncio.Task(cls.add_tick_emojis(message))
