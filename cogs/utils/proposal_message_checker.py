@@ -21,7 +21,7 @@ class TickPayloadCheckResult(object):
         "CROSS": "<:tick_filled_no:784976328231223306>",
     }
     BOOLEAN_ALT_EMOJIS = {
-        "TICK": ":white_check_mark:>",
+        "TICK": ":white_check_mark:",
         "CROSS": ":x:",
     }
 
