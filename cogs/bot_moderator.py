@@ -1,10 +1,13 @@
 from datetime import datetime as dt
+import typing
 
 import asyncpg
 from discord.ext import commands
 import voxelbotutils as utils
+import discord
 
 from cogs import utils as localutils
+
 
 
 class BotModerator(utils.Cog, command_attrs={'hidden': True}):
@@ -102,6 +105,24 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             await db(
                 """DELETE FROM guild_specific_families WHERE guild_id=$1""",
                 guild_id,
+            )
+        await ctx.okay()
+
+    @utils.command(hidden=True)
+    @utils.checks.is_bot_support()
+    @commands.bot_has_permissions(add_reactions=True)
+    async def addship(self, ctx:utils.Context, user1:discord.Member, user2:typing.Optional[discord.Member]=None, percentage:float=0):
+        """
+        Add a custom ship percentage.
+        """
+
+        user2 = user2 or ctx.author
+        percentage = max([min([percentage * 100, 10_000]), -10_000])
+        async with self.bot.database() as db:
+            await db(
+                """INSERT INTO ship_percentages (user_id_1, user_id_2, percentage) VALUES ($1, $2, $3)
+                ON CONFLICT (user_id_1, user_id_2) DO UPDATE SET percentage=excluded.percentage""",
+                *sorted([user1.id, user2.id]), percentage,
             )
         await ctx.okay()
 
