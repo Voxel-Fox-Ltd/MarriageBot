@@ -22,7 +22,7 @@ class Parentage(utils.Cog):
         # See how many children they're allowed with Gold
         gold_children_amount = 0
         if self.bot.config.get('is_server_specific', False):
-            guild_max_children = self.bot.guild_settings[guild.id]['max_children']
+            guild_max_children = self.bot.guild_settings[guild.id].get('max_children')
             if guild_max_children:
                 gold_children_amount = max([
                     amount if int(role_id) in user._roles else 0 for role_id, amount in guild_max_children.items()
