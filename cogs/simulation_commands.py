@@ -304,6 +304,18 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("*You eat an apple.*")
         await ctx.send(f"*Gives {user.mention} an apple.*")
 
+    @utils.command(hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def dance(self, ctx:utils.Context, user:discord.Member):
+        """
+        you are the dancing queen.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("You uhm.. dance.. with yourself. ")
+        await ctx.send(f"*You dance with {user.mention}!*")
+
     @utils.command()
     @commands.bot_has_permissions(send_messages=True)
     async def ship(self, ctx:utils.Context, user:discord.Member, user2:discord.Member=None):
