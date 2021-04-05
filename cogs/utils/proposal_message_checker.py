@@ -31,7 +31,7 @@ class TickPayloadCheckResult(object):
 
     @classmethod
     async def add_tick_emojis(cls, message):
-        external_emoji_bool = return message.channel.permissions_for(guild.me).external_emojis
+        external_emoji_bool = message.channel.permissions_for(guild.me).external_emojis
             if external_emoji_bool:
                     for emoji in cls.BOOLEAN_EMOJIS.values():
                         await message.add_reaction(emoji)
