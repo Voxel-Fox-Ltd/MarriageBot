@@ -21,6 +21,8 @@ class NameHandler(utils.Cog):
 
         if before.name == after.name:
             return
+        if str(after).endswith("#0000"):
+            return
         async with self.bot.redis() as re:
             await re.set(f'UserName-{after.id}', str(after))
 
