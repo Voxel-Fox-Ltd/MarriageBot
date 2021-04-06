@@ -1,5 +1,6 @@
 import asyncio
 import re
+import aioredlock
 
 import discord
 from discord.ext import commands
@@ -60,8 +61,14 @@ class ProposalLock(object):
         locks = []
         if any([await redis.lock_manager.is_locked(str(i)) for i in user_ids]):
             raise ProposalInProgress()
-        for i in user_ids:
-            locks.append(await redis.lock_manager.lock(str(i), lock_timeout=120))
+        try:
+            for i in user_ids:
+                locks.append(await redis.lock_manager.lock(str(i), lock_timeout=120))
+        except aioredlock.LockError:
+            for i in locks:
+                await redis.lock_manager.unlock(i)
+            await redis.disconnect()
+            raise ProposalInProgress()
         return cls(redis, *locks)
 
     async def unlock(self, *, disconnect_redis:bool=True):
