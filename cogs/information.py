@@ -2,10 +2,10 @@ import asyncio
 import typing
 import io
 from datetime import datetime as dt
-import voxelbotutils as utils
 
 import discord
 from discord.ext import commands
+import voxelbotutils as utils
 
 from cogs import utils as localutils
 
@@ -45,9 +45,9 @@ class Information(utils.Cog):
         # Get timestamp
         async with self.bot.database() as db:
             if self.bot.config.get('is_server_specific', False):
-                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id<>0", user)
+                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=$2", user_id, user_info._guild_id)
             else:
-                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", user)
+                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", user_id)
         try:
             timestamp = data[0]['timestamp']
         except Exception:
