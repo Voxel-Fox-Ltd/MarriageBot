@@ -184,11 +184,11 @@ class Information(utils.Cog):
                 output = f"**{localutils.escape_markdown(other_name)}** is your {relation}."
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
-    @utils.command(aliases=['tree', 't'])
+    @utils.command(aliases=['familytree', 't'])
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def familytree(self, ctx:utils.Context, user:utils.converters.UserID=None):
+    async def tree(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """
         Gets the blood family tree of a given user.
         """
@@ -198,12 +198,12 @@ class Information(utils.Cog):
         except Exception:
             raise
 
-    @utils.command(aliases=['st', 'stupidtree'])
+    @utils.command(aliases=['st', 'stupidtree', 'fulltree'])
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @localutils.checks.has_donator_perks("stupidtree_command")
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def fulltree(self, ctx:utils.Context, user:utils.converters.UserID=None):
+    async def bloodtree(self, ctx:utils.Context, user:utils.converters.UserID=None):
         """
         Gets the enitre family tree of a given user.
         """
@@ -268,7 +268,7 @@ class Information(utils.Cog):
         file = discord.File(image_filename)
         text = f"[Click here](https://marriagebot.xyz/) to customise your tree."
         if not stupid_tree:
-            text += f" Use `{ctx.prefix}fulltree` for your _entire_ family, including non-blood relatives."
+            text += f" Use `{ctx.prefix}bloodtree` for your _entire_ family, including non-blood relatives."
         await ctx.send(text, file=file)
 
         # Delete the files
