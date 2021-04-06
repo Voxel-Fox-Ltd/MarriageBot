@@ -13,6 +13,7 @@
     {"name": "mb10", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 160 --max 175", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "mb11", "script": "python3 -m voxelbotutils run-bot . config/config.toml --shardcount 192 --min 176 --max 191", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "gold", "script": "python3 -m voxelbotutils run-bot . config/gold.toml", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "test", "script": "python3 -m voxelbotutils run-bot . config/testbot.toml --loglevel debug", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "web", "script": "python3 webserver.py config/config.toml config/server_specific2.toml --port 8000", "cwd": "/home/kae/MarriageBot"}
   ]
 }

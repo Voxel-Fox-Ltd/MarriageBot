@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 
+import asyncpg
 import discord
 from discord.ext import commands
 import voxelbotutils as utils
