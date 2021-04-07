@@ -6,6 +6,11 @@ from cogs.utils.perks_handler import get_marriagebot_perks
 
 def has_donator_perks(perk_name:str):
     async def predicate(ctx):
+    	try:
+    		await utils.checks.is_bot_support().predicate(ctx)
+            return True
+        except Exception:
+        	pass
         perks = await get_marriagebot_perks(ctx.bot, ctx.author.id)
         v = getattr(perks, perk_name, False)
         if v:
