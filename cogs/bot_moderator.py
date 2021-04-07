@@ -166,16 +166,21 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
     @utils.checks.is_bot_support()
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None):
+    async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None, full_tree=True):
         """
-        Gives you the full family tree of a user.
+        Gives you the tree file of a user. ST optional.
         """
 
         root_user_id = root or ctx.author.id
         family_guild_id = localutils.get_family_guild_id(ctx)
+
         async with ctx.channel.typing():
-            text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).generate_gedcom_script(self.bot)
+            if full_tree:
+                text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_full_dot_script(self.bot)
+            else:
+                text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_dot_script(self.bot)
         file_bytes = io.BytesIO(text.encode())
+
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
 
