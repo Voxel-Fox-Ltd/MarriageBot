@@ -162,20 +162,20 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             )
         await ctx.send(f"Set blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
 
-    # @utils.command()
-    # @utils.checks.is_bot_support()
-    # @utils.checks.bot_is_ready()
-    # @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    # async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None):
-    #     """
-    #     Gives you the full family tree of a user.
-    #     """
+    @utils.command()
+    @utils.checks.is_bot_support()
+    @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True, attach_files=True)
+    async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None):
+        """
+        Gives you the full family tree of a user.
+        """
 
-    #     root_user_id = root or ctx.author.id
-    #     async with ctx.channel.typing():
-    #         text = await localutils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
-    #     file_bytes = io.BytesIO(text.encode())
-    #     await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
+        root_user_id = root or ctx.author.id
+        async with ctx.channel.typing():
+            text = await localutils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
+        file_bytes = io.BytesIO(text.encode())
+        await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
 
 def setup(bot:utils.Bot):
