@@ -175,10 +175,12 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
         family_guild_id = localutils.get_family_guild_id(ctx)
 
         async with ctx.channel.typing():
+            async with self.bot.database() as db:
+                customtree = await localutils.CustomisedTreeUser.fetch_by_id(db, root_user_id)
             if full_tree:
-                text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_full_dot_script(self.bot)
+                text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_full_dot_script(self.bot, customtree)
             else:
-                text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_dot_script(self.bot)
+                text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_dot_script(self.bot, customtree)
         file_bytes = io.BytesIO(text.encode())
 
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
