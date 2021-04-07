@@ -172,8 +172,9 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
         """
 
         root_user_id = root or ctx.author.id
+        family_guild_id = localutils.get_family_guild_id(ctx)
         async with ctx.channel.typing():
-            text = await localutils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
+            text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).generate_gedcom_script(self.bot)
         file_bytes = io.BytesIO(text.encode())
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
