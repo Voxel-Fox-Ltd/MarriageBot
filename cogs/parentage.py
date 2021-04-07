@@ -379,7 +379,7 @@ class Parentage(utils.Cog):
         return await ctx.send(f"You no longer have **{localutils.escape_markdown(parent_name)}** as a parent :c")
 
     @utils.command()
-    @localutils.checks.has_donator_perks("disownall_command")
+    @localutils.checks.has_donator_perks("can_run_disownall")
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
