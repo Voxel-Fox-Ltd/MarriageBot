@@ -16,10 +16,9 @@ def escape_markdown(value:str) -> str:
 
 class TickPayloadCheckResult(object):
 
-    # BOOLEAN_EMOJIS = ["\N{HEAVY CHECK MARK}", "\N{HEAVY MULTIPLICATION X}"]
     BOOLEAN_EMOJIS = {
-        "TICK": "<:tick_filled_yes:784976310366634034>",
-        "CROSS": "<:tick_filled_no:784976328231223306>",
+        "TICK": ("<:tick_filled_yes:784976310366634034>", "\N{HEAVY CHECK MARK}",),
+        "CROSS": ("<:tick_filled_no:784976328231223306>", "\N{HEAVY MULTIPLICATION X}",),
     }
 
     def __init__(self, emoji):
@@ -27,8 +26,21 @@ class TickPayloadCheckResult(object):
 
     @classmethod
     async def add_tick_emojis(cls, message):
+        index = 0
         for emoji in cls.BOOLEAN_EMOJIS.values():
-            await message.add_reaction(emoji)
+            while True:
+                try:
+                    await message.add_reaction(emoji[index])
+                    break
+                except discord.Forbidden:
+                    index += 1
+                except IndexError:
+                    return await message.edit(
+                        content="I need the `add_reactions` permission for me to be able to run this command.",
+                        embed=None,
+                    )
+                except discord.NotFound:
+                    return
 
     @classmethod
     def add_tick_emojis_non_async(cls, message):
@@ -40,10 +52,13 @@ class TickPayloadCheckResult(object):
 
     @property
     def is_tick(self):
-        return self.emoji == self.BOOLEAN_EMOJIS["TICK"]
+        return self.emoji in self.BOOLEAN_EMOJIS["TICK"]
 
     def __bool__(self):
-        return self.emoji in self.BOOLEAN_EMOJIS.values()
+        valid_emojis = []
+        for i in self.BOOLEAN_EMOJIS.values():
+            valid_emojis.extend(i)
+        return self.emoji in valid_emojis
 
 
 class ProposalInProgress(commands.CommandError):
@@ -103,7 +118,7 @@ async def send_proposal_message(
 
     # Reply yes if we allow bots
     if allow_bots and user.bot:
-        return TickPayloadCheckResult(TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"])
+        return TickPayloadCheckResult(TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"][0])
 
     # See if they want to say yes
     message = await ctx.send(text)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
@@ -118,7 +133,7 @@ async def send_proposal_message(
             if p.user_id == user.id:
                 return result
             if p.user_id == ctx.author.id:
-                return str(p.emoji) == result.BOOLEAN_EMOJIS["CROSS"]
+                return str(p.emoji) in result.BOOLEAN_EMOJIS["CROSS"]
             return False
         payload = await ctx.bot.wait_for("raw_reaction_add", check=check, timeout=60)
     except asyncio.TimeoutError:
