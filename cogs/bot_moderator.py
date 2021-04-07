@@ -172,9 +172,11 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
         Gives you the tree file of a user. ST optional.
         """
 
+        # Figure out the user we are working with
         root_user_id = root or ctx.author.id
         family_guild_id = localutils.get_family_guild_id(ctx)
 
+        # Get there data
         async with ctx.channel.typing():
             async with self.bot.database() as db:
                 customtree = await localutils.CustomisedTreeUser.fetch_by_id(db, root_user_id)
@@ -182,8 +184,9 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
                 text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_full_dot_script(self.bot, customtree)
             else:
                 text = await localutils.FamilyTreeMember.get(root_user_id, family_guild_id).to_dot_script(self.bot, customtree)
+        
+        # aand set it away!
         file_bytes = io.BytesIO(text.encode())
-
         await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
 
