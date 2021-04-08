@@ -1,7 +1,7 @@
 import asyncio
 import re
-import aioredlock
 
+import aioredlock
 import discord
 from discord.ext import commands
 
@@ -88,7 +88,10 @@ class ProposalLock(object):
 
     async def unlock(self, *, disconnect_redis:bool=True):
         for i in self.locks:
-            await self.redis.lock_manager.unlock(i)
+            try:
+                await self.redis.lock_manager.unlock(i)
+            except aioredlock.LockError:
+                pass
         if disconnect_redis:
             await self.redis.disconnect()
 
