@@ -1,6 +1,7 @@
 import asyncio
 import typing
 import io
+import collections
 from datetime import datetime as dt
 
 import discord
@@ -17,6 +18,17 @@ class TreeCommandCooldown(utils.cooldown.Cooldown):
 
 
 class Information(utils.Cog):
+
+    def __init__(self, bot):
+        super().__init__(bot)
+        self.locks = collections.defaultdict(asyncio.Lock)
+
+    def get_lock(self, user_id:int) -> asyncio.Lock:
+        """
+        Gets the lock for a particular user.
+        """
+
+        return self.locks[user_id]
 
     @utils.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
@@ -193,10 +205,14 @@ class Information(utils.Cog):
         Gets the blood family tree of a given user.
         """
 
-        try:
-            return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id)
-        except Exception:
-            raise
+        lock = self.get_lock(ctx.author.id)
+        if lock.locked():
+            return
+        async with lock:
+            try:
+                return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id)
+            except Exception:
+                raise
 
     @utils.command(aliases=['st', 'stupidtree', 'fulltree'])
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
@@ -208,10 +224,14 @@ class Information(utils.Cog):
         Gets the enitre family tree of a given user.
         """
 
-        try:
-            return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id, stupid_tree=True)
-        except Exception:
-            raise
+        lock = self.get_lock(ctx.author.id)
+        if lock.locked():
+            return
+        async with lock:
+            try:
+                return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id, stupid_tree=True)
+            except Exception:
+                raise
 
     async def treemaker(self, ctx:utils.Context, user_id:int, stupid_tree:bool=False):
         """
