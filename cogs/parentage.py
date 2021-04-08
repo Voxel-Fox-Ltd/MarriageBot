@@ -391,7 +391,7 @@ class Parentage(utils.Cog):
         # Get the family tree member objects
         family_guild_id = localutils.get_family_guild_id(ctx)
         user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
-        child_trees = user_tree.children.copy()
+        child_trees = list(user_tree.children)
         if not child_trees:
             return await ctx.send("You don't have any children to disown .-.")
 
