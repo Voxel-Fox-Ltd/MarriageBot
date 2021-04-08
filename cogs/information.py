@@ -265,7 +265,10 @@ class Information(utils.Cog):
             raise
 
         # Send file
-        file = discord.File(image_filename)
+        try:
+            file = discord.File(image_filename)
+        except FileNotFoundError:
+            return await ctx.send("I was unable to send your family tree image - please try again later.")
         text = f"[Click here](https://marriagebot.xyz/) to customise your tree."
         if not stupid_tree:
             text += f" Use `{ctx.prefix}bloodtree` for your _entire_ family, including non-blood relatives."
