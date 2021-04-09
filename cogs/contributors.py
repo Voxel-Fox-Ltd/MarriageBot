@@ -3,7 +3,7 @@ import json
 
 from discord.ext import commands
 from cogs import utils
-from discord import Embed
+from discord import Embed, Colour
 
 
 class Contributor:
@@ -25,7 +25,7 @@ class Contributors(utils.Cog):
         for i in res:
            contributors.append(Contributor(i))
         contributors.sort(key = lambda x:x.commits, reverse = True)
-        embed = Embed(color)
+        embed = Embed(title="Contributors of Marriage Bot", colour=Colour.blue())
         text=""
         for i,cont in enumerate(contributors, start=1):
             text+=f"{i}. **[{cont.username}]({cont.profile})** 🔨{cont.commits} commits.\n"
