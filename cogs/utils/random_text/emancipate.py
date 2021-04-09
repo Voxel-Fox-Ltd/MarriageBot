@@ -1,9 +1,11 @@
-from cogs.utils.random_text.text_template import TextTemplate, random_string_class_decorator
+from cogs.utils.random_text.text_template import (
+    TextTemplate,
+    random_string_class_decorator,
+)
 
 
 @random_string_class_decorator
 class EmancipateRandomText(TextTemplate):
-
     @staticmethod
     def valid_target():
         return [

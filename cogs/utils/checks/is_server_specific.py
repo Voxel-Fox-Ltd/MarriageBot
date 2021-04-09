@@ -4,6 +4,7 @@ from discord.ext import commands
 
 class NotServerSpecific(commands.CheckFailure):
     """The error thrown when the bot is not set to server specific"""
+
     pass
 
 
@@ -14,4 +15,5 @@ def guild_is_server_specific():
         if ctx.bot.is_server_specific:
             return True
         raise NotServerSpecific()
+
     return commands.check(predicate)

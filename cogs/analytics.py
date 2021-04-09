@@ -8,7 +8,7 @@ from cogs import utils
 
 class Analytics(utils.Cog):
 
-    GOOGLE_ANALYTICS_URL = 'https://www.google-analytics.com/collect'
+    GOOGLE_ANALYTICS_URL = "https://www.google-analytics.com/collect"
 
     """
     v   : version            : !1
@@ -41,23 +41,27 @@ class Analytics(utils.Cog):
         """Post the average guild count to DiscordBots.org"""
 
         # Only shard 0 can post
-        if self.bot.shard_count and self.bot.shard_count > 1 and 0 not in self.bot.shard_ids:
+        if (
+            self.bot.shard_count
+            and self.bot.shard_count > 1
+            and 0 not in self.bot.shard_ids
+        ):
             return
 
         # Only post if there's actually a DBL token set
-        if not self.bot.config.get('topgg_token'):
+        if not self.bot.config.get("topgg_token"):
             self.logger.warning("No DBL token has been provided")
             return
 
-        url = f'https://top.gg/api/bots/{self.bot.user.id}/stats'
+        url = f"https://top.gg/api/bots/{self.bot.user.id}/stats"
         data = {
-            'server_count': int((len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count),
-            'shard_count': self.bot.shard_count,
-            'shard_id': 0,
+            "server_count": int(
+                (len(self.bot.guilds) / len(self.bot.shard_ids)) * self.bot.shard_count
+            ),
+            "shard_count": self.bot.shard_count,
+            "shard_id": 0,
         }
-        headers = {
-            'Authorization': self.bot.config['topgg_token']
-        }
+        headers = {"Authorization": self.bot.config["topgg_token"]}
         self.logger.info(f"Sending POST request to DBL with data {json.dumps(data)}")
         async with self.bot.session.post(url, json=data, headers=headers):
             pass
@@ -70,10 +74,10 @@ class Analytics(utils.Cog):
         """Post the cached data over to Google Analytics"""
 
         # See if we should bother doing it
-        ga_data = self.bot.config.get('google_analytics')
+        ga_data = self.bot.config.get("google_analytics")
         if not ga_data:
             return
-        if '' in ga_data.values():
+        if "" in ga_data.values():
             return
 
         # Set up the params for us to use
@@ -81,9 +85,9 @@ class Analytics(utils.Cog):
             "v": "1",
             "t": "pageview",
             "aip": "1",
-            "tid": ga_data['tracking_id'],
-            "an": ga_data['app_name'],
-            "dh": ga_data['document_host'],
+            "tid": ga_data["tracking_id"],
+            "an": ga_data["app_name"],
+            "dh": ga_data["document_host"],
             "dr": "discord.com",
         }
         data.update(base_ga_params)
@@ -91,7 +95,7 @@ class Analytics(utils.Cog):
             pass
 
     @utils.Cog.listener()
-    async def on_command(self, ctx:utils.Context):
+    async def on_command(self, ctx: utils.Context):
         """Logs a command that's been sent"""
 
         params = {
@@ -103,7 +107,7 @@ class Analytics(utils.Cog):
         await self.try_send_ga_data(params)
 
     @utils.Cog.listener()
-    async def on_guild_join(self, guild:discord.Guild):
+    async def on_guild_join(self, guild: discord.Guild):
         """Logs when added to a guild"""
 
         params = {
@@ -115,7 +119,7 @@ class Analytics(utils.Cog):
         await self.try_send_ga_data(params)
 
     @utils.Cog.listener()
-    async def on_guild_remove(self, guild:discord.Guild):
+    async def on_guild_remove(self, guild: discord.Guild):
         """Logs when a guild is removed from the client"""
 
         params = {
@@ -127,6 +131,6 @@ class Analytics(utils.Cog):
         await self.try_send_ga_data(params)
 
 
-def setup(bot:utils.Bot):
+def setup(bot: utils.Bot):
     x = Analytics(bot)
     bot.add_cog(x)

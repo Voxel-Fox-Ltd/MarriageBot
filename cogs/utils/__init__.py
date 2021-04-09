@@ -16,5 +16,9 @@ from cogs.utils.proposal_cache import ProposalCache
 from cogs.utils.redis import RedisConnection
 from cogs.utils.shallow_user import ShallowUser
 from cogs.utils.time_value import TimeValue
-from cogs.utils.settings_menu import SettingsMenu, SettingsMenuOption, SettingsMenuIterable
+from cogs.utils.settings_menu import (
+    SettingsMenu,
+    SettingsMenuOption,
+    SettingsMenuIterable,
+)
 from cogs.utils.weeb_sh import get_reaction_gif

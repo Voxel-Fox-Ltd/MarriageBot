@@ -15,19 +15,25 @@ class CooldownWithChannelExemptions(Cooldown):
             If left blank, it won't apply anywhere apart from the whitelist
     """
 
-    _copy_kwargs = ('cooldown_in', 'no_cooldown_in')
+    _copy_kwargs = ("cooldown_in", "no_cooldown_in")
 
-    def __init__(self, *, cooldown_in:list=None, no_cooldown_in:list=None, **kwargs):
+    def __init__(
+        self, *, cooldown_in: list = None, no_cooldown_in: list = None, **kwargs
+    ):
         """Store our nice ol lists of things"""
 
         super().__init__(**kwargs)
         if cooldown_in is None and no_cooldown_in is None:
-            raise ValueError("You need to set at least one channel in your blacklist/whitelist")
+            raise ValueError(
+                "You need to set at least one channel in your blacklist/whitelist"
+            )
         self.cooldown_in = cooldown_in or []
         self.no_cooldown_in = no_cooldown_in or []
 
     def __call__(self, rate, per, type=None):
-        super().__call__(rate, per, commands.BucketType.channel)  # Override cooldown type
+        super().__call__(
+            rate, per, commands.BucketType.channel
+        )  # Override cooldown type
         return self
 
     def predicate(self, ctx) -> bool:

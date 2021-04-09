@@ -15,10 +15,10 @@ ALLOWED_REACTIONS = {
 }
 
 
-async def get_reaction_gif(bot, reaction_type:str):
+async def get_reaction_gif(bot, reaction_type: str):
     """Pings the endpoint, gets a reaction gif, bish bash bosh"""
 
-    if not bot.config['api_keys']['weebsh']:
+    if not bot.config["api_keys"]["weebsh"]:
         bot.logger.debug("No API key set for Weeb.sh")
         return None
     if reaction_type not in ALLOWED_REACTIONS:
@@ -26,13 +26,15 @@ async def get_reaction_gif(bot, reaction_type:str):
         return None
     headers = {
         "User-Agent": "MarriageBot/1.0.0 ~ Discord@Kae#0004",
-        "Authorization": f"Wolke {bot.config['api_keys']['weebsh']}"
+        "Authorization": f"Wolke {bot.config['api_keys']['weebsh']}",
     }
     params = {
         "type": reaction_type,
         "nsfw": "false",
     }
-    async with bot.session.get(f"{BASE_URL}/images/random", params=params, headers=headers) as r:
+    async with bot.session.get(
+        f"{BASE_URL}/images/random", params=params, headers=headers
+    ) as r:
         try:
             data = await r.json()
         except Exception as e:
@@ -40,5 +42,5 @@ async def get_reaction_gif(bot, reaction_type:str):
             bot.logger.warning(f"Error from Weeb.sh ({e}): {data}")
             return None
         if str(r.status)[0] == "2":
-            return data['url']
+            return data["url"]
     bot.logger.warning("Error from Weeb.sh: " + json.dumps(data))

@@ -13,16 +13,17 @@ def requires_login():
         """An inner wrapper so I can get args at the outer level"""
 
         @functools.wraps(func)
-        async def wrapper(request:Request):
+        async def wrapper(request: Request):
             """This is the wrapper that does all the heavy lifting"""
 
             # See if we have token info
             session = await aiohttp_session.get_session(request)
             if session.new:
-                return HTTPFound(location='/discord_oauth_login')
+                return HTTPFound(location="/discord_oauth_login")
 
             # We're already logged in
             return await func(request)
 
         return wrapper
+
     return inner_wrapper

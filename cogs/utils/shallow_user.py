@@ -17,7 +17,7 @@ class ShallowUser(object):
 
     LIFETIME_THRESHOLD = 10  # How long the class lasts for before re-fetching
 
-    def __init__(self, user_id:int, name:str=None, age:int=None):
+    def __init__(self, user_id: int, name: str = None, age: int = None):
         self.user_id = user_id
         self.name = name
         self.age = age if age is not None else self.LIFETIME_THRESHOLD
@@ -64,4 +64,3 @@ class ShallowUser(object):
         if self.name is None:
             return await self.fetch_from_api(bot)
         return self.name
-

@@ -4,8 +4,7 @@ from cogs import utils
 
 
 class PresenceAutoUpdater(utils.Cog):
-
-    def __init__(self, bot:utils.Bot):
+    def __init__(self, bot: utils.Bot):
         super().__init__(bot)
         self.shard_ready_loop.start()
 
@@ -13,7 +12,7 @@ class PresenceAutoUpdater(utils.Cog):
         self.shard_ready_loop.cancel()
 
     @utils.Cog.listener()
-    async def on_shard_ready(self, shard_id:int):
+    async def on_shard_ready(self, shard_id: int):
         """Update the presence when the shard becomes ready"""
 
         self.logger.info(f"`on_shard_ready` called for shard ID `{shard_id}`.")
@@ -27,6 +26,6 @@ class PresenceAutoUpdater(utils.Cog):
             await self.bot.set_default_presence()
 
 
-def setup(bot:utils.Bot):
+def setup(bot: utils.Bot):
     x = PresenceAutoUpdater(bot)
     bot.add_cog(x)

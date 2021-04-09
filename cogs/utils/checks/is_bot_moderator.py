@@ -16,11 +16,11 @@ class NotBotSupport(NotBotModerator):
     pass
 
 
-async def is_bot_support_predicate(ctx:commands.Context):
+async def is_bot_support_predicate(ctx: commands.Context):
     """Returns True if the user is on the support guild with the bot moderator role"""
 
     # Make sure both settings are set
-    if ctx.bot.config.get('bot_admin_role') in [None, '']:
+    if ctx.bot.config.get("bot_admin_role") in [None, ""]:
         ctx.bot.logger.warn("No bot admin role set in the config")
         return False
 
@@ -31,7 +31,7 @@ async def is_bot_support_predicate(ctx:commands.Context):
     # Get member and look for role
     try:
         member = await ctx.bot.support_guild.fetch_member(ctx.author.id)
-        if ctx.bot.config['bot_admin_role'] in member._roles:
+        if ctx.bot.config["bot_admin_role"] in member._roles:
             return True
     except (discord.NotFound, discord.HTTPException):
         pass
@@ -41,22 +41,31 @@ async def is_bot_support_predicate(ctx:commands.Context):
 def is_bot_support():
     """Checks whether the bot is set as an administrator"""
 
-    async def predicate(ctx:commands.Context):
+    async def predicate(ctx: commands.Context):
         if await is_bot_support_predicate(ctx):
             return True
         raise NotBotSupport()
+
     return commands.check(predicate)
 
 
 def is_server_specific_bot_moderator():
     """Check to see if the user has a role either called 'MarriageBot Moderator' or 'SSF MarriageBot Moderator'"""
 
-    async def predicate(ctx:commands.Context):
+    async def predicate(ctx: commands.Context):
         if await is_bot_support_predicate(ctx):
             return True  # If they're MB support
-        if not ctx.bot.config['server_specific']:
+        if not ctx.bot.config["server_specific"]:
             raise NotServerSpecific()  # If it's not server specific
-        if any([i for i in ctx.author.roles if i.name.casefold() in ('ssf marriagebot moderator', 'marriagebot moderator')]):
+        if any(
+            [
+                i
+                for i in ctx.author.roles
+                if i.name.casefold()
+                in ("ssf marriagebot moderator", "marriagebot moderator")
+            ]
+        ):
             return True  # Ye it's all good
         raise NotBotModerator()
+
     return commands.check(predicate)

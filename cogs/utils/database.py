@@ -13,25 +13,31 @@ class DatabaseConnection(object):
     config: dict = None
     pool: asyncpg.pool.Pool = None
     logger: logging.Logger = None
-    __slots__ = ('conn', 'transaction')
+    __slots__ = ("conn", "transaction")
 
-    def __init__(self, connection:asyncpg.Connection=None, transaction:asyncpg.transaction.Transaction=None):
+    def __init__(
+        self,
+        connection: asyncpg.Connection = None,
+        transaction: asyncpg.transaction.Transaction = None,
+    ):
         self.conn = connection
         self.transaction = transaction
 
     @classmethod
-    async def create_pool(cls, config:dict) -> None:
+    async def create_pool(cls, config: dict) -> None:
         """Creates the database pool and plonks it in DatabaseConnection.pool"""
 
         cls.config = config.copy()
         modified_config = config.copy()
-        if modified_config.pop('enabled') is False:
-            cls.logger.critical("Database create pool method is being run when the database is disabled")
+        if modified_config.pop("enabled") is False:
+            cls.logger.critical(
+                "Database create pool method is being run when the database is disabled"
+            )
             exit(1)
         cls.pool = await asyncpg.create_pool(**modified_config)
 
     @classmethod
-    async def get_connection(cls) -> 'DatabaseConnection':
+    async def get_connection(cls) -> "DatabaseConnection":
         """Acquires a connection to the database from the pool"""
 
         conn = await cls.pool.acquire()
@@ -65,13 +71,13 @@ class DatabaseConnection(object):
         self.conn = None
         del self
 
-    async def __call__(self, sql:str, *args) -> typing.Union[typing.List[dict], None]:
+    async def __call__(self, sql: str, *args) -> typing.Union[typing.List[dict], None]:
         """Runs a line of SQL and returns a list, if things are expected back,
         or None, if nothing of interest is happening"""
 
         # Runs the SQL
         self.logger.debug(f"Running SQL: {sql} {args!s}")
-        if 'select' in sql.casefold() or 'returning' in sql.casefold():
+        if "select" in sql.casefold() or "returning" in sql.casefold():
             x = await self.conn.fetch(sql, *args)
         else:
             await self.conn.execute(sql, *args)
@@ -80,36 +86,48 @@ class DatabaseConnection(object):
         # If it got something, return the dict, else None
         if x:
             return x
-        if 'select' in sql.casefold() or 'returning' in sql.casefold():
+        if "select" in sql.casefold() or "returning" in sql.casefold():
             return []
         return None
 
-    async def marry(self, instigator:typing.Union[int, discord.User], target:typing.Union[int, discord.User], guild_id:int):
+    async def marry(
+        self,
+        instigator: typing.Union[int, discord.User],
+        target: typing.Union[int, discord.User],
+        guild_id: int,
+    ):
         """Marries two given Discord users together"""
 
-        instigator_id = getattr(instigator, 'id', instigator)
-        target_id = getattr(target, 'id', target)
+        instigator_id = getattr(instigator, "id", instigator)
+        target_id = getattr(target, "id", target)
 
         await self.start_transaction()
         timestamp = dt.utcnow()
         try:
             await self(
-                'INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)',
-                instigator_id, target_id, guild_id, timestamp,
+                "INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)",
+                instigator_id,
+                target_id,
+                guild_id,
+                timestamp,
             )
             await self(
-                'INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($2, $1, $3, $4)',
-                instigator_id, target_id, guild_id, timestamp,
+                "INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($2, $1, $3, $4)",
+                instigator_id,
+                target_id,
+                guild_id,
+                timestamp,
             )
         except Exception as e:
             await self.transaction.rollback()
             raise e
         await self.commit_transaction()
 
-    async def copy_records_to_table(self, table_name, *, records, columns=None, timeout=None):
+    async def copy_records_to_table(
+        self, table_name, *, records, columns=None, timeout=None
+    ):
         """Copies a series of records to a given table"""
 
         return await self.conn.copy_records_to_table(
-            table_name=table_name, records=records,
-            columns=columns, timeout=timeout
+            table_name=table_name, records=records, columns=columns, timeout=timeout
         )

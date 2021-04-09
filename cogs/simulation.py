@@ -9,23 +9,26 @@ from cogs import utils
 
 
 class Simulation(utils.Cog):
-
-    @commands.command(aliases=['snuggle', 'cuddle'], cls=utils.Command)
+    @commands.command(aliases=["snuggle", "cuddle"], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def hug(self, ctx:utils.Context, user:discord.Member):
+    async def hug(self, ctx: utils.Context, user: discord.Member):
         """Hugs a mentioned user"""
 
         if user == ctx.author:
             return await ctx.send("*You hug yourself... and start crying.*")
-        image_url = await utils.get_reaction_gif(ctx.bot, "hug") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
+        image_url = (
+            await utils.get_reaction_gif(ctx.bot, "hug")
+            if self.bot.guild_settings[ctx.guild.id]["gifs_enabled"]
+            else None
+        )
         await ctx.send(f"*Hugs {user.mention}*", image_url=image_url)
 
-    @commands.command(aliases=['smooch'], cls=utils.Command)
+    @commands.command(aliases=["smooch"], cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def kiss(self, ctx:utils.Context, user:discord.Member):
+    async def kiss(self, ctx: utils.Context, user: discord.Member):
         """Kisses a mentioned user"""
 
         # Check if they're themself
@@ -40,11 +43,17 @@ class Simulation(utils.Cog):
 
         # Generate responses
         image_url = None
-        if relationship is None or relationship.casefold() == 'partner' or self.bot.allows_incest(ctx.guild.id):
-            responses = [
-                f"*Kisses {user.mention}*"
-            ]
-            image_url = await utils.get_reaction_gif(ctx.bot, "kiss") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
+        if (
+            relationship is None
+            or relationship.casefold() == "partner"
+            or self.bot.allows_incest(ctx.guild.id)
+        ):
+            responses = [f"*Kisses {user.mention}*"]
+            image_url = (
+                await utils.get_reaction_gif(ctx.bot, "kiss")
+                if self.bot.guild_settings[ctx.guild.id]["gifs_enabled"]
+                else None
+            )
         else:
             responses = [
                 "Woah woah, you two are family!",
@@ -53,31 +62,37 @@ class Simulation(utils.Cog):
             ]
         await ctx.send(random.choice(responses), image_url=image_url)
 
-    @commands.command(cls=utils.Command, aliases=['smack'])
+    @commands.command(cls=utils.Command, aliases=["smack"])
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def slap(self, ctx:utils.Context, user:discord.Member):
+    async def slap(self, ctx: utils.Context, user: discord.Member):
         """Slaps a mentioned user"""
 
         if user == ctx.author:
             return await ctx.send("*You slapped yourself... for some reason.*")
-        image_url = await utils.get_reaction_gif(ctx.bot, "slap") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
+        image_url = (
+            await utils.get_reaction_gif(ctx.bot, "slap")
+            if self.bot.guild_settings[ctx.guild.id]["gifs_enabled"]
+            else None
+        )
         await ctx.send(f"*Slaps {user.mention}*", image_url=image_url)
-    
+
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def coffee(self, ctx:utils.Context, user:discord.Member):
+    async def coffee(self, ctx: utils.Context, user: discord.Member):
         """Gives coffee to a mentioned user"""
 
         if user == ctx.author:
-            return await ctx.send("*You spilled coffee all over yourself... for some reason.*")
+            return await ctx.send(
+                "*You spilled coffee all over yourself... for some reason.*"
+            )
         await ctx.send(f"*Gives coffee to {user.mention}*")
-        
+
     @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 4, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def pasta(self, ctx:utils.Context, user:discord.Member):
+    async def pasta(self, ctx: utils.Context, user: discord.Member):
         """Gives pasta to a mentioned user"""
 
         if user == ctx.author:
@@ -87,38 +102,50 @@ class Simulation(utils.Cog):
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def punch(self, ctx:utils.Context, user:discord.Member):
+    async def punch(self, ctx: utils.Context, user: discord.Member):
         """Punches a mentioned user"""
 
         if user == ctx.author:
             return await ctx.send("*You punched yourself... for some reason.*")
-        image_url = await utils.get_reaction_gif(ctx.bot, "punch") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
-        await ctx.send(f"*Punches {user.mention} right in the nose*", image_url=image_url)
+        image_url = (
+            await utils.get_reaction_gif(ctx.bot, "punch")
+            if self.bot.guild_settings[ctx.guild.id]["gifs_enabled"]
+            else None
+        )
+        await ctx.send(
+            f"*Punches {user.mention} right in the nose*", image_url=image_url
+        )
 
     @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def cookie(self, ctx:utils.Context, user:discord.Member):
+    async def cookie(self, ctx: utils.Context, user: discord.Member):
         """Gives a cookie to a mentioned user"""
 
         if user == ctx.author:
             return await ctx.send("*You gave yourself a cookie.*")
         await ctx.send(f"*Gives {user.mention} a cookie*")
 
-    @commands.command(aliases=['nunget', 'nuggie'], cls=utils.Command, hidden=True)
+    @commands.command(aliases=["nunget", "nuggie"], cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def nugget(self, ctx:utils.Context, user:discord.Member):
+    async def nugget(self, ctx: utils.Context, user: discord.Member):
         """Gives a nugget to a mentioned user"""
 
         if user == ctx.author:
-            return await ctx.send(f"*You give yourself a {ctx.invoked_with}* <:nugget:585626539605884950>")
-        await ctx.send(f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>")
+            return await ctx.send(
+                f"*You give yourself a {ctx.invoked_with}* <:nugget:585626539605884950>"
+            )
+        await ctx.send(
+            f"*Gives {user.mention} a {ctx.invoked_with}* <:nugget:585626539605884950>"
+        )
 
-    @commands.command(aliases=['borger', 'borg', 'burge'], cls=utils.Command, hidden=True)
+    @commands.command(
+        aliases=["borger", "borg", "burge"], cls=utils.Command, hidden=True
+    )
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def burger(self, ctx:utils.Context, user:discord.Member):
+    async def burger(self, ctx: utils.Context, user: discord.Member):
         """Gives a burger to a mentioned user"""
 
         if user == ctx.author:
@@ -128,27 +155,31 @@ class Simulation(utils.Cog):
     @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def tea(self, ctx:utils.Context, user:discord.Member):
+    async def tea(self, ctx: utils.Context, user: discord.Member):
         """Gives tea to a mentioned user"""
 
         if user == ctx.author:
             return await ctx.send("*You gave yourself tea.*")
         await ctx.send(f"*Gives {user.mention} tea*")
 
-    @commands.command(aliases=['dumpster'], cls=utils.Command, hidden=True)
+    @commands.command(aliases=["dumpster"], cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def garbage(self, ctx:utils.Context, user:discord.Member):
+    async def garbage(self, ctx: utils.Context, user: discord.Member):
         """Throws a user in the garbage"""
 
         if user == ctx.author:
-            return await ctx.send("*You climb right into the trash can, where you belong*")
+            return await ctx.send(
+                "*You climb right into the trash can, where you belong*"
+            )
         await ctx.send(f"*Throws {user.mention} into the dumpster*")
 
     @commands.command(cls=utils.Command)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def ship(self, ctx:utils.Context, user:discord.Member, user2:discord.Member=None):
+    async def ship(
+        self, ctx: utils.Context, user: discord.Member, user2: discord.Member = None
+    ):
         """
         Gives you a ship percentage between two users.
         """
@@ -163,40 +194,51 @@ class Simulation(utils.Cog):
 
         # Get percentage
         async with self.bot.database() as db:
-            rows = await db("SELECT * FROM ship_percentages WHERE user_id_1=ANY($1::BIGINT[]) AND user_id_2=ANY($1::BIGINT[])", [user.id, user2.id])
-        if rows and rows[0]['percentage']:
-            percentage = rows[0]['percentage'] / 100
+            rows = await db(
+                "SELECT * FROM ship_percentages WHERE user_id_1=ANY($1::BIGINT[]) AND user_id_2=ANY($1::BIGINT[])",
+                [user.id, user2.id],
+            )
+        if rows and rows[0]["percentage"]:
+            percentage = rows[0]["percentage"] / 100
         else:
             percentage = ((user.id + user2.id + 4500) % 10001) / 100
-        return await ctx.send(f"{user.mention} \N{REVOLVING HEARTS} **{percentage:.2f}%** \N{REVOLVING HEARTS} {user2.mention}", allowed_mentions=discord.AllowedMentions(users=False))
-
+        return await ctx.send(
+            f"{user.mention} \N{REVOLVING HEARTS} **{percentage:.2f}%** \N{REVOLVING HEARTS} {user2.mention}",
+            allowed_mentions=discord.AllowedMentions(users=False),
+        )
 
     @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def insult(self, ctx:utils.Context, user:discord.Member):
+    async def insult(self, ctx: utils.Context, user: discord.Member):
         """Sends an insult into the chat"""
 
-        async with self.bot.session.get("https://insult.mattbas.org/api/insult.json") as r:
+        async with self.bot.session.get(
+            "https://insult.mattbas.org/api/insult.json"
+        ) as r:
             text = await r.text()
         data = json.loads(text)
-        await ctx.send(data['insult'])
+        await ctx.send(data["insult"])
 
     @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def poke(self, ctx:utils.Context, user:discord.Member):
+    async def poke(self, ctx: utils.Context, user: discord.Member):
         """Pokes a given user"""
 
         if user == ctx.author:
             return await ctx.send("You poke yourself.")
-        image_url = await utils.get_reaction_gif(ctx.bot, "poke") if self.bot.guild_settings[ctx.guild.id]['gifs_enabled'] else None
+        image_url = (
+            await utils.get_reaction_gif(ctx.bot, "poke")
+            if self.bot.guild_settings[ctx.guild.id]["gifs_enabled"]
+            else None
+        )
         await ctx.send(f"*Pokes {user.mention}.*", image_url=image_url)
 
     @commands.command(cls=utils.Command, hidden=True)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
-    async def stab(self, ctx:utils.Context, user:discord.Member):
+    async def stab(self, ctx: utils.Context, user: discord.Member):
         """Stabs a mentioned user"""
 
         if user == ctx.author:
@@ -217,9 +259,9 @@ class Simulation(utils.Cog):
             ]
         await ctx.send(random.choice(responses))
 
-    @commands.command(cls=utils.Command, aliases=['murder'], hidden=True)
+    @commands.command(cls=utils.Command, aliases=["murder"], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def kill(self, ctx:utils.Context, user:discord.Member=None):
+    async def kill(self, ctx: utils.Context, user: discord.Member = None):
         """Kills a person :/"""
 
         responses = [
@@ -232,18 +274,18 @@ class Simulation(utils.Cog):
         ]
         await ctx.send(random.choice(responses))
 
-    @commands.command(cls=utils.Command, aliases=['vore'], hidden=True)
+    @commands.command(cls=utils.Command, aliases=["vore"], hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def eat(self, ctx:utils.Context, user:discord.Member):
+    async def eat(self, ctx: utils.Context, user: discord.Member):
         """Eats a person OwO"""
-        
+
         if user == ctx.author:
             responses = [
                 "You swalled your finger... through the wrong hole."
                 "You've eaten yourself. Gross.",
                 "Are you into this or something? You've eaten yourself.",
                 f"You take a massive bite out of your left arm.",
-                f"You proceed to insert the entirety of your leg into your mouth, slowly chewing... disgraceful."
+                f"You proceed to insert the entirety of your leg into your mouth, slowly chewing... disgraceful.",
             ]
         else:
             responses = [
@@ -253,28 +295,32 @@ class Simulation(utils.Cog):
                 f"I guess lunch wasnt good enough. You eat {user.mention}.",
                 f"You insert {user.mention} into your mouth and proceed to digest them.",
             ]
-            
+
         await ctx.send(random.choice(responses))
 
     @commands.command(cls=utils.Command, hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def sleep(self, ctx:utils.Context):
+    async def sleep(self, ctx: utils.Context):
         """Todd Howard strikes once more"""
 
-        await ctx.send("You sleep for a while and when you wake up you're in a cart "
-                       "with your hands bound. A man says \"Hey, you. You're finally "
-                       "awake. You were trying to cross the border, right?\"")
+        await ctx.send(
+            "You sleep for a while and when you wake up you're in a cart "
+            "with your hands bound. A man says \"Hey, you. You're finally "
+            'awake. You were trying to cross the border, right?"'
+        )
 
-    @commands.command(aliases=['intercourse', 'fuck', 'smash', 'heck'], cls=utils.Command, hidden=True)
+    @commands.command(
+        aliases=["intercourse", "fuck", "smash", "heck"], cls=utils.Command, hidden=True
+    )
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def copulate(self, ctx:utils.Context, user:discord.Member):
+    async def copulate(self, ctx: utils.Context, user: discord.Member):
         """Lets you... um... heck someone"""
 
         # Check for the most common catches
-        text_processor = utils.random_text.RandomText('copulate', ctx.author, user)
+        text_processor = utils.random_text.RandomText("copulate", ctx.author, user)
         text = text_processor.process(check_for_instigator=False)
         if text:
             return await ctx.send(text)
@@ -284,7 +330,11 @@ class Simulation(utils.Cog):
         y = utils.FamilyTreeMember.get(user.id, ctx.family_guild_id)
         async with ctx.channel.typing():
             relationship = x.get_relation(y)
-        if relationship is None or relationship.casefold() == 'partner' or self.bot.allows_incest(ctx.guild.id):
+        if (
+            relationship is None
+            or relationship.casefold() == "partner"
+            or self.bot.allows_incest(ctx.guild.id)
+        ):
             pass
         else:
             return await ctx.send(text_processor.target_is_family())
@@ -295,7 +345,7 @@ class Simulation(utils.Cog):
         # Wait for a response
         try:
             check = utils.AcceptanceCheck(user.id, ctx.channel.id).check
-            m = await self.bot.wait_for('message', check=check, timeout=60.0)
+            m = await self.bot.wait_for("message", check=check, timeout=60.0)
             response = check(m)
         except asyncio.TimeoutError:
             return await ctx.send(text_processor.request_timeout(), ignore_error=True)
@@ -307,100 +357,102 @@ class Simulation(utils.Cog):
 
     @commands.command(hidden=True)
     @commands.bot_has_permissions(send_messages=True)
-    async def present(self, ctx:utils.Context, user:discord.Member):
+    async def present(self, ctx: utils.Context, user: discord.Member):
         """Gives a present to the user"""
 
-        present = random.choice([
-            "Talem",
-            "some candy",
-            "a magnifying glass",
-            "chocolate",
-            "Pepsi",
-            "a hairline",
-            "nuggets",
-            "a burger",
-            "some fries",
-            "potato strings",
-            "a dose of happiness",
-            "the feeling of love",
-            "some royalty free music",
-            "a free sample of milkshake",
-            "a roll of wrapping paper wrapped in more wrapping paper",
-            "trans rights",
-            "just a theory, a game theory",
-            "an envelope filled with glitter",
-            "a garbage bag filled with BBQ sauce",
-            "a set of lockpicks",
-            "a bird mask",
-            "four Tamagotchis, all neon pink",
-            "a coin with two 'heads' sides",
-            "a used toilet plunger",
-            "a slightly damp mop",
-            "a pair of unmatched socks",
-            "a banana peel with a bite taken out of it",
-            "a wilting mint plant",
-            "dog socks",
-            "a small collection of cat hairs",
-            "a can of off-brand mint-flavoured cola",
-            "a pack of AA batteries",
-            "a Bulbasaur plushie",
-            "a bad Discord bot",
-            "some discontinued Discord merch",
-            "chapstick",
-            "a small stamp collection",
-            "a soft-ass cushion",
-            "an egg",
-            "honey",
-            "a handful of screws",
-            "a toy train",
-            "pain",
-            "some smoke in a jar",
-            "a bottle of unbranded water",
-            "coal",
-            "a pink collar",
-            "a toy horse",
-            "destruction",
-            "pleasure",
-            "a tin can filled with baked beans",
-            "wax",
-            "a skateboard",
-            "bushes",
-            "some Roseart crayons",
-            "a jar filled with ants",
-            "a rat",
-            "a small vial of blood",
-            "a knife",
-            "power",
-            "snakes",
-            "cloth",
-            "cheese",
-            "cheesecloth",
-            "liquid",
-            "a snake in a box",
-            "soup",
-            "a yam, the worst part of Thanksgiving",
-            "spiders",
-            "chalk",
-            "a saucy fanfiction about the bourgeoisie",
-            "beef",
-            "a cow in sheep's clothing",
-            "silver",
-            "oranges",
-            "a collection of cobwebs",
-            "an existential crisis",
-            "string",
-            "rabbits",
-            "horses",
-            "a lump of plastic",
-            "oatmeal",
-            "a raw potato",
-            "toothpaste",
-            "salt",
-            "a burge",
-        ])
+        present = random.choice(
+            [
+                "Talem",
+                "some candy",
+                "a magnifying glass",
+                "chocolate",
+                "Pepsi",
+                "a hairline",
+                "nuggets",
+                "a burger",
+                "some fries",
+                "potato strings",
+                "a dose of happiness",
+                "the feeling of love",
+                "some royalty free music",
+                "a free sample of milkshake",
+                "a roll of wrapping paper wrapped in more wrapping paper",
+                "trans rights",
+                "just a theory, a game theory",
+                "an envelope filled with glitter",
+                "a garbage bag filled with BBQ sauce",
+                "a set of lockpicks",
+                "a bird mask",
+                "four Tamagotchis, all neon pink",
+                "a coin with two 'heads' sides",
+                "a used toilet plunger",
+                "a slightly damp mop",
+                "a pair of unmatched socks",
+                "a banana peel with a bite taken out of it",
+                "a wilting mint plant",
+                "dog socks",
+                "a small collection of cat hairs",
+                "a can of off-brand mint-flavoured cola",
+                "a pack of AA batteries",
+                "a Bulbasaur plushie",
+                "a bad Discord bot",
+                "some discontinued Discord merch",
+                "chapstick",
+                "a small stamp collection",
+                "a soft-ass cushion",
+                "an egg",
+                "honey",
+                "a handful of screws",
+                "a toy train",
+                "pain",
+                "some smoke in a jar",
+                "a bottle of unbranded water",
+                "coal",
+                "a pink collar",
+                "a toy horse",
+                "destruction",
+                "pleasure",
+                "a tin can filled with baked beans",
+                "wax",
+                "a skateboard",
+                "bushes",
+                "some Roseart crayons",
+                "a jar filled with ants",
+                "a rat",
+                "a small vial of blood",
+                "a knife",
+                "power",
+                "snakes",
+                "cloth",
+                "cheese",
+                "cheesecloth",
+                "liquid",
+                "a snake in a box",
+                "soup",
+                "a yam, the worst part of Thanksgiving",
+                "spiders",
+                "chalk",
+                "a saucy fanfiction about the bourgeoisie",
+                "beef",
+                "a cow in sheep's clothing",
+                "silver",
+                "oranges",
+                "a collection of cobwebs",
+                "an existential crisis",
+                "string",
+                "rabbits",
+                "horses",
+                "a lump of plastic",
+                "oatmeal",
+                "a raw potato",
+                "toothpaste",
+                "salt",
+                "a burge",
+            ]
+        )
         await ctx.send(f"You give {user.mention} {present}.")
 
 
-def setup(bot:utils.Bot):
+def setup(bot: utils.Bot):
     x = Simulation(bot)
     bot.add_cog(x)

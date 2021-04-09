@@ -8,28 +8,39 @@ from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relation_simplifier import Simplifier
 
 
-def get_random_string(length:int=10) -> str:
-    return ''.join(random.choices(string.ascii_letters, k=length))
+def get_random_string(length: int = 10) -> str:
+    return "".join(random.choices(string.ascii_letters, k=length))
 
 
 class FamilyTreeMember(object):
     """A class representing a member of a family"""
 
-    all_users: typing.Dict[typing.Tuple[int, int], 'FamilyTreeMember'] = {}
-    INVISIBLE = '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
-    __slots__ = ('id', '_children', '_parent', '_partner', 'tree_id', '_guild_id')
+    all_users: typing.Dict[typing.Tuple[int, int], "FamilyTreeMember"] = {}
+    INVISIBLE = (
+        '[shape=circle, label="", height=0.001, width=0.001]'  # For the DOT script
+    )
+    __slots__ = ("id", "_children", "_parent", "_partner", "tree_id", "_guild_id")
 
-    def __init__(self, discord_id:int, children:list=None, parent_id:int=None, partner_id:int=None, guild_id:int=0):
+    def __init__(
+        self,
+        discord_id: int,
+        children: list = None,
+        parent_id: int = None,
+        partner_id: int = None,
+        guild_id: int = 0,
+    ):
         self.id: int = discord_id
         self._children: typing.List[int] = children or list()
         self._parent: int = parent_id
         self._partner: int = partner_id
-        self.tree_id: str = get_random_string()  # Used purely for the dot joining two spouses in the GZ script
+        self.tree_id: str = (
+            get_random_string()
+        )  # Used purely for the dot joining two spouses in the GZ script
         self._guild_id: int = guild_id
         self.all_users[(self.id, self._guild_id)] = self
 
     @classmethod
-    def get(cls, discord_id:int, guild_id:int=0):
+    def get(cls, discord_id: int, guild_id: int = 0):
         """Gives you the object pertaining to the given user ID"""
 
         if discord_id is None:
@@ -43,15 +54,15 @@ class FamilyTreeMember(object):
         """Converts the object to JSON format so you can throw it through redis"""
 
         return {
-            'discord_id': self.id,
-            'children': self._children,
-            'parent_id': self._parent,
-            'partner_id': self._partner,
-            'guild_id': self._guild_id,
+            "discord_id": self.id,
+            "children": self._children,
+            "parent_id": self._parent,
+            "partner_id": self._partner,
+            "guild_id": self._guild_id,
         }
 
     @classmethod
-    def from_json(cls, data:dict):
+    def from_json(cls, data: dict):
         """Loads an FamilyTreeMember object from JSON"""
 
         return cls(**data)
@@ -62,10 +73,12 @@ class FamilyTreeMember(object):
     def __eq__(self, other) -> bool:
         if not isinstance(other, self.__class__):
             return False
-        return all([
-            self.id == other.id,
-            self._guild_id == other._guild_id,
-        ])
+        return all(
+            [
+                self.id == other.id,
+                self._guild_id == other._guild_id,
+            ]
+        )
 
     @property
     def partner(self):
@@ -104,11 +117,13 @@ class FamilyTreeMember(object):
     def is_empty(self) -> bool:
         """Is this instance useless"""
 
-        return all([
-            len(self._children) == 0,
-            self._parent is None,
-            self._partner is None,
-        ])
+        return all(
+            [
+                len(self._children) == 0,
+                self._parent is None,
+                self._partner is None,
+            ]
+        )
 
     def get_relation(self, target_user):
         """Gets your relation to another given FamilyTreeMember object"""
@@ -124,7 +139,13 @@ class FamilyTreeMember(object):
 
         return len(self.span(add_parent=True, expand_upwards=True))
 
-    def span(self, people_list:list=None, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None) -> list:
+    def span(
+        self,
+        people_list: list = None,
+        add_parent: bool = False,
+        expand_upwards: bool = False,
+        guild: Guild = None,
+    ) -> list:
         """
         Gets a list of every user related to this one
         If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
@@ -160,23 +181,32 @@ class FamilyTreeMember(object):
         # Add your parent
         if expand_upwards and add_parent and self._parent:
             parent = self.parent
-            people_list = parent.span(people_list, add_parent=True, expand_upwards=expand_upwards, guild=guild)
+            people_list = parent.span(
+                people_list, add_parent=True, expand_upwards=expand_upwards, guild=guild
+            )
 
         # Add your children
         if self._children:
             children = self.children
             for child in children:
-                people_list = child.span(people_list, add_parent=False, expand_upwards=expand_upwards, guild=guild)
+                people_list = child.span(
+                    people_list,
+                    add_parent=False,
+                    expand_upwards=expand_upwards,
+                    guild=guild,
+                )
 
         # Add your partner
         if self._partner:
             partner = self.partner
-            people_list = partner.span(people_list, add_parent=True, expand_upwards=expand_upwards, guild=guild)
+            people_list = partner.span(
+                people_list, add_parent=True, expand_upwards=expand_upwards, guild=guild
+            )
 
         # Remove dupes, should they be in there
         return people_list
 
-    def get_root(self, guild:Guild=None):
+    def get_root(self, guild: Guild = None):
         """
         Expands backwards into the tree up to a root user
         Only goes up one line of family so it cannot add your spouse's parents etc
@@ -191,7 +221,9 @@ class FamilyTreeMember(object):
 
         # Avoid loops
         already_processed = []
-        member_in_guild = lambda user_id: guild.get_member(user_id) if guild is not None else True
+        member_in_guild = (
+            lambda user_id: guild.get_member(user_id) if guild is not None else True
+        )
 
         while True:
             # Loop avoidance 2.0
@@ -213,7 +245,9 @@ class FamilyTreeMember(object):
             else:
                 return root_user
 
-    def get_unshortened_relation(self, target_user, working_relation:list=None, added_already:list=None) -> str:
+    def get_unshortened_relation(
+        self, target_user, working_relation: list = None, added_already: list = None
+    ) -> str:
         """
         Gets your relation to the other given user or None
 
@@ -246,8 +280,8 @@ class FamilyTreeMember(object):
             parent = self.parent
             x = parent.get_unshortened_relation(
                 target_user,
-                working_relation=working_relation + ['parent'],
-                added_already=added_already
+                working_relation=working_relation + ["parent"],
+                added_already=added_already,
             )
             if x:
                 return x
@@ -257,8 +291,8 @@ class FamilyTreeMember(object):
             partner = self.partner
             x = partner.get_unshortened_relation(
                 target_user,
-                working_relation=working_relation + ['partner'],
-                added_already=added_already
+                working_relation=working_relation + ["partner"],
+                added_already=added_already,
             )
             if x:
                 return x
@@ -269,8 +303,8 @@ class FamilyTreeMember(object):
             for i in [o for o in children if o not in added_already]:
                 x = i.get_unshortened_relation(
                     target_user,
-                    working_relation=working_relation + ['child'],
-                    added_already=added_already
+                    working_relation=working_relation + ["child"],
+                    added_already=added_already,
                 )
                 if x:
                     return x
@@ -300,20 +334,19 @@ class FamilyTreeMember(object):
 
         for i in full_family:
             name = await bot.get_name(i.id)
-            working_text = [
-                f'0 @I{i.tree_id}@ INDI',
-                f'\t1 NAME {name}'
-            ]
+            working_text = [f"0 @I{i.tree_id}@ INDI", f"\t1 NAME {name}"]
 
             # If you have a parent, get added to their family
             if i._parent:
                 parent = i.parent
                 if parent.id in family_id_cache:
-                    working_text.append(f'\t1 FAMC @F{family_id_cache[parent.id]}@')
+                    working_text.append(f"\t1 FAMC @F{family_id_cache[parent.id]}@")
                 elif parent._partner and parent._partner in family_id_cache:
-                    working_text.append(f'\t1 FAMC @F{family_id_cache[parent._partner]}@')
+                    working_text.append(
+                        f"\t1 FAMC @F{family_id_cache[parent._partner]}@"
+                    )
                 else:
-                    working_text.append(f'\t1 FAMC @F{parent.tree_id}@')
+                    working_text.append(f"\t1 FAMC @F{parent.tree_id}@")
 
             # If you have children or a partner, generate a family
             if i._children or i._partner:
@@ -322,28 +355,41 @@ class FamilyTreeMember(object):
 
                 # See if you need to make a new family or be added to one already made
                 try:
-                    insert_location = gedcom_text.index(f'\t1 HUSB @I{i.tree_id}@')
+                    insert_location = gedcom_text.index(f"\t1 HUSB @I{i.tree_id}@")
                     # Above will throw error if this user is not in a tree already
 
-                    working_text.append(f'\t1 FAMS @F{family_id_cache[partner.id]}@')
+                    working_text.append(f"\t1 FAMS @F{family_id_cache[partner.id]}@")
                     family_id_cache[i.id] = partner.tree_id
                     for c in children:
-                        gedcom_text.insert(insert_location, f'\t1 CHIL @I{c.tree_id}@')
+                        gedcom_text.insert(insert_location, f"\t1 CHIL @I{c.tree_id}@")
                 except ValueError:
                     family_id_cache[i.id] = i.tree_id
-                    working_text.append(f'\t1 FAMS @F{i.tree_id}@')
-                    working_text.append(f'0 @F{i.tree_id}@ FAM')
-                    working_text.append(f'\t1 WIFE @I{i.tree_id}@')
+                    working_text.append(f"\t1 FAMS @F{i.tree_id}@")
+                    working_text.append(f"0 @F{i.tree_id}@ FAM")
+                    working_text.append(f"\t1 WIFE @I{i.tree_id}@")
                     if i.partner:
-                        working_text.append(f'\t1 HUSB @I{partner.tree_id}@')
+                        working_text.append(f"\t1 HUSB @I{partner.tree_id}@")
                     for c in children:
-                        working_text.append(f'\t1 CHIL @I{c.tree_id}@')
+                        working_text.append(f"\t1 CHIL @I{c.tree_id}@")
 
             gedcom_text.extend(working_text)
-        x = '0 HEAD\n\t1 GEDC\n\t\t2 VERS 5.5\n\t\t2 FORM LINEAGE-LINKED\n\t1 CHAR UNICODE\n' + '\n'.join(gedcom_text) + '\n0 TRLR'
+        x = (
+            "0 HEAD\n\t1 GEDC\n\t\t2 VERS 5.5\n\t\t2 FORM LINEAGE-LINKED\n\t1 CHAR UNICODE\n"
+            + "\n".join(gedcom_text)
+            + "\n0 TRLR"
+        )
         return x
 
-    def generational_span(self, people_dict:dict=None, depth:int=0, add_parent:bool=False, expand_upwards:bool=False, guild:Guild=None, all_people:list=None, recursive_depth:int=0) -> dict:
+    def generational_span(
+        self,
+        people_dict: dict = None,
+        depth: int = 0,
+        add_parent: bool = False,
+        expand_upwards: bool = False,
+        guild: Guild = None,
+        all_people: list = None,
+        recursive_depth: int = 0,
+    ) -> dict:
         """
         Gets a list of every user related to this one
         If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
@@ -392,22 +438,48 @@ class FamilyTreeMember(object):
         if self._children:
             children = self.children
             for child in children:
-                people_dict = child.generational_span(people_dict, depth=depth + 1, add_parent=False, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth + 1)
+                people_dict = child.generational_span(
+                    people_dict,
+                    depth=depth + 1,
+                    add_parent=False,
+                    expand_upwards=expand_upwards,
+                    guild=guild,
+                    all_people=all_people,
+                    recursive_depth=recursive_depth + 1,
+                )
 
         # Add your partner
         if self._partner:
             partner = self.partner
-            people_dict = partner.generational_span(people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth + 1)
+            people_dict = partner.generational_span(
+                people_dict,
+                depth=depth,
+                add_parent=True,
+                expand_upwards=expand_upwards,
+                guild=guild,
+                all_people=all_people,
+                recursive_depth=recursive_depth + 1,
+            )
 
         # Add your parent
         if expand_upwards and add_parent and self._parent:
             parent = self.parent
-            people_dict = parent.generational_span(people_dict, depth=depth - 1, add_parent=True, expand_upwards=expand_upwards, guild=guild, all_people=all_people, recursive_depth=recursive_depth + 1)
+            people_dict = parent.generational_span(
+                people_dict,
+                depth=depth - 1,
+                add_parent=True,
+                expand_upwards=expand_upwards,
+                guild=guild,
+                all_people=all_people,
+                recursive_depth=recursive_depth + 1,
+            )
 
         # Remove dupes, should they be in there
         return people_dict
 
-    async def to_dot_script(self, bot, guild:Guild=None, customised_tree_user:CustomisedTreeUser=None) -> str:
+    async def to_dot_script(
+        self, bot, guild: Guild = None, customised_tree_user: CustomisedTreeUser = None
+    ) -> str:
         """
         Gives you a string of the current family tree that will go through Family
 
@@ -422,9 +494,13 @@ class FamilyTreeMember(object):
         # Get the generation spanning tree
         root_user = self.get_root(guild=guild)
         gen_span = root_user.generational_span(guild=guild)
-        return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
+        return await self.to_dot_script_from_generational_span(
+            bot, gen_span, customised_tree_user
+        )
 
-    async def to_full_dot_script(self, bot, customised_tree_user:CustomisedTreeUser=None) -> str:
+    async def to_full_dot_script(
+        self, bot, customised_tree_user: CustomisedTreeUser = None
+    ) -> str:
         """
         Gives you the string of the FULL current family
         """
@@ -432,13 +508,19 @@ class FamilyTreeMember(object):
         # Get the generation spanning tree
         root_user = self.get_root()
         gen_span = root_user.generational_span(expand_upwards=True, add_parent=True)
-        return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
+        return await self.to_dot_script_from_generational_span(
+            bot, gen_span, customised_tree_user
+        )
 
-    async def to_dot_script_from_generational_span(self, bot, gen_span:dict, customised_tree_user:CustomisedTreeUser) -> str:
+    async def to_dot_script_from_generational_span(
+        self, bot, gen_span: dict, customised_tree_user: CustomisedTreeUser
+    ) -> str:
         """Generates the DOT script from a given generational span"""
 
         ctu = customised_tree_user  # Shorten this variable name
-        gen_span: typing.Dict[int, typing.List[self.__class__]] = gen_span  # Just set up some type hinting
+        gen_span: typing.Dict[
+            int, typing.List[self.__class__]
+        ] = gen_span  # Just set up some type hinting
 
         # Find my own depth
         my_depth: int = None or 0
@@ -463,7 +545,7 @@ class FamilyTreeMember(object):
 
         # Make some initial digraph stuff
         all_text: str = (
-            'digraph {'
+            "digraph {"
             f"node [shape=box, fontcolor={ctu.hex['font']}, color={ctu.hex['edge']}, fillcolor={ctu.hex['node']}, style=filled];"
             f"edge [dir=none, color={ctu.hex['edge']}];"
             f"bgcolor={ctu.hex['background']};"
@@ -472,7 +554,9 @@ class FamilyTreeMember(object):
 
         # Set up some stuff for later
         all_users: typing.List[self.__class__] = []
-        user_parent_tree: typing.Dict[self.__class__: str] = {}  # Connects a parent to a random string used to connect the children
+        user_parent_tree: typing.Dict[
+            self.__class__ : str
+        ] = {}  # Connects a parent to a random string used to connect the children
 
         # Add the username for each user (from unflattened list)
         for generation in gen_span.values():
@@ -488,7 +572,9 @@ class FamilyTreeMember(object):
                     all_text += f'{i.id}[label="{name}"];'
 
         # Order the generations
-        generation_numbers: typing.List[int] = sorted(list(gen_span.keys()))  # The ordered list of generation numbers - just a list of sequential numbers
+        generation_numbers: typing.List[int] = sorted(
+            list(gen_span.keys())
+        )  # The ordered list of generation numbers - just a list of sequential numbers
 
         # Go through the members for each generation
         for generation_number in generation_numbers:
@@ -523,10 +609,14 @@ class FamilyTreeMember(object):
                 if partner and partner in generation:
 
                     # Set their user parent tree so they share a family value
-                    user_parent_tree[partner.id] = user_parent_tree[person.id] = get_random_string()
+                    user_parent_tree[partner.id] = user_parent_tree[
+                        person.id
+                    ] = get_random_string()
 
                     # Add the users and family value
-                    all_text += f"{person.id} -> {user_parent_tree[person.id]} -> {partner.id};"
+                    all_text += (
+                        f"{person.id} -> {user_parent_tree[person.id]} -> {partner.id};"
+                    )
                     all_text += f"{user_parent_tree[person.id]} {self.INVISIBLE};"
                     added_already.append(partner)
                     previous_person = partner
@@ -559,7 +649,9 @@ class FamilyTreeMember(object):
                             all_text += f"\t\t{user_parent_tree[person.id]} -> h{user_parent_tree[person.id]};"
                             added_already.append(user_parent_tree[person.id])
                         for child in [i for i in children if i in all_users]:
-                            all_text += f"\t\th{user_parent_tree[person.id]} -> {child.id};"
+                            all_text += (
+                                f"\t\th{user_parent_tree[person.id]} -> {child.id};"
+                            )
         all_text += "}"
 
         return all_text
