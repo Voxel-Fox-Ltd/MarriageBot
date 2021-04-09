@@ -2,7 +2,8 @@ from datetime import datetime as dt
 
 import asyncpg
 from discord.ext import commands
-
+import discord
+import typing
 from cogs import utils
 
 
