@@ -400,6 +400,24 @@ class SimulationCommands(utils.Cog):
             percentage = ((user.id + user2.id + 4500) % 10001) / 100
         return await ctx.send(f"{user.mention} \N{REVOLVING HEARTS} **{percentage:.2f}%** \N{REVOLVING HEARTS} {user2.mention}", allowed_mentions=discord.AllowedMentions(users=False))
 
+    @utils.command(aliases=['compat'], hidden=True)
+    @commands.bot_has_permissions(send_messages=True)
+    async def comatibility(self, ctx:utils.Context, user:discord.Member, user2:discord.Member=None):
+        """
+        Tells you how compatible two users may or may not be.
+        """
+
+        # Fix attrs
+        if user2 is None:
+            user, user2 = ctx.author, user
+
+        # Add response for yourself
+        if user == user2:
+            return await ctx.send("-.-")
+
+        percentage = random.randint(0, 10_000) / 100
+        return await ctx.send(f"{user.mention} \N{REVOLVING HEARTS} **{percentage:.2f}%** \N{REVOLVING HEARTS} {user2.mention}", allowed_mentions=discord.AllowedMentions(users=False))
+
     @utils.command(aliases=['intercourse', 'fuck', 'smash', 'heck', 'sex'], hidden=True)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.is_nsfw()
