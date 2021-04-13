@@ -49,6 +49,9 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
         Copy a family to a given Gold guild.
         """
 
+        if guild_id == 0:
+            return await ctx.send("No.")
+
         # Get their current family
         tree = localutils.FamilyTreeMember.get(user, guild_id=0)
         users = list(tree.span(expand_upwards=True, add_parent=True))
