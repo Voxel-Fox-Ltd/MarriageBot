@@ -192,6 +192,30 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("\N{CLAPPING HANDS SIGN}")
         await ctx.send(f"*You missed and hit {user.mention} in the face.*")
 
+    @utils.command(hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def bonk(self, ctx:utils.Context, user:discord.Member):
+        """
+        Bonk.
+        """
+
+        return await ctx.send("*Bonk*")
+
+    @utils.command(aliases=['pat', 'pet'], hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def headpat(self, ctx:utils.Context, user:discord.Member):
+        """
+        Give a fistbump to another user.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("*You pat yourself on the head. This is fine. Everything is normal.*")
+        # image_url = await self.get_reaction_gif(ctx, reaction_type="pat")
+        # await ctx.send(f"*Pets {user.mention}.*", image_url=image_url)
+        await ctx.send(f"*You gently pet {user.mention} on the head :3*")
+
     @utils.command(aliases=['waterbaloon', 'waterballon', 'waterbalon', 'waterblon'], hidden=True)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
