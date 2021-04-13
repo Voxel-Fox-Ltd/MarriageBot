@@ -60,7 +60,7 @@ class SimulationCommands(utils.Cog):
         image_url = await self.get_reaction_gif(ctx)
         await ctx.send(f"*Hugs {user.mention}.*", image_url=image_url)
 
-    @utils.command(aliases=['smooch'])
+    @utils.command(aliases=['smooch', 'makeout'])
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def kiss(self, ctx:utils.Context, user:discord.Member):
