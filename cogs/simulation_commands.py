@@ -192,6 +192,18 @@ class SimulationCommands(utils.Cog):
             return await ctx.send("\N{CLAPPING HANDS SIGN}")
         await ctx.send(f"*You missed and hit {user.mention} in the face.*")
 
+    @utils.command(aliases=['waterbaloon', 'waterballon', 'waterbalon', 'waterblon'], hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def waterballoon(self, ctx:utils.Context, user:discord.Member):
+        """
+        Throw a waterballoon at another user.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("*You calmly look at a water balloon for a few moments before smashing it into your own face.*")
+        await ctx.send(f"*You throw a water balloon at {user.mention}, soaking them.*")
+
     @utils.command(hidden=True)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
