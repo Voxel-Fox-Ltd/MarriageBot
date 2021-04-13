@@ -183,6 +183,18 @@ class SimulationCommands(utils.Cog):
     @utils.command(hidden=True)
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
+    async def fistbump(self, ctx:utils.Context, user:discord.Member):
+        """
+        Give a fistbump to another user.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("\N{CLAPPING HANDS SIGN}")
+        await ctx.send(f"*You missed and hit {user.mention} in the face.*")
+
+    @utils.command(hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
     async def poke(self, ctx:utils.Context, user:discord.Member):
         """
         Pokes a given user.
