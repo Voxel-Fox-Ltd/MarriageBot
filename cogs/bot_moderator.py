@@ -53,7 +53,7 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             return await ctx.send("No.")
 
         # Get their current family
-        tree = localutils.FamilyTreeMember.get(user, guild_id=0)
+        tree = localutils.FamilyTreeMember.get(user_id, guild_id=0)
         users = list(tree.span(expand_upwards=True, add_parent=True))
         await ctx.channel.trigger_typing()
 
