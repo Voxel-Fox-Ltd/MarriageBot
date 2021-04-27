@@ -22,6 +22,10 @@ class CacheHandler(utils.Cog):
             self.logger.critical(f"Ran into an error selecting either marriages or parents: {e}")
             exit(1)
 
+        # Clear the current cache
+        self.logger.info(f"Clearing the cache of all family tree members")
+        localutils.FamilyTreeMember.all_users.clear()
+
         # Cache the family data - partners
         self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
