@@ -114,7 +114,7 @@ async def send_proposal_message(
         utils.Button(
             "No",
             emoji=TickPayloadCheckResult.BOOLEAN_EMOJIS["CROSS"][0],
-            style=utils.ButtonStyle.FAILURE,
+            style=utils.ButtonStyle.DANGER,
         ),
     )
     message = await ctx.send(text, components=[components])  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
