@@ -108,8 +108,8 @@ class Marriage(utils.Cog):
                 await db.commit_transaction()
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await ctx.send("I ran into an error saving your family data.")
-        await ctx.send(f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!")
+                return await result.send("I ran into an error saving your family data.")
+        await result.send(f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!")
 
         # Ping over redis
         author_tree._partner = target.id
@@ -157,7 +157,7 @@ class Marriage(utils.Cog):
                 ctx.author.id, target_tree.id, family_guild_id,
             )
         partner_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, author_tree._partner)
-        await ctx.send(
+        await result.send(
             f"You've successfully divorced **{localutils.escape_markdown(partner_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )

@@ -459,7 +459,7 @@ class SimulationCommands(utils.Cog):
                 return
 
         # Respond
-        await ctx.send(random.choice(localutils.random_text.Copulate.VALID).format(author=ctx.author, target=target))
+        await result.send(random.choice(localutils.random_text.Copulate.VALID).format(author=ctx.author, target=target))
 
 
 def setup(bot:utils.Bot):

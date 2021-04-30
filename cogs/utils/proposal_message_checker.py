@@ -4,6 +4,7 @@ import re
 import aioredlock
 import discord
 from discord.ext import commands
+import voxelbotutils as utils
 
 
 def only_mention(user:discord.User) -> discord.AllowedMentions:
@@ -21,34 +22,12 @@ class TickPayloadCheckResult(object):
         "CROSS": ("<:tick_filled_no:784976328231223306>", "\N{HEAVY MULTIPLICATION X}",),
     }
 
-    def __init__(self, emoji):
+    def __init__(self, ctx, emoji):
         self.emoji = emoji
 
     @classmethod
-    async def add_tick_emojis(cls, message):
-        index = 0
-        for emoji in cls.BOOLEAN_EMOJIS.values():
-            while True:
-                try:
-                    await message.add_reaction(emoji[index])
-                    break
-                except discord.Forbidden:
-                    index += 1
-                except IndexError:
-                    return await message.edit(
-                        content="I need the `add_reactions` permission for me to be able to run this command.",
-                        embed=None,
-                    )
-                except discord.NotFound:
-                    return
-
-    @classmethod
-    def add_tick_emojis_non_async(cls, message):
-        return asyncio.Task(cls.add_tick_emojis(message))
-
-    @classmethod
     def from_payload(cls, payload):
-        return cls(str(payload.emoji))
+        return cls(payload, str(payload.button.emoji))
 
     @property
     def is_tick(self):
@@ -103,7 +82,8 @@ class ProposalLock(object):
 
 
 async def send_proposal_message(
-        ctx, user:discord.Member, text:str, *, timeout_message:str=None, cancel_message:str=None, allow_bots:bool=False) -> TickPayloadCheckResult:
+        ctx, user:discord.Member, text:str, *, timeout_message:str=None, cancel_message:str=None,
+        allow_bots:bool=False) -> TickPayloadCheckResult:
     """
     Send a proposal message out to the user to see if they want to say yes or no.
 
@@ -121,24 +101,35 @@ async def send_proposal_message(
 
     # Reply yes if we allow bots
     if allow_bots and user.bot:
-        return TickPayloadCheckResult(TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"][0])
+        return TickPayloadCheckResult(ctx, TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"][0])
 
     # See if they want to say yes
-    message = await ctx.send(text)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
-    TickPayloadCheckResult.add_tick_emojis_non_async(message)
+    components = utils.ActionRow(
+        utils.Button(
+            "Yes",
+            emoji=TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"][0],
+            style=utils.ButtonStyle.SUCCESS,
+        ),
+        utils.Button(
+            "No",
+            emoji=TickPayloadCheckResult.BOOLEAN_EMOJIS["CROSS"][0],
+            style=utils.ButtonStyle.FAILURE,
+        ),
+    )
+    message = await ctx.send(text, components=components)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
     try:
         def check(p):
-            if p.message_id != message.id:
+            if p.message.id != message.id:
                 return False
-            if p.user_id not in [user.id, ctx.author.id]:
+            if p.user.id not in [user.id, ctx.author.id]:
                 return False
             result = TickPayloadCheckResult.from_payload(p)
-            if p.user_id == user.id:
+            if p.user.id == user.id:
                 return result
-            if p.user_id == ctx.author.id:
-                return str(p.emoji) in result.BOOLEAN_EMOJIS["CROSS"]
+            if p.user.id == ctx.author.id:
+                return str(p.button.emoji) in result.BOOLEAN_EMOJIS["CROSS"]
             return False
-        payload = await ctx.bot.wait_for("raw_reaction_add", check=check, timeout=60)
+        payload = await ctx.bot.wait_for("button_click", check=check, timeout=60)
     except asyncio.TimeoutError:
         await ctx.send(timeout_message, allowed_mentions=only_mention(ctx.author))
         return None
@@ -147,9 +138,9 @@ async def send_proposal_message(
     result = TickPayloadCheckResult.from_payload(payload)
     if not result.is_tick:
         if payload.user_id == ctx.author.id:
-            await ctx.send(cancel_message, allowed_mentions=only_mention(ctx.author))
+            await result.send(cancel_message, allowed_mentions=only_mention(ctx.author))
             return None
-        await ctx.send(f"Sorry, {ctx.author.mention}; they said no :<")
+        await result.send(f"Sorry, {ctx.author.mention}; they said no :<")
         return None
 
     # Alright we done
