@@ -117,7 +117,7 @@ async def send_proposal_message(
             style=utils.ButtonStyle.DANGER,
         ),
     )
-    message = await ctx.send(text, components=[components])  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
+    message = await ctx.send(text, components=components)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
     try:
         def check(p):
             if p.message.id != message.id:
@@ -132,10 +132,16 @@ async def send_proposal_message(
             return False
         payload = await ctx.bot.wait_for("button_click", check=check, timeout=60)
     except asyncio.TimeoutError:
+        for button in components.components:
+            button.disabled = True
+        ctx.bot.loop.create_task(message.edit(components=components))
         await ctx.send(timeout_message, allowed_mentions=only_mention(ctx.author))
         return None
 
     # Check what they said
+    for button in components.components:
+        button.disabled = True
+    ctx.bot.loop.create_task(message.edit(components=components))
     result = TickPayloadCheckResult.from_payload(payload)
     if not result.is_tick:
         if payload.user_id == ctx.author.id:
