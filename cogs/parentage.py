@@ -143,7 +143,7 @@ class Parentage(utils.Cog):
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
                 return await result.ctx.send("I ran into an error saving your family data - please try again later.")
-        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!", ignore_error=True)
+        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!")
 
         # And we're done
         target_tree._children.append(author_tree.id)
@@ -255,7 +255,7 @@ class Parentage(utils.Cog):
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
                 return await result.ctx.send("I ran into an error saving your family data - please try again later.")
-        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!", ignore_error=True)
+        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!")
 
         # And we're done
         author_tree._children.append(target.id)
