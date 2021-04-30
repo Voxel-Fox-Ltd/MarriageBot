@@ -130,7 +130,7 @@ async def send_proposal_message(
             if p.user.id == ctx.author.id:
                 return str(p.button.emoji) in result.BOOLEAN_EMOJIS["CROSS"]
             return False
-        button = await ctx.bot.wait_for("button_click", check=check, timeout=60)
+        button_event = await ctx.bot.wait_for("button_click", check=check, timeout=60)
     except asyncio.TimeoutError:
         for button in components.components:
             button.disabled = True
@@ -142,9 +142,9 @@ async def send_proposal_message(
     for button in components.components:
         button.disabled = True
     ctx.bot.loop.create_task(message.edit(components=components))
-    result = TickPayloadCheckResult.from_payload(button)
+    result = TickPayloadCheckResult.from_payload(button_event)
     if not result.is_tick:
-        if button.user.id == ctx.author.id:
+        if button_event.user.id == ctx.author.id:
             await result.ctx.send(cancel_message, allowed_mentions=only_mention(ctx.author))
             return None
         await result.ctx.send(f"Sorry, {ctx.author.mention}; they said no :<")
