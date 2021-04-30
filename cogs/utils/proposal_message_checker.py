@@ -23,6 +23,7 @@ class TickPayloadCheckResult(object):
     }
 
     def __init__(self, ctx, emoji):
+        self.ctx = ctx
         self.emoji = emoji
 
     @classmethod
@@ -116,7 +117,7 @@ async def send_proposal_message(
             style=utils.ButtonStyle.FAILURE,
         ),
     )
-    message = await ctx.send(text, components=components)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
+    message = await ctx.send(text, components=[components])  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
     try:
         def check(p):
             if p.message.id != message.id:
@@ -138,9 +139,9 @@ async def send_proposal_message(
     result = TickPayloadCheckResult.from_payload(payload)
     if not result.is_tick:
         if payload.user_id == ctx.author.id:
-            await result.send(cancel_message, allowed_mentions=only_mention(ctx.author))
+            await result.ctx.send(cancel_message, allowed_mentions=only_mention(ctx.author))
             return None
-        await result.send(f"Sorry, {ctx.author.mention}; they said no :<")
+        await result.ctx.send(f"Sorry, {ctx.author.mention}; they said no :<")
         return None
 
     # Alright we done

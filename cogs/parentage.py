@@ -142,8 +142,8 @@ class Parentage(utils.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.send("I ran into an error saving your family data - please try again later.")
-        await result.send(f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!", ignore_error=True)
+                return await result.ctx.send("I ran into an error saving your family data - please try again later.")
+        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!", ignore_error=True)
 
         # And we're done
         target_tree._children.append(author_tree.id)
@@ -254,8 +254,8 @@ class Parentage(utils.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.send("I ran into an error saving your family data - please try again later.")
-        await result.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!", ignore_error=True)
+                return await result.ctx.send("I ran into an error saving your family data - please try again later.")
+        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!", ignore_error=True)
 
         # And we're done
         author_tree._children.append(target.id)
@@ -319,7 +319,7 @@ class Parentage(utils.Cog):
             )
 
         # And we're done
-        await result.send(
+        await result.ctx.send(
             f"You've successfully disowned **{localutils.escape_markdown(child_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )
@@ -376,7 +376,7 @@ class Parentage(utils.Cog):
 
         # And we're done
         parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
-        return await result.send(f"You no longer have **{localutils.escape_markdown(parent_name)}** as a parent :c")
+        return await result.ctx.send(f"You no longer have **{localutils.escape_markdown(parent_name)}** as a parent :c")
 
     @utils.command()
     @localutils.checks.has_donator_perks("can_run_disownall")
@@ -426,7 +426,7 @@ class Parentage(utils.Cog):
                 await re.publish('TreeMemberUpdate', person.to_json())
 
         # Output to user
-        await result.send("You've sucessfully disowned all of your children :c")
+        await result.ctx.send("You've sucessfully disowned all of your children :c")
 
 
 def setup(bot:utils.Bot):
