@@ -98,8 +98,8 @@ class Parentage(utils.Cog):
 
         # Manage children
         children_amount = await self.get_max_children_for_member(ctx.guild, target)
-        if len(author_tree._children) >= children_amount:
-            return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.prefix}perks` for more information.")
+        if len(target_tree._children) >= children_amount:
+            return await ctx.send(f"They're currently at the maximum amount of children they can have - see `{ctx.prefix}perks` for more information.")
 
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
