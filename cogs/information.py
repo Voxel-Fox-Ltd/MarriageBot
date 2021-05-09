@@ -102,6 +102,8 @@ class Information(utils.Cog):
             output += "\n".join([f"* **{localutils.escape_markdown(i[0])}** (`{i[1]}`)" for i in children])
 
         # Return all output
+        if len(output) > 2_000:
+            return await ctx.send(f"<@{user_id}>'s children list goes over 2,000 characters. Amazing.")
         await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['parents'])
