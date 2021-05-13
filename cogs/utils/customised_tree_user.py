@@ -1,5 +1,6 @@
 import voxelbotutils as utils
 
+
 class CustomisedTreeUser(object):
     """
     A class to hold the custom tree setup for a given user.
@@ -130,9 +131,12 @@ class CustomisedTreeUser(object):
         """
 
         await db(
-            """INSERT INTO customisation (user_id, edge, node, font, highlighted_font, highlighted_node, background, direction)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (user_id) DO UPDATE SET edge=excluded.edge, node=excluded.node,
-            font=excluded.font, highlighted_font=excluded.highlighted_font, highlighted_node=excluded.highlighted_node,
-            background=excluded.background, direction=excluded.direction""",
-            self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node, self.background, self.direction,
+            """INSERT INTO customisation (user_id, edge, node, font, highlighted_font,
+            highlighted_node, background, direction) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (user_id) DO UPDATE SET edge=excluded.edge, node=excluded.node,
+            font=excluded.font, highlighted_font=excluded.highlighted_font,
+            highlighted_node=excluded.highlighted_node, background=excluded.background,
+            direction=excluded.direction""",
+            self.id, self.edge, self.node, self.font, self.highlighted_font, self.highlighted_node,
+            self.background, self.direction,
         )
