@@ -1,0 +1,31 @@
+website_base_url = "http://localhost:8080"  # This will be used to dynamically make the redirect url internally
+login_url = "/login"  # The url or route used to prompt the user to login
+routes = [ "frontend", "backend", ]  # These routes `/website/<filename>` will have their `routes` variable imported which will be loaded into the bot's route table
+oauth_scopes = [ "identify", "guilds", ]  # The scopes that should be added to the automatic login url
+
+# These are a few different tokens for Discord bots that you can use at once
+# Config files are loaded as `config/<filename>`
+# This is fully welcome to be entirely empty
+[discord_bot_configs]
+    bot = "config.toml"
+
+# Used for the bot's invite and login links
+[oauth]
+    client_id = ""
+    client_secret = ""
+
+# This data is passed directly over to asyncpg.connect()
+[database]
+    enabled = false
+    user = "database_username"
+    password = "database_password"
+    database = "database_name"
+    host = "127.0.0.1"
+    port = 5432
+
+# This data is passed directly over to aioredis.connect()
+[redis]
+    enabled = false
+    host = "127.0.0.1"
+    port = 6379
+    db = 0
