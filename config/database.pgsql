@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS guild_settings(
     gold_prefix VARCHAR(30) DEFAULT 'm.',
     test_prefix VARCHAR(30) DEFAULT 'm,',
     allow_incest BOOLEAN DEFAULT FALSE,
-    max_family_members INTEGER DEFAULT 500,
+    max_family_members INTEGER DEFAULT 2000,
     gifs_enabled BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (guild_id)
 );
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS channel_list(
     PRIMARY KEY (guild_id, channel_id, key)
 );
 
-    
+
 CREATE TABLE IF NOT EXISTS redirects(
     code VARCHAR(50) PRIMARY KEY,
     location VARCHAR(2000)
