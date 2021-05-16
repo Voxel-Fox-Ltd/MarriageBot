@@ -54,7 +54,6 @@ async function updateGuildGifsEnabled(submitButton) {
 }
 
 
-
 async function updateGuildIncestEnabled(submitButton) {
 
     // Get the form node
@@ -75,6 +74,34 @@ async function updateGuildIncestEnabled(submitButton) {
     // Tell the user what happened
     if(response.ok) {
         alert("Incest for your guild is now updated.");
+    }
+    else {
+        let data = await response.json();
+        alert(data.error);
+    }
+}
+
+
+async function updateGuildMaxAllowedChildren(submitButton) {
+
+    // Get the form node
+    let form = submitButton;
+    while (form.nodeName !== "FORM") {
+        form = form.parentNode;
+    }
+
+    // Send the web request
+    let response = await fetch("/set_max_allowed_children", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Object.fromEntries(new URLSearchParams(new FormData(form)))),
+    });
+
+    // Tell the user what happened
+    if(response.ok) {
+        alert("Maximum children for your guild have now been updated.");
     }
     else {
         let data = await response.json();

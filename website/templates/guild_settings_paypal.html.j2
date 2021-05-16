@@ -106,9 +106,9 @@ MarriageBot - {{ guild.name }} Settings
     </div>
     <p>
         {%- if has_gold -%}
-            <button form="max-allowed-children" type="submit" formmethod="post" formaction="/set_max_allowed_children">Submit Children Amount Change</button>
+            <button  onclick="updateGuildMaxAllowedChildren(this); return false;">Submit Children Amount Change</button>
         {%- else -%}
-            <button form="max-allowed-children" type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
+            <button disabled>Disabled for non-Gold bot</button>
         {%- endif -%}
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />

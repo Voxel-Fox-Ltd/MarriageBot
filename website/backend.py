@@ -210,3 +210,42 @@ async def set_incest_enabled(request: Request):
 
     # Redirect to page
     return json_response({"error": ""}, status=200)
+
+
+@routes.post('/set_max_allowed_children')
+async def set_max_allowed_children(request: Request):
+    """
+    Sets the maximum allowed children for each given role.
+    """
+
+    # Make sure the user is allowed to make this request
+    checked_data = await localutils.check_user_is_valid(request)
+    if isinstance(checked_data, Response):
+        return checked_data
+
+    # Get current prefix
+    data = checked_data["post_data"].copy()
+    guild_id = int(data.pop("guild_id"))
+    max_children_dict = {}
+    async with request.app['database']() as db:
+        await db.start_transaction()
+        await db("""DELETE FROM max_children_amount WHERE guild_id=$1""", guild_id)
+        for role_id, amount in data.items():
+            try:
+                await db(
+                    """INSERT INTO max_children_amount (guild_id, role_id, amount) VALUES ($1, $2, $3)
+                    ON CONFLICT DO NOTHING""",
+                    guild_id, int(role_id), int(amount),
+                )
+                max_children_dict[int(role_id)] = int(amount)
+            except ValueError:
+                pass
+        await db.commit_transaction()
+    async with request.app['redis']() as re:
+        await re.publish('UpdateMaxChildren', {
+            'guild_id': checked_data['guild_id'],
+            'max_children': max_children_dict,
+        })
+
+    # Redirect to page
+    return json_response({"error": ""}, status=200)
