@@ -6,7 +6,7 @@ async function updateGuildPrefix(submitButton) {
     }
 
     // Send the web request
-    response = await fetch("/set_prefix", {
+    let response = await fetch("/set_prefix", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -17,6 +17,7 @@ async function updateGuildPrefix(submitButton) {
         alert("Yo it worked sick");
     }
     else {
-        alert("AAAAAAA ERROR");
+        let data = await response.json();
+        alert(data.error);
     }
 }
