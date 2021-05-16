@@ -78,7 +78,7 @@ MarriageBot - {{ guild.name }} Settings
         {%- for role in guild_roles -%}
             {%- if not role.managed -%}
                 <input
-                    {% if role == roles[-1] %}disabled{% endif %}
+                    {% if role == guild_roles[-1] %}disabled{% endif %}
                     id="role_max_children_{{ role.id }}"
                     name="{{ role.id }}"
                     type="number"
