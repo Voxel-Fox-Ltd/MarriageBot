@@ -1,8 +1,10 @@
-from aiohttp.web import HTTPFound, Request, Response, RouteTableDef
+from aiohttp.web import HTTPFound, Request, Response, RouteTableDef, json_response
 from voxelbotutils import web as webutils
 import aiohttp_session
 import discord
 from aiohttp_jinja2 import template
+
+from website import utils as localutils
 
 
 routes = RouteTableDef()
@@ -53,7 +55,7 @@ async def colour_settings_post_handler(request: Request):
     try:
         colours_raw = dict(colours_raw)
     except Exception:
-        return Response(status=400)
+        return json_response({"error": "Failed to get dictionary from POST data."}, status=400)
 
     # Fix up the attributes
     direction = colours_raw.pop("direction")
@@ -66,79 +68,90 @@ async def colour_settings_post_handler(request: Request):
     async with request.app['database']() as db:
         ctu = await utils.CustomisedTreeUser.get(user_id, db)
         for i, o in colours.items():
-            setattr(ctu, i, o)
+            try:
+                setattr(ctu, i, o)
+            except AttributeError:
+                pass
         await ctu.save(db)
 
     # Redirect back to user settings
-    return Response(status=200)
+    return json_response({"error": None}, status=200)
 
 
-@routes.post('/unblock_user')
-@webutils.requires_login()
-async def unblock_user_post_handler(request: Request):
-    """
-    Handles when people submit their new colours.
-    """
+# @routes.post('/unblock_user')
+# @webutils.requires_login()
+# async def unblock_user_post_handler(request: Request):
+#     """
+#     Handles when people submit their new colours.
+#     """
 
-    # Get data
-    post_data_raw = await request.post()
+#     # Get data
+#     post_data_raw = await request.post()
 
-    # Get blocked user
-    try:
-        blocked_user = int(post_data_raw['user_id'])
-    except ValueError:
-        return HTTPFound(location='/user_settings')
+#     # Get blocked user
+#     try:
+#         blocked_user = int(post_data_raw['user_id'])
+#     except ValueError:
+#         return HTTPFound(location='/user_settings')
 
-    # Get logged in user
-    session = await aiohttp_session.get_session(request)
-    logged_in_user = session['user_id']
+#     # Get logged in user
+#     session = await aiohttp_session.get_session(request)
+#     logged_in_user = session['user_id']
 
-    # Remove data
-    async with request.app['database']() as db:
-        await db(
-            """DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2""",
-            logged_in_user, blocked_user,
-        )
-    async with request.app['redis']() as re:
-        await re.publish("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
+#     # Remove data
+#     async with request.app['database']() as db:
+#         await db(
+#             """DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2""",
+#             logged_in_user, blocked_user,
+#         )
+#     async with request.app['redis']() as re:
+#         await re.publish("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
 
-    # Redirect back to user settings
-    return HTTPFound(location='/user_settings')
+#     # Redirect back to user settings
+#     return HTTPFound(location='/user_settings')
 
 
 @routes.post('/set_prefix')
 @webutils.requires_login()
-async def set_prefix(request:Request):
+async def set_prefix(request: Request):
     """
     Sets the prefix for a given guild.
     """
 
     # See if they're logged in
-    session = await aiohttp_session.get_session(request)
-    if not session.get('user_id'):
-        return HTTPFound(location='/')
+    if not webutils.is_logged_in(request):
+        return json_response({"error": "User isn't logged in."}, status=401)
 
     # Get the guild we're looking at
     post_data = await request.post()
-    guild_id = post_data['guild_id']
+    guild_id = post_data.get('guild_id')
     if not guild_id:
-        return HTTPFound(location='/')
+        return json_response({"error": "No guild ID provided."}, status=400)
+    try:
+        guild_id = int(guild_id)
+    except ValueError:
+        return json_response({"error": "Invalid guild ID provided."}, status=400)
+
+    # Get the guild member
+    guild = await localutils.get_guild(request, guild_id)
+    if not guild:
+        return json_response({"error": "Invalid guild ID provided."}, status=400)
+    session = await aiohttp_session.get_session(request)
+    user_id = session.get("user_id")
+    try:
+        member = await guild.fetch_member(user_id)
+    except discord.HTTPException:
+        return json_response({"error": "User not found in guild."}, status=401)
 
     # See if they're allowed to change this guild
-    all_guilds = await webutils.get_user_guilds(request)
-    if all_guilds is None:
-        return HTTPFound(location='/discord_oauth_login')
-    guild = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and guild_id == i['id']]
-    if not guild:
-        return HTTPFound(location='/')
+    if guild.owner_id == member.id or member.guild_permissions.manage_guild:
+        pass
+    else:
+        return json_response({"error": "User does not have permission to manage this guild."}, status=401)
 
     # Grab the prefix they gave
-    prefix = post_data['prefix'][0:30]
-    if len(prefix) == 0:
-        if post_data.get('gold', False):
-            prefix = request.app['gold_config']['prefix']['default_prefix']
-        else:
-            prefix = request.app['config']['prefix']['default_prefix']
+    prefix = post_data['prefix'][:30]
+    gold_prefix = post_data['gold_prefix'][:30]
 
     # Update prefix in DB
     async with request.app['database']() as db:
@@ -146,7 +159,11 @@ async def set_prefix(request:Request):
             key = 'gold_prefix'
         else:
             key = 'prefix'
-        await db(f'INSERT INTO guild_settings (guild_id, {key}) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET {key}=$2', int(guild_id), prefix)
+        await db(
+            """INSERT INTO guild_settings (guild_id, prefix, gold_prefix) VALUES ($1, $2)
+            ON CONFLICT (guild_id) DO UPDATE SET prefix=excluded.prefix, gold_prefix=excluded.gold_prefix""",
+            int(guild_id), prefix, gold_prefix
+        )
     async with request.app['redis']() as re:
         redis_data = {'guild_id': int(guild_id)}
         redis_data[{True: 'gold_prefix', False: 'prefix'}[bool(post_data['gold'])]] = prefix
