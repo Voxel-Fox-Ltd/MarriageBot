@@ -178,7 +178,6 @@ async def set_gifs_enabled(request: Request):
     return json_response({"error": ""}, status=200)
 
 
-
 @routes.post('/set_incest_enabled')
 async def set_incest_enabled(request: Request):
     """
