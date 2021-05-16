@@ -102,7 +102,10 @@ async def user_settings(request: Request):
         session['user_id'],
     )
     bot = request.app['bots']['bot']
-    blocked_users = {i['blocked_user_id']: localutils.DiscordNameManager.fetch_name_by_id(bot, i['blocked_user_id']) for i in blocked_users_db}
+    blocked_users = {
+        i['blocked_user_id']: await localutils.DiscordNameManager.fetch_name_by_id(bot, i['blocked_user_id'])
+        for i in blocked_users_db
+    }
 
     # Give all the data to the page
     await db.disconnect()
