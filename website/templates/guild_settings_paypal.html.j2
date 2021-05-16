@@ -41,14 +41,14 @@ MarriageBot - {{ guild.name }} Settings
     <p>
         <input
             name="prefix"
-            value="{{ guild_settings['prefix'] }}"
+            value="{{ guild_settings['prefix'] if guild_settings['prefix'] != request.app['bots']['bot'].config['default_prefix'] else ''}}"
             placeholder="{{ request.app['bots']['bot'].config['default_prefix'] }}"
             maxlength="30" />
         <label for="prefix">Normal Bot Prefix</label>
         <br />
         <input
             name="gold_prefix"
-            value="{{ guild_settings['gold_prefix'] }}"
+            value="{{ guild_settings['gold_prefix'] if guild_settings['gold_prefix'] != request.app['bots']['gold_bot'].config['default_prefix'] else ''}}"
             placeholder="{{ request.app['bots']['gold_bot'].config['default_prefix'] }}"
             maxlength="30" {% if not has_gold %}disabled{% endif %} />
         <label for="gold_prefix">Gold Prefix</label>
