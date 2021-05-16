@@ -159,9 +159,9 @@ async def set_prefix(request: Request):
     async with request.app['database']() as db:
 
         await db(
-            """INSERT INTO guild_settings (guild_id, prefix, gold_prefix) VALUES ($1, $2)
+            """INSERT INTO guild_settings (guild_id, prefix, gold_prefix) VALUES ($1, $2, $3)
             ON CONFLICT (guild_id) DO UPDATE SET prefix=excluded.prefix, gold_prefix=excluded.gold_prefix""",
-            int(guild_id), prefix, gold_prefix
+            int(guild_id), prefix, gold_prefix,
         )
     async with request.app['redis']() as re:
         redis_data = {'guild_id': int(guild_id)}
@@ -169,5 +169,4 @@ async def set_prefix(request: Request):
         await re.publish('UpdateGuildPrefix', redis_data)
 
     # Redirect to page
-    location = f'/guild_settings?guild_id={guild_id}&gold=1' if post_data['gold'] else f'/guild_settings?guild_id={guild_id}'
-    return HTTPFound(location=location)
+    return json_response({"error": ""}, status=200)
