@@ -86,7 +86,7 @@ MarriageBot - {{ guild.name }} Settings
                     max="{{ max_children_hard_cap }}"
                     value="{{ given_max_children.get(role.id) }}"
                     placeholder="Default - 5" />
-                <label for="role_max_children_{{ role.id }}"><span style="color: rgb(role.colour.r, role.colour.g, role.colour.b)">⦿</span>{{ role.name }}</label><br />
+                <label for="role_max_children_{{ role.id }}"><span style="color: rgb({{ role.colour.r }}, {{ role.colour.g }}, {{ role.colour.b }})">⦿</span>{{ role.name }}</label><br />
             {%- endif -%}
         {%- endfor -%}
     {%- endif -%}
