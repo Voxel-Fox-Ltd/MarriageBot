@@ -166,7 +166,7 @@ async def set_gifs_enabled(request: Request):
         await db(
             """INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2)
             ON CONFLICT (guild_id) DO UPDATE SET gifs_enabled=$2""",
-            int(guild_id), enabled,
+            checked_data['guild_id'], enabled,
         )
     async with request.app['redis']() as re:
         await re.publish('UpdateGifsEnabled', {
