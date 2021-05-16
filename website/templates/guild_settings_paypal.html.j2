@@ -75,20 +75,10 @@ MarriageBot - {{ guild.name }} Settings
     <p>Maximum allowed children - the amount of children that people with a given role are allowed to have. If a user has multiple of these roles, the one with the higest number will be used. Must be a number from <b>{{ min_children_hard_cap }}</b> to <b>{{ max_children_hard_cap }}</b>.</p>
     <div>
     {%- if has_gold -%}
-        {%- for role in roles -%}
-            {%- if role == roles[-1] -%}
+        {%- for role in guild_roles -%}
+            {%- if not role.managed -%}
                 <input
-                    disabled
-                    id="role_max_children_{{ role.id }}"
-                    name="{{ role.id }}"
-                    type="number"
-                    min="{{ min_children_hard_cap }}"
-                    max="{{ max_children_hard_cap }}"
-                    value="{{ min_children_hard_cap }}"
-                    placeholder="Default - 5" />
-                <label for="role_max_children_{{ role.id }}">{{ role.name }}</label><br />
-            {%- elif not role.managed -%}
-                <input
+                    {% if role == roles[-1] %}disabled{% endif %}
                     id="role_max_children_{{ role.id }}"
                     name="{{ role.id }}"
                     type="number"
