@@ -23,7 +23,7 @@ MarriageBot - {{ guild.name }} Settings
 
 
 <div class="content-header-data">
-    {% if gold == false %}
+    {% if not has_gold %}
         <h2>Click here to buy MarriageBot Gold for this guild </h2>
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
             <input type="hidden" name="cmd" value="_s-xclick">
