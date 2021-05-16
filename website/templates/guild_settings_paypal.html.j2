@@ -74,18 +74,35 @@ MarriageBot - {{ guild.name }} Settings
 <form id="max-allowed-children" class="boxed">
     <p>Maximum allowed children - the amount of children that people with a given role are allowed to have. If a user has multiple of these roles, the one with the higest number will be used. Must be a number from <b>{{ min_children_hard_cap }}</b> to <b>{{ max_children_hard_cap }}</b>.</p>
     <div>
-    {%- if gold is none -%}
+    {%- if has_gold -%}
         {%- for role in roles -%}
             {%- if role == roles[-1] -%}
-                <input id="role_max_children_{{ role.id }}" disabled name="{{ role.id }}" type="number" min="{{ min_children_hard_cap }}" max="{{ max_children_hard_cap }}" value="{{ min_children_hard_cap }}" placeholder="Default - 5" /><label for="role_max_children_{{ role.id }}">{{ role.name }}</label><br />
+                <input
+                    disabled
+                    id="role_max_children_{{ role.id }}"
+                    name="{{ role.id }}"
+                    type="number"
+                    min="{{ min_children_hard_cap }}"
+                    max="{{ max_children_hard_cap }}"
+                    value="{{ min_children_hard_cap }}"
+                    placeholder="Default - 5" />
+                <label for="role_max_children_{{ role.id }}">{{ role.name }}</label><br />
             {%- elif not role.managed -%}
-                <input id="role_max_children_{{ role.id }}" name="{{ role.id }}" type="number" min="{{ min_children_hard_cap }}" max="{{ max_children_hard_cap }}" value="{{ max_children_amount.get(role.id) }}" placeholder="Default - 5" /><label for="role_max_children_{{ role.id }}">{{ role.name }}</label><br />
+                <input
+                    id="role_max_children_{{ role.id }}"
+                    name="{{ role.id }}"
+                    type="number"
+                    min="{{ min_children_hard_cap }}"
+                    max="{{ max_children_hard_cap }}"
+                    value="{{ max_children_amount.get(role.id) }}"
+                    placeholder="Default - 5" />
+                <label for="role_max_children_{{ role.id }}">{{ role.name }}</label><br />
             {%- endif -%}
         {%- endfor -%}
     {%- endif -%}
     </div>
     <p>
-        {%- if gold is none -%}
+        {%- if has_gold -%}
             <button form="max-allowed-children" type="submit" formmethod="post" formaction="/set_max_allowed_children">Submit Children Amount Change</button>
         {%- else -%}
             <button form="max-allowed-children" type="submit" formmethod="post" disabled>Disabled for non-Gold bot</button>
