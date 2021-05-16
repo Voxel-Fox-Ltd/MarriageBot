@@ -76,12 +76,12 @@ MarriageBot - User Settings
     </div>
 </form> <!-- boxed -->
 
-{# <div class="boxed">
+<div class="boxed">
     <h2>Blocked Users</h2>
     <p>Here you can see a list of all the users you've blocked in past. You're able to unblock users with the 'unblock' command, but you're able to unblock them here as well.</p>
     <form action="/unblock_user">
         {% for user_id, username in blocked_users.items() %}
         <button type="submit" formmethod="POST" name="user_id" value="{{ user_id }}">Unblock "{{ username }}"</button>{% endfor %}
     </form>
-</div> #}
+</div>
 {% endblock content %}
