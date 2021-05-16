@@ -14,7 +14,7 @@ routes = RouteTableDef()
 
 @routes.get("/")
 @template('index.html.j2')
-@webutils.add_output_args()
+@webutils.add_discord_arguments()
 async def index(request: Request):
     """
     Index of the website, has "login with Discord" button.
@@ -26,7 +26,7 @@ async def index(request: Request):
 
 @routes.get("/blog/{code}")
 @template('blog.html.j2')
-@webutils.add_output_args()
+@webutils.add_discord_arguments()
 async def blog(request: Request):
     """
     Blog post handler - a page on the website that has a static
@@ -57,7 +57,7 @@ async def blog(request: Request):
 
 @routes.get('/settings')
 @template('settings.html.j2')
-@webutils.add_output_args()
+@webutils.add_discord_arguments()
 @webutils.requires_login()
 async def settings(request: Request):
     """
@@ -70,7 +70,7 @@ async def settings(request: Request):
 
 @routes.get('/user_settings')
 @template('user_settings.html.j2')
-@webutils.add_output_args()
+@webutils.add_discord_arguments()
 @webutils.requires_login()
 async def user_settings(request: Request):
     """
@@ -114,7 +114,7 @@ async def user_settings(request: Request):
 
 @routes.get("/guilds")
 @template('guild_picker.html.j2')
-@webutils.add_output_args()
+@webutils.add_discord_arguments()
 @webutils.requires_login()
 async def guild_picker(request: Request):
     """
@@ -151,7 +151,7 @@ async def guild_picker(request: Request):
 
 @routes.get('/tree_preview')
 @template('tree_preview.html.j2')
-@webutils.add_output_args()
+@webutils.add_discord_arguments()
 async def tree_preview(request:Request):
     """
     Tree preview for the bot.
@@ -187,7 +187,7 @@ async def tree_preview(request:Request):
 
 @routes.get(r"/guild_settings/{guild_id:\d+}")
 @template('guild_settings_paypal.html.j2')
-@webutils.add_output_args()
+@webutils.add_discord_arguments()
 @webutils.requires_login()
 async def guild_settings(request: Request):
     """
