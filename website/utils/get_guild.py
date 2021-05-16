@@ -1,3 +1,5 @@
+import typing
+
 import discord
 from aiohttp.web import Request
 
