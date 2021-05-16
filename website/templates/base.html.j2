@@ -10,8 +10,11 @@
     <link rel="stylesheet" type="text/css" href="/static/css/content.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/footer.css" />
 
-    {% for i, o in opengraph.items() %}
-    <meta property="{{ i }}" content="{{ o }}" />{% endfor %}
+    <meta property="og:title" content="MarriageBot - A marriage-based Discord bot" />
+    <meta property="og:description" content="MarriageBot is a Discord bot used for simulations of your family, be it that you want b1nzy as your mom,  or Jake as your nephew, MarriageBot can handle it all." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://marriagebot.xyz/static/images/MarriageBotCircle.150.png" />
+    <meta property="og:locale" content="en_GB" />
     <meta property="og:url" content="{{ request.url.human_repr() }}" />
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
