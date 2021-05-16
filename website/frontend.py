@@ -122,7 +122,7 @@ async def guild_picker(request: Request):
     """
 
     # Get the guilds from the user
-    all_guilds = await webutils.get_user_guilds(request)
+    all_guilds = await webutils.get_user_guilds_from_session(request)
     if all_guilds is None:
         return HTTPFound(location='/discord_oauth_login')
 
