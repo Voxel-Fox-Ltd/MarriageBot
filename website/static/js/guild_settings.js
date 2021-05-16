@@ -1,4 +1,5 @@
 async function updateGuildPrefix(submitButton) {
+
     // Get the form node
     let form = submitButton;
     while (form.nodeName !== "FORM") {
@@ -13,8 +14,10 @@ async function updateGuildPrefix(submitButton) {
         },
         body: JSON.stringify(Object.fromEntries(new URLSearchParams(new FormData(form)))),
     });
+
+    // Tell the user what happened
     if(response.ok) {
-        alert("Yo it worked sick");
+        alert("Preifx updated.");
     }
     else {
         let data = await response.json();
