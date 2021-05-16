@@ -39,8 +39,19 @@ MarriageBot - {{ guild.name }} Settings
 <form id="prefix" class="boxed">
     <p>Bot prefix - the prefix used to activate the bot on your server.</p>
     <p>
-        <input name="prefix" value="{{ guild_settings['prefix'] }}" placeholder="MarriageBot Prefix" maxlength="30" />
-        <input name="gold_prefix" value="{{ guild_settings['gold_prefix'] }}" placeholder="MarriageBot Gold Prefix" maxlength="30" {% if not has_gold %}disabled{% endif %} />
+        <input
+            name="prefix"
+            value="{{ guild_settings['prefix'] }}"
+            placeholder="{{ request.app['bots']['bot'].config['default_prefix'] }}"
+            maxlength="30" />
+        <label for="prefix">Prefix</label>
+        <input
+            name="gold_prefix"
+            value="{{ guild_settings['gold_prefix'] }}"
+            placeholder="{{ request.app['bots']['gold_bot'].config['default_prefix'] }}"
+            maxlength="30" {% if not has_gold %}disabled{% endif %} />
+        <label for="gold_prefix">Gold Prefix</label>
+        <br />
         <button type="submit" formmethod="post" formaction="/set_prefix">Update Guild Prefix</button>
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
