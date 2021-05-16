@@ -64,7 +64,7 @@ MarriageBot - {{ guild.name }} Settings
     <p>Gifs - sets whether gifs are enabled for your server's simulation commands.</p>
     <p>
         <input name="enabled" {% if guild_settings['gifs_enabled'] %}checked{% endif %} type="checkbox" />
-        <button form="gifs-enabled" type="submit" formmethod="post" formaction="/set_gifs_enabled">Update Gif Enable</button>
+        <button onclick="updateGuildGifsEnabled(this); return false;">Update Gif Enable</button>
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
 </form> <!-- gifs-enabled -->
