@@ -17,7 +17,7 @@ async function updateGuildPrefix(submitButton) {
 
     // Tell the user what happened
     if(response.ok) {
-        alert("Prefix updated.");
+        alert("The bot prefix for your guild has been updated.");
     }
     else {
         let data = await response.json();
@@ -45,7 +45,36 @@ async function updateGuildGifsEnabled(submitButton) {
 
     // Tell the user what happened
     if(response.ok) {
-        alert("Gifs are now updated.");
+        alert("Gifs for your guild are now updated.");
+    }
+    else {
+        let data = await response.json();
+        alert(data.error);
+    }
+}
+
+
+
+async function updateGuildIncestEnabled(submitButton) {
+
+    // Get the form node
+    let form = submitButton;
+    while (form.nodeName !== "FORM") {
+        form = form.parentNode;
+    }
+
+    // Send the web request
+    let response = await fetch("/set_incest_enabled", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Object.fromEntries(new URLSearchParams(new FormData(form)))),
+    });
+
+    // Tell the user what happened
+    if(response.ok) {
+        alert("Incest for your guild is now updated.");
     }
     else {
         let data = await response.json();
