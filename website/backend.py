@@ -115,45 +115,14 @@ async def set_prefix(request: Request):
     Sets the prefix for a given guild.
     """
 
-    # See if they're logged in
-    if not webutils.is_logged_in(request):
-        return json_response({"error": "User isn't logged in."}, status=401)
-
-    # Get the POST data
-    try:
-        post_data = await request.json()
-    except Exception:
-        return json_response({"error": "Invalid JSON provided."}, status=400)
-
-    # Get the guild we're looking at
-    guild_id = post_data.get('guild_id')
-    if not guild_id:
-        return json_response({"error": "No guild ID provided."}, status=400)
-    try:
-        guild_id = int(guild_id)
-    except ValueError:
-        return json_response({"error": "Invalid guild ID provided."}, status=400)
-
-    # Get the guild member
-    guild = await localutils.get_guild(request, guild_id)
-    if not guild:
-        return json_response({"error": "Invalid guild ID provided."}, status=400)
-    session = await aiohttp_session.get_session(request)
-    user_id = session.get("user_id")
-    try:
-        member = await guild.fetch_member(user_id)
-    except discord.HTTPException:
-        return json_response({"error": "User not found in guild."}, status=401)
-
-    # See if they're allowed to change this guild
-    if guild.owner_id == member.id or member.guild_permissions.manage_guild:
-        pass
-    else:
-        return json_response({"error": "User does not have permission to manage this guild."}, status=401)
+    # Make sure the user is allowed to make this request
+    checked_data = await localutils.check_user_is_valid(request)
+    if isinstance(checked_data, Response):
+        return checked_data
 
     # Grab the prefix they gave
-    prefix = post_data['prefix'][:30]
-    gold_prefix = post_data['gold_prefix'][:30]
+    prefix = checked_data['post_data']['prefix'][:30]
+    gold_prefix = checked_data['post_data']['gold_prefix'][:30]
 
     # Update prefix in DB
     async with request.app['database']() as db:
@@ -161,15 +130,49 @@ async def set_prefix(request: Request):
         await db(
             """INSERT INTO guild_settings (guild_id, prefix, gold_prefix) VALUES ($1, $2, $3)
             ON CONFLICT (guild_id) DO UPDATE SET prefix=excluded.prefix, gold_prefix=excluded.gold_prefix""",
-            int(guild_id), prefix, gold_prefix,
+            checked_data['guild_id'], prefix, gold_prefix,
         )
     async with request.app['redis']() as re:
         redis_data = {
-            'guild_id': int(guild_id),
+            'guild_id': checked_data['guild_id'],
             'prefix': prefix,
             'gold_prefix': gold_prefix,
         }
         await re.publish('UpdateGuildPrefix', redis_data)
+
+    # Redirect to page
+    return json_response({"error": ""}, status=200)
+
+
+@routes.post('/set_gifs_enabled')
+async def set_gifs_enabled(request: Request):
+    """
+    Sets whether or not gifs are enabled for a given guild.
+    """
+
+    # Make sure the user is allowed to make this request
+    checked_data = await localutils.check_user_is_valid(request)
+    if isinstance(checked_data, Response):
+        return checked_data
+
+    # Get the maximum members
+    try:
+        enabled = bool(checked_data['post_data']['enabled'])
+    except KeyError:
+        enabled = False
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db(
+            """INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2)
+            ON CONFLICT (guild_id) DO UPDATE SET gifs_enabled=$2""",
+            int(guild_id), enabled,
+        )
+    async with request.app['redis']() as re:
+        await re.publish('UpdateGifsEnabled', {
+            'guild_id': checked_data['guild_id'],
+            'gifs_enabled': enabled,
+        })
 
     # Redirect to page
     return json_response({"error": ""}, status=200)
