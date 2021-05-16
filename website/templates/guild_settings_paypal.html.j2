@@ -84,7 +84,7 @@ MarriageBot - {{ guild.name }} Settings
                     type="number"
                     min="{{ min_children_hard_cap }}"
                     max="{{ max_children_hard_cap }}"
-                    value="{{ max_children_amount.get(role.id) }}"
+                    value="{{ given_max_children.get(role.id) }}"
                     placeholder="Default - 5" />
                 <label for="role_max_children_{{ role.id }}">{{ role.name }}</label><br />
             {%- endif -%}
