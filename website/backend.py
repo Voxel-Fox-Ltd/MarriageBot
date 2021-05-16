@@ -157,10 +157,7 @@ async def set_prefix(request: Request):
 
     # Update prefix in DB
     async with request.app['database']() as db:
-        if post_data['gold']:
-            key = 'gold_prefix'
-        else:
-            key = 'prefix'
+
         await db(
             """INSERT INTO guild_settings (guild_id, prefix, gold_prefix) VALUES ($1, $2)
             ON CONFLICT (guild_id) DO UPDATE SET prefix=excluded.prefix, gold_prefix=excluded.gold_prefix""",
