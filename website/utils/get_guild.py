@@ -11,10 +11,10 @@ async def get_guild(request: Request, guild_id: int) -> typing.Optional[discord.
     """
 
     try:
-        guild_object = await request.app['bot'].fetch_guild(guild_id)
+        guild_object = await request.app['bots']['bot'].fetch_guild(guild_id)
     except discord.Forbidden:
         try:
-            guild_object = await request.app['guild_bot'].fetch_guild(guild_id)
+            guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
         except discord.Forbidden:
             return None
     return guild_object
