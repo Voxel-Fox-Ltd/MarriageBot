@@ -176,3 +176,38 @@ async def set_gifs_enabled(request: Request):
 
     # Redirect to page
     return json_response({"error": ""}, status=200)
+
+
+
+@routes.post('/set_incest_enabled')
+async def set_incest_enabled(request: Request):
+    """
+    Sets whether or not incest is enabled for a given guild.
+    """
+
+    # Make sure the user is allowed to make this request
+    checked_data = await localutils.check_user_is_valid(request)
+    if isinstance(checked_data, Response):
+        return checked_data
+
+    # Get the maximum members
+    try:
+        enabled = bool(checked_data['post_data']['enabled'])
+    except KeyError:
+        enabled = False
+
+    # Get current prefix
+    async with request.app['database']() as db:
+        await db(
+            """INSERT INTO guild_settings (guild_id, allow_incest) VALUES ($1, $2)
+            ON CONFLICT (guild_id) DO UPDATE SET allow_incest=$2""",
+            checked_data['guild_id'], enabled,
+        )
+    async with request.app['redis']() as re:
+        await re.publish('UpdateIncestAllowed', {
+            'guild_id': checked_data['guild_id'],
+            'allow_incest': enabled,
+        })
+
+    # Redirect to page
+    return json_response({"error": ""}, status=200)
