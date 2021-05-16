@@ -253,6 +253,6 @@ async def guild_settings(request: Request):
         "has_gold": bool(gold_settings),
         "guild_roles": guild_roles,  # The role objects for the guild
         "given_max_children": max_children_amount,  # Get the max children that is set for this guild
-        "max_children_hard_cap": localutils.TIER_NONE.max_children,
-        "min_children_hard_cap": localutils.TIER_THREE.max_children,
+        "max_children_hard_cap": localutils.TIER_THREE.max_children,
+        "min_children_hard_cap": localutils.TIER_NONE.max_children,
     }
