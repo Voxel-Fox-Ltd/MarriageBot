@@ -11,7 +11,7 @@ async function updateGuildPrefix(submitButton) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(Object.fromEntries(URLSearchParams(form.serialize()))),
+        body: JSON.stringify(Object.fromEntries(URLSearchParams(new FormData(form)))),
     });
     if(response.ok) {
         alert("Yo it worked sick");
