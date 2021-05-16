@@ -101,7 +101,8 @@ async def user_settings(request: Request):
         """SELECT blocked_user_id FROM blocked_user WHERE user_id=$1""",
         session['user_id'],
     )
-    blocked_users = {i['blocked_user_id']: await request.app['bots']['bot'].get_name(i['blocked_user_id']) for i in blocked_users_db}
+    bot = request.app['bots']['bot']
+    blocked_users = {i['blocked_user_id']: localutils.DiscordNameManager.fetch_name_by_id(bot, i['blocked_user_id']) for i in blocked_users_db}
 
     # Give all the data to the page
     await db.disconnect()
