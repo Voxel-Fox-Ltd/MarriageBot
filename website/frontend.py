@@ -216,11 +216,12 @@ async def guild_settings(request: Request):
             return HTTPFound(location=location)
 
     # Get the data for this guild
-    all_guilds = await webutils.get_user_guilds(request)
-    if all_guilds is None:
-        return HTTPFound(location='/discord_oauth_login')  # Couldn't get a token
-    oauth_guild_data = [i for i in all_guilds if (i['owner'] or i['permissions'] & 40 > 0) and str(guild_id) == i['id']]
-    if not oauth_guild_data:
+    session = await aiohttp_session.get_session(request)
+    try:
+        guild_member = await guild_object.fetch_member(session['user_id'])
+    except discord.HTTPException:
+        return HTTPFound(location='/')  # They can't change this guild
+    if not (guild_object.owner_id == guild_member.id or guild_member.guild_permissions.manage_guild):
         return HTTPFound(location='/')  # They can't change this guild
 
     # Get the current guild data from the database
