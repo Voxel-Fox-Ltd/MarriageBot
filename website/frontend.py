@@ -88,9 +88,9 @@ async def user_settings(request: Request):
         session['user_id'],
     )
     try:
-        colours = utils.CustomisedTreeUser(**data[0]).unquoted_hex
+        colours = localutils.CustomisedTreeUser(**data[0]).unquoted_hex
     except (IndexError, TypeError):
-        colours = utils.CustomisedTreeUser.get_default_unquoted_hex()
+        colours = localutils.CustomisedTreeUser.get_default_unquoted_hex()
 
     # Make a URL for the preview
     colours = {i: o.strip("#") for i, o in colours.items()}
@@ -101,7 +101,7 @@ async def user_settings(request: Request):
         """SELECT blocked_user_id FROM blocked_user WHERE user_id=$1""",
         session['user_id'],
     )
-    blocked_users = {i['blocked_user_id']: await request.app['bot'].get_name(i['blocked_user_id']) for i in blocked_users_db}
+    blocked_users = {i['blocked_user_id']: await request.app['bots']['bot'].get_name(i['blocked_user_id']) for i in blocked_users_db}
 
     # Give all the data to the page
     await db.disconnect()
