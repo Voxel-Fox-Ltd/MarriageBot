@@ -45,13 +45,13 @@ async def blog(request: Request):
     return {
         "text": markdown2.markdown(text),
         "title": data[0]['title'],
-        "opengraph": {
-            "article:published_time": data[0]['created_at'].isoformat(),
-            "article:modified_time": data[0]['created_at'].isoformat(),
-            "og:type": 'article',
-            "og:title": f"MarriageBot - {data[0]['title']}",
-            "og:description": text.split('\n')[0],
-        }
+        # "opengraph": {
+        #     "article:published_time": data[0]['created_at'].isoformat(),
+        #     "article:modified_time": data[0]['created_at'].isoformat(),
+        #     "og:type": 'article',
+        #     "og:title": f"MarriageBot - {data[0]['title']}",
+        #     "og:description": text.split('\n')[0],
+        # }
     }
 
 
@@ -202,12 +202,12 @@ async def guild_settings(request: Request):
 
     # See if the bot is in the guild
     try:
-        guild_object = await request.app['bot'].fetch_guild(guild_id)
+        guild_object = await request.app['bots']['bot'].fetch_guild(guild_id)
     except discord.Forbidden:
         try:
-            guild_object = await request.app['guild_bot'].fetch_guild(guild_id)
+            guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
         except discord.Forbidden:
-            location = request.app['bot'].get_invite_link(
+            location = request.app['bots']['bot'].get_invite_link(
                 redirect_uri=request.app['config']['website_base_url'],
                 response_type='code',
                 scope='bot applications.commands identify guilds',
