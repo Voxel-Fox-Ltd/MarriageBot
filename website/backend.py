@@ -44,7 +44,6 @@ async def login(request:Request):
 
 
 @routes.post('/colour_settings')
-@webutils.requires_login()
 async def colour_settings_post_handler(request: Request):
     """
     Handles when people submit their new colours.
@@ -79,7 +78,6 @@ async def colour_settings_post_handler(request: Request):
 
 
 # @routes.post('/unblock_user')
-# @webutils.requires_login()
 # async def unblock_user_post_handler(request: Request):
 #     """
 #     Handles when people submit their new colours.
@@ -112,7 +110,6 @@ async def colour_settings_post_handler(request: Request):
 
 
 @routes.post('/set_prefix')
-@webutils.requires_login()
 async def set_prefix(request: Request):
     """
     Sets the prefix for a given guild.
