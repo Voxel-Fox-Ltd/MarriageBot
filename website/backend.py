@@ -119,8 +119,13 @@ async def set_prefix(request: Request):
     if not webutils.is_logged_in(request):
         return json_response({"error": "User isn't logged in."}, status=401)
 
+    # Get the POST data
+    try:
+        post_data = await request.json()
+    except Exception:
+        return json_response({"error": "Invalid JSON provided."}, status=400)
+
     # Get the guild we're looking at
-    post_data = await request.post()
     guild_id = post_data.get('guild_id')
     if not guild_id:
         return json_response({"error": "No guild ID provided."}, status=400)
