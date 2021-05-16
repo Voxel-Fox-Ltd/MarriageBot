@@ -7,7 +7,8 @@ MarriageBot - {{ guild.name }} Settings
 
 
 {% block head %}
-<link rel="stylesheet" type="text/css" href="/static/css/guild_settings.css" />
+<link rel="stylesheet" type="text/css" href="{{ static('css/guild_settings.css) }}" />
+<script type="text/javascript" src="{{ static('js/guild_settings.js') }}"></script>
 {% endblock head %}
 
 
@@ -53,7 +54,7 @@ MarriageBot - {{ guild.name }} Settings
             maxlength="30" {% if not has_gold %}disabled{% endif %} />
         <label for="gold_prefix">Gold Prefix</label>
         <br /><br />
-        <button type="submit" formmethod="post" formaction="/set_prefix">Update Guild Prefix</button>
+        <button onclick="javascript:updateGuildPrefix(this);">Update Guild Prefix</button>
     </p>
     <input name="guild_id" value="{{ guild.id }}" type="hidden" />
 </form> <!-- prefix -->
