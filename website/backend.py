@@ -11,7 +11,7 @@ routes = RouteTableDef()
 
 
 @routes.get('/login_processor')
-async def login_processor(request:Request):
+async def login_processor(request: Request):
     """
     Page the discord login redirects the user to when successfully logged in with Discord.
     """
@@ -24,7 +24,7 @@ async def login_processor(request:Request):
 
 
 @routes.get('/logout')
-async def logout(request:Request):
+async def logout(request: Request):
     """
     Destroy the user's login session.
     """
@@ -35,7 +35,7 @@ async def logout(request:Request):
 
 
 @routes.get('/login')
-async def login(request:Request):
+async def login(request: Request):
     """
     Direct the user to the bot's Oauth login page.
     """
