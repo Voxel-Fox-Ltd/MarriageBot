@@ -51,7 +51,17 @@ MarriageBot - {{ guild.name }} Settings
             value="{{ guild_settings['gold_prefix'] if guild_settings['gold_prefix'] != app['bots']['gold_bot'].config['default_prefix'] else ''}}"
             placeholder="{{ app['bots']['gold_bot'].config['default_prefix'] }}"
             maxlength="30" {% if not has_gold %}disabled{% endif %} />
-        <label for="gold_prefix">Gold Prefix</label>
+        <label for="gold_prefix">
+            Gold Prefix
+            {% if has_gold and not gold_bot_in_guild %}
+            (<a href="{{ app['bots']['gold_bot'].get_invite_link(
+                redirect_uri=app['config']['website_base_url'].rstrip('/') + '/guilds',
+                response_type='code',
+                scope='bot applications.commands identify guilds',
+                guild_id=guild.id,
+            )|safe }}">add Gold bot</a>)
+            {% endif %}
+        </label>
         <br /><br />
         <button onclick="updateGuildPrefix(this); return false;">Update Guild Prefix</button>
     </p>
