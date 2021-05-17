@@ -130,6 +130,11 @@ async def guild_picker(request: Request):
     if all_guilds is None:
         return HTTPFound(location='/discord_oauth_login')
 
+    # See if we've been redirected here from the login
+    guild_id_get_param = request.query.get("guild_id")
+    if guild_id_get_param:
+        return HTTPFound(location=f"/guilds/{guild_id_get_param}")
+
     # Get which guilds they're allowed to manage
     try:
         guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
@@ -205,19 +210,27 @@ async def guild_settings(request: Request):
     guild_id = int(guild_id)
 
     # See if the bot is in the guild
+    gold_bot_in_guild = False
     try:
         guild_object = await request.app['bots']['bot'].fetch_guild(guild_id)
     except discord.Forbidden:
         try:
             guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
+            gold_bot_in_guild = True
         except discord.Forbidden:
             location = request.app['bots']['bot'].get_invite_link(
-                redirect_uri=request.app['config']['website_base_url'],
+                redirect_uri=request.app['config']['website_base_url'].rstrip('/') + '/guilds',
                 response_type='code',
                 scope='bot applications.commands identify guilds',
                 guild_id=guild_id,
             )
             return HTTPFound(location=location)
+    else:
+        try:
+            guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
+            gold_bot_in_guild = True
+        except discord.Forbidden:
+            pass
 
     # Get the data for this guild
     session = await aiohttp_session.get_session(request)
@@ -255,6 +268,7 @@ async def guild_settings(request: Request):
         "guild": guild_object,  # The guild object as we know it
         "guild_settings": guild_settings[0],  # The settings for this guild
         "has_gold": bool(gold_settings),
+        "gold_bot_in_guild": gold_bot_in_guild,
         "guild_roles": guild_roles,  # The role objects for the guild
         "given_max_children": max_children_amount,  # Get the max children that is set for this guild
         "max_children_hard_cap": botutils.TIER_THREE.max_children,
