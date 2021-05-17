@@ -77,45 +77,6 @@ async def colour_settings_post_handler(request: Request):
     return json_response({"error": None}, status=200)
 
 
-@routes.post('/unblock_user')
-async def unblock_user_post_handler(request: Request):
-    """
-    Handles when people submit their new colours.
-    """
-
-    # Make sure the user is allowed to make this request
-    if not webutils.is_logged_in(request):
-        return json_response({"error": "You need to be logged in to use this endpoint."}, status=401)
-
-    # Get the POST data
-    try:
-        post_data = await request.json()
-    except Exception:
-        return json_response({"error": "Invalid JSON provided."}, status=400)
-
-    # Get blocked user
-    try:
-        blocked_user = int(post_data['user_id'])
-    except ValueError:
-        return json_response({"error": "Invalid blocked user ID provided."}, status=400)
-
-    # Get logged in user
-    session = await aiohttp_session.get_session(request)
-    logged_in_user = session['user_id']
-
-    # Remove data
-    async with request.app['database']() as db:
-        await db(
-            """DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2""",
-            logged_in_user, blocked_user,
-        )
-    async with request.app['redis']() as re:
-        await re.publish("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
-
-    # Redirect back to user settings
-    return json_response({"error": ""}, status=200)
-
-
 @routes.post('/set_prefix')
 async def set_prefix(request: Request):
     """
@@ -255,4 +216,79 @@ async def set_max_allowed_children(request: Request):
         })
 
     # Redirect to page
+    return json_response({"error": ""}, status=200)
+
+
+@routes.post('/unblock_user')
+async def unblock_user_post_handler(request: Request):
+    """
+    Handles when people submit their new colours.
+    """
+
+    # Make sure the user is allowed to make this request
+    if not webutils.is_logged_in(request):
+        return json_response({"error": "You need to be logged in to use this endpoint."}, status=401)
+
+    # Get the POST data
+    try:
+        post_data = await request.json()
+    except Exception:
+        return json_response({"error": "Invalid JSON provided."}, status=400)
+
+    # Get blocked user
+    try:
+        blocked_user = int(post_data['user_id'])
+    except ValueError:
+        return json_response({"error": "Invalid blocked user ID provided."}, status=400)
+
+    # Get logged in user
+    session = await aiohttp_session.get_session(request)
+    logged_in_user = session['user_id']
+
+    # Remove data
+    async with request.app['database']() as db:
+        await db(
+            """DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2""",
+            logged_in_user, blocked_user,
+        )
+    async with request.app['redis']() as re:
+        await re.publish("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
+
+    # Redirect back to user settings
+    return json_response({"error": ""}, status=200)
+
+
+@routes.post('/colour_settings')
+async def colour_settings_post_handler(request:Request):
+    """
+    Handles when people submit their new colours.
+    """
+
+    # Make sure the user is allowed to make this request
+    if not webutils.is_logged_in(request):
+        return json_response({"error": "You need to be logged in to use this endpoint."}, status=401)
+
+    # Get the POST data
+    try:
+        post_data = await request.json()
+    except Exception:
+        return json_response({"error": "Invalid JSON provided."}, status=400)
+
+    # Get logged in user
+    session = await aiohttp_session.get_session(request)
+    logged_in_user = session['user_id']
+
+    # Fix up the attributes
+    direction = post_data.pop("direction")
+    colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in post_data.items()}
+    colours['direction'] = direction
+
+    # Save the data to the database
+    async with request.app['database']() as db:
+        ctu = await utils.CustomisedTreeUser.get(logged_in_user, db)
+        for i, o in colours.items():
+            setattr(ctu, i, o)
+        await ctu.save(db)
+
+    # Redirect back to user settings
     return json_response({"error": ""}, status=200)
