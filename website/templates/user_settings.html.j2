@@ -4,12 +4,15 @@
 MarriageBot - User Settings
 {% endblock title %}
 
+
 {% block head %}
-<link rel="stylesheet" type="text/css" href="/static/css/colour_selector.css">
+<link rel="stylesheet" type="text/css" href="{{ static('/css/colour_selector.css') }}">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+<script type="text/javascript" src="{{ static('js/user_settings.js') }}"></script>
 {% endblock head %}
+
 
 {% block content %}
 <div class="content-header-data">
@@ -81,7 +84,7 @@ MarriageBot - User Settings
     <p>Here you can see a list of all the users you've blocked in past. You're able to unblock users with the 'unblock' command, but you're able to unblock them here as well.</p>
     <form action="/unblock_user">
         {% for user_id, username in blocked_users.items() %}
-        <button type="submit" formmethod="POST" name="user_id" value="{{ user_id }}">Unblock "{{ username }}"</button>{% endfor %}
+        <button onclick="updateBlockedUser('{{ user_id }}'); return false;">Unblock "{{ username }}"</button>{% endfor %}
     </form>
 </div>
 {% endblock content %}
