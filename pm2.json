@@ -17,6 +17,6 @@
     {"name": "mb14", "script": "vbu run-bot . config/config.toml --shardcount $((16 * 16)) --min $((14 * 16)) --max $((((14 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "mb15", "script": "vbu run-bot . config/config.toml --shardcount $((16 * 16)) --min $((15 * 16)) --max $((((15 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "gold", "script": "vbu run-bot . config/gold.toml --shardcount 1", "cwd": "/home/kae/MarriageBotTest"},
-    {"name": "web", "script": "python3 webserver.py config/config.toml config/server_specific2.toml --port 8000", "cwd": "/home/kae/MarriageBot"}
+    {"name": "web", "script": "vbu run-website --port 8000", "cwd": "/home/kae/MarriageBotTest"}
   ]
 }
