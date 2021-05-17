@@ -218,7 +218,7 @@ class Information(utils.Cog):
 
     @utils.command(aliases=['st', 'stupidtree', 'fulltree'])
     @utils.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
-    @localutils.checks.has_donator_perks("can_run_stupidtree")
+    @localutils.checks.has_donator_perks("can_run_bloodtree")
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def bloodtree(self, ctx:utils.Context, user:utils.converters.UserID=None):
