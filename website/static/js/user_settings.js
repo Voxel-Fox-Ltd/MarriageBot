@@ -23,6 +23,12 @@ async function updateBlockedUser(submitButton, userId) {
 
 async function updateTreeColours(submitButton) {
 
+    // Get the form node
+    let form = submitButton;
+    while (form.nodeName !== "FORM") {
+        form = form.parentNode;
+    }
+
     // Send the web request
     let response = await fetch("/colour_settings", {
         method: "POST",
@@ -34,7 +40,6 @@ async function updateTreeColours(submitButton) {
 
     // Tell the user what happened
     if(response.ok) {
-        submitButton.parentNode.removeChild(submitButton);
         alert("Updated tree colours.");
     }
     else {
