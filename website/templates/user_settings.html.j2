@@ -24,37 +24,42 @@ MarriageBot - User Settings
     <h2>Colour Selector</h2>
     <p>Here you'll be able to interactively set values for your tree's colour. When you're done, just press submit and it'll all be transferred over to the bot!</p>
     <div id="colour-selector-content">
-        <table>
+        <table style="table-layout: fixed; height: 1px;">
             <tr class="colour-choice">
                 <td>Edge</td>
-                <td><input name="edge" id="edge" value="{{ hex_strings.edge }}" onchange="updatePreview(this);" /></td>
+                <td><input name="edge" id="edge" value="{{ hex_strings.edge }}" onchange="updatePreview(this); return false;" /></td>
             </tr>
             <tr class="colour-choice">
                 <td>Node</td>
-                <td><input name="node" value="{{ hex_strings.node }}" id="node" onchange="updatePreview(this);" /></td>
+                <td><input name="node" value="{{ hex_strings.node }}" id="node" onchange="updatePreview(this); return false;" /></td>
             </tr>
             <tr class="colour-choice">
                 <td>Font</td>
-                <td><input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this);" /></td>
+                <td><input name="font" value="{{ hex_strings.font }}" id="font" onchange="updatePreview(this); return false;" /></td>
             </tr>
             <tr class="colour-choice">
                 <td>Background</td>
-                <td><input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this);" /></td>
+                <td><input name="background" value="{{ hex_strings.background }}" id="background" onchange="updatePreview(this); return false;" /></td>
             </tr>
             <tr class="colour-choice">
                 <td>Highlighted Font</td>
-                <td><input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font" onchange="updatePreview(this);" /></td>
+                <td><input name="highlighted_font" value="{{ hex_strings.highlighted_font }}" id="highlighted_font" onchange="updatePreview(this); return false;" /></td>
             </tr>
             <tr class="colour-choice">
                 <td>Highlighted Node</td>
-                <td><input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node" onchange="updatePreview(this);" /></td>
+                <td><input name="highlighted_node" value="{{ hex_strings.highlighted_node }}" id="highlighted_node" onchange="updatePreview(this); return false;" /></td>
             </tr>
             <tr class="colour-choice">
-                <td for="direction">Tree Direction: </td>
-                <td><select name="direction" id="direction" onchange="updatePreview(this);">
+                <td for="direction">Tree Direction</td>
+                <td><select name="direction" id="direction" onchange="updatePreview(this); return false;" style="width: 100%;">
                     <option {% if hex_strings.direction == "TB" %}selected="TRUE" {% endif %}value="TB" >TB</option>
                     <option {% if hex_strings.direction == "LR" %}selected="TRUE" {% endif %}value="LR" >LR</option>
                 </select></td>
+            </tr>
+            <tr class="colour-choice">
+                <td colspan="2">
+                    <button onclick="updateTreeColours(this); return false;" style="width: 100%;">Submit Tree Changes</button>
+                </td>
             </tr>
         </table>
         <script>
@@ -64,19 +69,9 @@ MarriageBot - User Settings
             $("#background").spectrum({ color: "{{ hex_strings.background }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
             $("#highlighted_font").spectrum({ color: "{{ hex_strings.highlighted_font }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
             $("#highlighted_node").spectrum({ color: "{{ hex_strings.highlighted_node }}", preferredFormat: "hex", showInput: true, allowEmpty: true });
-            function updatePreview(input) {
-                var form = $(`#colour-selector`);
-                var data = form.serialize();
-                var iframe = document.getElementById('preview-iframe');
-                iframe.src = "/tree_preview?" + data;
-                return false;
-            }
         </script>
-        <iframe id="preview-iframe" src="{{ tree_preview_url|safe }}" scrolling="no" frameborder="0" onload="javascript:this.style.height = this.contentWindow.document.body.scrollHeight + 'px';"></iframe>
+        <iframe id="preview-iframe" src="{{ tree_preview_url|safe }}" scrolling="no" frameborder="0" onload="adjustIframeHeight(this); return false;"></iframe>
     </div> <!-- colour-selector-content -->
-    <div class="content-header-data">
-        <button onclick="updateTreeColours(this); return false;">Submit Tree Changes</button>
-    </div>
 </form> <!-- boxed -->
 
 <div class="boxed">
