@@ -77,36 +77,43 @@ async def colour_settings_post_handler(request: Request):
     return json_response({"error": None}, status=200)
 
 
-# @routes.post('/unblock_user')
-# async def unblock_user_post_handler(request: Request):
-#     """
-#     Handles when people submit their new colours.
-#     """
+@routes.post('/unblock_user')
+async def unblock_user_post_handler(request: Request):
+    """
+    Handles when people submit their new colours.
+    """
 
-#     # Get data
-#     post_data_raw = await request.post()
+    # Make sure the user is allowed to make this request
+    if not webutils.is_logged_in(request):
+        return json_response({"error": "You need to be logged in to use this endpoint."}, status=401)
 
-#     # Get blocked user
-#     try:
-#         blocked_user = int(post_data_raw['user_id'])
-#     except ValueError:
-#         return HTTPFound(location='/user_settings')
+    # Get the POST data
+    try:
+        post_data = await request.json()
+    except Exception:
+        return json_response({"error": "Invalid JSON provided."}, status=400)
 
-#     # Get logged in user
-#     session = await aiohttp_session.get_session(request)
-#     logged_in_user = session['user_id']
+    # Get blocked user
+    try:
+        blocked_user = int(post_data['user_id'])
+    except ValueError:
+        return json_response({"error": "Invalid blocked user ID provided."}, status=400)
 
-#     # Remove data
-#     async with request.app['database']() as db:
-#         await db(
-#             """DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2""",
-#             logged_in_user, blocked_user,
-#         )
-#     async with request.app['redis']() as re:
-#         await re.publish("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
+    # Get logged in user
+    session = await aiohttp_session.get_session(request)
+    logged_in_user = session['user_id']
 
-#     # Redirect back to user settings
-#     return HTTPFound(location='/user_settings')
+    # Remove data
+    async with request.app['database']() as db:
+        await db(
+            """DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2""",
+            logged_in_user, blocked_user,
+        )
+    async with request.app['redis']() as re:
+        await re.publish("BlockedUserRemove", {"user_id": logged_in_user, "blocked_user_id": blocked_user})
+
+    # Redirect back to user settings
+    return json_response({"error": ""}, status=200)
 
 
 @routes.post('/set_prefix')
