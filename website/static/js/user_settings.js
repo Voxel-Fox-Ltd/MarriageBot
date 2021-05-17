@@ -48,3 +48,23 @@ async function updateTreeColours(submitButton) {
     }
 }
 
+
+async function updatePreview(submitButton) {
+    let form = submitButton;
+    while (form.nodeName !== "FORM") {
+        form = form.parentNode;
+    }
+    let urlParams = new URLSearchParams(new FormData(form));
+    let iframe = document.getElementById('preview-iframe');
+    iframe.contentWindow.location = "/tree_preview?" + urlParams.toString();
+}
+
+
+function adjustIframeHeight(frame) {
+    if(frame.contentWindow.document.getElementById("preview").scrollHeight > 200) {
+        frame.style.height = `${frame.contentWindow.document.body.scrollHeight}px`;
+    }
+    else {
+        frame.style.height = "auto";
+    }
+}
