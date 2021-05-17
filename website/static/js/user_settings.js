@@ -1,4 +1,4 @@
-async function updateBlockedUser(userId) {
+async function updateBlockedUser(submitButton, userId) {
 
     // Send the web request
     let response = await fetch("/unblock_user", {
@@ -11,6 +11,7 @@ async function updateBlockedUser(userId) {
 
     // Tell the user what happened
     if(response.ok) {
+        submitButton.parentNode.removeChild(submitButton);
         alert("Unblocked user.");
     }
     else {
