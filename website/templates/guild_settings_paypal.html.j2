@@ -44,7 +44,16 @@ MarriageBot - {{ guild.name }} Settings
             value="{{ guild_settings['prefix'] if guild_settings['prefix'] != app['bots']['bot'].config['default_prefix'] else ''}}"
             placeholder="{{ app['bots']['bot'].config['default_prefix'] }}"
             maxlength="30" />
-        <label for="prefix">Normal Bot Prefix</label>
+        <label for="prefix">
+            Normal Bot Prefix
+            {% if not normal_bot_in_guild %}
+            (<a href="{{ app['bots']['bot'].get_invite_link(
+                redirect_uri=app['config']['website_base_url'].rstrip('/') + '/guilds',
+                response_type='code',
+                scope='bot applications.commands identify guilds',
+                guild_id=guild.id,
+            )|safe }}">add bot</a>)
+        </label>
         <br />
         <input
             name="gold_prefix"

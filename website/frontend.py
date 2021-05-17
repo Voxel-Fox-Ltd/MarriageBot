@@ -210,9 +210,11 @@ async def guild_settings(request: Request):
     guild_id = int(guild_id)
 
     # See if the bot is in the guild
+    normal_bot_in_guild = False
     gold_bot_in_guild = False
     try:
         guild_object = await request.app['bots']['bot'].fetch_guild(guild_id)
+        normal_bot_in_guild = True
     except discord.Forbidden:
         try:
             guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
@@ -268,6 +270,7 @@ async def guild_settings(request: Request):
         "guild": guild_object,  # The guild object as we know it
         "guild_settings": guild_settings[0],  # The settings for this guild
         "has_gold": bool(gold_settings),
+        "normal_bot_in_guild": normal_bot_in_guild,
         "gold_bot_in_guild": gold_bot_in_guild,
         "guild_roles": guild_roles,  # The role objects for the guild
         "given_max_children": max_children_amount,  # Get the max children that is set for this guild
