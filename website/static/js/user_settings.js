@@ -19,3 +19,27 @@ async function updateBlockedUser(submitButton, userId) {
         alert(data.error);
     }
 }
+
+
+async function updateTreeColours(submitButton) {
+
+    // Send the web request
+    let response = await fetch("/colour_settings", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Object.fromEntries(new URLSearchParams(new FormData(form)))),
+    });
+
+    // Tell the user what happened
+    if(response.ok) {
+        submitButton.parentNode.removeChild(submitButton);
+        alert("Updated tree colours.");
+    }
+    else {
+        let data = await response.json();
+        alert(data.error);
+    }
+}
+
