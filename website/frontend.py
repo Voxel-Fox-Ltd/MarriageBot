@@ -6,7 +6,7 @@ import aiohttp_session
 import discord
 from aiohttp_jinja2 import template
 
-from cogs import utils as localutils
+from cogs import utils as botutils
 
 
 routes = RouteTableDef()
@@ -88,9 +88,9 @@ async def user_settings(request: Request):
         session['user_id'],
     )
     try:
-        colours = localutils.CustomisedTreeUser(**data[0]).unquoted_hex
+        colours = botutils.CustomisedTreeUser(**data[0]).unquoted_hex
     except (IndexError, TypeError):
-        colours = localutils.CustomisedTreeUser.get_default_unquoted_hex()
+        colours = botutils.CustomisedTreeUser.get_default_unquoted_hex()
 
     # Make a URL for the preview
     colours = {i: o.strip("#") for i, o in colours.items()}
@@ -103,7 +103,7 @@ async def user_settings(request: Request):
     )
     bot = request.app['bots']['bot']
     blocked_users = {
-        i['blocked_user_id']: await localutils.DiscordNameManager.fetch_name_by_id(bot, i['blocked_user_id'])
+        i['blocked_user_id']: await botutils.DiscordNameManager.fetch_name_by_id(bot, i['blocked_user_id'])
         for i in blocked_users_db
     }
 
@@ -257,6 +257,6 @@ async def guild_settings(request: Request):
         "has_gold": bool(gold_settings),
         "guild_roles": guild_roles,  # The role objects for the guild
         "given_max_children": max_children_amount,  # Get the max children that is set for this guild
-        "max_children_hard_cap": localutils.TIER_THREE.max_children,
-        "min_children_hard_cap": localutils.TIER_NONE.max_children,
+        "max_children_hard_cap": botutils.TIER_THREE.max_children,
+        "min_children_hard_cap": botutils.TIER_NONE.max_children,
     }

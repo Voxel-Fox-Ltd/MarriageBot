@@ -5,6 +5,7 @@ import discord
 from aiohttp_jinja2 import template
 
 from website import utils as localutils
+from cogs import utils as botutils
 
 
 routes = RouteTableDef()
@@ -251,7 +252,7 @@ async def colour_settings_post_handler(request: Request):
 
     # Save the data to the database
     async with request.app['database']() as db:
-        ctu = await localutils.CustomisedTreeUser.get(logged_in_user, db)
+        ctu = await botutils.CustomisedTreeUser.get(logged_in_user, db)
         for i, o in colours.items():
             try:
                 setattr(ctu, i, o)
