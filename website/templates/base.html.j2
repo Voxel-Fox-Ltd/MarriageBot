@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>{% block title %}MarriageBot - Fill Title{% endblock title %}</title>
     <link rel="icon" href="{{ static('/images/MarriageBotCircle.150.png') }}" />
-    <link rel="stylesheet" type="text/css" href="/static/css/main.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/header.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/content.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/main.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/header.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/content.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/footer.css') }}" />
 
     <meta property="og:title" content="MarriageBot - A marriage-based Discord bot" />
     <meta property="og:description" content="MarriageBot is a Discord bot used for simulations of your family, be it that you want b1nzy as your mom,  or Jake as your nephew, MarriageBot can handle it all." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://marriagebot.xyz/static/images/MarriageBotCircle.150.png" />
+    <meta property="og:image" content="{{ app['config']['base_url'].rstrip('/') }}{{ static('/images/MarriageBotCircle.150.png') }}" />
     <meta property="og:locale" content="en_GB" />
     <meta property="og:url" content="{{ request.url.human_repr() }}" />
 
