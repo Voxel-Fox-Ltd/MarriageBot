@@ -43,40 +43,6 @@ async def login(request: Request):
     return HTTPFound(location=webutils.get_discord_login_url(request, "/login_processor"))
 
 
-@routes.post('/colour_settings')
-async def colour_settings_post_handler(request: Request):
-    """
-    Handles when people submit their new colours.
-    """
-
-    # Grab the colours from their post request
-    colours_raw = await request.post()
-    try:
-        colours_raw = dict(colours_raw)
-    except Exception:
-        return json_response({"error": "Failed to get dictionary from POST data."}, status=400)
-
-    # Fix up the attributes
-    direction = colours_raw.pop("direction")
-    colours = {i: -1 if o in ['', 'transparent'] else int(o.strip('#'), 16) for i, o in colours_raw.items()}
-    colours['direction'] = direction
-
-    # Save the data to the database
-    session = await aiohttp_session.get_session(request)
-    user_id = session['user_id']
-    async with request.app['database']() as db:
-        ctu = await utils.CustomisedTreeUser.get(user_id, db)
-        for i, o in colours.items():
-            try:
-                setattr(ctu, i, o)
-            except AttributeError:
-                pass
-        await ctu.save(db)
-
-    # Redirect back to user settings
-    return json_response({"error": None}, status=200)
-
-
 @routes.post('/set_prefix')
 async def set_prefix(request: Request):
     """
@@ -259,7 +225,7 @@ async def unblock_user_post_handler(request: Request):
 
 
 @routes.post('/colour_settings')
-async def colour_settings_post_handler(request:Request):
+async def colour_settings_post_handler(request: Request):
     """
     Handles when people submit their new colours.
     """
@@ -287,7 +253,10 @@ async def colour_settings_post_handler(request:Request):
     async with request.app['database']() as db:
         ctu = await utils.CustomisedTreeUser.get(logged_in_user, db)
         for i, o in colours.items():
-            setattr(ctu, i, o)
+            try:
+                setattr(ctu, i, o)
+            except AttributeError:
+                pass
         await ctu.save(db)
 
     # Redirect back to user settings
