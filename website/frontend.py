@@ -133,7 +133,7 @@ async def guild_picker(request: Request):
     # See if we've been redirected here from the login
     guild_id_get_param = request.query.get("guild_id")
     if guild_id_get_param:
-        return HTTPFound(location=f"/guilds/{guild_id_get_param}")
+        return HTTPFound(location=f"/guild_settings/{guild_id_get_param}")
 
     # Get which guilds they're allowed to manage
     try:
