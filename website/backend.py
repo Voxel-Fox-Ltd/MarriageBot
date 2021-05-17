@@ -252,7 +252,7 @@ async def colour_settings_post_handler(request: Request):
 
     # Save the data to the database
     async with request.app['database']() as db:
-        ctu = await botutils.CustomisedTreeUser.get(logged_in_user, db)
+        ctu = await botutils.CustomisedTreeUser.fetch_by_id(db, logged_in_user)
         for i, o in colours.items():
             try:
                 setattr(ctu, i, o)
