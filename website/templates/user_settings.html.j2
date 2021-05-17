@@ -75,7 +75,7 @@ MarriageBot - User Settings
         <iframe id="preview-iframe" src="{{ tree_preview_url|safe }}" scrolling="no" frameborder="0" onload="javascript:this.style.height = this.contentWindow.document.body.scrollHeight + 'px';"></iframe>
     </div> <!-- colour-selector-content -->
     <div class="content-header-data">
-        <button type="submit" formmethod="POST">Submit Tree Changes</button>
+        <button onclick="updateTreeColours(this); return false;">Submit Tree Changes</button>
     </div>
 </form> <!-- boxed -->
 
