@@ -8,11 +8,15 @@ oauth_scopes = [ "identify", "guilds", ]  # The scopes that should be added to t
 # This is fully welcome to be entirely empty
 [discord_bot_configs]
     bot = "config.toml"
+    gold_bot = "gold.toml"
 
 # Used for the bot's invite and login links
 [oauth]
     client_id = ""
     client_secret = ""
+
+[payment_info]
+    authorization = ""
 
 # This data is passed directly over to asyncpg.connect()
 [database]
