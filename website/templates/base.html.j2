@@ -37,7 +37,7 @@
             <li class="right"><a class="header-button login-button" href="{{ app['config']['login_url'] }}">Login</a></li>
         {% else -%}
             <li class="right"><a class="header-button logout-button" href="/logout">Logout</a></li>
-            <li class="right"><a class="header-button logout-button" style="margin-right: 5px;" href="/settings">Settings</a></li>
+            <li class="right"><a class="header-button settings-button" style="margin-right: 5px;" href="/settings">Settings</a></li>
             <li class="right"><img class="user-avatar" alt="Your Discord user avatar" src="{{ user_info.avatar_url }}" /></li>
         {% endif %}
     </ul>

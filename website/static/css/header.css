@@ -77,7 +77,7 @@ header .user-avatar {
     margin: 0 10px 0 0;
 }
 
-header .logout-button {
+header .logout-button, header .settings-button {
     font-size: 1.1em;
     width: 100px;
     height: 70%;
@@ -87,7 +87,7 @@ header a, header a:visited {
     text-decoration: none;
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 600px) {
     header .mb-title {
         display: none;
     }
@@ -98,5 +98,11 @@ header a, header a:visited {
 
     header .header-button {
         margin-right: 50px;
+    }
+}
+
+@media screen and (max-width: 410px) {
+    header .logout-button {
+        display: none;
     }
 }
