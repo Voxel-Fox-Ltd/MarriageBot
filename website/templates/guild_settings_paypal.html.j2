@@ -12,6 +12,11 @@ MarriageBot - {{ guild.name }} Settings
 
 
 {% block content %}
+<style type="text/css">
+p {
+    text-align: left;
+}
+</style>
 <div class="content-header-data">
     {% if guild.icon %}
         <img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />
