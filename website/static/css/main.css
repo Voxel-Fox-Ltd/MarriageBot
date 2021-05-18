@@ -40,3 +40,8 @@ label {
 .guild-block p {
     margin: 0;
 }
+
+p {
+    font-size: 110%;
+    text-align: center;
+}
