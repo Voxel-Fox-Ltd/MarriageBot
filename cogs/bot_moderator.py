@@ -9,7 +9,6 @@ import discord
 from cogs import utils as localutils
 
 
-
 class BotModerator(utils.Cog, command_attrs={'hidden': True}):
 
     @utils.command()
