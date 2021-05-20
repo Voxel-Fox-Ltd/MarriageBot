@@ -275,7 +275,21 @@ class Information(utils.Cog):
 
         # Convert to an image
         image_filename = f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png'
-        dot = await asyncio.create_subprocess_exec('dot', '-Tpng:gd', dot_filename, '-o', image_filename, '-Gcharset=UTF-8')
+        # http://www.graphviz.org/doc/info/output.html#d:png
+        perks = await localutils.get_marriagebot_perks(ctx.bot, ctx.author.id)
+        # highest quality colour, and antialiasing
+        # not using this because not much point
+        # todo: add extra level for better colour, stroke etc, basically like the one in the readme (in addition to antialiasing)
+        # if False:
+        #     format_rendering_option = '-T:png:cairo'  # -T:png does the same thing but this is clearer
+        # normal colour, and antialising
+        if perks.tree_render_quality >= 1:
+            format_rendering_option = '-T:png:cairo:gd'
+        # normal colour, no antialising
+        else:
+            format_rendering_option = '-Tpng:gd'
+            
+        dot = await asyncio.create_subprocess_exec('dot', format_rendering_option, dot_filename, '-o', image_filename, '-Gcharset=UTF-8')
         await asyncio.wait_for(dot.wait(), 10.0, loop=self.bot.loop)
 
         # Kill subprocess
