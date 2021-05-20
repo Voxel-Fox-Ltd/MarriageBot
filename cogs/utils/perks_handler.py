@@ -11,7 +11,7 @@ class MarriageBotPerks(object):
     )
 
     def __init__(
-            self, max_children:int=5, max_partners:int=1, can_run_stupidtree:bool=False,
+            self, max_children:int=5, max_partners:int=1, can_run_bloodtree:bool=False,
             can_run_disownall:bool=False, tree_command_cooldown:int=60, tree_render_quality:int=0):
         self.max_children = max_children
         self.max_partners = max_partners
