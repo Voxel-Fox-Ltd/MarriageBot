@@ -47,6 +47,10 @@
     margin-top: 10px;
 }
 
+.boxed:last-of-type {
+    margin-bottom: 10px;
+}
+
 .content-header-data {
     display: flex;
     align-items: center;

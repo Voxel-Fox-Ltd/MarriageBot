@@ -4,6 +4,10 @@
     justify-content: space-around
 }
 
+#guild-holder p {
+    text-align: right;
+}
+
 #guild-holder img {
     margin: 0
 }

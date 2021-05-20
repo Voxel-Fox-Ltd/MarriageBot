@@ -1,2 +1,2 @@
-voxelbotutils[web]
+voxelbotutils[web]>=0.3.2
 markdown2

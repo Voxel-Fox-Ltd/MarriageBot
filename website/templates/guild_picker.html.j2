@@ -1,0 +1,32 @@
+{% extends "base.html.j2" %}
+
+
+{% block title %}
+MarriageBot - Guild Picker
+{% endblock title %}
+
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ static('/css/guild_picker.css') }}" />
+{% endblock head %}
+
+
+{% block content %}
+<h2>Guild Picker</h2>
+<p>Select which server you want to alter. From there you'll be able to change the prefix that the bot uses.</p>
+
+<div id="guild-holder">
+    {% for guild in guilds %}
+    <div class="guild-block">
+        {% if guild.icon %}<img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />{% else %}<img alt="The default guild icon" src="{{ static('/images/GuildDefaultImage.png') }}" />{% endif %}
+        <h3>
+            <a href="/guild_settings/{{ guild.id }}" alt="The settings page for {{ guild.name }}">{{ guild.name }}</a>
+            {% if guild.gold %}
+                <br />
+                <p>(Gold Active)</p>
+            {% endif %}
+        </h3>
+    </div> <!-- guild-block -->
+    {% endfor %}
+</div>
+{% endblock content %}

@@ -17,28 +17,20 @@ def escape_markdown(value:str) -> str:
 
 class TickPayloadCheckResult(object):
 
-    BOOLEAN_EMOJIS = {
-        "TICK": ("<:tick_filled_yes:784976310366634034>", "\N{HEAVY CHECK MARK}",),
-        "CROSS": ("<:tick_filled_no:784976328231223306>", "\N{HEAVY MULTIPLICATION X}",),
-    }
-
-    def __init__(self, ctx, emoji):
+    def __init__(self, ctx, response):
         self.ctx = ctx
-        self.emoji = emoji
+        self.response = response
 
     @classmethod
     def from_payload(cls, payload):
-        return cls(payload, str(payload.button.emoji))
+        return cls(payload, payload.component.custom_id)
 
     @property
     def is_tick(self):
-        return self.emoji in self.BOOLEAN_EMOJIS["TICK"]
+        return self.response == "YES"
 
     def __bool__(self):
-        valid_emojis = []
-        for i in self.BOOLEAN_EMOJIS.values():
-            valid_emojis.extend(i)
-        return self.emoji in valid_emojis
+        return True
 
 
 class ProposalInProgress(commands.CommandError):
@@ -102,46 +94,26 @@ async def send_proposal_message(
 
     # Reply yes if we allow bots
     if allow_bots and user.bot:
-        return TickPayloadCheckResult(ctx, TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"][0])
+        return TickPayloadCheckResult(ctx, "YES")
 
     # See if they want to say yes
-    components = utils.ActionRow(
-        utils.Button(
-            "Yes",
-            emoji=TickPayloadCheckResult.BOOLEAN_EMOJIS["TICK"][0],
-            style=utils.ButtonStyle.SUCCESS,
-        ),
-        utils.Button(
-            "No",
-            emoji=TickPayloadCheckResult.BOOLEAN_EMOJIS["CROSS"][0],
-            style=utils.ButtonStyle.DANGER,
-        ),
-    )
+    components = utils.MessageComponents.boolean_buttons()
     message = await ctx.send(text, components=components)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
     try:
-        def check(p):
-            if p.message.id != message.id:
+        def check(payload):
+            if payload.user.id not in [user.id, ctx.author.id]:
                 return False
-            if p.user.id not in [user.id, ctx.author.id]:
-                return False
-            result = TickPayloadCheckResult.from_payload(p)
-            if p.user.id == user.id:
-                return result
-            if p.user.id == ctx.author.id:
-                return str(p.button.emoji) in result.BOOLEAN_EMOJIS["CROSS"]
-            return False
-        button_event = await ctx.bot.wait_for("button_click", check=check, timeout=60)
+            if payload.user.id == ctx.author.id:
+                return payload.component.custom_id == "NO"
+            return True
+        button_event = await message.wait_for_button_click(check=check, timeout=60)
     except asyncio.TimeoutError:
-        for button in components.components:
-            button.disabled = True
-        ctx.bot.loop.create_task(message.edit(components=components))
+        ctx.bot.loop.create_task(message.edit(components=components.disable_components()))
         await ctx.send(timeout_message, allowed_mentions=only_mention(ctx.author))
         return None
 
     # Check what they said
-    for button in components.components:
-        button.disabled = True
-    ctx.bot.loop.create_task(message.edit(components=components))
+    ctx.bot.loop.create_task(message.edit(components=components.disable_components()))
     result = TickPayloadCheckResult.from_payload(button_event)
     if not result.is_tick:
         if button_event.user.id == ctx.author.id:
