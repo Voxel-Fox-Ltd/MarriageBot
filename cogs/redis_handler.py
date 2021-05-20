@@ -31,9 +31,7 @@ class RedisHandler(utils.Cog):
         Updates the prefix for the guild.
         """
 
-        key = self.bot.config['guild_settings_prefix_column']
-        data = payload.get(key)
-        self.bot.guild_settings[payload['guild_id']][key] = data
+        self.bot.guild_settings[payload['guild_id']].update(payload)
 
     @utils.redis_channel_handler("UpdateFamilyMaxMembers")
     def update_max_family_members(self, payload):

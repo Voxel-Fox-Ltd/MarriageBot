@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>{% block title %}MarriageBot - Fill Title{% endblock title %}</title>
+    <link rel="icon" href="{{ static('/images/MarriageBotCircle.150.png') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/main.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/header.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/content.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/footer.css') }}" />
+
+    <meta property="og:title" content="MarriageBot - A marriage-based Discord bot" />
+    <meta property="og:description" content="MarriageBot is a Discord bot used for simulations of your family, be it that you want b1nzy as your mom,  or Jake as your nephew, MarriageBot can handle it all." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="{{ app['config']['website_base_url'].rstrip('/') }}{{ static('/images/MarriageBotCircle.150.png') }}" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:url" content="{{ request.url.human_repr() }}" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123512689-2"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-123512689-2');</script>
+    {% block head -%}{% endblock head %}
+</head>
+<body>
+
+{% block body %}
+<header>
+    <ul id="header-content">
+        <li class="logo-holder left">
+            <a href="/">
+                <img class="mb-logo" alt="The MarriageBot logo" src="{{ static('/images/MarriageBot.150.png') }}" />
+            </a>
+        </li>
+        <li class="left"><a href="/"><h1 class="mb-title">MarriageBot</h1></a></li>
+        {% if user_info == None -%}
+            <li class="right"><a class="header-button login-button" href="{{ app['config']['login_url'] }}">Login</a></li>
+        {% else -%}
+            <li class="right"><a class="header-button logout-button" href="/logout">Logout</a></li>
+            <li class="right"><a class="header-button settings-button" style="margin-right: 5px;" href="/settings">Settings</a></li>
+            <li class="right"><img class="user-avatar" alt="Your Discord user avatar" src="{{ user_info.avatar_url }}" /></li>
+        {% endif %}
+    </ul>
+</header> <!-- header -->
+
+<div id="content">
+{% block content -%}{% endblock content %}
+</div> <!-- content -->
+
+<footer>
+{% block footer -%}<h4>&copy; Voxel Fox</h4>{% endblock footer %}
+</footer> <!-- footer -->
+
+{% endblock body %}
+
+</body>
+</html>

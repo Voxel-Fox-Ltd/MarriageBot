@@ -81,7 +81,7 @@ class ServerSpecific(utils.Cog):
             "15s tree cooldown",
             "15 children",
             "`disownall` command (disowns all of your children at once)",
-            "`stupidtree` command (shows all relations, not just blood relatives)",
+            "`bloodtree` command (shows all relations, not just blood relatives)",
         ]
 
         # Perks for $5 Patrons
@@ -89,7 +89,7 @@ class ServerSpecific(utils.Cog):
             "5s tree cooldown",
             "20 children",
             "`disownall` command (disowns all of your children at once)",
-            "`stupidtree` command (shows all relations, not just blood relatives)",
+            "`bloodtree` command (shows all relations, not just blood relatives)",
         ]
 
         # Perks for MarriageBot Gold

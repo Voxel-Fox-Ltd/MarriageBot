@@ -1,0 +1,143 @@
+{% extends "base.html.j2" %}
+
+
+{% block title %}
+MarriageBot - {{ guild.name }} Settings
+{% endblock title %}
+
+
+{% block head %}
+<script type="text/javascript" src="{{ static('js/guild_settings.js') }}"></script>
+{% endblock head %}
+
+
+{% block content %}
+<style type="text/css">
+p {
+    text-align: left;
+}
+</style>
+<div class="content-header-data">
+    {% if guild.icon %}
+        <img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />
+    {% else %}
+        <img alt="The default guild icon" src="{{ static('images/GuildDefaultImage.png') }}" />
+    {% endif %}
+    <h2>{{ guild.name }} - Settings</h2>
+</div>
+
+
+<div class="content-header-data">
+    {% if not has_gold %}
+        <h2 style="margin-right: 10px;">Click here to buy MarriageBot Gold for this guild</h2>
+        <form style="top: 2px; position: relative;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <input type="hidden" name="cmd" value="_s-xclick">
+            <input type="hidden" name="hosted_button_id" value="83N4P9WB294EL">
+            <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+            <input type="hidden" name="custom" value='{"discord_user_id": {{ user_info.id }}, "discord_guild_id": {{ guild.id }}}'>
+        </form>
+    {% endif %}
+</div>
+
+
+<form id="prefix" class="boxed">
+    <p>Bot prefix - the prefix used to activate the bot on your server.</p>
+    <p>
+        <input
+            name="prefix"
+            value="{{ guild_settings['prefix'] if guild_settings['prefix'] != app['bots']['bot'].config['default_prefix'] else ''}}"
+            placeholder="{{ app['bots']['bot'].config['default_prefix'] }}"
+            maxlength="30" />
+        <label for="prefix">
+            Normal Bot Prefix
+            {% if not normal_bot_in_guild %}
+            (<a href="{{ app['bots']['bot'].get_invite_link(
+                redirect_uri=app['config']['website_base_url'].rstrip('/') + '/guilds',
+                response_type='code',
+                scope='bot applications.commands identify guilds',
+                guild_id=guild.id,
+            )|safe }}">add bot</a>)
+            {% endif %}
+        </label>
+        <br />
+        <input
+            name="gold_prefix"
+            value="{{ guild_settings['gold_prefix'] if guild_settings['gold_prefix'] != app['bots']['gold_bot'].config['default_prefix'] else ''}}"
+            placeholder="{{ app['bots']['gold_bot'].config['default_prefix'] }}"
+            maxlength="30" {% if not has_gold %}disabled{% endif %} />
+        <label for="gold_prefix">
+            Gold Prefix
+            {% if has_gold and not gold_bot_in_guild %}
+            (<a href="{{ app['bots']['gold_bot'].get_invite_link(
+                redirect_uri=app['config']['website_base_url'].rstrip('/') + '/guilds',
+                response_type='code',
+                scope='bot applications.commands identify guilds',
+                guild_id=guild.id,
+            )|safe }}">add Gold bot</a>)
+            {% endif %}
+        </label>
+        <br /><br />
+        <button onclick="updateGuildPrefix(this); return false;">Update Guild Prefix</button>
+    </p>
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+</form> <!-- prefix -->
+
+
+<form id="gifs-enabled" class="boxed">
+    <p>Gifs - sets whether gifs are enabled for your server's simulation commands.</p>
+    <p>
+        <input name="enabled" {% if guild_settings['gifs_enabled'] %}checked{% endif %} type="checkbox" />
+        <button onclick="updateGuildGifsEnabled(this); return false;">Update Gif Enable</button>
+    </p>
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+</form> <!-- gifs-enabled -->
+
+
+<form id="incest-allowed" class="boxed">
+    <p>Incest - sets whether incest is allowed on your server.</p>
+    <p>
+        <input name="allowed" {% if guild_settings['allow_incest'] %}checked{% endif %} type="checkbox" {% if not has_gold %}disabled{% endif %} />
+        {% if has_gold -%}
+            <button onclick="updateGuildIncestEnabled(this); return false;">Update Incest Allowed</button>
+        {%- else -%}
+            <button disabled>Disabled for non-Gold bot</button>
+        {%- endif -%}
+    </p>
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+</form> <!-- incest-allowed -->
+
+
+<form id="max-allowed-children" class="boxed">
+    <p>Maximum allowed children - the amount of children that people with a given role are allowed to have. If a user has multiple of these roles, the one with the higest number will be used. Must be a number from <b>{{ min_children_hard_cap }}</b> to <b>{{ max_children_hard_cap }}</b>.</p>
+    <div>
+    {%- if has_gold -%}
+        {%- for role in guild_roles -%}
+            {%- if not role.is_bot_managed() -%}
+                <input
+                    {% if role == guild_roles[-1] %}disabled{% endif %}
+                    id="role_max_children_{{ role.id }}"
+                    name="{{ role.id }}"
+                    type="number"
+                    min="{{ min_children_hard_cap }}"
+                    max="{{ max_children_hard_cap }}"
+                    value="{{ given_max_children.get(role.id) }}"
+                    placeholder="Default - 5" />
+                <label for="role_max_children_{{ role.id }}"><span style="color: rgb({{ role.colour.r }}, {{ role.colour.g }}, {{ role.colour.b }})">⦿</span>{{ role.name }}</label><br />
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+    </div>
+    <p>
+        {%- if has_gold -%}
+            <button  onclick="updateGuildMaxAllowedChildren(this); return false;">Submit Children Amount Change</button>
+        {%- else -%}
+            <button disabled>Disabled for non-Gold bot</button>
+        {%- endif -%}
+    </p>
+    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
+    <input name="gold" value="{% if gold is none%}1{% endif %}" type="hidden" />
+</form> <!-- max-allowed-children -->
+
+
+{% endblock content %}
