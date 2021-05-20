@@ -267,7 +267,7 @@ async def colour_settings_post_handler(request: Request):
 
 
 @routes.post('/webhooks/voxel_fox/purchase')
-async def paypal_purchase_complete(request:Request):
+async def paypal_purchase_complete(request: Request):
     """
     Handles Paypal throwing data my way.
     """
@@ -290,3 +290,4 @@ async def paypal_purchase_complete(request:Request):
                 """DELETE FROM guild_specific_families WHERE guild_id=$1""",
                 custom_data['discord_guild_id'],
             )
+    return Response(status=200)
