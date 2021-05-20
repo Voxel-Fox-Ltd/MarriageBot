@@ -7,7 +7,7 @@ class MarriageBotPerks(object):
 
     __slots__ = (
         "max_children", "max_partners", "can_run_bloodtree",
-        "can_run_disownall", "tree_command_cooldown",
+        "can_run_disownall", "tree_command_cooldown", "tree_render_quality"
     )
 
     def __init__(
@@ -18,7 +18,7 @@ class MarriageBotPerks(object):
         self.can_run_bloodtree = can_run_bloodtree
         self.can_run_disownall = can_run_disownall
         self.tree_command_cooldown = tree_command_cooldown
-        self.tree_render_quality= tree_render_quality
+        self.tree_render_quality = tree_render_quality
 
 
 TIER_THREE = MarriageBotPerks(
