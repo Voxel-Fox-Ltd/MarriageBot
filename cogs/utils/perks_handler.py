@@ -12,12 +12,13 @@ class MarriageBotPerks(object):
 
     def __init__(
             self, max_children:int=5, max_partners:int=1, can_run_stupidtree:bool=False,
-            can_run_disownall:bool=False, tree_command_cooldown:int=60):
+            can_run_disownall:bool=False, tree_command_cooldown:int=60, tree_render_quality:int=0):
         self.max_children = max_children
         self.max_partners = max_partners
         self.can_run_stupidtree = can_run_stupidtree
         self.can_run_disownall = can_run_disownall
         self.tree_command_cooldown = tree_command_cooldown
+        self.tree_render_quality= tree_render_quality
 
 
 TIER_THREE = MarriageBotPerks(
@@ -25,17 +26,20 @@ TIER_THREE = MarriageBotPerks(
     can_run_stupidtree=True,
     can_run_disownall=True,
     tree_command_cooldown=5,
+    tree_render_quality=3
 )
 TIER_TWO = MarriageBotPerks(
     max_children=15,
     can_run_stupidtree=True,
     can_run_disownall=True,
     tree_command_cooldown=15,
+    tree_render_quality=2
 )
 TIER_ONE = MarriageBotPerks(
     max_children=10,
     can_run_disownall=True,
     tree_command_cooldown=15,
+    tree_render_quality=1
 )
 TIER_VOTER = MarriageBotPerks(
     tree_command_cooldown=30,
