@@ -275,7 +275,19 @@ class Information(utils.Cog):
 
         # Convert to an image
         image_filename = f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png'
-        dot = await asyncio.create_subprocess_exec('dot', '-Tpng:gd', dot_filename, '-o', image_filename, '-Gcharset=UTF-8')
+        # http://www.graphviz.org/doc/info/output.html#d:png
+        # todo: implement
+        # highest quality colour, and antialiasing
+        if False:
+            format_rendering_option = '-T:png:cairo'  # -T:png does the same thing but this is clearer
+        # normal colour, and antialising
+        elif False:
+            format_rendering_option = '-T:png:cairo:gd'
+        # normal colour, no antialising
+        else:
+            format_rendering_option = '-Tpng:gd'
+            
+        dot = await asyncio.create_subprocess_exec('dot', format_rendering_option, dot_filename, '-o', image_filename, '-Gcharset=UTF-8')
         await asyncio.wait_for(dot.wait(), 10.0, loop=self.bot.loop)
 
         # Kill subprocess
