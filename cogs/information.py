@@ -276,12 +276,14 @@ class Information(utils.Cog):
         # Convert to an image
         image_filename = f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png'
         # http://www.graphviz.org/doc/info/output.html#d:png
-        # todo: implement
+        perks = await localutils.get_marriagebot_perks(ctx.bot, ctx.author.id)
         # highest quality colour, and antialiasing
-        if False:
-            format_rendering_option = '-T:png:cairo'  # -T:png does the same thing but this is clearer
+        # not using this because not much point
+        # todo: add extra level for better colour, stroke etc, basically like the one in the readme (in addition to antialiasing)
+        # if False:
+        #     format_rendering_option = '-T:png:cairo'  # -T:png does the same thing but this is clearer
         # normal colour, and antialising
-        elif False:
+        if perks.tree_render_quality >= 1:
             format_rendering_option = '-T:png:cairo:gd'
         # normal colour, no antialising
         else:
