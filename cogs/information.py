@@ -284,7 +284,7 @@ class Information(utils.Cog):
         #     format_rendering_option = '-Tpng:cairo'  # -T:png does the same thing but this is clearer
         # normal colour, and antialising
         if perks.tree_render_quality >= 1:
-            format_rendering_option = '-Tpng:cairo:gd'
+            format_rendering_option = '-Tpng:cairo'
         # normal colour, no antialising
         else:
             format_rendering_option = '-Tpng:gd'
