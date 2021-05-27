@@ -103,7 +103,9 @@ async def send_proposal_message(
         def check(payload):
             if payload.user.id not in [user.id, ctx.author.id]:
                 return False
-            if payload.user.id == ctx.author.id:
+            if payload.user.id == user.id:
+                return True
+            if payload.user_id == ctx.author.id:
                 return payload.component.custom_id == "NO"
             return True
         button_event = await message.wait_for_button_click(check=check, timeout=60)

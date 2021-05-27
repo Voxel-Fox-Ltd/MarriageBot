@@ -288,7 +288,7 @@ class Information(utils.Cog):
         # normal colour, no antialising
         else:
             format_rendering_option = '-Tpng:gd'
-            
+
         dot = await asyncio.create_subprocess_exec('dot', format_rendering_option, dot_filename, '-o', image_filename, '-Gcharset=UTF-8')
         await asyncio.wait_for(dot.wait(), 10.0, loop=self.bot.loop)
 
