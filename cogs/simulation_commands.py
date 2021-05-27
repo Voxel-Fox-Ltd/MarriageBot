@@ -423,7 +423,7 @@ class SimulationCommands(utils.Cog):
     @commands.is_nsfw()
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def copulate(self, ctx:utils.Context, target:discord.Member):
+    async def copulate(self, ctx: utils.Context, target: discord.Member):
         """
         Lets you... um... heck someone.
         """
@@ -435,6 +435,8 @@ class SimulationCommands(utils.Cog):
         # Check they're not a bot
         if target.id == self.bot.user.id:
             return await ctx.send("Ew. No. Thanks.")
+        if target.id == ctx.author.id:
+            return
 
         # See if they're already related
         async with ctx.channel.typing():
@@ -455,8 +457,8 @@ class SimulationCommands(utils.Cog):
                 )
             except Exception:
                 result = None
-            if result is None:
-                return
+        if result is None:
+            return
 
         # Respond
         await result.ctx.send(random.choice(localutils.random_text.Copulate.VALID).format(author=ctx.author, target=target))
