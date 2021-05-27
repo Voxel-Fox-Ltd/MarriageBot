@@ -139,9 +139,9 @@ async def guild_picker(request: Request):
     gold_guild_ids = [i['guild_id'] for i in gold_guild_data]
     for i in guilds:
         if i.id in gold_guild_ids:
-            i.gold = True
+            i.guild.gold = True
         else:
-            i.gold = False
+            i.guild.gold = False
 
     # Send off guilds to the page
     return {
