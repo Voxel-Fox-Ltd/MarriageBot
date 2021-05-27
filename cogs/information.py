@@ -281,10 +281,10 @@ class Information(utils.Cog):
         # not using this because not much point
         # todo: add extra level for better colour, stroke etc, basically like the one in the readme (in addition to antialiasing)
         # if False:
-        #     format_rendering_option = '-T:png:cairo'  # -T:png does the same thing but this is clearer
+        #     format_rendering_option = '-Tpng:cairo'  # -T:png does the same thing but this is clearer
         # normal colour, and antialising
         if perks.tree_render_quality >= 1:
-            format_rendering_option = '-T:png:cairo:gd'
+            format_rendering_option = '-Tpng:cairo:gd'
         # normal colour, no antialising
         else:
             format_rendering_option = '-Tpng:gd'
