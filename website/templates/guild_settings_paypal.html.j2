@@ -7,7 +7,7 @@ MarriageBot - {{ guild.name }} Settings
 
 
 {% block head %}
-<script type="text/javascript" src="{{ static('js/guild_settings.js') }}"></script>
+<script type="text/javascript" src="{{ static('/js/guild_settings.js') }}"></script>
 {% endblock head %}
 
 
@@ -19,7 +19,7 @@ p {
 </style>
 <div class="content-header-data">
     {% if guild.icon %}
-        <img alt="The guild icon for {{ guild.name }}" src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png" />
+        <img alt="The guild icon for {{ guild.name }}" src="{{ guild.icon_url }}" />
     {% else %}
         <img alt="The default guild icon" src="{{ static('images/GuildDefaultImage.png') }}" />
     {% endif %}

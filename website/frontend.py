@@ -45,13 +45,6 @@ async def blog(request: Request):
     return {
         "text": markdown2.markdown(text),
         "title": data[0]['title'],
-        # "opengraph": {
-        #     "article:published_time": data[0]['created_at'].isoformat(),
-        #     "article:modified_time": data[0]['created_at'].isoformat(),
-        #     "og:type": 'article',
-        #     "og:title": f"MarriageBot - {data[0]['title']}",
-        #     "og:description": text.split('\n')[0],
-        # }
     }
 
 
@@ -127,8 +120,6 @@ async def guild_picker(request: Request):
 
     # Get the guilds from the user
     all_guilds = await webutils.get_user_guilds_from_session(request)
-    if all_guilds is None:
-        return HTTPFound(location='/discord_oauth_login')
 
     # See if we've been redirected here from the login
     guild_id_get_param = request.query.get("guild_id")
@@ -136,21 +127,21 @@ async def guild_picker(request: Request):
         return HTTPFound(location=f"/guild_settings/{guild_id_get_param}")
 
     # Get which guilds they're allowed to manage
-    try:
-        guilds = [i for i in all_guilds if i['owner'] or i['permissions'] & 40 > 0]
-    except TypeError:
-        guilds = []  # No guilds provided - did they remove the scope? who knows. either way iut's not my issue
-    guild_ids = [int(i['id']) for i in guilds]
+    guilds = [i for i in all_guilds if i.guild.owner_id == i.id or i.guild_permissions.manage_guild]
+    guild_ids = [i.guild.id for i in guilds]
 
     # Get guilds that have gold attached
     async with request.app['database']() as db:
-        gold_guild_data = await db("SELECT * FROM guild_specific_families WHERE guild_id=ANY($1::BIGINT[])", guild_ids)
-    gold_guild_ids = [str(i['guild_id']) for i in gold_guild_data]
+        gold_guild_data = await db(
+            """SELECT guild_id FROM guild_specific_families WHERE guild_id=ANY($1::BIGINT[])""",
+            guild_ids,
+        )
+    gold_guild_ids = [i['guild_id'] for i in gold_guild_data]
     for i in guilds:
-        if i['id'] in gold_guild_ids:
-            i['gold'] = True
+        if i.id in gold_guild_ids:
+            i.gold = True
         else:
-            i['gold'] = False
+            i.gold = False
 
     # Send off guilds to the page
     return {
