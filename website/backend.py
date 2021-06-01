@@ -276,18 +276,21 @@ async def paypal_purchase_complete(request: Request):
     if request.headers.get("Authorization", None) != request.app['config']['payment_info']['authorization']:
         return Response(status=200)
     data = await request.json()
-    custom_data = json.loads(data['custom'])
+
+    # Make sure it's MarriageBot Gold
+    if data['product_name'] != "MarriageBot Gold":
+        return
 
     # Update the database
     async with request.app['database']() as db:
         if data['refunded'] is False:
             await db(
                 """INSERT INTO guild_specific_families VALUES ($1, $2) ON CONFLICT (guild_id) DO NOTHING""",
-                custom_data['discord_guild_id'], custom_data['discord_user_id'],
+                int(data['discord_guild_id']), int(data['discord_user_id']),
             )
         else:
             await db(
                 """DELETE FROM guild_specific_families WHERE guild_id=$1""",
-                custom_data['discord_guild_id'],
+                int(data['discord_guild_id']),
             )
     return Response(status=200)
