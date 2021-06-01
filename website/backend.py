@@ -283,7 +283,8 @@ async def paypal_purchase_complete(request: Request):
 
     # Update the database
     async with request.app['database']() as db:
-        if data['refund'] is False:
+        refund = data.get('refund', False) or data.get('refunded', False)
+        if refund is False:
             await db(
                 """INSERT INTO guild_specific_families VALUES ($1, $2) ON CONFLICT (guild_id) DO NOTHING""",
                 int(data['discord_guild_id']), int(data['discord_user_id']),
