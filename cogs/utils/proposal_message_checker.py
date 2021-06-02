@@ -109,6 +109,7 @@ async def send_proposal_message(
                 return payload.component.custom_id == "NO"
             return True
         button_event = await message.wait_for_button_click(check=check, timeout=60)
+        await button_event.ack()
     except asyncio.TimeoutError:
         ctx.bot.loop.create_task(message.edit(components=components.disable_components()))
         await ctx.send(timeout_message, allowed_mentions=only_mention(ctx.author))
