@@ -10,11 +10,11 @@ from cogs import utils as localutils
 
 class Marriage(utils.Cog):
 
-    @utils.command(aliases=['marry'])
+    @utils.command(aliases=['propose'])
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def propose(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
+    async def marry(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
         """
         Lets you propose to another Discord user.
         """
