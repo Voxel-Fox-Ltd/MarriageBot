@@ -109,7 +109,7 @@ class ServerSpecific(utils.Cog):
         e.add_field(name=f'T1 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
         e.add_field(name=f'T2 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
         e.add_field(name=f'T3 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
-        e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gives you access to:\n* " + '\n* '.join(gold_perks), inline=False)
+        e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gold is a seperate bot for your server, which gives you perks such as:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
     @utils.command(hidden=True)
