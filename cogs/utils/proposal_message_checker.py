@@ -101,6 +101,8 @@ async def send_proposal_message(
     message = await ctx.send(text, components=components)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
     try:
         def check(payload):
+            if payload.message.id != message.id:
+                return False
             if payload.user.id not in [user.id, ctx.author.id]:
                 return False
             if payload.user.id == user.id:
@@ -108,7 +110,7 @@ async def send_proposal_message(
             if payload.user_id == ctx.author.id:
                 return payload.component.custom_id == "NO"
             return True
-        button_event = await message.wait_for_button_click(check=check, timeout=60)
+        button_event = await ctx.bot.wait_for("component_interaction", check=check, timeout=60)
         await button_event.ack()
     except asyncio.TimeoutError:
         ctx.bot.loop.create_task(message.edit(components=components.disable_components()))
