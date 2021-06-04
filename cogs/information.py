@@ -152,9 +152,9 @@ class Information(utils.Cog):
             size = user_info.family_member_count
 
         # Output
-        output = f"There are {"are" if size > 1 else "is"} people in **{localutils.escape_markdown(user_name)}**'s family tree."
+        output = f"There {"are" if size > 1 else "is"} {size} {"people" if size > 1 else "person"} in **{localutils.escape_markdown(user_name)}**'s family tree."
         if user_id == ctx.author.id:
-            output = f"There {"are" if size > 1 else "is"} {size} people in your family tree."
+            output = f"There {"are" if size > 1 else "is"} {size} {"people" if size > 1 else "person"} in your family tree."
         return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(aliases=['relation'])
