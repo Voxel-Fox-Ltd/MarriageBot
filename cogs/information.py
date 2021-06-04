@@ -105,6 +105,53 @@ class Information(utils.Cog):
         if len(output) > 2_000:
             return await ctx.send(f"<@{user_id}>'s children list goes over 2,000 characters. Amazing.")
         await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        
+    @utils.command(aliases=['sib'])
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @utils.checks.bot_is_ready()
+    @commands.bot_has_permissions(send_messages=True)
+    async def siblings(self, ctx:utils.Context, user:utils.converters.UserID=None):
+        """
+        Tells you who a user's siblings are.
+        """
+
+        # Get the user's info
+        user_id = user or ctx.author.id
+        user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
+        user_info = localutils.FamilyTreeMember.get(user_id, localutils.get_family_guild_id(ctx))
+        
+        # Make sure they have a parent
+        parent_id = user_info._parent
+        if not parent_id:
+            if user_id == ctx.author.id:
+                return await ctx.send("You have no siblings.")
+            return await ctx.send(f"**{localutils.escape_markdown(user_name)}** has no siblings.", allowed_mentions=discord.AllowedMentions.none())
+        
+        # Get the parent's info
+        parent_info = localutils.FamilyTreeMember.get(parent_id)
+        
+        # Get parent's children
+        sibling_list = parent_info._children
+        
+        # If the user has no siblings
+        if not sibling_list:
+            output = f"**{localutils.escape_markdown(user_name)}** has no siblings right now." if user_id != ctx.author.id else "You have no siblings right now."
+        else:
+            # Remove the user from the sibling list
+            sibling_list = [sibling for sibling in sibling_list if sibling != user.id]
+            siblings_plural = 'sibling' if len(sibling_list) == 1 else 'siblings'
+            # Count the siblings
+            output = f"**{localutils.escape_markdown(user_name)}** has {len(sibling_list)} {sibling_plural}:\n"
+            if user_id == ctx.author.id:
+                ouptut = f"You have {len(sibling_list)} {sibling_plural}:\n"
+            # Get the name of the siblings
+            sibling_list = [(await localutils.DiscordNameManager.fetch_name_by_id(self.bot, i), i) for sibling in sibling_list]
+            output += "\n".join([f"* **{localutils.escape_markdown(i[0])}** (`{i[1]}`)" for sibling in sibling_list])
+
+        # Return all output
+        if len(output) > 2_000:
+            return await ctx.send(f"{user.mention}'s sibling list goes over 2,000 characters. Amazing.")
+        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())    
 
     @utils.command(aliases=['parents'])
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
