@@ -29,6 +29,7 @@ class RelationshipStringSimplifier(object):
         lambda x: x.replace("aunt/uncle's child", "cousin"),
         lambda x: x.replace("niece/nephew's sibling", "niece/nephew"),
         lambda x: x.replace("niece/nephew's child", "grandniece/nephew").replace("grandgrandniece/nephew", "great grandniece/nephew"),
+        lambda x: x.replace("partner's parent", "parent-in-law")
     ]
 
     # Operations to shorten strings of the same word ("child's child") into more appropriate forms ("grandchild")
