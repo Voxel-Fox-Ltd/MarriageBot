@@ -280,7 +280,7 @@ async def change_gold_guild(request: Request):
     """
 
     # Get the guilds from the user
-    session = aiohttp_session.get_session(request)
+    session = await aiohttp_session.get_session(request)
     all_guilds = await webutils.get_user_guilds_from_session(request)
 
     # Get which guilds they're allowed to manage
