@@ -19,7 +19,7 @@ p {
 </style>
 <div class="content-header-data">
     {% if guild.icon %}
-        <img alt="The guild icon for {{ guild.name }}" src="{{ guild.icon_url }}" />
+        <img alt="The guild icon for {{ guild.name }}" src="{{ guild..icon_url_as(size=128) }}" />
     {% else %}
         <img alt="The default guild icon" src="{{ static('images/GuildDefaultImage.png') }}" />
     {% endif %}
