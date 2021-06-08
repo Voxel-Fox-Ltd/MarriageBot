@@ -281,10 +281,11 @@ async def change_gold_guild(request: Request):
 
     # See if this guild has gold
     session = await aiohttp_session.get_session(request)
-    gold_settings = await db(
-        """SELECT * FROM guild_specific_families WHERE purchased_by=$1""",
-        session['user_id'],
-    )
+    async with request.app['database']() as db:
+        gold_settings = await db(
+            """SELECT * FROM guild_specific_families WHERE purchased_by=$1""",
+            session['user_id'],
+        )
 
     # Get the guilds they're in
     all_guilds = await webutils.get_user_guilds_from_session(request)
