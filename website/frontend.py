@@ -268,3 +268,29 @@ async def guild_settings(request: Request):
         "max_children_hard_cap": botutils.TIER_THREE.max_children,
         "min_children_hard_cap": botutils.TIER_NONE.max_children,
     }
+
+
+@routes.get('/change_gold_guild')
+@template('change_gold_guild.html.j2')
+@webutils.add_discord_arguments()
+@webutils.requires_login()
+async def change_gold_guild(request: Request):
+    """
+    Lets users change the guild that they purchased Gold for.
+    """
+
+    # See if this guild has gold
+    session = await aiohttp_session.get_session(request)
+    gold_settings = await db(
+        """SELECT * FROM guild_specific_families WHERE purchased_by=$1""",
+        session['user_id'],
+    )
+
+    # Get the guilds they're in
+    all_guilds = await webutils.get_user_guilds_from_session(request)
+    guilds = [i for i in all_guilds if i.guild.owner_id == i.id or i.guild_permissions.manage_guild]
+
+    return {
+        "guilds": guilds,
+        "user_gold_guilds": [i['guild_id'] for i in gold_settings],
+    }
