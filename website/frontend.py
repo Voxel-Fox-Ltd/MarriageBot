@@ -279,19 +279,29 @@ async def change_gold_guild(request: Request):
     Lets users change the guild that they purchased Gold for.
     """
 
-    # See if this guild has gold
-    session = await aiohttp_session.get_session(request)
-    async with request.app['database']() as db:
-        gold_settings = await db(
-            """SELECT * FROM guild_specific_families WHERE purchased_by=$1""",
-            session['user_id'],
-        )
-
-    # Get the guilds they're in
+    # Get the guilds from the user
+    session = aiohttp_session.get_session(request)
     all_guilds = await webutils.get_user_guilds_from_session(request)
-    guilds = [i for i in all_guilds if i.guild.owner_id == i.id or i.guild_permissions.manage_guild]
 
+    # Get which guilds they're allowed to manage
+    guilds = [i for i in all_guilds if i.guild.owner_id == i.id or i.guild_permissions.manage_guild]
+    guild_ids = [i.guild.id for i in guilds]
+
+    # Get guilds that have gold attached
+    async with request.app['database']() as db:
+        gold_guild_data = await db(
+            """SELECT * FROM guild_specific_families WHERE purchased_by=$1 OR guild_id=ANY($2::BIGINT[])""",
+            session['user_id'], guild_ids,
+        )
+    gold_guild_ids = [i['guild_id'] for i in gold_guild_data]
+    for i in guilds:
+        if i.guild.id in gold_guild_ids:
+            i.guild.gold = True
+        else:
+            i.guild.gold = False
+
+    # Send off guilds to the page
     return {
+        "user_gold_guilds": [i['guild_id'] for i in gold_guild_data if i['purchased_by'] == session['user_id']],
         "guilds": guilds,
-        "user_gold_guilds": [i['guild_id'] for i in gold_settings],
     }
