@@ -17,6 +17,7 @@ MarriageBot - Gold Guild Mover
 
 <div id="guild-holder">
     {% for member in guilds %}
+    {% if member.guild.id in user_gold_guilds %}
     <div class="guild-block">
         {% if member.guild.icon %}<img alt="The guild icon for {{ member.guild.name }}" src="{{ member.guild.icon_url }}" />{% else %}<img alt="The default guild icon" src="{{ static('/images/GuildDefaultImage.png') }}" />{% endif %}
         <h3>
@@ -30,6 +31,27 @@ MarriageBot - Gold Guild Mover
             {% endif %}
         </h3>
     </div> <!-- guild-block -->
+    {% endif %}
+    {% endfor %}
+</div>
+
+<div id="guild-holder">
+    {% for member in guilds %}
+    {% if member.guild.id not in user_gold_guilds %}
+    <div class="guild-block">
+        {% if member.guild.icon %}<img alt="The guild icon for {{ member.guild.name }}" src="{{ member.guild.icon_url }}" />{% else %}<img alt="The default guild icon" src="{{ static('/images/GuildDefaultImage.png') }}" />{% endif %}
+        <h3>
+            <a href="/guild_settings/{{ member.guild.id }}" alt="The settings page for {{ member.guild.name }}">{{ member.guild.name }}</a>
+            {% if member.guild.id in user_gold_guilds %}
+                <br />
+                <p>(Your Gold Purchase)</p>
+            {% elif member.guild.gold %}
+                <br />
+                <p>(Gold Active)</p>
+            {% endif %}
+        </h3>
+    </div> <!-- guild-block -->
+    {% endif %}
     {% endfor %}
 </div>
 {% endblock content %}
