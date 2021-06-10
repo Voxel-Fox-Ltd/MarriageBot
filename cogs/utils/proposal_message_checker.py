@@ -102,13 +102,16 @@ async def send_proposal_message(
     try:
         def check(payload):
             if payload.message.id != message.id:
-                return False
+                return False  # not relevant to this request
             if payload.user.id not in [user.id, ctx.author.id]:
-                return False
+                ctx.bot.loop.create_task(payload.respond(f"You can't respond to this proposal!", embeddify=False, ephemeral=True))
+                return False  # user isn't whitelisted
             if payload.user.id == user.id:
                 return True
             if payload.user_id == ctx.author.id:
-                return payload.component.custom_id == "NO"
+                if payload.component.custom_id != "NO":
+                    ctx.bot.loop.create_task(payload.respond(f"You can't accept your own proposal!", embeddify=False, ephemeral=True))
+                    return False
             return True
         button_event = await ctx.bot.wait_for("component_interaction", check=check, timeout=60)
         await button_event.ack()
