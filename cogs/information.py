@@ -138,7 +138,7 @@ class Information(utils.Cog):
             output = f"**{localutils.escape_markdown(user_name)}** has no siblings right now." if user_id != ctx.author.id else "You have no siblings right now."
         else:
             # Remove the user from the sibling list
-            sibling_list = [sibling for sibling in sibling_list if sibling != user.id]
+            sibling_list = [sibling for sibling in sibling_list if sibling != user_id]
             siblings_plural = 'sibling' if len(sibling_list) == 1 else 'siblings'
             # Count the siblings
             output = f"**{localutils.escape_markdown(user_name)}** has {len(sibling_list)} {sibling_plural}:\n"
