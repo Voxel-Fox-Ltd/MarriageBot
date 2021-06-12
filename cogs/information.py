@@ -128,17 +128,18 @@ class Information(utils.Cog):
             return await ctx.send(f"**{localutils.escape_markdown(user_name)}** has no siblings.", allowed_mentions=discord.AllowedMentions.none())
         
         # Get the parent's info
-        parent_info = localutils.FamilyTreeMember.get(parent_id)
+        parent_info = user_info.parent
         
         # Get parent's children
         sibling_list = parent_info._children
+        
+        # Remove the user from the sibling list
+        sibling_list = [sibling for sibling in sibling_list if sibling != user_id]
         
         # If the user has no siblings
         if not sibling_list:
             output = f"**{localutils.escape_markdown(user_name)}** has no siblings right now." if user_id != ctx.author.id else "You have no siblings right now."
         else:
-            # Remove the user from the sibling list
-            sibling_list = [sibling for sibling in sibling_list if sibling != user_id]
             sibling_plural = 'sibling' if len(sibling_list) == 1 else 'siblings'
             # Count the siblings
             output = f"**{localutils.escape_markdown(user_name)}** has {len(sibling_list)} {sibling_plural}:\n"
