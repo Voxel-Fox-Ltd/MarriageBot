@@ -150,7 +150,7 @@ class Information(utils.Cog):
 
         # Return all output
         if len(output) > 2_000:
-            return await ctx.send(f"{bot.get_user(user_id).mention}'s sibling list goes over 2,000 characters. Amazing.")
+            return await ctx.send(f"**{localutils.escape_markdown(user_name)}**'s sibling list goes over 2,000 characters. Amazing.")
         await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())    
 
     @utils.command(aliases=['parents'])
