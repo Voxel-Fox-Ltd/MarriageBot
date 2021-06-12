@@ -146,11 +146,11 @@ class Information(utils.Cog):
                 ouptut = f"You have {len(sibling_list)} {sibling_plural}:\n"
             # Get the name of the siblings
             sibling_list = [(await localutils.DiscordNameManager.fetch_name_by_id(self.bot, sibling), sibling) for sibling in sibling_list]
-            output += "\n".join([f"* **{localutils.escape_markdown(i[0])}** (`{i[1]}`)" for sibling in sibling_list])
+            output += "\n".join([f"* **{localutils.escape_markdown(username)}** (`{uid}`)" for username, uid in sibling_list])
 
         # Return all output
         if len(output) > 2_000:
-            return await ctx.send(f"{user.mention}'s sibling list goes over 2,000 characters. Amazing.")
+            return await ctx.send(f"{bot.get_user(user_id).mention}'s sibling list goes over 2,000 characters. Amazing.")
         await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())    
 
     @utils.command(aliases=['parents'])
