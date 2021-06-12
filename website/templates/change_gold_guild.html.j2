@@ -8,47 +8,52 @@ MarriageBot - Gold Guild Mover
 
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ static('/css/guild_picker.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static('/css/change_gold_guild.css') }}" />
+<script type="text/javascript" src="{{ static('/js/change_gold_guild.js') }}"></script>
 {% endblock head %}
 
 
 {% block content %}
 <h2>Guild Picker</h2>
 <p>Select which server you want to alter. From there you'll be able to change the prefix that the bot uses.</p>
+<input type="hidden" id="before-guild-input" name="before" />
+<input type="hidden" id="after-guild-input" name="after" />
 
-<div id="guild-holder">
+<div id="before-guilds" class="guild-holder">
     {% for member in guilds %}
     {% if member.guild.id in user_gold_guilds %}
     <div class="guild-block">
         {% if member.guild.icon %}<img alt="The guild icon for {{ member.guild.name }}" src="{{ member.guild.icon_url_as(size=128) }}" />{% else %}<img alt="The default guild icon" src="{{ static('/images/GuildDefaultImage.png') }}" />{% endif %}
         <h3>
-            <a href="/guild_settings/{{ member.guild.id }}" alt="The settings page for {{ member.guild.name }}">{{ member.guild.name }}</a>
-            {% if member.guild.id in user_gold_guilds %}
-                <br />
-                <p>(Your Gold Purchase)</p>
-            {% elif member.guild.gold %}
-                <br />
-                <p>(Gold Active)</p>
-            {% endif %}
+            <label for="button-guild-{{ member.guild.id }}">{{ member.guild.name }}</label>
+            <button
+                    class="button"
+                    name="button-guild-{{ member.guild.id }}"
+                    onclick="setBeforeButton(this, '{{ member.guild.id }}');">
+                Move Gold
+            </button>
         </h3>
     </div> <!-- guild-block -->
     {% endif %}
     {% endfor %}
 </div>
 
-<div id="guild-holder">
+<hr style="margin-bottom: 20px;">
+
+<div id="after-guilds" class="guild-holder">
     {% for member in guilds %}
-    {% if member.guild.id not in user_gold_guilds %}
+    {% if member.guild.id not in user_gold_guilds and not member.guild.gold %}
     <div class="guild-block">
         {% if member.guild.icon %}<img alt="The guild icon for {{ member.guild.name }}" src="{{ member.guild.icon_url_as(size=128) }}" />{% else %}<img alt="The default guild icon" src="{{ static('/images/GuildDefaultImage.png') }}" />{% endif %}
         <h3>
-            <a href="/guild_settings/{{ member.guild.id }}" alt="The settings page for {{ member.guild.name }}">{{ member.guild.name }}</a>
-            {% if member.guild.id in user_gold_guilds %}
-                <br />
-                <p>(Your Gold Purchase)</p>
-            {% elif member.guild.gold %}
-                <br />
-                <p>(Gold Active)</p>
-            {% endif %}
+            <label for="button-guild-{{ member.guild.id }}">{{ member.guild.name }}</label>
+            <button
+                    class="button"
+                    name="button-guild-{{ member.guild.id }}"
+                    onclick="setAfterButton(this, '{{ member.guild.id }}');"
+                    disabled>
+                Move Gold
+            </button>
         </h3>
     </div> <!-- guild-block -->
     {% endif %}

@@ -15,7 +15,7 @@ MarriageBot - Guild Picker
 <h2>Guild Picker</h2>
 <p>Select which server you want to alter. From there you'll be able to change the prefix that the bot uses.</p>
 
-<div id="guild-holder">
+<div class="guild-holder">
     {% for member in guilds %}
     <div class="guild-block">
         {% if member.guild.icon %}<img alt="The guild icon for {{ member.guild.name }}" src="{{ member.guild.icon_url_as(size=128) }}" />{% else %}<img alt="The default guild icon" src="{{ static('/images/GuildDefaultImage.png') }}" />{% endif %}

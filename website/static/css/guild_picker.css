@@ -1,14 +1,14 @@
-#guild-holder {
+.guild-holder {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around
 }
 
-#guild-holder p {
+.guild-holder p {
     text-align: right;
 }
 
-#guild-holder img {
+.guild-holder img {
     margin: 0
 }
 

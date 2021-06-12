@@ -195,7 +195,7 @@ async def unblock_user_post_handler(request: Request):
     """
 
     # Make sure the user is allowed to make this request
-    if not webutils.is_logged_in(request):
+    if not await webutils.is_logged_in(request):
         return json_response({"error": "You need to be logged in to use this endpoint."}, status=401)
 
     # Get the POST data
@@ -234,7 +234,7 @@ async def colour_settings_post_handler(request: Request):
     """
 
     # Make sure the user is allowed to make this request
-    if not webutils.is_logged_in(request):
+    if not await webutils.is_logged_in(request):
         return json_response({"error": "You need to be logged in to use this endpoint."}, status=401)
 
     # Get the POST data
@@ -261,6 +261,43 @@ async def colour_settings_post_handler(request: Request):
             except AttributeError:
                 pass
         await ctu.save(db)
+
+    # Redirect back to user settings
+    return json_response({"error": ""}, status=200)
+
+
+@routes.post('/change_gold_guild')
+async def change_gold_guild(request: Request):
+    """
+    Handles users changing thier Gold guild.
+    """
+
+    # Make sure the user is allowed to make this request
+    if not await webutils.is_logged_in(request):
+        return json_response({"error": "You need to be logged in to use this endpoint."}, status=401)
+
+    # Get the POST data
+    try:
+        post_data = await request.json()
+    except Exception:
+        return json_response({"error": "Invalid JSON provided."}, status=400)
+
+    # Get logged in user
+    session = await aiohttp_session.get_session(request)
+    logged_in_user = session['user_id']
+
+    # Save the data to the database
+    async with request.app['database']() as db:
+        rows = await db(
+            """SELECT * FROM guild_specific_families WHERE purchased_by=$1 AND guild_id=$2""",
+            logged_in_user, int(post_data['before']),
+        )
+        if not rows:
+            return json_response({"error": "You don't own the guild that you're trying to move gold from."}, status=401)
+        await db(
+            """UPDATE guild_specific_families SET guild_id=$3 WHERE purchased_by=$1 AND guild_id=$2""",
+            logged_in_user, int(post_data['before']), int(post_data['after']),
+        )
 
     # Redirect back to user settings
     return json_response({"error": ""}, status=200)
