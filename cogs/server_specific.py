@@ -328,7 +328,7 @@ class ServerSpecific(utils.Cog):
 
         # Update cache
         parent_tree._children.append(child_id)
-        child_tree._parent = parent
+        child_tree._parent = parent_id
         async with self.bot.redis() as re:
             await re.publish('TreeMemberUpdate', parent_tree.to_json())
             await re.publish('TreeMemberUpdate', child_tree.to_json())
