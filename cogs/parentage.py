@@ -429,7 +429,7 @@ class Parentage(utils.Cog):
         await result.ctx.send("You've sucessfully disowned all of your children :c")
     
     @utils.command(aliases=["desert", "leave"])
-    # @localutils.checks.has_donator_perks("can_run_abandon") - if you wanna make this a donator-only perk
+    # @localutils.checks.has_donator_perks("can_run_abandon") - if you wanna make this a donator-only perk... this could also just be can_run_disownall, I suppose
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
@@ -518,7 +518,11 @@ class Parentage(utils.Cog):
             await re.publish('TreeMemberUpdate', author_tree.to_json())
             await re.publish('TreeMemberUpdate', target_tree.to_json())
 
-        
+        # And we're done
+        await result.ctx.send(
+            f"You've successfully left your family, {ctx.author.mention} :c",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
         
 
 def setup(bot:utils.Bot):
