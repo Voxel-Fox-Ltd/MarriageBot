@@ -340,7 +340,7 @@ async def paypal_purchase_complete(request: Request):
     if channel_id and discord_channel_send_text:
         try:
             channel = await bot.fetch_channel(channel_id)
-            await channel.send(discord_channel_send_text)
+            await channel.send(discord_channel_send_text, embeddify=False)
         except Exception:
             pass
 
