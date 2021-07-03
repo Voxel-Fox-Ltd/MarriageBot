@@ -17,6 +17,7 @@ oauth_scopes = [ "identify", "guilds", ]  # The scopes that should be added to t
 
 [payment_info]
     authorization = ""
+    notification_channel_id = 0
 
 # This data is passed directly over to asyncpg.connect()
 [database]
