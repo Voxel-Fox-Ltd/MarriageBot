@@ -290,7 +290,7 @@ class Parentage(utils.Cog):
         try:
             result = await localutils.send_proposal_message(
                 ctx, ctx.author,
-                f"Are you sure you want to disown your child, {ctx.author.mention}?",
+                f"Are you sure you want to disown **{localutils.escape_markdown(child_name)}**, {ctx.author.mention}?",
                 timeout_message=f"Timed out making sure you want to disown, {ctx.author.mention} :<",
                 cancel_message="Alright, I've cancelled your disown!",
             )
