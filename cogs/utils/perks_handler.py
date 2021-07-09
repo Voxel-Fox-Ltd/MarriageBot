@@ -1,6 +1,8 @@
 import asyncio
+import collections
+from datetime import datetime as dt, timedelta
 
-import voxelbotutils as utils
+import voxelbotutils as vbu
 
 
 class MarriageBotPerks(object):
@@ -11,8 +13,8 @@ class MarriageBotPerks(object):
     )
 
     def __init__(
-            self, max_children:int=5, max_partners:int=1, can_run_bloodtree:bool=False,
-            can_run_disownall:bool=False, tree_command_cooldown:int=60, tree_render_quality:int=0):
+            self, max_children: int = 5, max_partners: int = 1, can_run_bloodtree: bool = False,
+            can_run_disownall: bool = False, tree_command_cooldown: int = 60, tree_render_quality: int = 0):
         self.max_children = max_children
         self.max_partners = max_partners
         self.can_run_bloodtree = can_run_bloodtree
@@ -47,7 +49,24 @@ TIER_VOTER = MarriageBotPerks(
 TIER_NONE = MarriageBotPerks()
 
 
-async def get_marriagebot_perks(bot:utils.Bot, user_id:int) -> MarriageBotPerks:
+CACHED_PERK_ITEMS = collections.defaultdict(lambda: (None, dt(2000, 1, 1),))
+
+
+def cache_response(**lifetime):
+    def inner(func):
+        async def wrapper(bot: vbu.Bot, user_id: int):
+            perks, expiry_time = CACHED_PERK_ITEMS[user_id]
+            if expiry_time > dt.utcnow():
+                return perks  # Cache not expired
+            perks = await func(bot, user_id)
+            CACHED_PERK_ITEMS[user_id] = (perks, dt.utcnow() + timedelta(**lifetime),)
+            return perks
+        return wrapper
+    return inner
+
+
+@cache_response(minutes=2)
+async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
     """
     Get the specific perks that any given user has.
 
