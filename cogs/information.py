@@ -356,7 +356,8 @@ class Information(utils.Cog):
         text = f"[Click here](https://marriagebot.xyz/) to customise your tree."
         if not stupid_tree:
             text += f" Use `{ctx.prefix}bloodtree` for your _entire_ family, including non-blood relatives."
-        await ctx.send(text, file=file)
+        tree_message = await ctx.send(text, file=file)
+        await self.bot.add_delete_reaction(tree_message, wait=True)
 
         # Delete the files
         self.bot.loop.create_task(asyncio.create_subprocess_exec('rm', dot_filename))
