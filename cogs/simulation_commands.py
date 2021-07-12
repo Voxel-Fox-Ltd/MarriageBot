@@ -17,6 +17,8 @@ class SimulationCommands(utils.Cog):
         """
 
         # See if we should return anything anyway
+        if not ctx.guild:
+            return None
         if not self.bot.guild_settings[ctx.guild.id]['gifs_enabled']:
             return None
 
