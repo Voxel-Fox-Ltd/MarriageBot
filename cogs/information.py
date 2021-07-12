@@ -357,7 +357,7 @@ class Information(utils.Cog):
         if not stupid_tree:
             text += f" Use `{ctx.prefix}bloodtree` for your _entire_ family, including non-blood relatives."
         tree_message = await ctx.send(text, file=file)
-        await self.bot.add_delete_reaction(tree_message, wait=True)
+        await self.bot.add_delete_reaction(tree_message)
 
         # Delete the files
         self.bot.loop.create_task(asyncio.create_subprocess_exec('rm', dot_filename))
