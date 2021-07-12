@@ -427,39 +427,21 @@ class Parentage(utils.Cog):
 
         # Output to user
         await result.ctx.send("You've sucessfully disowned all of your children :c")
-    
-    @utils.command(aliases=["desert", "leave"])
-    # @localutils.checks.has_donator_perks("can_run_abandon") - if you wanna make this a donator-only perk... this could also just be can_run_disownall, I suppose
+
+    @utils.command(aliases=["desert", "leave", "dessert"])
+    @localutils.checks.has_donator_perks("can_run_abandon")
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def abandon(self, ctx:utils.Context):
+    async def abandon(self, ctx: utils.Context):
         """
         Completely removes you from the tree.
         """
-        
+
         # Set up some variables
         family_guild_id = localutils.get_family_guild_id(ctx)
         user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
-        
-        # Parent
-        parent_tree = user_tree.parent
-        
-        if not parent_tree:
-            pass
-        
-        # Children
-        child_trees = list(user_tree.children)
-        
-        if not child_trees:
-            pass
-        
-        # Partner
-        partner_tree = user_tree.partner
-        
-        if not partner_tree:
-            pass
-        
+
         # See if they're sure
         try:
             result = await localutils.send_proposal_message(
@@ -472,59 +454,70 @@ class Parentage(utils.Cog):
             result = None
         if result is None:
             return
-        
-        # Remove from cache
-        # Children
+
+        # Grab the users from the cache
+        parent_tree = user_tree.parent
+        child_trees = list(user_tree.children)
+        partner_tree = user_tree.partner
+
+        # Remove children from cache
         for child in child_trees:
             child._parent = None
         user_tree._children = []
-        # Parent
-        user_tree._parent = None
-        try:
-            parent_tree._children.remove(ctx.author.id)
-        except ValueError:
-            pass
-        # Partner
-        user_tree._partner = None
-        partner_tree._partner = None
-        
+
+        # Remove parent from cache
+        if parent_tree:
+            user_tree._parent = None
+            try:
+                parent_tree._children.remove(ctx.author.id)
+            except ValueError:
+                pass
+
+        # Remove partner from cache
+        if partner_tree:
+            user_tree._partner = None
+            partner_tree._partner = None
+
         # Remove from database
         async with self.bot.database() as db:
-            # Children
             await db(
                 """DELETE FROM parents WHERE parent_id=$1 AND guild_id=$2 AND child_id=ANY($3::BIGINT[])""",
                 ctx.author.id, family_guild_id, [child.id for child in child_trees],
             )
-            # Parent
             await db(
                 """DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3""",
                 parent_tree.id, ctx.author.id, family_guild_id,
             )
-            # Partner
             await db(
                 """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
-                ctx.author.id, target_tree.id, family_guild_id,
+                ctx.author.id, partner_tree.id, family_guild_id,
             )
 
         # Remove from redis
         async with self.bot.redis() as re:
+
             # Children
-            for person in child_trees + [user_tree]:
+            for person in child_trees:
                 await re.publish('TreeMemberUpdate', person.to_json())
+
             # Parent
-            await re.publish('TreeMemberUpdate', user_tree.to_json())
-            await re.publish('TreeMemberUpdate', parent_tree.to_json())
+            if parent_tree:
+                await re.publish('TreeMemberUpdate', parent_tree.to_json())
+
             # Partner
-            await re.publish('TreeMemberUpdate', author_tree.to_json())
-            await re.publish('TreeMemberUpdate', target_tree.to_json())
+            if partner_tree:
+                await re.publish('TreeMemberUpdate', partner_tree.to_json())
+
+            # And our guy
+            await re.publish('TreeMemberUpdate', user_tree.to_json())
 
         # And we're done
         await result.ctx.send(
             f"You've successfully left your family, {ctx.author.mention} :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )
-        
 
-def setup(bot:utils.Bot):
+
+def setup(bot: utils.Bot):
     x = Parentage(bot)
     bot.add_cog(x)
