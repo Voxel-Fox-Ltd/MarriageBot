@@ -10,7 +10,7 @@ from cogs import utils as localutils
 
 class Parentage(utils.Cog):
 
-    async def get_max_children_for_member(self, guild:discord.Guild, user:discord.Member):
+    async def get_max_children_for_member(self, guild: discord.Guild, user: discord.Member):
         """
         Get the maximum amount of children a given member can have.
         """
@@ -46,7 +46,7 @@ class Parentage(utils.Cog):
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def makeparent(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
+    async def makeparent(self, ctx: utils.Context, *, target: localutils.converters.UnblockedMember):
         """
         Picks a user that you want to be your parent.
         """
@@ -157,7 +157,7 @@ class Parentage(utils.Cog):
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def adopt(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
+    async def adopt(self, ctx: utils.Context, *, target: localutils.converters.UnblockedMember):
         """
         Adopt another user into your family.
         """
@@ -269,7 +269,7 @@ class Parentage(utils.Cog):
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def disown(self, ctx:utils.Context, *, target:utils.converters.UserID):
+    async def disown(self, ctx: utils.Context, *, target: utils.converters.UserID):
         """
         Lets you remove a user from being your child.
         """
@@ -328,7 +328,7 @@ class Parentage(utils.Cog):
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def emancipate(self, ctx:utils.Context):
+    async def emancipate(self, ctx: utils.Context):
         """
         Removes your parent.
         """
@@ -383,7 +383,7 @@ class Parentage(utils.Cog):
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @utils.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def disownall(self, ctx:utils.Context):
+    async def disownall(self, ctx: utils.Context):
         """
         Disowns all of your children.
         """
