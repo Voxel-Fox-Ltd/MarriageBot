@@ -9,24 +9,28 @@ class MarriageBotPerks(object):
 
     __slots__ = (
         "max_children", "max_partners", "can_run_bloodtree",
-        "can_run_disownall", "tree_command_cooldown", "tree_render_quality"
+        "can_run_disownall", "tree_command_cooldown", "tree_render_quality",
+        "can_run_abandon",
     )
 
     def __init__(
             self, max_children: int = 5, max_partners: int = 1, can_run_bloodtree: bool = False,
-            can_run_disownall: bool = False, tree_command_cooldown: int = 60, tree_render_quality: int = 0):
+            can_run_disownall: bool = False, tree_command_cooldown: int = 60, tree_render_quality: int = 0,
+            can_run_abandon: bool = False):
         self.max_children = max_children
         self.max_partners = max_partners
         self.can_run_bloodtree = can_run_bloodtree
         self.can_run_disownall = can_run_disownall
         self.tree_command_cooldown = tree_command_cooldown
         self.tree_render_quality = tree_render_quality
+        self.can_run_abandon = can_run_abandon
 
 
 TIER_THREE = MarriageBotPerks(
     max_children=20,
     can_run_bloodtree=True,
     can_run_disownall=True,
+    can_run_abandon=True,
     tree_command_cooldown=5,
     tree_render_quality=3
 )
@@ -34,6 +38,7 @@ TIER_TWO = MarriageBotPerks(
     max_children=15,
     can_run_bloodtree=True,
     can_run_disownall=True,
+    can_run_abandon=True,
     tree_command_cooldown=15,
     tree_render_quality=2
 )
