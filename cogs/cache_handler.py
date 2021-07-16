@@ -22,6 +22,12 @@ class CacheHandler(vbu.Cog):
         child = utils.FamilyTreeMember.get(row['child_id'], row['guild_id'])
         child._parent = row['parent_id']
 
+    @staticmethod
+    def wrap(func, *args, **kwargs):
+        def inner():
+            return func(*args, **kwargs)
+        return inner
+
     async def cache_setup(self, db):
         """
         Set up the cache for the users.
@@ -46,12 +52,12 @@ class CacheHandler(vbu.Cog):
         # Cache the family data - partners
         self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
-            await self.bot.loop.run_in_executor(None, self.handle_partner(i))
+            await self.bot.loop.run_in_executor(None, self.wrap(self.handle_partner, i))
 
         # - children
         self.logger.info(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
-            await self.bot.loop.run_in_executor(None, self.handle_parent(i))
+            await self.bot.loop.run_in_executor(None, self.wrap(self.handle_parent, i))
 
         # And done
         return True
