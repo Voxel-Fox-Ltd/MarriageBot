@@ -53,13 +53,15 @@ class CacheHandler(vbu.Cog):
         self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
             # await self.bot.loop.run_in_executor(executor, functools.partial(self.handle_partner, dict(i)))
-            await self.bot.loop.run_in_executor(None, functools.partial(self.handle_partner, dict(i)))
+            # await self.bot.loop.run_in_executor(None, functools.partial(self.handle_partner, dict(i)))
+            self.handle_partner(dict(i))
 
         # - children
         self.logger.info(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
             # await self.bot.loop.run_in_executor(executor, functools.partial(self.handle_parent, dict(i)))
-            await self.bot.loop.run_in_executor(None, functools.partial(self.handle_parent, dict(i)))
+            # await self.bot.loop.run_in_executor(None, functools.partial(self.handle_parent, dict(i)))
+            self.handle_parent(dict(i))
 
         # And done
         return True
