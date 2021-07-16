@@ -64,6 +64,7 @@ class CacheHandler(vbu.Cog):
             self.handle_parent(dict(i))
 
         # And done
+        self.logger.info("Family tree member caching complete")
         return True
 
 
