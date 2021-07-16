@@ -56,8 +56,8 @@ class CacheHandler(vbu.Cog):
 
             # Cache the family data - partners
             self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
-                for i in partnerships:
-                    await self.bot.loop.run_in_executor(executor, self.wrap(self.handle_partner, i))
+            for i in partnerships:
+                await self.bot.loop.run_in_executor(executor, self.wrap(self.handle_partner, i))
 
             # - children
             self.logger.info(f"Caching {len(parents)} parents/children from parents")
