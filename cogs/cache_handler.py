@@ -1,3 +1,5 @@
+import concurrent.futures as cf
+
 import voxelbotutils as vbu
 
 from cogs import utils
@@ -49,15 +51,18 @@ class CacheHandler(vbu.Cog):
         self.logger.info("Clearing the cache of all family tree members")
         utils.FamilyTreeMember.all_users.clear()
 
-        # Cache the family data - partners
-        self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
-        for i in partnerships:
-            await self.bot.loop.run_in_executor(None, self.wrap(self.handle_partner, i))
+        # Use a process pool for CPU-bound tasks
+        with cf.ProcessPoolExecutor() as executor:
 
-        # - children
-        self.logger.info(f"Caching {len(parents)} parents/children from parents")
-        for i in parents:
-            await self.bot.loop.run_in_executor(None, self.wrap(self.handle_parent, i))
+            # Cache the family data - partners
+            self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
+                for i in partnerships:
+                    await self.bot.loop.run_in_executor(executor, self.wrap(self.handle_partner, i))
+
+            # - children
+            self.logger.info(f"Caching {len(parents)} parents/children from parents")
+            for i in parents:
+                await self.bot.loop.run_in_executor(executor, self.wrap(self.handle_parent, i))
 
         # And done
         return True
