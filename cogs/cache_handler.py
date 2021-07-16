@@ -1,4 +1,4 @@
-import concurrent.futures as cf
+import functools
 
 import voxelbotutils as vbu
 
@@ -23,12 +23,6 @@ class CacheHandler(vbu.Cog):
         parent._children.append(row['child_id'])
         child = utils.FamilyTreeMember.get(row['child_id'], row['guild_id'])
         child._parent = row['parent_id']
-
-    @staticmethod
-    def wrap(func, *args, **kwargs):
-        def inner():
-            return func(*args, **kwargs)
-        return inner
 
     async def cache_setup(self, db):
         """
@@ -57,12 +51,12 @@ class CacheHandler(vbu.Cog):
             # Cache the family data - partners
             self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
             for i in partnerships:
-                await self.bot.loop.run_in_executor(executor, self.wrap(self.handle_partner, i))
+                await self.bot.loop.run_in_executor(executor, functools.partial(self.handle_partner, i))
 
             # - children
             self.logger.info(f"Caching {len(parents)} parents/children from parents")
             for i in parents:
-                await self.bot.loop.run_in_executor(executor, self.wrap(self.handle_parent, i))
+                await self.bot.loop.run_in_executor(executor, functools.partial(self.handle_parent, i))
 
         # And done
         return True
