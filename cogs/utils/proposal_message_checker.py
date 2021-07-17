@@ -7,11 +7,11 @@ from discord.ext import commands
 import voxelbotutils as utils
 
 
-def only_mention(user:discord.User) -> discord.AllowedMentions:
+def only_mention(user: discord.User) -> discord.AllowedMentions:
     return discord.AllowedMentions(users=[user])
 
 
-def escape_markdown(value:str) -> str:
+def escape_markdown(value: str) -> str:
     return re.sub(r"([\*`_])", r"\\\g<1>", value)
 
 
@@ -58,7 +58,7 @@ class ProposalLock(object):
             raise ProposalInProgress()
         return cls(redis, *locks)
 
-    async def unlock(self, *, disconnect_redis:bool=True):
+    async def unlock(self, *, disconnect_redis: bool = True):
         for i in self.locks:
             try:
                 await self.redis.lock_manager.unlock(i)
@@ -75,8 +75,8 @@ class ProposalLock(object):
 
 
 async def send_proposal_message(
-        ctx, user:discord.Member, text:str, *, timeout_message:str=None, cancel_message:str=None,
-        allow_bots:bool=False) -> TickPayloadCheckResult:
+        ctx, user: discord.Member, text: str, *, timeout_message: str = None, cancel_message: str = None,
+        allow_bots: bool = False) -> TickPayloadCheckResult:
     """
     Send a proposal message out to the user to see if they want to say yes or no.
 
@@ -104,13 +104,13 @@ async def send_proposal_message(
             if payload.message.id != message.id:
                 return False  # not relevant to this request
             if payload.user.id not in [user.id, ctx.author.id]:
-                ctx.bot.loop.create_task(payload.respond(f"You can't respond to this proposal!", embeddify=False, ephemeral=True))
+                ctx.bot.loop.create_task(payload.respond("You can't respond to this proposal!", embeddify=False, ephemeral=True))
                 return False  # user isn't whitelisted
             if payload.user.id == user.id:
                 return True
-            if payload.user_id == ctx.author.id:
+            if payload.user.id == ctx.author.id:
                 if payload.component.custom_id != "NO":
-                    ctx.bot.loop.create_task(payload.respond(f"You can't accept your own proposal!", embeddify=False, ephemeral=True))
+                    ctx.bot.loop.create_task(payload.respond("You can't accept your own proposal!", embeddify=False, ephemeral=True))
                     return False
             return True
         button_event = await ctx.bot.wait_for("component_interaction", check=check, timeout=60)
