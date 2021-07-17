@@ -12,6 +12,10 @@ class BlockCommands(utils.Cog):
         Blocks a user from being able to adopt/makeparent/etc you.
         """
 
+        # Make sure it's not the author
+        if ctx.author.id == user:
+            return await ctx.send("You can't block yourself .-.")
+
         # Add to list
         async with self.bot.database() as db:
             await db(
@@ -29,6 +33,10 @@ class BlockCommands(utils.Cog):
         """
         Unblocks a user and allows them to adopt/makeparent/etc you.
         """
+
+        # Make sure it's not the author
+        if ctx.author.id == user:
+            return await ctx.send("You can't block yourself .-.")
 
         # Remove from list
         async with self.bot.database() as db:
