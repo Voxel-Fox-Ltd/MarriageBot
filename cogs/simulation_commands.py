@@ -1,5 +1,4 @@
 import random
-import asyncio
 import typing
 
 import discord
@@ -377,6 +376,30 @@ class SimulationCommands(utils.Cog):
         if user == ctx.author:
             return await ctx.send("You make pancakes... and eat them.")
         await ctx.send(f"*You make panckaes for {user.mention}.*")
+
+    @utils.command(hidden=True)
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def tissue(self, ctx:utils.Context, user:discord.Member):
+        """
+        GIve a tissue to one of your friends.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("*You bury your face in a tissue.*")
+        await ctx.send(f"*You gently wipe away tears from {user.mention}'s face.*")
+
+    @utils.command(hidden=True, aliases=['crepes'])
+    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages=True)
+    async def crepe(self, ctx:utils.Context, user:discord.Member):
+        """
+        Crepes. Don't know what else to tell you.
+        """
+
+        if user == ctx.author:
+            return await ctx.send("You make crepes... and eat them.")
+        await ctx.send(f"*You make crepes for {user.mention}. Delicious.*")
 
     @utils.command()
     @commands.bot_has_permissions(send_messages=True)
