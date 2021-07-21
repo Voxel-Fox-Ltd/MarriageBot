@@ -252,6 +252,11 @@ class Information(vbu.Cog):
         Gets the blood family tree of a given user.
         """
 
+        # Let's ack it if we need to
+        if ctx.is_interaction:
+            await ctx.defer()
+
+        # And generate
         lock = self.get_lock(ctx.author.id)
         if lock.locked():
             return
@@ -271,6 +276,11 @@ class Information(vbu.Cog):
         Gets the enitre family tree of a given user.
         """
 
+        # Let's ack it if we need to
+        if ctx.is_interaction:
+            await ctx.defer()
+
+        # And generate
         lock = self.get_lock(ctx.author.id)
         if lock.locked():
             return
@@ -284,10 +294,6 @@ class Information(vbu.Cog):
         """
         Handles the generation and sending of the tree to the user.
         """
-
-        # Let's ack it if we need to
-        if ctx.is_interaction:
-            await ctx.defer()
 
         # Get their family tree
         user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
@@ -307,7 +313,7 @@ class Information(vbu.Cog):
             ctu = await utils.CustomisedTreeUser.fetch_by_id(db, ctx.author.id)
 
         # Get their dot script
-        async with ctx.channel.typing():
+        async with ctx.typing():
             if stupid_tree:
                 dot_code = await user_info.to_full_dot_script(self.bot, ctu)
             else:
