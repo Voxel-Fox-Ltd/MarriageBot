@@ -252,11 +252,7 @@ class Information(vbu.Cog):
         Gets the blood family tree of a given user.
         """
 
-        # Let's ack it if we need to
-        if ctx.is_interaction:
-            await ctx.defer()
-
-        # And generate
+        await ctx.defer()
         lock = self.get_lock(ctx.author.id)
         if lock.locked():
             return
@@ -276,11 +272,7 @@ class Information(vbu.Cog):
         Gets the enitre family tree of a given user.
         """
 
-        # Let's ack it if we need to
-        if ctx.is_interaction:
-            await ctx.defer()
-
-        # And generate
+        await ctx.defer()
         lock = self.get_lock(ctx.author.id)
         if lock.locked():
             return
