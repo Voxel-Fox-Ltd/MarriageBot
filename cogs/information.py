@@ -285,6 +285,10 @@ class Information(vbu.Cog):
         Handles the generation and sending of the tree to the user.
         """
 
+        # Let's ack it if we need to
+        if ctx.is_interaction:
+            await ctx.defer()
+
         # Get their family tree
         user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
         user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
