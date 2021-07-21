@@ -261,7 +261,7 @@ class Information(vbu.Cog):
             except Exception:
                 raise
 
-    @vbu.command(aliases=['st', 'stupidtree', 'fulltree'])
+    @vbu.command(aliases=['st', 'stupidtree', 'fulltree', 'bt'])
     @vbu.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @utils.checks.has_donator_perks("can_run_bloodtree")
     @vbu.checks.bot_is_ready()
