@@ -262,7 +262,7 @@ class ServerSpecific(utils.Cog):
         async with self.bot.redis() as re:
             await re.publish('TreeMemberUpdate', usera_tree.to_json())
             await re.publish('TreeMemberUpdate', userb_tree.to_json())
-            
+
     @utils.command(add_slash_command=False, aliases=['addtime', 'marriagetime', 'marrytime'])
     @localutils.checks.is_server_specific_bot_moderator()
     @commands.bot_has_permissions(send_messages=True)
@@ -270,32 +270,33 @@ class ServerSpecific(utils.Cog):
         """
         Adds a custom timestamp to an existing marriage. Timestamps are formatted by Day/Month and an optional Year (the year defaults to the current year)
         """
-        
+
         # Correct user params
         if userb is None:
             usera, userb = ctx.author.id, usera
         if usera == userb:
             return await ctx.send("You aren't married to yourself.")
-        
+
         # Correct time param
         try:
             dt_time = localutils.fix_time_string(new_time)
         except Exception:
             return await ctx.send("I ran into an error getting the time. Make sure your time is written as 'day/month', and that the day and month exist.")
+
         # Make sure we're not in the future
         if dt_time > dt.utcnow():
             return await ctx.send("That date is in the future - make sure you're using the UTC timezone")
-        
+
         # Get user variables
         family_guild_id = localutils.get_family_guild_id(ctx)
         usera_tree, userb_tree = localutils.FamilyTreeMember.get_multiple(usera, userb, guild_id=family_guild_id)
         usera_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
         userb_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, userb_tree.id)
-        
+
         # See if they are each other's partners
-        if usera_tree._partner != user_b:
+        if usera_tree._partner != userb:
             return await ctx.send(f"**{usera_name}** and **{userb_name}** are not married to each other.", allowed_mentions=discord.AllowedMentions.none())
-        
+
         # Update database
         async with self.bot.database() as db:
             try:
@@ -307,7 +308,7 @@ class ServerSpecific(utils.Cog):
                 await db.commit_transaction()
             except asyncpg.UniqueViolationError:
                 return await ctx.send("I ran into an error saving your family data.")
-            
+
         await ctx.send(f"Set **{usera_name}** and **{userb_name}** marriage time to {new_time}.", allowed_mentions=discord.AllowedMentions.none())
 
     @utils.command(add_slash_command=False)
