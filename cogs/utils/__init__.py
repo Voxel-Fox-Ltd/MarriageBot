@@ -11,6 +11,8 @@ from cogs.utils.perks_handler import get_marriagebot_perks, TIER_NONE, TIER_ONE,
 
 def get_family_guild_id(ctx) -> int:
     if ctx.bot.config['is_server_specific']:
+        if ctx.guild is None:
+            return 0
         return ctx.guild.id
     return 0
 

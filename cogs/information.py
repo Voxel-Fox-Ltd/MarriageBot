@@ -181,6 +181,7 @@ class Information(vbu.Cog):
     @vbu.command(aliases=['treesize', 'fs', 'ts'])
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
+    @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True)
     async def familysize(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
@@ -246,6 +247,7 @@ class Information(vbu.Cog):
     @vbu.command(aliases=['familytree', 't'])
     @vbu.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @vbu.checks.bot_is_ready()
+    @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def tree(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
