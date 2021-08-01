@@ -58,7 +58,7 @@ class Marriage(utils.Cog):
             )
 
         # See if they're already related
-        async with ctx.channel.typing():
+        async with ctx.typing():
             relation = author_tree.get_relation(target_tree)
         if relation and localutils.guild_allows_incest(ctx) is False:
             await lock.unlock()
@@ -70,7 +70,7 @@ class Marriage(utils.Cog):
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
         max_family_members = localutils.get_max_family_members(ctx)
-        async with ctx.channel.typing():
+        async with ctx.typing():
             family_member_count = 0
             for i in author_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:

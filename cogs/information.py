@@ -194,7 +194,7 @@ class Information(vbu.Cog):
         user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
 
         # Get size
-        async with ctx.channel.typing():
+        async with ctx.typing():
             size = user_info.family_member_count
 
         # Output
@@ -226,7 +226,7 @@ class Information(vbu.Cog):
 
         # Get their relation
         user_info, other_info = utils.FamilyTreeMember.get_multiple(user_id, other_id, guild_id=utils.get_family_guild_id(ctx))
-        async with ctx.channel.typing():
+        async with ctx.typing():
             relation = user_info.get_relation(other_info)
 
         # Get names
