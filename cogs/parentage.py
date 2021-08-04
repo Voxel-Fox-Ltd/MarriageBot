@@ -317,12 +317,13 @@ class Parentage(utils.Cog):
                 if payload.message.id != m.id:
                     return False
                 if payload.user.id != ctx.author.id:
-                    self.bot.loop.create_task(payload.respond("You can't respond to this message!", ephemeral=True, wait=False))
+                    self.bot.loop.create_task(payload.respond("You can't respond to this message!", ephemeral=True))
                     return False
                 return True
             try:
                 payload = await self.bot.wait_for("component_interaction", check=check, timeout=60)
-                await payload.update_message(components=components.disable_components())
+                await payload.defer_update()
+                await payload.message.delete()
             except asyncio.TimeoutError:
                 return await ctx.send("Timed out asking for which child you want to disown :<", wait=False)
 
