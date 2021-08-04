@@ -322,8 +322,7 @@ class Parentage(utils.Cog):
                 return True
             try:
                 payload = await self.bot.wait_for("component_interaction", check=check, timeout=60)
-                await payload.defer_update()
-                await payload.message.delete()
+                await payload.defer()
             except asyncio.TimeoutError:
                 return await ctx.send("Timed out asking for which child you want to disown :<", wait=False)
 
