@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime as dt
 
 import asyncpg
@@ -272,14 +273,66 @@ class Parentage(utils.Cog):
     @utils.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def disown(self, ctx: utils.Context, *, target: utils.converters.UserID):
+    async def disown(self, ctx: utils.Context, *, target: localutils.ChildIDConverter = None):
         """
         Lets you remove a user from being your child.
         """
 
-        # Get the family tree member objects
+        # Get the user family tree member
         family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree, child_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target, guild_id=family_guild_id)
+        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+
+        # If they didn't give a child, give them a dropdown
+        if target is None:
+
+            # See if they have children to disown
+            if not user_tree.children:
+                return await ctx.send("You don't have any children!", wait=False)
+
+            # Make a list of options
+            child_options = []
+            for index, child_tree in enumerate(user_tree.children):
+                child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
+                child_options.append(utils.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
+                if index >= 25:
+                    return await ctx.send(
+                        (
+                            "I couldn't work out which of your children you wanted to disown. "
+                            "You can ping or use their ID to disown them."
+                        ),
+                        wait=False,
+                    )
+
+            # Wait for them to pick one
+            components = utils.MessageComponents(utils.ActionRow(
+                utils.SelectMenu(custom_id="DISOWN_USER", options=child_options),
+            ))
+            m = await ctx.send(
+                "Which of your children would you like to disown?",
+                components=components,
+            )
+
+            # Make our check
+            def check(payload: utils.ComponentInteractionPayload):
+                if payload.message.id != m.id:
+                    return False
+                if payload.user.id != ctx.author.id:
+                    self.bot.loop.create_task(payload.respond("You can't respond to this message!", ephemeral=True, wait=False))
+                    return False
+                return True
+            try:
+                payload = await self.bot.wait_for("component_interaction", check=check, timeout=60)
+                await payload.update_message(components=components.disable_components())
+            except asyncio.TimeoutError:
+                return await ctx.send("Timed out asking for which child you want to disown :<", wait=False)
+
+            # Get the child's ID that they selected
+            target = int(payload.values[0][len("DISOWN "):])
+            payload.author = ctx.author
+            ctx = payload
+
+        # Get the family tree member objects
+        child_tree = localutils.FamilyTreeMember.get(target, guild_id=family_guild_id)
         child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
 
         # Make sure they're actually children
@@ -287,6 +340,7 @@ class Parentage(utils.Cog):
             return await ctx.send(
                 f"It doesn't look like **{localutils.escape_markdown(child_name)}** is one of your children!",
                 allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
             )
 
         # See if they're sure
@@ -325,6 +379,7 @@ class Parentage(utils.Cog):
         await result.ctx.send(
             f"You've successfully disowned **{localutils.escape_markdown(child_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
+            wait=False,
         )
 
     @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
