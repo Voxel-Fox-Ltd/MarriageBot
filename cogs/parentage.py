@@ -285,10 +285,6 @@ class Parentage(utils.Cog):
         # If they didn't give a child, give them a dropdown
         if target is None:
 
-            # See if they have children to disown
-            if not user_tree.children:
-                return await ctx.send("You don't have any children!", wait=False)
-
             # Make a list of options
             child_options = []
             for index, child_tree in enumerate(user_tree.children):
@@ -302,6 +298,10 @@ class Parentage(utils.Cog):
                         ),
                         wait=False,
                     )
+
+            # See if they don't have any children
+            if not child_options:
+                return await ctx.send("You don't have any children!", wait=False)
 
             # Wait for them to pick one
             components = utils.MessageComponents(utils.ActionRow(
