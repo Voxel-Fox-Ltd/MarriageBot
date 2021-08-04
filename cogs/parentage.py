@@ -328,8 +328,6 @@ class Parentage(utils.Cog):
 
             # Get the child's ID that they selected
             target = int(payload.values[0][len("DISOWN "):])
-            payload.author = ctx.author
-            ctx = payload
 
         # Get the family tree member objects
         child_tree = localutils.FamilyTreeMember.get(target, guild_id=family_guild_id)
