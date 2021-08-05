@@ -16,7 +16,7 @@ class ChildIDConverter(vbu.converters.UserID):
             return await super().convert(value)
 
         # See if it's a name
-        except Exception:
+        except Exception as e:
             user_tree = utils.FamilyTreeMember.get(ctx.author.id, utils.get_family_guild_id(ctx))
             for child in user_tree.children:
                 child_name = await utils.DiscordNameManager.fetch_name_by_id(ctx.bot, child.id)
@@ -27,5 +27,5 @@ class ChildIDConverter(vbu.converters.UserID):
                     raise
                 if child_name.startswith(value):
                     return child.id
-            raise
+            raise e
 
