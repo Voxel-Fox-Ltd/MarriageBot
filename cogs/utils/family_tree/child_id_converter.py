@@ -13,7 +13,7 @@ class ChildIDConverter(vbu.converters.UserID):
 
         # See if it's a ping or a mention
         try:
-            return await super().convert(value)
+            return await super().convert(ctx, value)
 
         # See if it's a name
         except Exception as e:
