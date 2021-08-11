@@ -6,6 +6,9 @@ default_prefix = "m!"  # The prefix for the bot's commands
 support_guild_id = 208895639164026880  # The ID for the support guild - used by `Bot.fetch_support_guild()`
 bot_support_role_id = 522072743273824262  # The ID used to determine whether or not the user is part of the bot's support team - used for `.checks.is_bot_support()` check
 guild_settings_prefix_column = "prefix"  # Used if multiple bots connect to the same database and need to seperate their prefixes
+ephemeral_error_messages = true
+owners_ignore_check_failures = true
+cached_messages = 1_000
 
 # MarriageBot-specific config items
 max_family_members = 750  # The maximum amount of people you can have in a family
@@ -22,7 +25,7 @@ is_server_specific = false
         shard_disconnect = false
         shard_ready = false
         bot_ready = false
-        unhandled_error = false
+        unhandled_error = true
 
 # The intents that the bot should start with
 [intents]
@@ -42,11 +45,6 @@ is_server_specific = false
     guild_typing = false  # Guild typing - Used for the typing event in guilds.
     dm_typing = false  # DM typing - Used for the typing event in Dms.
 
-# Content to be included in the help command
-[help_command]
-    dm_help = true  # Whether or not the help embed should be DMd to the user
-    content = ""  # Additional content to be sent with the embed
-
 # Data used to send API requests to whatever service
 [bot_listing_api_keys]
     topgg_token = ""  # The token used to post data to top.gg
@@ -56,17 +54,18 @@ is_server_specific = false
 [api_keys]
     weebsh = ""
 
-# Data that's copied directly over to a command
-[command_data]
-    website_link = "https://marriagebot.xyz"  # A link to be used on !website
-    guild_invite = "https://discord.gg/vfl"  # A link to be used on !support
-    github_link = "https://github.com/Voxel-Fox-Ltd/MarriageBot"  # A link to be used on !git
-    donate_link = "https://upgrade.chat/checkout/208895639164026880"  # A link to be used on !donate
-    echo_command_enabled = true  # Whether or not the echo command is enabled
-    stats_command_enabled = true  # Whether or not the stats command is enabled
-    vote_command_enabled = true  # Whether or not the top.gg vote command is enabled
-    updates_channel_id = 634196652529418240  # The ID of the news channel for the bot
-    info = ""  # The text passed out with the !info command
+[bot_info]
+    enabled = true
+    content = """
+        **MarriageBot** is a bot that lets you marry your friends, and adopt your enemies. Using commands like `adopt`, `makeparent`, and `marry`, you're able to create your own in-Discord family tree, which you can then check out with the `tree` command!
+    """
+    thumbnail = ""
+    image = "https://marriagebot.xyz/static/images/tree.png"
+    links.Website = {url = "https://marriagebot.xyz"}
+    links."Support Server" = {url = "https://discord.gg/vfl"}
+    links.Github = {url = "https://github.com/Voxel-Fox-Ltd/MarriageBot"}
+    links.Donate = {url = "https://upgrade.chat/checkout/208895639164026880"}
+    links.Vote = {url = "https://top.gg/bot/marriagebot/vote"}
 
 # Used to generate the invite link
 [oauth]
@@ -74,6 +73,8 @@ is_server_specific = false
     client_id = "468281173072805889"  #  If not set then will use the bot's ID, which is correct as of around 2017 I think
     scope = "bot applications.commands"  # The scope that will be generated with the invite link, space seperated (applications.commands for slash)
     permissions = [ "send_messages", "attach_files", "embed_links", "add_reactions", "external_emojis"]  # args here are passed directly to discord.Permissions as True
+    response_type = ""
+    redirect_uri = ""
 
 # This data is passed directly over to asyncpg.connect()
 [database]
@@ -91,6 +92,11 @@ is_server_specific = false
     port = 6379
     db = 0
 
+[shard_manager]
+    enabled = true
+    host = "127.0.0.1"
+    port = 8888
+
 # The data that gets shoves into custom context for the embed
 [embed]
     enabled = true  # whether or not to embed messages by default
@@ -107,19 +113,19 @@ is_server_specific = false
         text = "Learn how to get more children ({ctx.clean_prefix}perks)"
         amount = 3
     [[embed.footer]]
-        text = "Join the official Discord server ({ctx.clean_prefix}server)"
+        text = "Join the official Discord server ({ctx.clean_prefix}info)"
         amount = 3
     [[embed.footer]]
         text = "Learn more about MarriageBot Gold ({ctx.clean_prefix}gold)"
         amount = 3
     [[embed.footer]]
-        text = "Donate to keep MarriageBot alive ({ctx.clean_prefix}donate)"
+        text = "Donate to keep MarriageBot alive ({ctx.clean_prefix}info)"
         amount = 10
 
 # What the bot is playing
 [presence]
-    activity_type = "playing"  # Should be one of 'playing', 'listening', 'watching', 'competing'
-    text = "m!help"
+    activity_type = "watching"  # Should be one of 'playing', 'listening', 'watching', 'competing'
+    text = "you build families"
     status = "online"  # Should be one of 'online', 'invisible', 'idle', 'dnd'
     include_shard_id = true  # Whether or not to append "(shard N)" to the presence; only present if there's more than 1 shard
     [presence.streaming]  # This is used to automatically set the bot's status to your Twitch stream when you go live
@@ -136,5 +142,4 @@ is_server_specific = false
 [statsd]
     host = "127.0.0.1"
     port = 8125  # This is the DataDog default, 9125 is the general statsd default
-    [statsd.constant_tags]
-        service = ""  # Put your bot name here - leave blank to disable stats collection
+    constant_tags.service = ""  # Put your bot name here - leave blank to disable stats collection

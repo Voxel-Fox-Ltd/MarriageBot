@@ -49,7 +49,7 @@ class ServerSpecific(utils.Cog):
     @utils.command(add_slash_command=False)
     @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    @utils.checks.is_config_set('command_data', 'stats_command_enabled')
+    @utils.checks.is_config_set("bot_info", "links", "Donate")
     async def perks(self, ctx:utils.Context):
         """
         Shows you the perks associated with different support tiers.
@@ -106,9 +106,9 @@ class ServerSpecific(utils.Cog):
         e = discord.Embed()
         e.add_field(name='Normal Users', value="Gives you access to:\n* " + '\n* '.join(normal_users), inline=False)
         e.add_field(name=f'Voting ({ctx.prefix}vote)', value="Gives you access to:\n* " + '\n* '.join(voting_perks), inline=False)
-        e.add_field(name=f'T1 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
-        e.add_field(name=f'T2 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
-        e.add_field(name=f'T3 Subscriber ({ctx.prefix}donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
+        e.add_field(name=f'T1 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
+        e.add_field(name=f'T2 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
+        e.add_field(name=f'T3 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
         e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gold is a seperate bot for your server, which gives you perks such as:\n* " + '\n* '.join(gold_perks), inline=False)
         await ctx.send(embed=e)
 
