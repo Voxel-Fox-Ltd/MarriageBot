@@ -4,12 +4,12 @@ from datetime import datetime as dt
 import asyncpg
 import discord
 from discord.ext import commands
-import voxelbotutils as utils
+import voxelbotutils as vbu
 
-from cogs import utils as localutils
+from cogs import utils
 
 
-class Parentage(utils.Cog):
+class Parentage(vbu.Cog):
 
     async def get_max_children_for_member(self, guild: discord.Guild, user: discord.Member):
         """
@@ -30,7 +30,7 @@ class Parentage(utils.Cog):
                 ])
 
         # See how many children they're allowed normally (in regard to Patreon tier)
-        marriagebot_perks = await localutils.get_marriagebot_perks(self.bot, user.id)
+        marriagebot_perks = await utils.get_marriagebot_perks(self.bot, user.id)
         user_children_amount = marriagebot_perks.max_children
 
         # Return the largest amount of children they've been assigned that's UNDER the global max children as set in the config
@@ -38,24 +38,24 @@ class Parentage(utils.Cog):
             max([
                 gold_children_amount,
                 user_children_amount,
-                localutils.TIER_NONE.max_children,
+                utils.TIER_NONE.max_children,
             ]),
-            localutils.TIER_THREE.max_children,
+            utils.TIER_THREE.max_children,
         ])
 
-    @utils.command()
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command(context_command_type=vbu.ApplicationCommandType.USER, context_command_name="Make user your parent")
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def makeparent(self, ctx: utils.Context, *, target: localutils.converters.UnblockedMember):
+    async def makeparent(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Picks a user that you want to be your parent.
         """
 
         # Variables we're gonna need for later
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        author_tree, target_tree = utils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -68,8 +68,8 @@ class Parentage(utils.Cog):
         # Lock those users
         re = await self.bot.redis.get_connection()
         try:
-            lock = await localutils.ProposalLock.lock(re, ctx.author.id, target.id)
-        except localutils.ProposalInProgress:
+            lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
+        except utils.ProposalInProgress:
             return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
         # See if the *target* is already married
@@ -77,7 +77,7 @@ class Parentage(utils.Cog):
             await lock.unlock()
             return await ctx.send(
                 f"Hey! {ctx.author.mention}, you already have a parent \N{ANGRY FACE}",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # See if we're already married
@@ -85,17 +85,17 @@ class Parentage(utils.Cog):
             await lock.unlock()
             return await ctx.send(
                 f"Hey isn't {target.mention} already your child? \N{FACE WITH ROLLING EYES}",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # See if they're already related
         async with ctx.typing():
             relation = author_tree.get_relation(target_tree)
-        if relation and localutils.guild_allows_incest(ctx) is False:
+        if relation and utils.guild_allows_incest(ctx) is False:
             await lock.unlock()
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # Manage children
@@ -105,7 +105,7 @@ class Parentage(utils.Cog):
 
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
-        max_family_members = localutils.get_max_family_members(ctx)
+        max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
             for i in author_tree.span(add_parent=True, expand_upwards=True):
@@ -120,12 +120,12 @@ class Parentage(utils.Cog):
                 await lock.unlock()
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
-                    allowed_mentions=localutils.only_mention(ctx.author),
+                    allowed_mentions=utils.only_mention(ctx.author),
                 )
 
         # Set up the proposal
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, target,
                 f"Hey, {target.mention}, {ctx.author.mention} wants to be your child! What do you think?",
                 allow_bots=True,
@@ -155,19 +155,19 @@ class Parentage(utils.Cog):
         await re.disconnect()
         await lock.unlock()
 
-    @utils.command()
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command(context_command_type=vbu.ApplicationCommandType.USER, context_command_name="Adopt user")
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def adopt(self, ctx: utils.Context, *, target: localutils.converters.UnblockedMember):
+    async def adopt(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Adopt another user into your family.
         """
 
         # Variables we're gonna need for later
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        author_tree, target_tree = utils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -182,8 +182,8 @@ class Parentage(utils.Cog):
         # Lock those users
         re = await self.bot.redis.get_connection()
         try:
-            lock = await localutils.ProposalLock.lock(re, ctx.author.id, target.id)
-        except localutils.ProposalInProgress:
+            lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
+        except utils.ProposalInProgress:
             return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
         # See if the *target* is already married
@@ -191,7 +191,7 @@ class Parentage(utils.Cog):
             await lock.unlock()
             return await ctx.send(
                 f"Sorry, {ctx.author.mention}, it looks like {target.mention} already has a parent \N{PENSIVE FACE}",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # See if we're already married
@@ -199,17 +199,17 @@ class Parentage(utils.Cog):
             await lock.unlock()
             return await ctx.send(
                 f"Hey, {ctx.author.mention}, they're already your child \N{FACE WITH ROLLING EYES}",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # See if they're already related
         async with ctx.typing():
             relation = author_tree.get_relation(target_tree)
-        if relation and localutils.guild_allows_incest(ctx) is False:
+        if relation and utils.guild_allows_incest(ctx) is False:
             await lock.unlock()
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # Manage children
@@ -219,7 +219,7 @@ class Parentage(utils.Cog):
 
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
-        max_family_members = localutils.get_max_family_members(ctx)
+        max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
             for i in author_tree.span(add_parent=True, expand_upwards=True):
@@ -234,12 +234,12 @@ class Parentage(utils.Cog):
                 await lock.unlock()
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
-                    allowed_mentions=localutils.only_mention(ctx.author),
+                    allowed_mentions=utils.only_mention(ctx.author),
                 )
 
         # Set up the proposal
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, target,
                 f"Hey, {target.mention}, {ctx.author.mention} wants to adopt you! What do you think?",
             )
@@ -268,19 +268,19 @@ class Parentage(utils.Cog):
         await re.disconnect()
         await lock.unlock()
 
-    @utils.command(aliases=['abort'])
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command(aliases=['abort'])
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def disown(self, ctx: utils.Context, *, target: localutils.ChildIDConverter = None):
+    async def disown(self, ctx: vbu.Context, *, target: utils.ChildIDConverter = None):
         """
         Lets you remove a user from being your child.
         """
 
         # Get the user family tree member
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
         # If they didn't give a child, give them a dropdown
         if target is None:
@@ -288,8 +288,8 @@ class Parentage(utils.Cog):
             # Make a list of options
             child_options = []
             for index, child_tree in enumerate(user_tree.children):
-                child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
-                child_options.append(utils.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
+                child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
+                child_options.append(vbu.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
                 if index >= 25:
                     return await ctx.send(
                         (
@@ -304,8 +304,8 @@ class Parentage(utils.Cog):
                 return await ctx.send("You don't have any children!", wait=False)
 
             # Wait for them to pick one
-            components = utils.MessageComponents(utils.ActionRow(
-                utils.SelectMenu(custom_id="DISOWN_USER", options=child_options),
+            components = vbu.MessageComponents(vbu.ActionRow(
+                vbu.SelectMenu(custom_id="DISOWN_USER", options=child_options),
             ))
             m = await ctx.send(
                 "Which of your children would you like to disown?",
@@ -313,7 +313,7 @@ class Parentage(utils.Cog):
             )
 
             # Make our check
-            def check(payload: utils.ComponentInteractionPayload):
+            def check(payload: vbu.ComponentInteractionPayload):
                 if payload.message.id != m.id:
                     return False
                 if payload.user.id != ctx.author.id:
@@ -331,22 +331,22 @@ class Parentage(utils.Cog):
             target = int(payload.values[0][len("DISOWN "):])
 
         # Get the family tree member objects
-        child_tree = localutils.FamilyTreeMember.get(target, guild_id=family_guild_id)
-        child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
+        child_tree = utils.FamilyTreeMember.get(target, guild_id=family_guild_id)
+        child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
 
         # Make sure they're actually children
         if child_tree.id not in user_tree._children:
             return await ctx.send(
-                f"It doesn't look like **{localutils.escape_markdown(child_name)}** is one of your children!",
+                f"It doesn't look like **{utils.escape_markdown(child_name)}** is one of your children!",
                 allowed_mentions=discord.AllowedMentions.none(),
                 wait=False,
             )
 
         # See if they're sure
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, ctx.author,
-                f"Are you sure you want to disown **{localutils.escape_markdown(child_name)}**, {ctx.author.mention}?",
+                f"Are you sure you want to disown **{utils.escape_markdown(child_name)}**, {ctx.author.mention}?",
                 timeout_message=f"Timed out making sure you want to disown, {ctx.author.mention} :<",
                 cancel_message="Alright, I've cancelled your disown!",
             )
@@ -376,24 +376,24 @@ class Parentage(utils.Cog):
 
         # And we're done
         await result.ctx.send(
-            f"You've successfully disowned **{localutils.escape_markdown(child_name)}** :c",
+            f"You've successfully disowned **{utils.escape_markdown(child_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
             wait=False,
         )
 
-    @utils.command(aliases=['eman', 'runaway', 'runawayfromhome'])
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command(aliases=['eman', 'runaway', 'runawayfromhome'])
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def emancipate(self, ctx: utils.Context):
+    async def emancipate(self, ctx: vbu.Context):
         """
         Removes your parent.
         """
 
         # Get the family tree member objects
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
         # Make sure they're the child of the instigator
         parent_tree = user_tree.parent
@@ -402,7 +402,7 @@ class Parentage(utils.Cog):
 
         # See if they're sure
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, ctx.author,
                 f"Are you sure you want to leave your parent, {ctx.author.mention}?",
                 timeout_message=f"Timed out making sure you want to emancipate, {ctx.author.mention} :<",
@@ -433,30 +433,30 @@ class Parentage(utils.Cog):
             )
 
         # And we're done
-        parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
-        return await result.ctx.send(f"You no longer have **{localutils.escape_markdown(parent_name)}** as a parent :c")
+        parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
+        return await result.ctx.send(f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c")
 
-    @utils.command()
-    @localutils.checks.has_donator_perks("can_run_disownall")
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command()
+    @utils.checks.has_donator_perks("can_run_disownall")
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def disownall(self, ctx: utils.Context):
+    async def disownall(self, ctx: vbu.Context):
         """
         Disowns all of your children.
         """
 
         # Get the family tree member objects
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
         child_trees = list(user_tree.children)
         if not child_trees:
             return await ctx.send("You don't have any children to disown .-.")
 
         # See if they're sure
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, ctx.author,
                 f"Are you sure you want to disown all your children, {ctx.author.mention}?",
                 timeout_message=f"Timed out making sure you want to disownall, {ctx.author.mention} :<",
@@ -487,24 +487,24 @@ class Parentage(utils.Cog):
         # Output to user
         await result.ctx.send("You've sucessfully disowned all of your children :c")
 
-    @utils.command(aliases=["desert", "leave", "dessert"])
-    @localutils.checks.has_donator_perks("can_run_abandon")
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command(aliases=["desert", "leave", "dessert"])
+    @utils.checks.has_donator_perks("can_run_abandon")
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def abandon(self, ctx: utils.Context):
+    async def abandon(self, ctx: vbu.Context):
         """
         Completely removes you from the tree.
         """
 
         # Set up some variables
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        user_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
         # See if they're sure
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, ctx.author,
                 f"Are you sure you want to completely abandon your family, {ctx.author.mention}? This will disown all your kids, emancipate, and divorce you",
                 timeout_message=f"Timed out making sure you want to abandon your family, {ctx.author.mention} :<",
@@ -578,6 +578,6 @@ class Parentage(utils.Cog):
         )
 
 
-def setup(bot: utils.Bot):
+def setup(bot: vbu.Bot):
     x = Parentage(bot)
     bot.add_cog(x)

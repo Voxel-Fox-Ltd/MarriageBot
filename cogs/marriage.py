@@ -3,26 +3,26 @@ from datetime import datetime as dt
 import asyncpg
 import discord
 from discord.ext import commands
-import voxelbotutils as utils
+import voxelbotutils as vbu
 
-from cogs import utils as localutils
+from cogs import utils
 
 
-class Marriage(utils.Cog):
+class Marriage(vbu.Cog):
 
-    @utils.command(aliases=['propose'])
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command(aliases=['propose'], context_command_type=vbu.ApplicationCommandType.USER, context_command_name="Marry user")
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def marry(self, ctx:utils.Context, *, target:localutils.converters.UnblockedMember):
+    async def marry(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Lets you propose to another Discord user.
         """
 
         # Get the family tree member objects
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree, target_tree = localutils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        author_tree, target_tree = utils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -37,8 +37,8 @@ class Marriage(utils.Cog):
         # Lock those users
         re = await self.bot.redis.get_connection()
         try:
-            lock = await localutils.ProposalLock.lock(re, ctx.author.id, target.id)
-        except localutils.ProposalInProgress:
+            lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
+        except utils.ProposalInProgress:
             return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
         # See if we're already married
@@ -46,7 +46,7 @@ class Marriage(utils.Cog):
             await lock.unlock()
             return await ctx.send(
                 f"Hey, {ctx.author.mention}, you're already married! Try divorcing your partner first \N{FACE WITH ROLLING EYES}",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # See if the *target* is already married
@@ -54,22 +54,22 @@ class Marriage(utils.Cog):
             await lock.unlock()
             return await ctx.send(
                 f"Sorry, {ctx.author.mention}, it looks like {target.mention} is already married \N{PENSIVE FACE}",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # See if they're already related
         async with ctx.typing():
             relation = author_tree.get_relation(target_tree)
-        if relation and localutils.guild_allows_incest(ctx) is False:
+        if relation and utils.guild_allows_incest(ctx) is False:
             await lock.unlock()
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
-                allowed_mentions=localutils.only_mention(ctx.author),
+                allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
-        max_family_members = localutils.get_max_family_members(ctx)
+        max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
             for i in author_tree.span(add_parent=True, expand_upwards=True):
@@ -84,12 +84,12 @@ class Marriage(utils.Cog):
                 await lock.unlock()
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
-                    allowed_mentions=localutils.only_mention(ctx.author),
+                    allowed_mentions=utils.only_mention(ctx.author),
                 )
 
         # Set up the proposal
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, target,
                 f"Hey, {target.mention}, it would make {ctx.author.mention} really happy if you would marry them. What do you say?",
             )
@@ -120,19 +120,19 @@ class Marriage(utils.Cog):
         await re.disconnect()
         await lock.unlock()
 
-    @utils.command()
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @utils.checks.bot_is_ready()
+    @vbu.command()
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def divorce(self, ctx:utils.Context):
+    async def divorce(self, ctx: vbu.Context):
         """
         Divorces you from your current partner.
         """
 
         # Get the family tree member objects
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        author_tree = localutils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        author_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
         # See if they're married
         target_tree = author_tree.partner
@@ -141,7 +141,7 @@ class Marriage(utils.Cog):
 
         # See if they're sure
         try:
-            result = await localutils.send_proposal_message(
+            result = await utils.send_proposal_message(
                 ctx, ctx.author,
                 f"Are you sure you want to divorce your partner, {ctx.author.mention}?",
                 timeout_message=f"Timed out making sure you want to divorce, {ctx.author.mention} :<",
@@ -158,9 +158,9 @@ class Marriage(utils.Cog):
                 """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
                 ctx.author.id, target_tree.id, family_guild_id,
             )
-        partner_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, author_tree._partner)
+        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, author_tree._partner)
         await result.ctx.send(
-            f"You've successfully divorced **{localutils.escape_markdown(partner_name)}** :c",
+            f"You've successfully divorced **{utils.escape_markdown(partner_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )
 
@@ -172,6 +172,6 @@ class Marriage(utils.Cog):
             await re.publish('TreeMemberUpdate', target_tree.to_json())
 
 
-def setup(bot:utils.Bot):
+def setup(bot: vbu.Bot):
     x = Marriage(bot)
     bot.add_cog(x)
