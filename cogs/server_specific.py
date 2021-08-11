@@ -105,7 +105,7 @@ class ServerSpecific(utils.Cog):
         # Make embed
         e = discord.Embed()
         e.add_field(name='Normal Users', value="Gives you access to:\n* " + '\n* '.join(normal_users), inline=False)
-        e.add_field(name=f'Voting ({ctx.prefix}vote)', value="Gives you access to:\n* " + '\n* '.join(voting_perks), inline=False)
+        e.add_field(name=f'Voting ({ctx.prefix}info - vote)', value="Gives you access to:\n* " + '\n* '.join(voting_perks), inline=False)
         e.add_field(name=f'T1 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks), inline=False)
         e.add_field(name=f'T2 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
         e.add_field(name=f'T3 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
@@ -201,7 +201,7 @@ class ServerSpecific(utils.Cog):
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
         await ctx.send("Incest is now **DISALLOWED** on your guild.")
 
-    @utils.command(aliases=['ssf'], add_slash_command=False)
+    @utils.command(aliases=['ssf'])
     @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def gold(self, ctx:utils.Context):
