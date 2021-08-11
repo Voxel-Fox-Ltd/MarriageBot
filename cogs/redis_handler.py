@@ -8,7 +8,7 @@ class RedisHandler(vbu.Cog):
 
     def __init__(self, bot: vbu.Bot):
         super().__init__(bot)
-        if vbu.RedisHandler.enabled:
+        if vbu.RedisConnection.enabled:
             self.update_guild_prefix.start()
             self.update_max_family_members.start()
             self.update_incest_alllowed.start()
