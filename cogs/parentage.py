@@ -47,7 +47,7 @@ class Parentage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def makeparent(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Picks a user that you want to be your parent.
@@ -169,7 +169,7 @@ class Parentage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def adopt(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Adopt another user into your family.
@@ -289,7 +289,7 @@ class Parentage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def disown(self, ctx: vbu.Context, *, target: utils.ChildIDConverter = None):
         """
         Lets you remove a user from being your child.
@@ -403,7 +403,7 @@ class Parentage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def emancipate(self, ctx: vbu.Context):
         """
         Removes your parent.
@@ -459,7 +459,7 @@ class Parentage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def disownall(self, ctx: vbu.Context):
         """
         Disowns all of your children.
@@ -510,7 +510,7 @@ class Parentage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def abandon(self, ctx: vbu.Context):
         """
         Completely removes you from the tree.

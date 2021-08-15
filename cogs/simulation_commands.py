@@ -306,7 +306,7 @@ class SimulationCommands(vbu.Cog):
     @vbu.command(hidden=True)
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.bot_has_permissions(send_messages=True)
-    async def sleep(self, ctx:vbu.Context):
+    async def sleep(self, ctx: vbu.Context):
         """
         Todd Howard strikes once more.
         """
@@ -406,7 +406,7 @@ class SimulationCommands(vbu.Cog):
 
     @vbu.command()
     @vbu.bot_has_permissions(send_messages=True)
-    async def ship(self, ctx:vbu.Context, user:discord.Member, user2:discord.Member=None):
+    async def ship(self, ctx: vbu.Context, user: discord.Member, user2: discord.Member = None):
         """
         Gives you a ship percentage between two users.
         """
@@ -440,7 +440,7 @@ class SimulationCommands(vbu.Cog):
 
     @vbu.command(aliases=['compat'], hidden=True)
     @vbu.bot_has_permissions(send_messages=True)
-    async def comatibility(self, ctx:vbu.Context, user:discord.Member, user2:discord.Member=None):
+    async def comatibility(self, ctx: vbu.Context, user: discord.Member, user2: discord.Member = None):
         """
         Tells you how compatible two users may or may not be.
         """
@@ -513,6 +513,6 @@ class SimulationCommands(vbu.Cog):
         )
 
 
-def setup(bot:vbu.Bot):
+def setup(bot: vbu.Bot):
     x = SimulationCommands(bot)
     bot.add_cog(x)
