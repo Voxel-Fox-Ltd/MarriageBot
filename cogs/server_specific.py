@@ -3,9 +3,9 @@ from datetime import datetime as dt
 import asyncpg
 import discord
 from discord.ext import commands
-import voxelbotutils as utils
+import voxelbotutils as vbu
 
-from cogs import utils as localutils
+from cogs import utils
 
 
 MARRIAGEBOT_GOLD_INFORMATION = """
@@ -29,9 +29,9 @@ Please feel free to direct any questions to the team at `m!support`.
 """.strip()
 
 
-class ServerSpecific(utils.Cog):
+class ServerSpecific(vbu.Cog):
 
-    @utils.Cog.listener()
+    @vbu.Cog.listener()
     async def on_guild_join(self, guild:discord.Guild):
         """
         Looks for when the bot is added to a guild, leaving if it's not whitelisted.
@@ -46,11 +46,11 @@ class ServerSpecific(utils.Cog):
         self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
         await guild.leave()
 
-    @utils.command(add_slash_command=False)
-    @utils.cooldown.cooldown(1, 5, commands.BucketType.user)
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    @utils.checks.is_config_set("bot_info", "links", "Donate")
-    async def perks(self, ctx:utils.Context):
+    @vbu.command(add_slash_command=False)
+    @vbu.cooldown.cooldown(1, 5, commands.BucketType.user)
+    @vbu.bot_has_permissions(send_messages=True, embed_links=True)
+    @vbu.checks.is_config_set("bot_info", "links", "Donate")
+    async def perks(self, ctx: vbu.Context):
         """
         Shows you the perks associated with different support tiers.
         """
@@ -110,14 +110,14 @@ class ServerSpecific(utils.Cog):
         e.add_field(name=f'T2 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks), inline=False)
         e.add_field(name=f'T3 Subscriber ({ctx.prefix}info - donate)', value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks), inline=False)
         e.add_field(name=f'MarriageBot Gold ({ctx.prefix}gold)', value="Gold is a seperate bot for your server, which gives you perks such as:\n* " + '\n* '.join(gold_perks), inline=False)
-        await ctx.send(embed=e)
+        await ctx.send(embed=e, wait=False)
 
-    @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @localutils.checks.guild_is_server_specific()
-    @commands.bot_has_permissions(send_messages=True)
-    async def allowincest(self, ctx:utils.Context):
+    @vbu.command(hidden=True)
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @utils.checks.is_server_specific_bot_moderator()
+    @utils.checks.guild_is_server_specific()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def allowincest(self, ctx: vbu.Context):
         """
         Toggles allowing incest on your guild.
         """
@@ -129,14 +129,14 @@ class ServerSpecific(utils.Cog):
                 ctx.guild.id, True,
             )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
-        await ctx.send("Incest is now **ALLOWED** on your guild.")
+        await ctx.send("Incest is now **ALLOWED** on your guild.", wait=False)
 
-    @utils.command(hidden=True)
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @localutils.checks.guild_is_server_specific()
-    @commands.bot_has_permissions(send_messages=True)
-    async def disallowincest(self, ctx:utils.Context):
+    @vbu.command(hidden=True)
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @utils.checks.is_server_specific_bot_moderator()
+    @utils.checks.guild_is_server_specific()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def disallowincest(self, ctx: vbu.Context):
         """
         Toggles allowing incest on your guild.
         """
@@ -148,27 +148,33 @@ class ServerSpecific(utils.Cog):
                 ctx.guild.id, False,
             )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
-        await ctx.send("Incest is now **DISALLOWED** on your guild.")
+        await ctx.send("Incest is now **DISALLOWED** on your guild.", wait=False)
 
-    @utils.group(add_slash_command=False)
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @commands.bot_has_permissions(send_messages=True)
-    async def incest(self, ctx:utils.Context):
+    @vbu.group(add_slash_command=False)
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.bot_has_permissions(send_messages=True)
+    async def incest(self, ctx: vbu.Context):
         """
         Toggles allowing incest on your guild.
         """
 
         if not self.bot.config['is_server_specific']:
-            return await ctx.send(f"Incest is only allowed in the server-specific version of MarriageBot - see `{ctx.clean_prefix}gold` for more information.")
+            return await ctx.send(
+                (
+                    f"Incest is only allowed in the server-specific version of MarriageBot - "
+                    f"see `{ctx.clean_prefix}gold` for more information."
+                ),
+                wait=False,
+            )
         if ctx.invoked_subcommand is None:
             return await ctx.send_help(ctx.command)
 
     @incest.command(name="allow", aliases=['enable', 'on', 'start'], add_slash_command=False)
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @localutils.checks.guild_is_server_specific()
-    @commands.bot_has_permissions(send_messages=True)
-    async def incest_allow(self, ctx:utils.Context):
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @utils.checks.is_server_specific_bot_moderator()
+    @utils.checks.guild_is_server_specific()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def incest_allow(self, ctx: vbu.Context):
         """
         Toggles allowing incest on your guild.
         """
@@ -180,14 +186,14 @@ class ServerSpecific(utils.Cog):
                 ctx.guild.id, True,
             )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = True
-        await ctx.send("Incest is now **ALLOWED** on your guild.")
+        await ctx.send("Incest is now **ALLOWED** on your guild.", wait=False)
 
     @incest.command(name="disallow", aliases=['disable', 'off', 'stop'], add_slash_command=False)
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @localutils.checks.guild_is_server_specific()
-    @commands.bot_has_permissions(send_messages=True)
-    async def incest_disallow(self, ctx:utils.Context):
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @utils.checks.is_server_specific_bot_moderator()
+    @utils.checks.guild_is_server_specific()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def incest_disallow(self, ctx: vbu.Context):
         """
         Toggles allowing incest on your guild.
         """
@@ -199,26 +205,26 @@ class ServerSpecific(utils.Cog):
                 ctx.guild.id, False,
             )
         self.bot.guild_settings[ctx.guild.id]['allow_incest'] = False
-        await ctx.send("Incest is now **DISALLOWED** on your guild.")
+        await ctx.send("Incest is now **DISALLOWED** on your guild.", wait=False)
 
-    @utils.command(aliases=['ssf'])
-    @utils.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
-    @commands.bot_has_permissions(send_messages=True)
-    async def gold(self, ctx:utils.Context):
+    @vbu.command(aliases=['ssf'])
+    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @vbu.bot_has_permissions(send_messages=True)
+    async def gold(self, ctx: vbu.Context):
         """
         Gives you the information about server specific families and MarriageBot Gold.
         """
 
         try:
             await ctx.author.send(MARRIAGEBOT_GOLD_INFORMATION.strip())
-            await ctx.send("Sent you a DM!")
+            await ctx.send("Sent you a DM!", wait=False)
         except discord.Forbidden:
-            await ctx.send("I couldn't send you a DM :c")
+            await ctx.send("I couldn't send you a DM :c", wait=False)
 
-    @utils.command(add_slash_command=False)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @commands.bot_has_permissions(send_messages=True)
-    async def forcemarry(self, ctx:utils.Context, usera:utils.converters.UserID, userb:utils.converters.UserID=None):
+    @vbu.command(add_slash_command=False)
+    @utils.checks.is_server_specific_bot_moderator()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def forcemarry(self, ctx: vbu.Context, usera: vbu.converters.UserID, userb: vbu.converters.UserID = None):
         """
         Marries the two specified users.
         """
@@ -227,19 +233,27 @@ class ServerSpecific(utils.Cog):
         if userb is None:
             usera, userb = ctx.author.id, usera
         if usera == userb:
-            return await ctx.send("You can't marry yourself.")
+            return await ctx.send("You can't marry yourself.", wait=False)
 
         # Get users
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        usera_tree, userb_tree = localutils.FamilyTreeMember.get_multiple(usera, userb, guild_id=family_guild_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        usera_tree, userb_tree = utils.FamilyTreeMember.get_multiple(usera, userb, guild_id=family_guild_id)
 
         # See if they have partners
         if usera_tree._partner is not None:
-            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera)
-            return await ctx.send(f"**{user_name}** already has a partner.", allowed_mentions=discord.AllowedMentions.none())
+            user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, usera)
+            return await ctx.send(
+                f"**{user_name}** already has a partner.",
+                allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
+            )
         if userb_tree._partner is not None:
-            user_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, userb)
-            return await ctx.send(f"**{user_name}** already has a partner.", allowed_mentions=discord.AllowedMentions.none())
+            user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, userb)
+            return await ctx.send(
+                f"**{user_name}** already has a partner.",
+                allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
+            )
 
         # Update database
         async with self.bot.database() as db:
@@ -251,10 +265,14 @@ class ServerSpecific(utils.Cog):
                 )
                 await db.commit_transaction()
             except asyncpg.UniqueViolationError:
-                return await ctx.send("I ran into an error saving your family data.")
-        usera_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
-        userb_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, userb_tree.id)
-        await ctx.send(f"Married **{usera_name}** and **{userb_name}**.", allowed_mentions=discord.AllowedMentions.none())
+                return await ctx.send("I ran into an error saving your family data.", wait=False)
+        usera_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, usera_tree.id)
+        userb_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, userb_tree.id)
+        await ctx.send(
+            f"Married **{usera_name}** and **{userb_name}**.",
+            allowed_mentions=discord.AllowedMentions.none(),
+            wait=False,
+        )
 
         # Update cache
         usera_tree._partner = userb
@@ -263,20 +281,24 @@ class ServerSpecific(utils.Cog):
             await re.publish('TreeMemberUpdate', usera_tree.to_json())
             await re.publish('TreeMemberUpdate', userb_tree.to_json())
 
-    @utils.command(add_slash_command=False)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @commands.bot_has_permissions(send_messages=True)
-    async def forcedivorce(self, ctx:utils.Context, usera:utils.converters.UserID):
+    @vbu.command(add_slash_command=False)
+    @utils.checks.is_server_specific_bot_moderator()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def forcedivorce(self, ctx: vbu.Context, usera: vbu.converters.UserID):
         """
         Divorces a user from their spouse.
         """
 
         # Get user
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        usera_tree = localutils.FamilyTreeMember.get(usera, guild_id=family_guild_id)
-        usera_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, usera)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        usera_tree = utils.FamilyTreeMember.get(usera, guild_id=family_guild_id)
+        usera_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, usera)
         if not usera_tree.partner:
-            return await ctx.send(f"**{usera_name}** isn't even married .-.", allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(
+                f"**{usera_name}** isn't even married .-.",
+                allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
+            )
 
         # Update database
         async with self.bot.database() as db:
@@ -292,12 +314,12 @@ class ServerSpecific(utils.Cog):
         async with self.bot.redis() as re:
             await re.publish('TreeMemberUpdate', usera_tree.to_json())
             await re.publish('TreeMemberUpdate', userb_tree.to_json())
-        await ctx.send("Consider it done.")
+        await ctx.send("Consider it done.", wait=False)
 
-    @utils.command(add_slash_command=False)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @commands.bot_has_permissions(send_messages=True)
-    async def forceadopt(self, ctx:utils.Context, parent:utils.converters.UserID, child:utils.converters.UserID=None):
+    @vbu.command(add_slash_command=False)
+    @utils.checks.is_server_specific_bot_moderator()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def forceadopt(self, ctx: vbu.Context, parent: vbu.converters.UserID, child: vbu.converters.UserID = None):
         """
         Adds the child to the specified parent.
         """
@@ -309,12 +331,12 @@ class ServerSpecific(utils.Cog):
             parent_id, child_id = parent, child
 
         # Check users
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        parent_tree, child_tree = localutils.FamilyTreeMember.get_multiple(parent_id, child_id, guild_id=family_guild_id)
-        child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child_id)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        parent_tree, child_tree = utils.FamilyTreeMember.get_multiple(parent_id, child_id, guild_id=family_guild_id)
+        child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_id)
         if child_tree.parent:
-            return await ctx.send(f"**{child_name}** already has a parent.", allowed_mentions=discord.AllowedMentions.none())
-        parent_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
+            return await ctx.send(f"**{child_name}** already has a parent.", allowed_mentions=discord.AllowedMentions.none(), wait=False)
+        parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
 
         # Update database
         async with self.bot.database() as db:
@@ -324,7 +346,7 @@ class ServerSpecific(utils.Cog):
                     parent_id, child_id, family_guild_id, dt.utcnow(),
                 )
             except asyncpg.UniqueViolationError:
-                return await ctx.send("I ran into an error saving your family data.")
+                return await ctx.send("I ran into an error saving your family data.", wait=False)
 
         # Update cache
         parent_tree._children.append(child_id)
@@ -332,22 +354,22 @@ class ServerSpecific(utils.Cog):
         async with self.bot.redis() as re:
             await re.publish('TreeMemberUpdate', parent_tree.to_json())
             await re.publish('TreeMemberUpdate', child_tree.to_json())
-        await ctx.send(f"Added **{child_name}** to **{parent_name}**'s children list.")
+        await ctx.send(f"Added **{child_name}** to **{parent_name}**'s children list.", wait=False)
 
-    @utils.command(aliases=['forceeman'], add_slash_command=False)
-    @localutils.checks.is_server_specific_bot_moderator()
-    @commands.bot_has_permissions(send_messages=True)
-    async def forceemancipate(self, ctx:utils.Context, child:utils.converters.UserID):
+    @vbu.command(aliases=['forceeman'], add_slash_command=False)
+    @utils.checks.is_server_specific_bot_moderator()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def forceemancipate(self, ctx: vbu.Context, child: vbu.converters.UserID):
         """
         Force emancipates a child.
         """
 
         # Run checks
-        family_guild_id = localutils.get_family_guild_id(ctx)
-        child_tree = localutils.FamilyTreeMember.get(child, family_guild_id)
-        child_name = await localutils.DiscordNameManager.fetch_name_by_id(self.bot, child)
+        family_guild_id = utils.get_family_guild_id(ctx)
+        child_tree = utils.FamilyTreeMember.get(child, family_guild_id)
+        child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child)
         if not child_tree._parent:
-            return await ctx.send(f"**{child_name}** doesn't even have a parent .-.")
+            return await ctx.send(f"**{child_name}** doesn't even have a parent .-.", wait=False)
 
         # Update database
         async with self.bot.database() as db:
@@ -366,9 +388,9 @@ class ServerSpecific(utils.Cog):
         async with self.bot.redis() as re:
             await re.publish('TreeMemberUpdate', child_tree.to_json())
             await re.publish('TreeMemberUpdate', parent.to_json())
-        await ctx.send("Consider it done.")
+        await ctx.send("Consider it done.", wait=False)
 
 
-def setup(bot:utils.Bot):
+def setup(bot: vbu.Bot):
     x = ServerSpecific(bot)
     bot.add_cog(x)

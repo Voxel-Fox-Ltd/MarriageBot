@@ -1,11 +1,11 @@
 import discord
-import voxelbotutils as utils
+import voxelbotutils as vbu
 
 
-class NameHandler(utils.Cog):
+class NameHandler(vbu.Cog):
 
-    @utils.Cog.listener()
-    async def on_message(self, message:discord.Message):
+    @vbu.Cog.listener()
+    async def on_message(self, message: discord.Message):
         """
         Caches a user's name when send any message.
         """
@@ -13,8 +13,8 @@ class NameHandler(utils.Cog):
         async with self.bot.redis() as re:
             await re.set(f"UserName-{message.author.id}", str(message.author))
 
-    @utils.Cog.listener()
-    async def on_user_update(self, before:discord.User, after:discord.User):
+    @vbu.Cog.listener()
+    async def on_user_update(self, before: discord.User, after: discord.User):
         """
         Caches a username change into the redis cache.
         """
@@ -27,6 +27,6 @@ class NameHandler(utils.Cog):
             await re.set(f'UserName-{after.id}', str(after))
 
 
-def setup(bot:utils.Bot):
+def setup(bot: vbu.Bot):
     x = NameHandler(bot)
     bot.add_cog(x)

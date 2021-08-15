@@ -11,7 +11,7 @@ from cogs import utils
 
 class Parentage(vbu.Cog):
 
-    async def get_max_children_for_member(self, guild: discord.Guild, user: discord.Member):
+    async def get_max_children_for_member(self, guild: discord.Guild, user: discord.Member) -> int:
         """
         Get the maximum amount of children a given member can have.
         """
@@ -59,18 +59,18 @@ class Parentage(vbu.Cog):
 
         # Check they're not themselves
         if target.id == ctx.author.id:
-            return await ctx.send("That's you. You can't make yourself your parent.")
+            return await ctx.send("That's you. You can't make yourself your parent.", wait=False)
 
         # Check they're not a bot
         if target.id == self.bot.user.id:
-            return await ctx.send("I think I could do better actually, but thank you!")
+            return await ctx.send("I think I could do better actually, but thank you!", wait=False)
 
         # Lock those users
         re = await self.bot.redis.get_connection()
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.", wait=False)
 
         # See if the *target* is already married
         if author_tree.parent:
@@ -78,6 +78,7 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Hey! {ctx.author.mention}, you already have a parent \N{ANGRY FACE}",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # See if we're already married
@@ -86,6 +87,7 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Hey isn't {target.mention} already your child? \N{FACE WITH ROLLING EYES}",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # See if they're already related
@@ -96,12 +98,16 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # Manage children
         children_amount = await self.get_max_children_for_member(ctx.guild, target)
         if len(target_tree._children) >= children_amount:
-            return await ctx.send(f"They're currently at the maximum amount of children they can have - see `{ctx.prefix}perks` for more information.")
+            return await ctx.send(
+                f"They're currently at the maximum amount of children they can have - see `{ctx.prefix}perks` for more information.",
+                wait=False,
+            )
 
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
@@ -121,6 +127,7 @@ class Parentage(vbu.Cog):
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
                     allowed_mentions=utils.only_mention(ctx.author),
+                    wait=False,
                 )
 
         # Set up the proposal
@@ -145,7 +152,10 @@ class Parentage(vbu.Cog):
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
                 return await result.ctx.send("I ran into an error saving your family data - please try again later.")
-        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!")
+        await result.ctx.send(
+            f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!",
+            wait=False,
+        )
 
         # And we're done
         target_tree._children.append(author_tree.id)
@@ -171,20 +181,20 @@ class Parentage(vbu.Cog):
 
         # Check they're not themselves
         if target.id == ctx.author.id:
-            return await ctx.send("That's you. You can't adopt yourself.")
+            return await ctx.send("That's you. You can't adopt yourself.", wait=False)
 
         # Check they're not a bot
         if target.bot:
             if target.id == self.bot.user.id:
-                return await ctx.send("I think I could do better actually, but thank you!")
-            return await ctx.send("That is a robot. Robots cannot consent to adoption.")
+                return await ctx.send("I think I could do better actually, but thank you!", wait=False)
+            return await ctx.send("That is a robot. Robots cannot consent to adoption.", wait=False)
 
         # Lock those users
         re = await self.bot.redis.get_connection()
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.", wait=False)
 
         # See if the *target* is already married
         if target_tree.parent:
@@ -192,6 +202,7 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Sorry, {ctx.author.mention}, it looks like {target.mention} already has a parent \N{PENSIVE FACE}",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # See if we're already married
@@ -200,6 +211,7 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Hey, {ctx.author.mention}, they're already your child \N{FACE WITH ROLLING EYES}",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # See if they're already related
@@ -210,12 +222,16 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # Manage children
         children_amount = await self.get_max_children_for_member(ctx.guild, ctx.author)
         if len(author_tree._children) >= children_amount:
-            return await ctx.send(f"You're currently at the maximum amount of children you can have - see `{ctx.prefix}perks` for more information.")
+            return await ctx.send(
+                f"You're currently at the maximum amount of children you can have - see `{ctx.prefix}perks` for more information.",
+                wait=False,
+            )
 
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
@@ -235,6 +251,7 @@ class Parentage(vbu.Cog):
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
                     allowed_mentions=utils.only_mention(ctx.author),
+                    wait=False,
                 )
 
         # Set up the proposal
@@ -257,8 +274,8 @@ class Parentage(vbu.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.send("I ran into an error saving your family data - please try again later.")
-        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!")
+                return await result.ctx.send("I ran into an error saving your family data - please try again later.", wait=False)
+        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!", wait=False)
 
         # And we're done
         author_tree._children.append(target.id)
@@ -310,6 +327,7 @@ class Parentage(vbu.Cog):
             m = await ctx.send(
                 "Which of your children would you like to disown?",
                 components=components,
+                wait=True,
             )
 
             # Make our check
@@ -317,7 +335,7 @@ class Parentage(vbu.Cog):
                 if payload.message.id != m.id:
                     return False
                 if payload.user.id != ctx.author.id:
-                    self.bot.loop.create_task(payload.respond("You can't respond to this message!", ephemeral=True))
+                    self.bot.loop.create_task(payload.respond("You can't respond to this message!", wait=False, ephemeral=True))
                     return False
                 return True
             try:
@@ -398,7 +416,7 @@ class Parentage(vbu.Cog):
         # Make sure they're the child of the instigator
         parent_tree = user_tree.parent
         if not parent_tree:
-            return await ctx.send("You don't have a parent right now :<")
+            return await ctx.send("You don't have a parent right now :<", wait=False)
 
         # See if they're sure
         try:
@@ -434,7 +452,7 @@ class Parentage(vbu.Cog):
 
         # And we're done
         parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
-        return await result.ctx.send(f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c")
+        return await result.ctx.send(f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c", wait=False)
 
     @vbu.command()
     @utils.checks.has_donator_perks("can_run_disownall")
@@ -452,7 +470,7 @@ class Parentage(vbu.Cog):
         user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
         child_trees = list(user_tree.children)
         if not child_trees:
-            return await ctx.send("You don't have any children to disown .-.")
+            return await ctx.send("You don't have any children to disown .-.", wait=False)
 
         # See if they're sure
         try:
@@ -485,7 +503,7 @@ class Parentage(vbu.Cog):
                 await re.publish('TreeMemberUpdate', person.to_json())
 
         # Output to user
-        await result.ctx.send("You've sucessfully disowned all of your children :c")
+        await result.ctx.send("You've sucessfully disowned all of your children :c", wait=False)
 
     @vbu.command(aliases=["desert", "leave", "dessert"])
     @utils.checks.has_donator_perks("can_run_abandon")
@@ -544,37 +562,32 @@ class Parentage(vbu.Cog):
                 """DELETE FROM parents WHERE parent_id=$1 AND guild_id=$2 AND child_id=ANY($3::BIGINT[])""",
                 ctx.author.id, family_guild_id, [child.id for child in child_trees],
             )
-            await db(
-                """DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3""",
-                parent_tree.id, ctx.author.id, family_guild_id,
-            )
-            await db(
-                """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
-                ctx.author.id, partner_tree.id, family_guild_id,
-            )
+            if parent_tree:
+                await db(
+                    """DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3""",
+                    parent_tree.id, ctx.author.id, family_guild_id,
+                )
+            if partner_tree:
+                await db(
+                    """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
+                    ctx.author.id, partner_tree.id, family_guild_id,
+                )
 
         # Remove from redis
         async with self.bot.redis() as re:
-
-            # Children
             for person in child_trees:
                 await re.publish('TreeMemberUpdate', person.to_json())
-
-            # Parent
             if parent_tree:
                 await re.publish('TreeMemberUpdate', parent_tree.to_json())
-
-            # Partner
             if partner_tree:
                 await re.publish('TreeMemberUpdate', partner_tree.to_json())
-
-            # And our guy
             await re.publish('TreeMemberUpdate', user_tree.to_json())
 
         # And we're done
         await result.ctx.send(
             f"You've successfully left your family, {ctx.author.mention} :c",
             allowed_mentions=discord.AllowedMentions.none(),
+            wait=False,
         )
 
 

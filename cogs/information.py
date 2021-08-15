@@ -30,7 +30,7 @@ class Information(vbu.Cog):
     @vbu.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
+    @vbu.bot_has_permissions(send_messages=True)
     async def partner(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
         Tells you who a user is married to.
@@ -44,10 +44,15 @@ class Information(vbu.Cog):
         # Check they have a partner
         if user_info._partner is None:
             if user_id == ctx.author.id:
-                return await ctx.send("You're not currently married.", allowed_mentions=discord.AllowedMentions.none())
+                return await ctx.send(
+                    "You're not currently married.",
+                    allowed_mentions=discord.AllowedMentions.none(),
+                    wait=False,
+                )
             return await ctx.send(
                 f"**{utils.escape_markdown(user_name)}** is not currently married.",
                 allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
             )
         partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._partner)
 
@@ -69,12 +74,12 @@ class Information(vbu.Cog):
         if timestamp:
             duration = vbu.TimeFormatter(timestamp)
             text += f"{'You' if user_id == ctx.author.id else 'They'} got married {duration.relative_time}."
-        await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
+        await ctx.send(text, allowed_mentions=discord.AllowedMentions.none(), wait=False)
 
     @vbu.command(aliases=['child', 'kids'])
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
+    @vbu.bot_has_permissions(send_messages=True)
     async def children(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
         Tells you who a user's children are.
@@ -85,28 +90,43 @@ class Information(vbu.Cog):
         user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
         user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
 
-        # Get user's children
+        # See if the user has no children
         if len(user_info._children) == 0:
-            output = f"**{utils.escape_markdown(user_name)}** has no children right now."
             if user_id == ctx.author.id:
-                output = "You have no children right now."
-        else:
-            children_plural = 'child' if len(user_info._children) == 1 else 'children'
-            output = f"**{utils.escape_markdown(user_name)}** has {len(user_info._children)} {children_plural}:\n"
-            if user_id == ctx.author.id:
-                ouptut = f"You have {len(user_info._children)} {children_plural}:\n"
-            children = [(await utils.DiscordNameManager.fetch_name_by_id(self.bot, i), i) for i in user_info._children]
-            output += "\n".join([f"* **{utils.escape_markdown(i[0])}** (`{i[1]}`)" for i in children])
+                return await ctx.send(
+                    "You have no children right now.",
+                    allowed_mentions=discord.AllowedMentions.none(),
+                    wait=False,
+                )
+            return await ctx.send(
+                f"**{utils.escape_markdown(user_name)}** has no children right now.",
+                allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
+            )
+
+        # They do have children!
+        children_plural = 'child' if len(user_info._children) == 1 else 'children'
+        output = f"**{utils.escape_markdown(user_name)}** has {len(user_info._children)} {children_plural}:\n"
+        if user_id == ctx.author.id:
+            output = f"You have {len(user_info._children)} {children_plural}:\n"
+        children = [
+            (await utils.DiscordNameManager.fetch_name_by_id(self.bot, i), i,)
+            for i in user_info._children
+        ]
+        output += "\n".join([
+            f"\N{BULLET} **{utils.escape_markdown(i[0])}** (`{i[1]}`)"
+            for i in children
+        ])
 
         # Return all output
         if len(output) > 2_000:
-            return await ctx.send(f"<@{user_id}>'s children list goes over 2,000 characters. Amazing.")
-        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(f"<@{user_id}>'s children list goes over 2,000 characters. Amazing.", wait=False)
+        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none(), wait=False)
 
     @vbu.command(aliases=['sib'])
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
+    @vbu.bot_has_permissions(send_messages=True)
     async def siblings(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
         Tells you who a user's siblings are.
@@ -121,13 +141,19 @@ class Information(vbu.Cog):
         parent_id = user_info._parent
         if not parent_id:
             if user_id == ctx.author.id:
-                return await ctx.send("You have no siblings.")
-            return await ctx.send(f"**{utils.escape_markdown(user_name)}** has no siblings.", allowed_mentions=discord.AllowedMentions.none())
-
-        # Get the parent's info
-        parent_info = user_info.parent
+                return await ctx.send(
+                    "You have no siblings.",
+                    allowed_mentions=discord.AllowedMentions.none(),
+                    wait=False,
+                )
+            return await ctx.send(
+                f"**{utils.escape_markdown(user_name)}** has no siblings.",
+                allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
+            )
 
         # Get parent's children
+        parent_info = user_info.parent
         sibling_list = parent_info._children
 
         # Remove the user from the sibling list
@@ -135,26 +161,45 @@ class Information(vbu.Cog):
 
         # If the user has no siblings
         if not sibling_list:
-            output = f"**{utils.escape_markdown(user_name)}** has no siblings right now." if user_id != ctx.author.id else "You have no siblings right now."
-        else:
-            sibling_plural = 'sibling' if len(sibling_list) == 1 else 'siblings'
-            # Count the siblings
-            output = f"**{utils.escape_markdown(user_name)}** has {len(sibling_list)} {sibling_plural}:\n"
             if user_id == ctx.author.id:
-                ouptut = f"You have {len(sibling_list)} {sibling_plural}:\n"
-            # Get the name of the siblings
-            sibling_list = [(await utils.DiscordNameManager.fetch_name_by_id(self.bot, sibling), sibling) for sibling in sibling_list]
-            output += "\n".join([f"* **{utils.escape_markdown(username)}** (`{uid}`)" for username, uid in sibling_list])
+                return await ctx.send(
+                    "You have no siblings right now.",
+                    allowed_mentions=discord.AllowedMentions.none(),
+                    wait=False,
+                )
+            return await ctx.send(
+                f"**{utils.escape_markdown(user_name)}** has no siblings right now.",
+                allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
+            )
+
+        # They do have siblings!
+        sibling_plural = 'sibling' if len(sibling_list) == 1 else 'siblings'
+
+        # Count the siblings
+        output = f"**{utils.escape_markdown(user_name)}** has {len(sibling_list)} {sibling_plural}:\n"
+        if user_id == ctx.author.id:
+            output = f"You have {len(sibling_list)} {sibling_plural}:\n"
+
+        # Get the name of the siblings
+        sibling_list = [
+            (await utils.DiscordNameManager.fetch_name_by_id(self.bot, sibling), sibling,)
+            for sibling in sibling_list
+        ]
+        output += "\n".join([
+            f"\N{BULLET} **{utils.escape_markdown(username)}** (`{uid}`)"
+            for username, uid in sibling_list
+        ])
 
         # Return all output
         if len(output) > 2_000:
-            return await ctx.send(f"**{utils.escape_markdown(user_name)}**'s sibling list goes over 2,000 characters. Amazing.")
-        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+            return await ctx.send(f"**{utils.escape_markdown(user_name)}**'s sibling list goes over 2,000 characters. Amazing.", wait=False)
+        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none(), wait=False)
 
     @vbu.command(aliases=['parents'])
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
+    @vbu.bot_has_permissions(send_messages=True)
     async def parent(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
         Tells you who someone's parent is.
@@ -168,21 +213,29 @@ class Information(vbu.Cog):
         # Make sure they have a parent
         if user_info._parent is None:
             if user_id == ctx.author.id:
-                return await ctx.send("You have no parent.")
-            return await ctx.send(f"**{utils.escape_markdown(user_name)}** has no parent.", allowed_mentions=discord.AllowedMentions.none())
+                return await ctx.send(
+                    "You have no parent.",
+                    allowed_mentions=discord.AllowedMentions.none(),
+                    wait=False,
+                )
+            return await ctx.send(
+                f"**{utils.escape_markdown(user_name)}** has no parent.",
+                allowed_mentions=discord.AllowedMentions.none(),
+                wait=False,
+            )
         parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._parent)
 
         # Output parent
         output = f"**{utils.escape_markdown(user_name)}**'s parent is **{utils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
         if user_id == ctx.author.id:
             output = f"Your parent is **{utils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
-        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none(), wait=False)
 
     @vbu.command(aliases=['treesize', 'fs', 'ts'])
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True)
+    @vbu.bot_has_permissions(send_messages=True)
     async def familysize(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
         Gives you the size of your family tree.
@@ -194,19 +247,21 @@ class Information(vbu.Cog):
         user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
 
         # Get size
-        async with ctx.typing():
-            size = user_info.family_member_count
+        size = user_info.family_member_count
 
         # Output
-        output = f"There {'are' if size > 1 else 'is'} {size} {'people' if size > 1 else 'person'} in **{utils.escape_markdown(user_name)}**'s family tree."
+        output = (
+            f"There {'are' if size > 1 else 'is'} {size} {'people' if size > 1 else 'person'} "
+            f"in **{utils.escape_markdown(user_name)}**'s family tree."
+        )
         if user_id == ctx.author.id:
             output = f"There {'are' if size > 1 else 'is'} {size} {'people' if size > 1 else 'person'} in your family tree."
-        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none(), wait=False)
 
     @vbu.command(aliases=['relation'])
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True)
+    @vbu.bot_has_permissions(send_messages=True)
     async def relationship(self, ctx: vbu.Context, user: vbu.converters.UserID, other: vbu.converters.UserID = None):
         """
         Gets the relationship between the two specified users.
@@ -221,8 +276,8 @@ class Information(vbu.Cog):
         # See if they're the same person
         if user_id == other_id:
             if user_id == ctx.author.id:
-                return await ctx.send("Unsurprisingly, you're pretty closely related to yourself.")
-            return await ctx.send("Unsurprisingly, they're pretty closely related to themselves.")
+                return await ctx.send("Unsurprisingly, you're pretty closely related to yourself.", wait=False)
+            return await ctx.send("Unsurprisingly, they're pretty closely related to themselves.", wait=False)
 
         # Get their relation
         user_info, other_info = utils.FamilyTreeMember.get_multiple(user_id, other_id, guild_id=utils.get_family_guild_id(ctx))
@@ -242,13 +297,13 @@ class Information(vbu.Cog):
             output = f"**{utils.escape_markdown(other_name)}** is **{utils.escape_markdown(user_name)}**'s {relation}."
             if user_id == ctx.author.id:
                 output = f"**{utils.escape_markdown(other_name)}** is your {relation}."
-        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none(), wait=False)
 
     @vbu.command(aliases=['familytree', 't'])
     @vbu.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, attach_files=True)
+    @vbu.bot_has_permissions(send_messages=True, attach_files=True)
     async def tree(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
         Gets the blood family tree of a given user.
@@ -268,7 +323,7 @@ class Information(vbu.Cog):
     @vbu.cooldown.cooldown(1, 60, commands.BucketType.user, cls=TreeCommandCooldown())
     @utils.checks.has_donator_perks("can_run_bloodtree")
     @vbu.checks.bot_is_ready()
-    @commands.bot_has_permissions(send_messages=True, attach_files=True)
+    @vbu.bot_has_permissions(send_messages=True, attach_files=True)
     async def bloodtree(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
         """
         Gets the enitre family tree of a given user.

@@ -14,7 +14,7 @@ class Marriage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def marry(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Lets you propose to another Discord user.
@@ -26,20 +26,20 @@ class Marriage(vbu.Cog):
 
         # Check they're not themselves
         if target.id == ctx.author.id:
-            return await ctx.send("That's you. You can't marry yourself.")
+            return await ctx.send("That's you. You can't marry yourself.", wait=False)
 
         # Check they're not a bot
         if target.bot:
             if target.id == self.bot.user.id:
-                return await ctx.send("I think I could do better actually, but thank you!")
-            return await ctx.send("That is a robot. Robots cannot consent to marriage.")
+                return await ctx.send("I think I could do better actually, but thank you!", wait=False)
+            return await ctx.send("That is a robot. Robots cannot consent to marriage.", wait=False)
 
         # Lock those users
         re = await self.bot.redis.get_connection()
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.", wait=False)
 
         # See if we're already married
         if author_tree._partner:
@@ -47,6 +47,7 @@ class Marriage(vbu.Cog):
             return await ctx.send(
                 f"Hey, {ctx.author.mention}, you're already married! Try divorcing your partner first \N{FACE WITH ROLLING EYES}",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # See if the *target* is already married
@@ -55,6 +56,7 @@ class Marriage(vbu.Cog):
             return await ctx.send(
                 f"Sorry, {ctx.author.mention}, it looks like {target.mention} is already married \N{PENSIVE FACE}",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # See if they're already related
@@ -65,6 +67,7 @@ class Marriage(vbu.Cog):
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=utils.only_mention(ctx.author),
+                wait=False,
             )
 
         # Check the size of their trees
@@ -85,6 +88,7 @@ class Marriage(vbu.Cog):
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
                     allowed_mentions=utils.only_mention(ctx.author),
+                    wait=False,
                 )
 
         # Set up the proposal
@@ -109,8 +113,11 @@ class Marriage(vbu.Cog):
                 await db.commit_transaction()
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.send("I ran into an error saving your family data.")
-        await result.ctx.send(f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!")
+                return await result.ctx.send("I ran into an error saving your family data.", wait=False)
+        await result.ctx.send(
+            f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!",
+            wait=False,
+        )  # Keep allowed mentions on
 
         # Ping over redis
         author_tree._partner = target.id
@@ -124,7 +131,7 @@ class Marriage(vbu.Cog):
     @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
     async def divorce(self, ctx: vbu.Context):
         """
         Divorces you from your current partner.
@@ -137,7 +144,7 @@ class Marriage(vbu.Cog):
         # See if they're married
         target_tree = author_tree.partner
         if not target_tree:
-            return await ctx.send("It doesn't look like you're married yet!")
+            return await ctx.send("It doesn't look like you're married yet!", wait=False)
 
         # See if they're sure
         try:
@@ -162,6 +169,7 @@ class Marriage(vbu.Cog):
         await result.ctx.send(
             f"You've successfully divorced **{utils.escape_markdown(partner_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
+            wait=False,
         )
 
         # Ping over redis

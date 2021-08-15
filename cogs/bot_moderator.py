@@ -1,20 +1,17 @@
-from datetime import datetime as dt
 import typing
 
-import asyncpg
-from discord.ext import commands
-import voxelbotutils as utils
 import discord
+import voxelbotutils as vbu
 
-from cogs import utils as localutils
+from cogs import utils
 
 
-class BotModerator(utils.Cog, command_attrs={'hidden': True}):
+class BotModerator(vbu.Cog, command_attrs={'hidden': True}):
 
-    @utils.command()
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def runstartupmethod(self, ctx:utils.Context):
+    @vbu.command()
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    async def runstartupmethod(self, ctx: vbu.Context):
         """
         Runs the bot startup method, recaching everything of interest.
         """
@@ -23,27 +20,27 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             await self.bot.startup()
         await ctx.okay()
 
-    @utils.command()
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguildwithdelete(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    @vbu.command()
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def copyfamilytoguildwithdelete(self, ctx: vbu.Context, user: vbu.converters.UserID, guild_id: int):
         """
         Copies a family's span to a given guild ID for server specific families.
         """
 
         await self.copy_family(ctx, user, guild_id, True)
 
-    @utils.command()
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguild(self, ctx:utils.Context, user:utils.converters.UserID, guild_id:int):
+    @vbu.command()
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def copyfamilytoguild(self, ctx: vbu.Context, user: vbu.converters.UserID, guild_id: int):
         """
         Copies a family's span to a given guild ID for server specific families.
         """
 
         await self.copy_family(ctx, user, guild_id, False)
 
-    async def copy_family(self, ctx:utils.Context, user_id:int, guild_id:int, delete_members:bool):
+    async def copy_family(self, ctx: vbu.Context, user_id: int, guild_id: int, delete_members: bool):
         """
         Copy a family to a given Gold guild.
         """
@@ -52,7 +49,7 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             return await ctx.send("No.")
 
         # Get their current family
-        tree = localutils.FamilyTreeMember.get(user_id, guild_id=0)
+        tree = utils.FamilyTreeMember.get(user_id, guild_id=0)
         users = list(tree.span(expand_upwards=True, add_parent=True))
         await ctx.channel.trigger_typing()
 
@@ -76,13 +73,13 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             return await ctx.send("I encountered an error copying that family over.")
 
         # Send to user
-        await ctx.send(f"Copied over `{len(users)}` users. Be sure to run the `runstartupmethod` command")
+        await ctx.send(f"Copied over `{len(users)}` users. Be sure to run the `runstartupmethod` command", wait=False)
         await db.disconnect()
 
-    @utils.command()
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(add_reactions=True)
-    async def addserverspecific(self, ctx:utils.Context, guild_id:int, user_id:utils.converters.UserID):
+    @vbu.command()
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(add_reactions=True)
+    async def addserverspecific(self, ctx: vbu.Context, guild_id: int, user_id: vbu.converters.UserID):
         """
         Adds a guild to the MarriageBot Gold whitelist.
         """
@@ -95,10 +92,10 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             )
         await ctx.okay()
 
-    @utils.command()
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(add_reactions=True)
-    async def removeserverspecific(self, ctx:utils.Context, guild_id:int):
+    @vbu.command()
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(add_reactions=True)
+    async def removeserverspecific(self, ctx: vbu.Context, guild_id: int):
         """
         Remove a guild from the MarriageBot Gold whitelist.
         """
@@ -110,10 +107,12 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             )
         await ctx.okay()
 
-    @utils.command(hidden=True)
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(add_reactions=True)
-    async def addship(self, ctx:utils.Context, user1:discord.Member, user2:typing.Optional[discord.Member]=None, percentage:float=0):
+    @vbu.command(hidden=True)
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(add_reactions=True)
+    async def addship(
+            self, ctx: vbu.Context, user1: discord.Member, user2: typing.Optional[discord.Member] = None,
+            percentage: float = 0):
         """
         Add a custom ship percentage.
         """
@@ -128,10 +127,10 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
             )
         await ctx.okay()
 
-    @utils.command(aliases=['getgoldpurchase'])
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(send_messages=True)
-    async def getgoldpurchases(self, ctx:utils.Context, user:utils.converters.UserID):
+    @vbu.command(aliases=['getgoldpurchase'])
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def getgoldpurchases(self, ctx: vbu.Context, user: vbu.converters.UserID):
         """
         Remove a guild from the MarriageBot Gold whitelist.
         """
@@ -139,16 +138,16 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
         async with self.bot.database() as db:
             rows = await db('SELECT * FROM guild_specific_families WHERE purchased_by=$1', user)
         if not rows:
-            return await ctx.send("That user has purchased no instances of MarriageBot Gold.")
+            return await ctx.send("That user has purchased no instances of MarriageBot Gold.", wait=False)
         return await ctx.invoke(
             self.bot.get_command("runsql"),
             sql="SELECT * FROM guild_specific_families WHERE purchased_by={}".format(user),
         )
 
-    @utils.command(aliases=['addblogpost'])
-    @utils.checks.is_bot_support()
-    @commands.bot_has_permissions(send_messages=True)
-    async def createblogpost(self, ctx:utils.Context, url:str, title:str, *, content:str=None):
+    @vbu.command(aliases=['addblogpost'])
+    @vbu.checks.is_bot_support()
+    @vbu.bot_has_permissions(send_messages=True)
+    async def createblogpost(self, ctx: vbu.Context, url: str, title: str, *, content: str = None):
         """
         Adds a blog post to the database.
         """
@@ -162,24 +161,24 @@ class BotModerator(utils.Cog, command_attrs={'hidden': True}):
                 author_id=excluded.author_id""",
                 url, title, content, ctx.author.id,
             )
-        await ctx.send(f"Set blog post: https://marriagebot.xyz/blog/{url}", embeddify=False)
+        await ctx.send(f"Set blog post: https://marriagebot.xyz/blog/{url}", wait=False, embeddify=False)
 
-    # @utils.command()
-    # @utils.checks.is_bot_support()
-    # @utils.checks.bot_is_ready()
-    # @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    # async def treefile(self, ctx:utils.Context, root:utils.converters.UserID=None):
+    # @vbu.command()
+    # @vbu.checks.is_bot_support()
+    # @vbu.checks.bot_is_ready()
+    # @vbu.bot_has_permissions(send_messages=True, attach_files=True)
+    # async def treefile(self, ctx:vbu.Context, root:vbu.converters.UserID=None):
     #     """
     #     Gives you the full family tree of a user.
     #     """
 
     #     root_user_id = root or ctx.author.id
     #     async with ctx.typing():
-    #         text = await localutils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
+    #         text = await utils.FamilyTreeMember.get(root_user_id, ctx.family_guild_id).generate_gedcom_script(self.bot)
     #     file_bytes = io.BytesIO(text.encode())
     #     await ctx.send(file=discord.File(file_bytes, filename=f'tree_of_{root_user_id}.ged'))
 
 
-def setup(bot:utils.Bot):
+def setup(bot: vbu.Bot):
     x = BotModerator(bot)
     bot.add_cog(x)
