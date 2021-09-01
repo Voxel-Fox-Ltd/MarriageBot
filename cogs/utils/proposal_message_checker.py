@@ -99,7 +99,6 @@ async def send_proposal_message(
     # See if they want to say yes
     components = utils.MessageComponents.boolean_buttons()
     message = await ctx.send(text, components=components, wait=True)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
-    ctx.bot.logger.info(message)
     try:
         def check(payload):
             if payload.message.id != message.id:
