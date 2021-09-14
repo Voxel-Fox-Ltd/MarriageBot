@@ -1,5 +1,5 @@
 import discord
-import voxelbotutils as vbu
+from discord.ext import vbu
 
 
 class NameHandler(vbu.Cog):
@@ -10,7 +10,7 @@ class NameHandler(vbu.Cog):
         Caches a user's name when send any message.
         """
 
-        async with self.bot.redis() as re:
+        async with vbu.Redis() as re:
             await re.set(f"UserName-{message.author.id}", str(message.author))
 
     @vbu.Cog.listener()
@@ -23,7 +23,7 @@ class NameHandler(vbu.Cog):
             return
         if str(after).endswith("#0000"):
             return
-        async with self.bot.redis() as re:
+        async with vbu.Redis() as re:
             await re.set(f'UserName-{after.id}', str(after))
 
 
