@@ -79,6 +79,7 @@ is_server_specific = false
 # This data is passed directly over to asyncpg.connect()
 [database]
     enabled = true
+    type = "postgres"
     user = "database_username"
     password = "database_password"
     database = "database_name"
