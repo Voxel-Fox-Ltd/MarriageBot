@@ -1,8 +1,9 @@
+import functools
 import asyncio
 import collections
 from datetime import datetime as dt, timedelta
 
-import voxelbotutils as vbu
+from discord.ext import vbu
 
 
 class MarriageBotPerks(object):
@@ -59,6 +60,7 @@ CACHED_PERK_ITEMS = collections.defaultdict(lambda: (None, dt(2000, 1, 1),))
 
 def cache_response(**lifetime):
     def inner(func):
+        @functools.wraps(func)
         async def wrapper(bot: vbu.Bot, user_id: int):
             perks, expiry_time = CACHED_PERK_ITEMS[user_id]
             if expiry_time > dt.utcnow():

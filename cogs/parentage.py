@@ -3,8 +3,7 @@ from datetime import datetime as dt
 
 import asyncpg
 import discord
-from discord.ext import commands
-import voxelbotutils as vbu
+from discord.ext import commands, vbu
 
 from cogs import utils
 
@@ -30,7 +29,7 @@ class Parentage(vbu.Cog):
                 ])
 
         # See how many children they're allowed normally (in regard to Patreon tier)
-        marriagebot_perks = await utils.get_marriagebot_perks(self.bot, user.id)
+        marriagebot_perks: utils.MarriageBotPerks = await utils.get_marriagebot_perks(self.bot, user.id)  # type: ignore
         user_children_amount = marriagebot_perks.max_children
 
         # Return the largest amount of children they've been assigned that's UNDER the global max children as set in the config
@@ -43,11 +42,17 @@ class Parentage(vbu.Cog):
             utils.TIER_THREE.max_children,
         ])
 
-    @vbu.command(context_command_type=vbu.ApplicationCommandType.USER, context_command_name="Make user your parent")
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.context_command(name="Make user your parent")
+    async def context_command_makeparent(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
+        command = self.makeparent
+        await command.can_run(ctx)
+        await ctx.invoke(command, user)
+
+    @commands.command()
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def makeparent(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Picks a user that you want to be your parent.
@@ -59,18 +64,18 @@ class Parentage(vbu.Cog):
 
         # Check they're not themselves
         if target.id == ctx.author.id:
-            return await ctx.send("That's you. You can't make yourself your parent.", wait=False)
+            return await ctx.send("That's you. You can't make yourself your parent.")
 
         # Check they're not a bot
         if target.id == self.bot.user.id:
-            return await ctx.send("I think I could do better actually, but thank you!", wait=False)
+            return await ctx.send("I think I could do better actually, but thank you!")
 
         # Lock those users
-        re = await self.bot.redis.get_connection()
+        re = await vbu.Redis.get_connection()
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.", wait=False)
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
         # See if the *target* is already married
         if author_tree.parent:
@@ -78,7 +83,6 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Hey! {ctx.author.mention}, you already have a parent \N{ANGRY FACE}",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # See if we're already married
@@ -87,7 +91,6 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Hey isn't {target.mention} already your child? \N{FACE WITH ROLLING EYES}",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # See if they're already related
@@ -98,7 +101,6 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # Manage children
@@ -106,7 +108,6 @@ class Parentage(vbu.Cog):
         if len(target_tree._children) >= children_amount:
             return await ctx.send(
                 f"They're currently at the maximum amount of children they can have - see `{ctx.prefix}perks` for more information.",
-                wait=False,
             )
 
         # Check the size of their trees
@@ -127,7 +128,6 @@ class Parentage(vbu.Cog):
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
                     allowed_mentions=utils.only_mention(ctx.author),
-                    wait=False,
                 )
 
         # Set up the proposal
@@ -143,7 +143,7 @@ class Parentage(vbu.Cog):
             return await lock.unlock()
 
         # Database it up
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             try:
                 await db(
                     """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
@@ -154,22 +154,27 @@ class Parentage(vbu.Cog):
                 return await result.ctx.send("I ran into an error saving your family data - please try again later.")
         await result.ctx.send(
             f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!",
-            wait=False,
         )
 
         # And we're done
         target_tree._children.append(author_tree.id)
         author_tree._parent = target.id
-        await re.publish('TreeMemberUpdate', author_tree.to_json())
-        await re.publish('TreeMemberUpdate', target_tree.to_json())
+        await re.publish("TreeMemberUpdate", author_tree.to_json())
+        await re.publish("TreeMemberUpdate", target_tree.to_json())
         await re.disconnect()
         await lock.unlock()
 
-    @vbu.command(context_command_type=vbu.ApplicationCommandType.USER, context_command_name="Adopt user")
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.context_command(name="Adopt user")
+    async def context_command_adopt(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
+        command = self.adopt
+        await command.can_run(ctx)
+        await ctx.invoke(command, user)
+
+    @commands.command()
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def adopt(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Adopt another user into your family.
@@ -181,20 +186,20 @@ class Parentage(vbu.Cog):
 
         # Check they're not themselves
         if target.id == ctx.author.id:
-            return await ctx.send("That's you. You can't adopt yourself.", wait=False)
+            return await ctx.send("That's you. You can't adopt yourself.")
 
         # Check they're not a bot
         if target.bot:
             if target.id == self.bot.user.id:
-                return await ctx.send("I think I could do better actually, but thank you!", wait=False)
-            return await ctx.send("That is a robot. Robots cannot consent to adoption.", wait=False)
+                return await ctx.send("I think I could do better actually, but thank you!")
+            return await ctx.send("That is a robot. Robots cannot consent to adoption.")
 
         # Lock those users
-        re = await self.bot.redis.get_connection()
+        re = await vbu.Redis.get_connection()
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.", wait=False)
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
         # See if the *target* is already married
         if target_tree.parent:
@@ -202,7 +207,6 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Sorry, {ctx.author.mention}, it looks like {target.mention} already has a parent \N{PENSIVE FACE}",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # See if we're already married
@@ -211,7 +215,6 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Hey, {ctx.author.mention}, they're already your child \N{FACE WITH ROLLING EYES}",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # See if they're already related
@@ -222,7 +225,6 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # Manage children
@@ -230,7 +232,6 @@ class Parentage(vbu.Cog):
         if len(author_tree._children) >= children_amount:
             return await ctx.send(
                 f"You're currently at the maximum amount of children you can have - see `{ctx.prefix}perks` for more information.",
-                wait=False,
             )
 
         # Check the size of their trees
@@ -251,7 +252,6 @@ class Parentage(vbu.Cog):
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
                     allowed_mentions=utils.only_mention(ctx.author),
-                    wait=False,
                 )
 
         # Set up the proposal
@@ -266,7 +266,7 @@ class Parentage(vbu.Cog):
             return await lock.unlock()
 
         # Database it up
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             try:
                 await db(
                     """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
@@ -274,8 +274,8 @@ class Parentage(vbu.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.send("I ran into an error saving your family data - please try again later.", wait=False)
-        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!", wait=False)
+                return await result.ctx.send("I ran into an error saving your family data - please try again later.")
+        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!")
 
         # And we're done
         author_tree._children.append(target.id)
@@ -285,11 +285,11 @@ class Parentage(vbu.Cog):
         await re.disconnect()
         await lock.unlock()
 
-    @vbu.command(aliases=['abort'])
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.command()
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def disown(self, ctx: vbu.Context, *, target: utils.ChildIDConverter = None):
         """
         Lets you remove a user from being your child.
@@ -306,36 +306,34 @@ class Parentage(vbu.Cog):
             child_options = []
             for index, child_tree in enumerate(user_tree.children):
                 child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
-                child_options.append(vbu.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
+                child_options.append(discord.ui.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
                 if index >= 25:
                     return await ctx.send(
                         (
                             "I couldn't work out which of your children you wanted to disown. "
                             "You can ping or use their ID to disown them."
                         ),
-                        wait=False,
                     )
 
             # See if they don't have any children
             if not child_options:
-                return await ctx.send("You don't have any children!", wait=False)
+                return await ctx.send("You don't have any children!")
 
             # Wait for them to pick one
-            components = vbu.MessageComponents(vbu.ActionRow(
-                vbu.SelectMenu(custom_id="DISOWN_USER", options=child_options),
+            components = discord.ui.MessageComponents(discord.ui.ActionRow(
+                discord.ui.SelectMenu(custom_id="DISOWN_USER", options=child_options),
             ))
             m = await ctx.send(
                 "Which of your children would you like to disown?",
                 components=components,
-                wait=True,
             )
 
             # Make our check
-            def check(payload: vbu.ComponentInteractionPayload):
+            def check(payload: discord.Interaction):
                 if payload.message.id != m.id:
                     return False
                 if payload.user.id != ctx.author.id:
-                    self.bot.loop.create_task(payload.respond("You can't respond to this message!", wait=False, ephemeral=True))
+                    self.bot.loop.create_task(payload.response.send_message("You can't respond to this message!", ephemeral=True))
                     return False
                 return True
             try:
@@ -343,7 +341,7 @@ class Parentage(vbu.Cog):
                 await payload.defer_update()
                 await payload.message.delete()
             except asyncio.TimeoutError:
-                return await ctx.send("Timed out asking for which child you want to disown :<", wait=False)
+                return await ctx.send("Timed out asking for which child you want to disown :<")
 
             # Get the child's ID that they selected
             target = int(payload.values[0][len("DISOWN "):])
@@ -357,7 +355,6 @@ class Parentage(vbu.Cog):
             return await ctx.send(
                 f"It doesn't look like **{utils.escape_markdown(child_name)}** is one of your children!",
                 allowed_mentions=discord.AllowedMentions.none(),
-                wait=False,
             )
 
         # See if they're sure
@@ -374,37 +371,33 @@ class Parentage(vbu.Cog):
             return
 
         # Remove from cache
-        try:
-            user_tree._children.remove(child_tree.id)
-        except ValueError:
-            pass
-        child_tree._parent = None
+        user_tree.remove_child(child_tree.id)
+        child_tree.parent = None
 
         # Remove from redis
-        async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', user_tree.to_json())
-            await re.publish('TreeMemberUpdate', child_tree.to_json())
+        async with vbu.Redis() as re:
+            await re.publish("TreeMemberUpdate", user_tree.to_json())
+            await re.publish("TreeMemberUpdate", child_tree.to_json())
 
         # Remove from database
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             await db(
                 """DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3""",
                 child_tree.id, ctx.author.id, family_guild_id,
             )
 
         # And we're done
-        await result.ctx.send(
+        await result.ctx.followup.send(
             f"You've successfully disowned **{utils.escape_markdown(child_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
-            wait=False,
         )
 
-    @vbu.command(aliases=['eman', 'runaway', 'runawayfromhome'])
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.command(aliases=['eman', 'emancipate', 'runawayfromhome'])
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def emancipate(self, ctx: vbu.Context):
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    async def runaway(self, ctx: vbu.Context):
         """
         Removes your parent.
         """
@@ -416,7 +409,7 @@ class Parentage(vbu.Cog):
         # Make sure they're the child of the instigator
         parent_tree = user_tree.parent
         if not parent_tree:
-            return await ctx.send("You don't have a parent right now :<", wait=False)
+            return await ctx.send("You don't have a parent right now :<")
 
         # See if they're sure
         try:
@@ -432,19 +425,16 @@ class Parentage(vbu.Cog):
             return
 
         # Remove family caching
-        user_tree._parent = None
-        try:
-            parent_tree._children.remove(ctx.author.id)
-        except ValueError:
-            pass
+        user_tree.parent = None
+        parent_tree.remove_child(ctx.author.id)
 
         # Ping them off over reids
-        async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', user_tree.to_json())
-            await re.publish('TreeMemberUpdate', parent_tree.to_json())
+        async with vbu.Redis() as re:
+            await re.publish("TreeMemberUpdate", user_tree.to_json())
+            await re.publish("TreeMemberUpdate", parent_tree.to_json())
 
         # Remove their relationship from the database
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             await db(
                 """DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3""",
                 parent_tree.id, ctx.author.id, family_guild_id,
@@ -452,14 +442,14 @@ class Parentage(vbu.Cog):
 
         # And we're done
         parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
-        return await result.ctx.send(f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c", wait=False)
+        return await result.ctx.followup.send(f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c")
 
-    @vbu.command()
+    @commands.command()
     @utils.checks.has_donator_perks("can_run_disownall")
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def disownall(self, ctx: vbu.Context):
         """
         Disowns all of your children.
@@ -470,7 +460,7 @@ class Parentage(vbu.Cog):
         user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
         child_trees = list(user_tree.children)
         if not child_trees:
-            return await ctx.send("You don't have any children to disown .-.", wait=False)
+            return await ctx.send("You don't have any children to disown .-.")
 
         # See if they're sure
         try:
@@ -491,26 +481,26 @@ class Parentage(vbu.Cog):
         user_tree._children = []
 
         # Save em
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             await db(
                 """DELETE FROM parents WHERE parent_id=$1 AND guild_id=$2 AND child_id=ANY($3::BIGINT[])""",
                 ctx.author.id, family_guild_id, [child.id for child in child_trees],
             )
 
         # Redis em
-        async with self.bot.redis() as re:
+        async with vbu.Redis() as re:
             for person in child_trees + [user_tree]:
-                await re.publish('TreeMemberUpdate', person.to_json())
+                await re.publish("TreeMemberUpdate", person.to_json())
 
         # Output to user
-        await result.ctx.send("You've sucessfully disowned all of your children :c", wait=False)
+        await result.ctx.followup.send("You've sucessfully disowned all of your children :c")
 
-    @vbu.command(aliases=["desert", "leave", "dessert"])
+    @commands.command(aliases=["desert", "leave", "dessert"])
     @utils.checks.has_donator_perks("can_run_abandon")
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def abandon(self, ctx: vbu.Context):
         """
         Completely removes you from the tree.
@@ -524,7 +514,10 @@ class Parentage(vbu.Cog):
         try:
             result = await utils.send_proposal_message(
                 ctx, ctx.author,
-                f"Are you sure you want to completely abandon your family, {ctx.author.mention}? This will disown all your kids, emancipate, and divorce you",
+                (
+                    f"Are you sure you want to completely abandon your family, {ctx.author.mention}? "
+                    "This will disown all your kids, emancipate, and divorce you"
+                ),
                 timeout_message=f"Timed out making sure you want to abandon your family, {ctx.author.mention} :<",
                 cancel_message="Alright, I've cancelled your abandonment!",
             )
@@ -540,24 +533,21 @@ class Parentage(vbu.Cog):
 
         # Remove children from cache
         for child in child_trees:
-            child._parent = None
+            child.parent = None
         user_tree._children = []
 
         # Remove parent from cache
         if parent_tree:
-            user_tree._parent = None
-            try:
-                parent_tree._children.remove(ctx.author.id)
-            except ValueError:
-                pass
+            user_tree.parent = None
+            parent_tree.remove_child(ctx.author.id)
 
         # Remove partner from cache
         if partner_tree:
-            user_tree._partner = None
-            partner_tree._partner = None
+            user_tree.partner = None
+            partner_tree.partner = None
 
         # Remove from database
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             await db(
                 """DELETE FROM parents WHERE parent_id=$1 AND guild_id=$2 AND child_id=ANY($3::BIGINT[])""",
                 ctx.author.id, family_guild_id, [child.id for child in child_trees],
@@ -574,20 +564,19 @@ class Parentage(vbu.Cog):
                 )
 
         # Remove from redis
-        async with self.bot.redis() as re:
+        async with vbu.Redis() as re:
             for person in child_trees:
-                await re.publish('TreeMemberUpdate', person.to_json())
+                await re.publish("TreeMemberUpdate", person.to_json())
             if parent_tree:
-                await re.publish('TreeMemberUpdate', parent_tree.to_json())
+                await re.publish("TreeMemberUpdate", parent_tree.to_json())
             if partner_tree:
-                await re.publish('TreeMemberUpdate', partner_tree.to_json())
-            await re.publish('TreeMemberUpdate', user_tree.to_json())
+                await re.publish("TreeMemberUpdate", partner_tree.to_json())
+            await re.publish("TreeMemberUpdate", user_tree.to_json())
 
         # And we're done
-        await result.ctx.send(
+        await result.ctx.followup.send(
             f"You've successfully left your family, {ctx.author.mention} :c",
             allowed_mentions=discord.AllowedMentions.none(),
-            wait=False,
         )
 
 

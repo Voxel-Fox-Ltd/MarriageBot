@@ -1,13 +1,13 @@
 import asyncio
 import re
+import typing
 
 import aioredlock
 import discord
-from discord.ext import commands
-import voxelbotutils as utils
+from discord.ext import commands, vbu
 
 
-def only_mention(user: discord.User) -> discord.AllowedMentions:
+def only_mention(user: typing.Union[discord.Member, discord.User]) -> discord.AllowedMentions:
     return discord.AllowedMentions(users=[user])
 
 
@@ -75,13 +75,13 @@ class ProposalLock(object):
 
 
 async def send_proposal_message(
-        ctx, user: discord.Member, text: str, *, timeout_message: str = None, cancel_message: str = None,
-        allow_bots: bool = False) -> TickPayloadCheckResult:
+        ctx, user: typing.Union[discord.Member, discord.User], text: str, *, timeout_message: str = None,
+        cancel_message: str = None, allow_bots: bool = False) -> typing.Optional[TickPayloadCheckResult]:
     """
     Send a proposal message out to the user to see if they want to say yes or no.
 
     Args:
-        ctx (utils.Context): The context object for the called command.
+        ctx (vbu.Context): The context object for the called command.
         user (discord.Member): The user who the calling user wants to ask out.
         text (str): The text to be sent when the user's proposal is started.
 
@@ -97,26 +97,26 @@ async def send_proposal_message(
         return TickPayloadCheckResult(ctx, "YES")
 
     # See if they want to say yes
-    components = utils.MessageComponents.boolean_buttons()
+    components = discord.ui.MessageComponents.boolean_buttons()
     message = await ctx.send(text, components=components, wait=True)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
     try:
         def check(payload):
             if payload.message.id != message.id:
                 return False  # not relevant to this request
             if payload.user.id not in [user.id, ctx.author.id]:
-                ctx.bot.loop.create_task(payload.respond("You can't respond to this proposal!", embeddify=False, ephemeral=True))
+                ctx.bot.loop.create_task(payload.response.send_message("You can't respond to this proposal!", ephemeral=True))
                 return False  # user isn't whitelisted
             if payload.user.id == user.id:
                 return True
             if payload.user.id == ctx.author.id:
                 if payload.component.custom_id != "NO":
-                    ctx.bot.loop.create_task(payload.respond("You can't accept your own proposal!", embeddify=False, ephemeral=True))
+                    ctx.bot.loop.create_task(payload.response.send_message("You can't accept your own proposal!", ephemeral=True))
                     return False
             return True
-        button_event = await ctx.bot.wait_for("component_interaction", check=check, timeout=60)
-        await button_event.defer()
+        button_event: discord.Interaction = await ctx.bot.wait_for("component_interaction", check=check, timeout=60)
+        await button_event.response.defer()
     except asyncio.TimeoutError:
-        ctx.bot.loop.create_task(message.update_message(components=components.disable_components()))
+        ctx.bot.loop.create_task(message.edit(components=components.disable_components()))
         await ctx.send(timeout_message, allowed_mentions=only_mention(ctx.author))
         return None
 
@@ -125,9 +125,9 @@ async def send_proposal_message(
     result = TickPayloadCheckResult.from_payload(button_event)
     if not result.is_tick:
         if button_event.user.id == ctx.author.id:
-            await result.ctx.send(cancel_message, allowed_mentions=only_mention(ctx.author))
+            await result.ctx.followup.send(cancel_message, allowed_mentions=only_mention(ctx.author))
             return None
-        await result.ctx.send(f"Sorry, {ctx.author.mention}; they said no :<")
+        await result.ctx.followup.send(f"Sorry, {ctx.author.mention}; they said no :<")
         return None
 
     # Alright we done
