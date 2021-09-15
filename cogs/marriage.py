@@ -2,19 +2,24 @@ from datetime import datetime as dt
 
 import asyncpg
 import discord
-from discord.ext import commands
-import voxelbotutils as vbu
+from discord.ext import commands, vbu
 
 from cogs import utils
 
 
 class Marriage(vbu.Cog):
 
-    @vbu.command(aliases=['propose'], context_command_type=vbu.ApplicationCommandType.USER, context_command_name="Marry user")
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.context_command(name="Marry user")
+    async def context_command_marry(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
+        command = self.marry
+        await command.can_run(ctx)
+        await ctx.invoke(command, user)
+
+    @commands.command(aliases=['propose'])
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def marry(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Lets you propose to another Discord user.
@@ -26,20 +31,20 @@ class Marriage(vbu.Cog):
 
         # Check they're not themselves
         if target.id == ctx.author.id:
-            return await ctx.send("That's you. You can't marry yourself.", wait=False)
+            return await ctx.send("That's you. You can't marry yourself.")
 
         # Check they're not a bot
         if target.bot:
             if target.id == self.bot.user.id:
-                return await ctx.send("I think I could do better actually, but thank you!", wait=False)
-            return await ctx.send("That is a robot. Robots cannot consent to marriage.", wait=False)
+                return await ctx.send("I think I could do better actually, but thank you!")
+            return await ctx.send("That is a robot. Robots cannot consent to marriage.")
 
         # Lock those users
-        re = await self.bot.redis.get_connection()
+        re = await vbu.Redis.get_connection()
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.", wait=False)
+            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
 
         # See if we're already married
         if author_tree._partner:
@@ -47,7 +52,6 @@ class Marriage(vbu.Cog):
             return await ctx.send(
                 f"Hey, {ctx.author.mention}, you're already married! Try divorcing your partner first \N{FACE WITH ROLLING EYES}",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # See if the *target* is already married
@@ -56,7 +60,6 @@ class Marriage(vbu.Cog):
             return await ctx.send(
                 f"Sorry, {ctx.author.mention}, it looks like {target.mention} is already married \N{PENSIVE FACE}",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # See if they're already related
@@ -67,7 +70,6 @@ class Marriage(vbu.Cog):
             return await ctx.send(
                 f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
                 allowed_mentions=utils.only_mention(ctx.author),
-                wait=False,
             )
 
         # Check the size of their trees
@@ -88,7 +90,6 @@ class Marriage(vbu.Cog):
                 return await ctx.send(
                     f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
                     allowed_mentions=utils.only_mention(ctx.author),
-                    wait=False,
                 )
 
         # Set up the proposal
@@ -103,35 +104,33 @@ class Marriage(vbu.Cog):
             return await lock.unlock()
 
         # They said yes!
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             try:
-                await db.start_transaction()
-                await db(
-                    "INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($1, $2, $3, $4), ($2, $1, $3, $4)",
-                    ctx.author.id, target.id, family_guild_id, dt.utcnow(),
-                )
-                await db.commit_transaction()
+                async with db.transaction() as trans:
+                    await trans.call(
+                        "INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($1, $2, $3, $4), ($2, $1, $3, $4)",
+                        ctx.author.id, target.id, family_guild_id, dt.utcnow(),
+                    )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.send("I ran into an error saving your family data.", wait=False)
-        await result.ctx.send(
+                return await result.ctx.followup.send("I ran into an error saving your family data.")
+        await result.ctx.followup.send(
             f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!",
-            wait=False,
         )  # Keep allowed mentions on
 
         # Ping over redis
-        author_tree._partner = target.id
-        target_tree._partner = ctx.author.id
-        await re.publish('TreeMemberUpdate', author_tree.to_json())
-        await re.publish('TreeMemberUpdate', target_tree.to_json())
+        author_tree.partner = target.id
+        target_tree.partner = ctx.author.id
+        await re.publish("TreeMemberUpdate", author_tree.to_json())
+        await re.publish("TreeMemberUpdate", target_tree.to_json())
         await re.disconnect()
         await lock.unlock()
 
-    @vbu.command()
-    @vbu.cooldown.no_raise_cooldown(1, 3, commands.BucketType.user)
+    @commands.command()
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @vbu.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def divorce(self, ctx: vbu.Context):
         """
         Divorces you from your current partner.
@@ -144,7 +143,7 @@ class Marriage(vbu.Cog):
         # See if they're married
         target_tree = author_tree.partner
         if not target_tree:
-            return await ctx.send("It doesn't look like you're married yet!", wait=False)
+            return await ctx.send("It doesn't look like you're married yet!")
 
         # See if they're sure
         try:
@@ -160,24 +159,23 @@ class Marriage(vbu.Cog):
             return
 
         # Remove them from the database
-        async with self.bot.database() as db:
+        async with vbu.Database() as db:
             await db(
                 """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
                 ctx.author.id, target_tree.id, family_guild_id,
             )
-        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, author_tree._partner)
-        await result.ctx.send(
+        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, author_tree.partner.id)
+        await result.ctx.followup.send(
             f"You've successfully divorced **{utils.escape_markdown(partner_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
-            wait=False,
         )
 
         # Ping over redis
-        author_tree._partner = None
-        target_tree._partner = None
-        async with self.bot.redis() as re:
-            await re.publish('TreeMemberUpdate', author_tree.to_json())
-            await re.publish('TreeMemberUpdate', target_tree.to_json())
+        author_tree.partner = None
+        target_tree.partner = None
+        async with vbu.Redis() as re:
+            await re.publish("TreeMemberUpdate", author_tree.to_json())
+            await re.publish("TreeMemberUpdate", target_tree.to_json())
 
 
 def setup(bot: vbu.Bot):
