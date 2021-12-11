@@ -288,69 +288,63 @@ class Parentage(vbu.Cog):
         await re.disconnect()
         await lock.unlock()
 
-    @commands.command(autocomplete_params=('target'))
+    @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def disown(self, ctx: vbu.Context, *, target: utils.ChildIDConverter = None):
+    async def disown(self, ctx: vbu.Context):
         """
-        Lets you remove a user from being your child.
+        Remove someone from being your child.
         """
-
-        # Fix our type hinting
-        target: int
 
         # Get the user family tree member
         family_guild_id = utils.get_family_guild_id(ctx)
         user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
-        # If they didn't give a child, give them a dropdown
-        if target is None:
+        # Make a list of options
+        child_options = []
+        for index, child_tree in enumerate(user_tree.children):
+            child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
+            child_options.append(discord.ui.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
+            if index >= 25:
+                return await ctx.send((
+                    "I couldn't work out which of your children you wanted to disown. "
+                    "You can ping or use their ID to disown them."
+                ))
 
-            # Make a list of options
-            child_options = []
-            for index, child_tree in enumerate(user_tree.children):
-                child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
-                child_options.append(discord.ui.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
-                if index >= 25:
-                    return await ctx.send((
-                        "I couldn't work out which of your children you wanted to disown. "
-                        "You can ping or use their ID to disown them."
-                    ))
+        # See if they don't have any children
+        if not child_options:
+            return await ctx.send("You don't have any children!")
 
-            # See if they don't have any children
-            if not child_options:
-                return await ctx.send("You don't have any children!")
+        # Wait for them to pick one
+        components = discord.ui.MessageComponents(discord.ui.ActionRow(
+            discord.ui.SelectMenu(custom_id="DISOWN_USER", options=child_options),
+        ))
+        m = await ctx.send(
+            "Which of your children would you like to disown?",
+            components=components,
+        )
 
-            # Wait for them to pick one
-            components = discord.ui.MessageComponents(discord.ui.ActionRow(
-                discord.ui.SelectMenu(custom_id="DISOWN_USER", options=child_options),
-            ))
-            m = await ctx.send(
-                "Which of your children would you like to disown?",
-                components=components,
-            )
+        # Make our check
+        def check(payload: discord.Interaction):
+            assert payload.message
+            if payload.message.id != m.id:
+                return False
+            assert payload.user
+            if payload.user.id != ctx.author.id:
+                self.bot.loop.create_task(payload.response.send_message("You can't respond to this message!", ephemeral=True))
+                return False
+            return True
+        try:
+            payload = await self.bot.wait_for("component_interaction", check=check, timeout=60)
+            await payload.defer_update()
+            await payload.message.delete()
+        except asyncio.TimeoutError:
+            return await ctx.send("Timed out asking for which child you want to disown :<")
 
-            # Make our check
-            def check(payload: discord.Interaction):
-                assert payload.message
-                if payload.message.id != m.id:
-                    return False
-                assert payload.user
-                if payload.user.id != ctx.author.id:
-                    self.bot.loop.create_task(payload.response.send_message("You can't respond to this message!", ephemeral=True))
-                    return False
-                return True
-            try:
-                payload = await self.bot.wait_for("component_interaction", check=check, timeout=60)
-                await payload.defer_update()
-                await payload.message.delete()
-            except asyncio.TimeoutError:
-                return await ctx.send("Timed out asking for which child you want to disown :<")
-
-            # Get the child's ID that they selected
-            target = int(payload.values[0][len("DISOWN "):])
+        # Get the child's ID that they selected
+        target = int(payload.values[0][len("DISOWN "):])
 
         # Get the family tree member objects
         child_tree = utils.FamilyTreeMember.get(target, guild_id=family_guild_id)
@@ -404,16 +398,19 @@ class Parentage(vbu.Cog):
         Throw the user's current children back at them for the autocomplete.
         """
 
+        self.logger.info("autocomplete invoked")
         assert interaction.user
         assert interaction.guild_id
         user = utils.FamilyTreeMember.get(interaction.user.id, guild_id=interaction.guild_id)
-        await interaction.response.send_autocomplete([
+        options = [
             discord.ApplicationCommandOptionChoice(
                 name=await utils.DiscordNameManager.fetch_name_by_id(self.bot, i.id, ignore_name_validity=False),
                 value=str(i.id),
             )
             for i in user.children
-        ])
+        ]
+        self.logger.info(options)
+        await interaction.response.send_autocomplete(options)
 
     @commands.command(aliases=['eman', 'emancipate', 'runawayfromhome'])
     @commands.cooldown(1, 3, commands.BucketType.user)
