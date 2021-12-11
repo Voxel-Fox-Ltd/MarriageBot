@@ -410,7 +410,7 @@ class Parentage(vbu.Cog):
         await interaction.response.send_autocomplete([
             discord.ApplicationCommandOptionChoice(
                 name=await utils.DiscordNameManager.fetch_name_by_id(self.bot, i.id, ignore_name_validity=False),
-                value=i.id,
+                value=str(i.id),
             )
             for i in user.children
         ])
