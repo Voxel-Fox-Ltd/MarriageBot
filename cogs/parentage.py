@@ -327,24 +327,24 @@ class Parentage(vbu.Cog):
         )
 
         # Make our check
-        def check(payload: discord.Interaction):
-            assert payload.message
-            if payload.message.id != m.id:
+        def check(interaction: discord.Interaction):
+            assert interaction.message
+            if interaction.message.id != m.id:
                 return False
-            assert payload.user
-            if payload.user.id != ctx.author.id:
-                self.bot.loop.create_task(payload.response.send_message("You can't respond to this message!", ephemeral=True))
+            assert interaction.user
+            if interaction.user.id != ctx.author.id:
+                self.bot.loop.create_task(interaction.response.send_message("You can't respond to this message!", ephemeral=True))
                 return False
             return True
         try:
-            payload = await self.bot.wait_for("component_interaction", check=check, timeout=60)
-            await payload.defer_update()
-            await payload.message.delete()
+            interaction = await self.bot.wait_for("component_interaction", check=check, timeout=60)
+            await interaction.response.defer_update()
+            await interaction.message.delete()
         except asyncio.TimeoutError:
             return await ctx.send("Timed out asking for which child you want to disown :<")
 
         # Get the child's ID that they selected
-        target = int(payload.values[0][len("DISOWN "):])
+        target = int(interaction.values[0][len("DISOWN "):])
 
         # Get the family tree member objects
         child_tree = utils.FamilyTreeMember.get(target, guild_id=family_guild_id)
