@@ -13,7 +13,7 @@ class Marriage(vbu.Cog):
     async def context_command_marry(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
         command = self.marry
         await command.can_run(ctx)
-        await ctx.invoke(command, user)
+        await ctx.invoke(command, user)  # type: ignore
 
     @commands.command(aliases=['propose'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -35,7 +35,7 @@ class Marriage(vbu.Cog):
 
         # Check they're not a bot
         if target.bot:
-            if target.id == self.bot.user.id:
+            if self.bot.user and target.id == self.bot.user.id:
                 return await ctx.send("I think I could do better actually, but thank you!")
             return await ctx.send("That is a robot. Robots cannot consent to marriage.")
 
@@ -77,11 +77,11 @@ class Marriage(vbu.Cog):
         max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
-            for i in author_tree.span(add_parent=True, expand_upwards=True):
+            for _ in author_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:
                     break
                 family_member_count += 1
-            for i in target_tree.span(add_parent=True, expand_upwards=True):
+            for _ in target_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:
                     break
                 family_member_count += 1

@@ -120,12 +120,10 @@ class ServerSpecific(vbu.Cog):
         """
 
         if not self.bot.config['is_server_specific']:
-            return await ctx.send(
-                (
-                    f"Incest is only allowed in the server-specific version of MarriageBot - "
-                    f"see `{ctx.clean_prefix}gold` for more information."
-                ),
-            )
+            return await ctx.send((
+                f"Incest is only allowed in the server-specific version of MarriageBot - "
+                f"see `{ctx.clean_prefix}gold` for more information."
+            ))
         if ctx.invoked_subcommand is None:
             return await ctx.send_help(ctx.command)
 

@@ -1,9 +1,9 @@
-import functools
 import asyncio
 import collections
 from datetime import datetime as dt, timedelta
+import functools
 
-from discord.ext import vbu
+import voxelbotutils as vbu
 
 
 class MarriageBotPerks(object):
@@ -58,8 +58,10 @@ TIER_NONE = MarriageBotPerks()
 CACHED_PERK_ITEMS = collections.defaultdict(lambda: (None, dt(2000, 1, 1),))
 
 
-def cache_response(**lifetime):
+def cache_response(**lifetime: int):
+
     def inner(func):
+
         @functools.wraps(func)
         async def wrapper(bot: vbu.Bot, user_id: int):
             perks, expiry_time = CACHED_PERK_ITEMS[user_id]
@@ -68,8 +70,9 @@ def cache_response(**lifetime):
             perks = await func(bot, user_id)
             CACHED_PERK_ITEMS[user_id] = (perks, dt.utcnow() + timedelta(**lifetime),)
             return perks
+
         return wrapper
-    return inner
+    return inner  # type: ignore
 
 
 @cache_response(minutes=2)
@@ -97,8 +100,10 @@ async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
 
     # Check UpgradeChat purchases
     try:
-        purchases = await asyncio.wait_for(bot.upgrade_chat.get_orders(discord_id=user_id), timeout=3)
+        purchases = await asyncio.wait_for(bot.upgrade_chat.get_orders(discord_id=user_id), timeout=5)
     except asyncio.TimeoutError:
+        purchases = []
+    except Exception:
         purchases = []
     purchased_item_names = []
     [purchased_item_names.extend(i.order_item_names) for i in purchases]

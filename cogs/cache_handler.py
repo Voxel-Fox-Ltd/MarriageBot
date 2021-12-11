@@ -1,7 +1,4 @@
-import concurrent.futures as cf
-import functools
-
-import voxelbotutils as vbu
+from discord.ext import vbu
 
 from cogs import utils
 
@@ -10,22 +7,17 @@ class CacheHandler(vbu.Cog):
 
     @staticmethod
     def handle_partner(row):
-        utils.FamilyTreeMember(
-            discord_id=row['user_id'],
-            children=[],
-            parent_id=None,
-            partner_id=row['partner_id'],
-            guild_id=row['guild_id'],
-        )
+        user = utils.FamilyTreeMember.get(row['user_id'], row['guild_id'])
+        user.partner = row['partner_id']
 
     @staticmethod
     def handle_parent(row):
         parent = utils.FamilyTreeMember.get(row['parent_id'], row['guild_id'])
-        parent._children.append(row['child_id'])
+        parent.add_child(row['child_id'])
         child = utils.FamilyTreeMember.get(row['child_id'], row['guild_id'])
-        child._parent = row['parent_id']
+        child.parent = row['parent_id']
 
-    async def cache_setup(self, db):
+    async def cache_setup(self, db: vbu.Database):
         """
         Set up the cache for the users.
         """
@@ -49,12 +41,12 @@ class CacheHandler(vbu.Cog):
         # Cache the family data - partners
         self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
         for i in partnerships:
-            self.handle_partner(dict(i))
+            self.handle_partner(i)
 
         # - children
         self.logger.info(f"Caching {len(parents)} parents/children from parents")
         for i in parents:
-            self.handle_parent(dict(i))
+            self.handle_parent(i)
 
         # And done
         self.logger.info("Family tree member caching complete")

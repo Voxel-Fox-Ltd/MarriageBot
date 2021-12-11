@@ -1,4 +1,4 @@
-import voxelbotutils as vbu
+from discord.ext import vbu
 
 from cogs import utils
 

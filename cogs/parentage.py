@@ -1,3 +1,4 @@
+import typing
 import asyncio
 from datetime import datetime as dt
 
@@ -10,7 +11,7 @@ from cogs import utils
 
 class Parentage(vbu.Cog):
 
-    async def get_max_children_for_member(self, guild: discord.Guild, user: discord.Member) -> int:
+    async def get_max_children_for_member(self, guild: discord.Guild, user: typing.Union[discord.Member, discord.User]) -> int:
         """
         Get the maximum amount of children a given member can have.
         """
@@ -46,7 +47,7 @@ class Parentage(vbu.Cog):
     async def context_command_makeparent(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
         command = self.makeparent
         await command.can_run(ctx)
-        await ctx.invoke(command, user)
+        await ctx.invoke(command, user)  # type: ignore
 
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -67,7 +68,7 @@ class Parentage(vbu.Cog):
             return await ctx.send("That's you. You can't make yourself your parent.")
 
         # Check they're not a bot
-        if target.id == self.bot.user.id:
+        if self.bot.user and target.id == self.bot.user.id:
             return await ctx.send("I think I could do better actually, but thank you!")
 
         # Lock those users
@@ -104,6 +105,7 @@ class Parentage(vbu.Cog):
             )
 
         # Manage children
+        assert ctx.guild
         children_amount = await self.get_max_children_for_member(ctx.guild, target)
         if len(target_tree._children) >= children_amount:
             return await ctx.send(
@@ -115,11 +117,11 @@ class Parentage(vbu.Cog):
         max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
-            for i in author_tree.span(add_parent=True, expand_upwards=True):
+            for _ in author_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:
                     break
                 family_member_count += 1
-            for i in target_tree.span(add_parent=True, expand_upwards=True):
+            for _ in target_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:
                     break
                 family_member_count += 1
@@ -168,7 +170,7 @@ class Parentage(vbu.Cog):
     async def context_command_adopt(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
         command = self.adopt
         await command.can_run(ctx)
-        await ctx.invoke(command, user)
+        await ctx.invoke(command, user)  # type: ignore
 
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -190,7 +192,7 @@ class Parentage(vbu.Cog):
 
         # Check they're not a bot
         if target.bot:
-            if target.id == self.bot.user.id:
+            if self.bot.user and target.id == self.bot.user.id:
                 return await ctx.send("I think I could do better actually, but thank you!")
             return await ctx.send("That is a robot. Robots cannot consent to adoption.")
 
@@ -228,6 +230,7 @@ class Parentage(vbu.Cog):
             )
 
         # Manage children
+        assert ctx.guild
         children_amount = await self.get_max_children_for_member(ctx.guild, ctx.author)
         if len(author_tree._children) >= children_amount:
             return await ctx.send(
@@ -285,7 +288,7 @@ class Parentage(vbu.Cog):
         await re.disconnect()
         await lock.unlock()
 
-    @commands.command()
+    @commands.command(autocomplete_params=('target'))
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
@@ -294,6 +297,9 @@ class Parentage(vbu.Cog):
         """
         Lets you remove a user from being your child.
         """
+
+        # Fix our type hinting
+        target: int
 
         # Get the user family tree member
         family_guild_id = utils.get_family_guild_id(ctx)
@@ -308,12 +314,10 @@ class Parentage(vbu.Cog):
                 child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
                 child_options.append(discord.ui.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
                 if index >= 25:
-                    return await ctx.send(
-                        (
-                            "I couldn't work out which of your children you wanted to disown. "
-                            "You can ping or use their ID to disown them."
-                        ),
-                    )
+                    return await ctx.send((
+                        "I couldn't work out which of your children you wanted to disown. "
+                        "You can ping or use their ID to disown them."
+                    ))
 
             # See if they don't have any children
             if not child_options:
@@ -330,8 +334,10 @@ class Parentage(vbu.Cog):
 
             # Make our check
             def check(payload: discord.Interaction):
+                assert payload.message
                 if payload.message.id != m.id:
                     return False
+                assert payload.user
                 if payload.user.id != ctx.author.id:
                     self.bot.loop.create_task(payload.response.send_message("You can't respond to this message!", ephemeral=True))
                     return False
@@ -391,6 +397,23 @@ class Parentage(vbu.Cog):
             f"You've successfully disowned **{utils.escape_markdown(child_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )
+
+    @disown.autocomplete
+    async def disown_autocomplete(self, interaction: discord.Interaction):
+        """
+        Throw the user's current children back at them for the autocomplete.
+        """
+
+        assert interaction.user
+        assert interaction.guild_id
+        user = utils.FamilyTreeMember.get(interaction.user.id, guild_id=interaction.guild_id)
+        await interaction.response.send_autocomplete([
+            discord.ApplicationCommandOptionChoice(
+                name=await utils.DiscordNameManager.fetch_name_by_id(self.bot, i.id, ignore_name_validity=False),
+                value=i.id,
+            )
+            for i in user.children
+        ])
 
     @commands.command(aliases=['eman', 'emancipate', 'runawayfromhome'])
     @commands.cooldown(1, 3, commands.BucketType.user)

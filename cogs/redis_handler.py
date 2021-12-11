@@ -76,6 +76,8 @@ class RedisHandler(vbu.Cog):
         Sends a message to a given user.
         """
 
+        if not self.bot.user:
+            return
         if self.bot.user.id != payload.get('bot_id', None):
             return
         if 0 not in (self.bot.shard_ids or [0]):

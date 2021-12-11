@@ -4,7 +4,7 @@ import typing
 
 import aioredlock
 import discord
-from discord.ext import commands, vbu
+from discord.ext import commands
 
 
 def only_mention(user: typing.Union[discord.Member, discord.User]) -> discord.AllowedMentions:

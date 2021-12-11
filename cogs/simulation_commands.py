@@ -333,13 +333,11 @@ class SimulationCommands(vbu.Cog):
         Todd Howard strikes once more.
         """
 
-        await ctx.send(
-            (
-                "You sleep for a while and when you wake up you're in a cart "
-                "with your hands bound. A man says \"Hey, you. You're finally "
-                "awake. You were trying to cross the border, right?\""
-            ),
-        )
+        await ctx.send((
+            "You sleep for a while and when you wake up you're in a cart "
+            "with your hands bound. A man says \"Hey, you. You're finally "
+            "awake. You were trying to cross the border, right?\""
+        ))
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 3, commands.BucketType.user)
