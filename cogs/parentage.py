@@ -154,7 +154,8 @@ class Parentage(vbu.Cog):
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
                 return await result.ctx.send("I ran into an error saving your family data - please try again later.")
-        await result.ctx.send(
+        await vbu.embeddify(
+            result.ctx,
             f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!",
         )
 
@@ -242,11 +243,11 @@ class Parentage(vbu.Cog):
         max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
-            for i in author_tree.span(add_parent=True, expand_upwards=True):
+            for _ in author_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:
                     break
                 family_member_count += 1
-            for i in target_tree.span(add_parent=True, expand_upwards=True):
+            for _ in target_tree.span(add_parent=True, expand_upwards=True):
                 if family_member_count >= max_family_members:
                     break
                 family_member_count += 1
@@ -278,7 +279,10 @@ class Parentage(vbu.Cog):
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
                 return await result.ctx.send("I ran into an error saving your family data - please try again later.")
-        await result.ctx.send(f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!")
+        await vbu.embeddify(
+            result.ctx,
+            f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!",
+        )
 
         # And we're done
         author_tree._children.append(target.id)
@@ -321,7 +325,8 @@ class Parentage(vbu.Cog):
         components = discord.ui.MessageComponents(discord.ui.ActionRow(
             discord.ui.SelectMenu(custom_id="DISOWN_USER", options=child_options),
         ))
-        m = await ctx.send(
+        m = await vbu.embeddify(
+            ctx,
             "Which of your children would you like to disown?",
             components=components,
         )
@@ -387,7 +392,8 @@ class Parentage(vbu.Cog):
             )
 
         # And we're done
-        await result.ctx.followup.send(
+        await vbu.embeddify(
+            result.ctx.followup,
             f"You've successfully disowned **{utils.escape_markdown(child_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )
@@ -462,7 +468,10 @@ class Parentage(vbu.Cog):
 
         # And we're done
         parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
-        return await result.ctx.followup.send(f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c")
+        await vbu.embeddify(
+            result.ctx.followup,
+            f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c",
+        )
 
     @commands.command()
     @utils.checks.has_donator_perks("can_run_disownall")
@@ -513,7 +522,10 @@ class Parentage(vbu.Cog):
                 await re.publish("TreeMemberUpdate", person.to_json())
 
         # Output to user
-        await result.ctx.followup.send("You've sucessfully disowned all of your children :c")
+        await vbu.embeddify(
+            result.ctx.followup,
+            "You've sucessfully disowned all of your children :c",
+        )
 
     @commands.command(aliases=["desert", "leave", "dessert"])
     @utils.checks.has_donator_perks("can_run_abandon")
@@ -594,7 +606,8 @@ class Parentage(vbu.Cog):
             await re.publish("TreeMemberUpdate", user_tree.to_json())
 
         # And we're done
-        await result.ctx.followup.send(
+        await vbu.embeddify(
+            result.ctx.followup,
             f"You've successfully left your family, {ctx.author.mention} :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )

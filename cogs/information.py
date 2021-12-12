@@ -79,7 +79,7 @@ class Information(vbu.Cog):
         if timestamp:
             duration = discord.utils.format_dt(timestamp, "R")
             text += f"{'You' if user_id == ctx.author.id else 'They'} got married {duration}."
-        await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
+        await vbu.embeddify(ctx, text, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['child', 'kids'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -124,7 +124,7 @@ class Information(vbu.Cog):
         # Return all output
         if len(output) > 2_000:
             return await ctx.send(f"<@{user_id}>'s children list goes over 2,000 characters. Amazing.")
-        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['sib'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -194,7 +194,7 @@ class Information(vbu.Cog):
         # Return all output
         if len(output) > 2_000:
             return await ctx.send(f"**{utils.escape_markdown(user_name)}**'s sibling list goes over 2,000 characters. Amazing.")
-        await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['parents'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -227,7 +227,7 @@ class Information(vbu.Cog):
         output = f"**{utils.escape_markdown(user_name)}**'s parent is **{utils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
         if user_id == ctx.author.id:
             output = f"Your parent is **{utils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
-        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['treesize', 'fs', 'ts'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -254,7 +254,7 @@ class Information(vbu.Cog):
         )
         if user_id == ctx.author.id:
             output = f"There {'are' if size > 1 else 'is'} {size} {'people' if size > 1 else 'person'} in your family tree."
-        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['relation'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -295,7 +295,7 @@ class Information(vbu.Cog):
             output = f"**{utils.escape_markdown(other_name)}** is **{utils.escape_markdown(user_name)}**'s {relation}."
             if user_id == ctx.author.id:
                 output = f"**{utils.escape_markdown(other_name)}** is your {relation}."
-        return await ctx.send(output, allowed_mentions=discord.AllowedMentions.none())
+        await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['familytree', 't'])
     @commands.defer()
@@ -410,8 +410,7 @@ class Information(vbu.Cog):
         text = "[Click here](https://marriagebot.xyz/) to customise your tree."
         if not stupid_tree:
             text += f" Use `{ctx.prefix}bloodtree` for your _entire_ family, including non-blood relatives."
-        tree_message = await ctx.send(text, file=file)
-        await self.bot.add_delete_reaction(tree_message)
+        await vbu.embeddify(ctx, text, file=file)
 
         # Delete the files
         asyncio.create_task(asyncio.create_subprocess_exec('rm', dot_filename))

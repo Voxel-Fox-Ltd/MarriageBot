@@ -114,7 +114,8 @@ class Marriage(vbu.Cog):
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
                 return await result.ctx.followup.send("I ran into an error saving your family data.")
-        await result.ctx.followup.send(
+        await vbu.embeddify(
+            result.ctx.followup,
             f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!",
         )  # Keep allowed mentions on
 
