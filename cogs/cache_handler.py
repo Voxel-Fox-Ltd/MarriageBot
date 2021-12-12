@@ -22,6 +22,9 @@ class CacheHandler(vbu.Cog):
         Set up the cache for the users.
         """
 
+        # self.logger.info("Ignoring caching")
+        # return True
+
         # Get family data from database
         try:
             if self.bot.config['is_server_specific']:

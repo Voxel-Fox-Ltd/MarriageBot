@@ -17,8 +17,9 @@ class TreeCommandCooldown(object):
     @classmethod
     def cooldown(cls, message: discord.Message) -> commands.Cooldown:
         assert cls.bot
-        perks: utils.MarriageBotPerks = cls.bot.loop.run_until_complete(utils.get_marriagebot_perks(cls.bot, message.author.id))
-        return commands.Cooldown(1, perks.tree_command_cooldown)
+        # perks: utils.MarriageBotPerks = cls.bot.loop.(utils.get_marriagebot_perks(cls.bot, message.author.id))
+        # return commands.Cooldown(1, perks.tree_command_cooldown)
+        return commands.Cooldown(1, 15)
 
 
 class Information(vbu.Cog):
