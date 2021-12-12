@@ -15,9 +15,9 @@ class TreeCommandCooldown(object):
     bot: typing.Optional[vbu.Bot] = None
 
     @classmethod
-    async def cooldown(cls, message: discord.Message) -> commands.Cooldown:
+    def cooldown(cls, message: discord.Message) -> commands.Cooldown:
         assert cls.bot
-        perks: utils.MarriageBotPerks = await utils.get_marriagebot_perks(cls.bot, message.author.id)
+        perks: utils.MarriageBotPerks = cls.bot.loop.run_until_complete(utils.get_marriagebot_perks(cls.bot, message.author.id))
         return commands.Cooldown(1, perks.tree_command_cooldown)
 
 
@@ -25,6 +25,7 @@ class Information(vbu.Cog):
 
     def __init__(self, bot):
         super().__init__(bot)
+        TreeCommandCooldown.bot = bot
         self.locks = collections.defaultdict(asyncio.Lock)
 
     def get_lock(self, user_id: int) -> asyncio.Lock:
