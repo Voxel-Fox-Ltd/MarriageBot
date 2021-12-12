@@ -362,11 +362,12 @@ class Information(vbu.Cog):
             ctu = await utils.CustomisedTreeUser.fetch_by_id(db, ctx.author.id)
 
         # Get their dot script
-        async with ctx.typing():
-            if stupid_tree:
-                dot_code = await user_info.to_full_dot_script(self.bot, ctu)
-            else:
-                dot_code = await user_info.to_dot_script(self.bot, ctu)
+        if not isinstance(ctx, commands.SlashContext):
+            await ctx.trigger_typing()
+        if stupid_tree:
+            dot_code = await user_info.to_full_dot_script(self.bot, ctu)
+        else:
+            dot_code = await user_info.to_dot_script(self.bot, ctu)
 
         # Write the dot to a file
         dot_filename = f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz'
