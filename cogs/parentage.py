@@ -143,6 +143,7 @@ class Parentage(vbu.Cog):
             result = None
         if result is None:
             return await lock.unlock()
+        await result.ctx.response.defer()
 
         # Database it up
         async with vbu.Database() as db:
@@ -153,9 +154,9 @@ class Parentage(vbu.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.send("I ran into an error saving your family data - please try again later.")
+                return await result.ctx.followup.send("I ran into an error saving your family data - please try again later.")
         await vbu.embeddify(
-            result.ctx,
+            result.ctx.followup,
             f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!",
         )
 
@@ -268,6 +269,7 @@ class Parentage(vbu.Cog):
             result = None
         if result is None:
             return await lock.unlock()
+        await result.ctx.response.defer()
 
         # Database it up
         async with vbu.Database() as db:
@@ -278,9 +280,9 @@ class Parentage(vbu.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.send("I ran into an error saving your family data - please try again later.")
+                return await result.ctx.followup.send("I ran into an error saving your family data - please try again later.")
         await vbu.embeddify(
-            result.ctx,
+            result.ctx.followup,
             f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!",
         )
 
