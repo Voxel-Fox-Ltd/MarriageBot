@@ -143,7 +143,6 @@ class Parentage(vbu.Cog):
             result = None
         if result is None:
             return await lock.unlock()
-        await result.ctx.response.defer()
 
         # Database it up
         async with vbu.Database() as db:
@@ -269,7 +268,6 @@ class Parentage(vbu.Cog):
             result = None
         if result is None:
             return await lock.unlock()
-        await result.ctx.response.defer()
 
         # Database it up
         async with vbu.Database() as db:
