@@ -50,6 +50,10 @@ class SimulationCommands(vbu.Cog):
             self.logger.debug("No API key set for Weeb.sh")
             return None
 
+        # Defer the interaction
+        if isinstance(ctx, commands.SlashContext):
+            await ctx.interaction.response.defer()
+
         # Set up our headers and params
         headers = {
             "User-Agent": self.bot.user_agent,
