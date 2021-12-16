@@ -47,7 +47,7 @@ class Parentage(vbu.Cog):
     async def context_command_makeparent(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
         command = self.makeparent
         await command.can_run(ctx)
-        await ctx.invoke(command, user)  # type: ignore
+        await command.invoke(ctx, target=user)  # type: ignore
 
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
