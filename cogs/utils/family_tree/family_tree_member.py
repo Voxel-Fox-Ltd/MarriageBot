@@ -154,11 +154,11 @@ class FamilyTreeMember(object):
     @parent.setter
     def parent(self, value: typing.Union[FamilyTreeMember, int, None]):
         if value is None:
-            self._partner = None
+            self._parent = None
         elif isinstance(value, int):
-            self._partner = value
+            self._parent = value
         else:
-            self._partner = value.id
+            self._parent = value.id
 
     @property
     def children(self) -> typing.Iterable[FamilyTreeMember]:
