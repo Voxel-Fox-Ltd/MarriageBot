@@ -528,7 +528,7 @@ class SimulationCommands(vbu.Cog):
             return
 
         # Respond
-        await result.ctx.followup.send(
+        await result.ctx.interaction.followup.send(
             random.choice(utils.random_text.Copulate.VALID).format(author=ctx.author, target=target),
             wait=False,
         )
