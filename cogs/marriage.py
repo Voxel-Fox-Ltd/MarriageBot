@@ -167,7 +167,7 @@ class Marriage(vbu.Cog):
                 """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
                 ctx.author.id, target_tree.id, family_guild_id,
             )
-        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, author_tree.partner.id)
+        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, target_tree.id)
         await result.ctx.followup.send(
             f"You've successfully divorced **{utils.escape_markdown(partner_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
