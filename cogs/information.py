@@ -37,6 +37,7 @@ class Information(vbu.Cog):
         return self.locks[user_id]
 
     @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
@@ -84,6 +85,7 @@ class Information(vbu.Cog):
         await vbu.embeddify(ctx, text, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['child', 'kids'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
@@ -129,6 +131,7 @@ class Information(vbu.Cog):
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['sib'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
@@ -199,6 +202,7 @@ class Information(vbu.Cog):
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['parents'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
@@ -232,6 +236,7 @@ class Information(vbu.Cog):
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['treesize', 'fs', 'ts'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
@@ -259,6 +264,7 @@ class Information(vbu.Cog):
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(aliases=['relation'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)

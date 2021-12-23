@@ -50,6 +50,7 @@ class Parentage(vbu.Cog):
         await ctx.invoke(command, target=user)  # type: ignore
 
     @commands.command()
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
@@ -113,7 +114,6 @@ class Parentage(vbu.Cog):
             )
 
         # Check the size of their trees
-        # TODO I can make this a util because I'm going to use it a couple times
         max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
@@ -174,6 +174,7 @@ class Parentage(vbu.Cog):
         await ctx.invoke(command, user)  # type: ignore
 
     @commands.command()
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
@@ -239,7 +240,6 @@ class Parentage(vbu.Cog):
             )
 
         # Check the size of their trees
-        # TODO I can make this a util because I'm going to use it a couple times
         max_family_members = utils.get_max_family_members(ctx)
         async with ctx.typing():
             family_member_count = 0
@@ -293,6 +293,7 @@ class Parentage(vbu.Cog):
         await lock.unlock()
 
     @commands.command()
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
@@ -344,7 +345,6 @@ class Parentage(vbu.Cog):
         try:
             interaction = await self.bot.wait_for("component_interaction", check=check, timeout=60)
             await interaction.response.defer_update()
-            await interaction.message.delete()
         except asyncio.TimeoutError:
             return await ctx.send("Timed out asking for which child you want to disown :<")
 
@@ -398,27 +398,8 @@ class Parentage(vbu.Cog):
             allowed_mentions=discord.AllowedMentions.none(),
         )
 
-    @disown.autocomplete
-    async def disown_autocomplete(self, interaction: discord.Interaction):
-        """
-        Throw the user's current children back at them for the autocomplete.
-        """
-
-        self.logger.info("autocomplete invoked")
-        assert interaction.user
-        assert interaction.guild_id
-        user = utils.FamilyTreeMember.get(interaction.user.id, guild_id=interaction.guild_id)
-        options = [
-            discord.ApplicationCommandOptionChoice(
-                name=await utils.DiscordNameManager.fetch_name_by_id(self.bot, i.id, ignore_name_validity=False),
-                value=str(i.id),
-            )
-            for i in user.children
-        ]
-        self.logger.info(options)
-        await interaction.response.send_autocomplete(options)
-
     @commands.command(aliases=['eman', 'emancipate', 'runawayfromhome'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
@@ -474,6 +455,7 @@ class Parentage(vbu.Cog):
         )
 
     @commands.command()
+    @commands.defer()
     @utils.checks.has_donator_perks("can_run_disownall")
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -528,6 +510,7 @@ class Parentage(vbu.Cog):
         )
 
     @commands.command(aliases=["desert", "leave", "dessert"])
+    @commands.defer()
     @utils.checks.has_donator_perks("can_run_abandon")
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()

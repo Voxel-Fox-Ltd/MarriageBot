@@ -15,15 +15,13 @@ class BlockCommands(vbu.Cog):
         if ctx.author.id == user:
             return await ctx.send("You can't block yourself .-.")
 
-        # Add to list
+        # Add to db and cache
         async with vbu.Database() as db:
             await db(
                 """INSERT INTO blocked_user (user_id, blocked_user_id) VALUES ($1, $2)
                 ON CONFLICT (user_id, blocked_user_id) DO NOTHING""",
                 ctx.author.id, user,
             )
-
-        # Publish to redis
         async with vbu.Redis() as re:
             await re.publish("BlockedUserAdd", {"user_id": ctx.author.id, "blocked_user_id": user})
 
@@ -42,14 +40,12 @@ class BlockCommands(vbu.Cog):
         if ctx.author.id == user:
             return await ctx.send("You can't block yourself .-.")
 
-        # Remove from list
+        # Add to db and cache
         async with vbu.Database() as db:
             await db(
                 """DELETE FROM blocked_user WHERE user_id=$1 AND blocked_user_id=$2""",
                 ctx.author.id, user,
             )
-
-        # Publish to redis
         async with vbu.Redis() as re:
             await re.publish("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user})
 

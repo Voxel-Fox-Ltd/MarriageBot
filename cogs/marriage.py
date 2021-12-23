@@ -16,6 +16,7 @@ class Marriage(vbu.Cog):
         await ctx.invoke(command, user)  # type: ignore
 
     @commands.command(aliases=['propose'])
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
@@ -128,6 +129,7 @@ class Marriage(vbu.Cog):
         await lock.unlock()
 
     @commands.command()
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()

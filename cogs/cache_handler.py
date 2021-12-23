@@ -9,6 +9,7 @@ class CacheHandler(vbu.Cog):
     def handle_partner(row):
         user = utils.FamilyTreeMember.get(row['user_id'], row['guild_id'])
         user.partner = row['partner_id']
+        user.partner.partner = user
 
     @staticmethod
     def handle_parent(row):
@@ -21,9 +22,6 @@ class CacheHandler(vbu.Cog):
         """
         Set up the cache for the users.
         """
-
-        # self.logger.info("Ignoring caching")
-        # return True
 
         # Get family data from database
         try:
