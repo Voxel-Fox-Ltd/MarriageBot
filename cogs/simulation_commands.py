@@ -54,6 +54,10 @@ class SimulationCommands(vbu.Cog):
         if isinstance(ctx, commands.SlashContext):
             await ctx.interaction.response.defer()
 
+        # If we can't return images, then don't
+        elif ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).embed_links:
+            return None
+
         # Set up our headers and params
         headers = {
             "User-Agent": self.bot.user_agent,
