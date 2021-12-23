@@ -21,9 +21,9 @@
     {"name": "mb18", "autorestart": false, "script": "vbu run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#18 * 16)) --max $((((10#18 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "mb19", "autorestart": false, "script": "vbu run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#19 * 16)) --max $((((10#19 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "mb20", "autorestart": false, "script": "vbu run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#20 * 16)) --max $((((10#20 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
-    {"name": "mb21", "autorestart": false, "script": "vbu run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#21 * 16)) --max $((((10#21 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
-    {"name": "mb22", "autorestart": false, "script": "vbu run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#22 * 16)) --max $((((10#22 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
-    {"name": "mb23", "autorestart": false, "script": "vbu run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#23 * 16)) --max $((((10#23 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBotTest"},
+    {"name": "mb21", "autorestart": false, "script": ".venv/bin/python3.8 -m voxelbotutils run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#21 * 16)) --max $((((10#21 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBot"},
+    {"name": "mb22", "autorestart": false, "script": ".venv/bin/python3.8 -m voxelbotutils run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#22 * 16)) --max $((((10#22 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBot"},
+    {"name": "mb23", "autorestart": false, "script": ".venv/bin/python3.8 -m voxelbotutils run-bot . config/config.toml --shardcount $((24 * 16)) --min $((10#23 * 16)) --max $((((10#23 + 1) * 16) - 1))", "cwd": "/home/kae/MarriageBot"},
     {"name": "gold", "autorestart": false, "script": "vbu run-bot . config/gold.toml --shardcount 1", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "web", "autorestart": false, "script": "vbu run-website --port 8000", "cwd": "/home/kae/MarriageBotTest"},
     {"name": "sharder", "autorestart": false, "script": "vbu run-sharder --loglevel debug --port 8888 --concurrency 16", "cwd": "/home/kae/MarriageBotTest"}

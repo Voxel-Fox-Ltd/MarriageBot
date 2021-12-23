@@ -55,7 +55,7 @@ class SimulationCommands(vbu.Cog):
             await ctx.interaction.response.defer()
 
         # If we can't return images, then don't
-        elif ctx.guild and not ctx.guild.me.permissions_in(ctx.channel).embed_links:
+        elif ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).embed_links:
             return None
 
         # Set up our headers and params
