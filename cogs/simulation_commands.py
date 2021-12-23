@@ -532,7 +532,7 @@ class SimulationCommands(vbu.Cog):
             return
 
         # Respond
-        if isinstance(result.ctx, commands.SlashContext):
+        if isinstance(result.ctx, discord.Interaction):
             sendable = result.ctx.followup
         else:
             sendable = result.ctx
