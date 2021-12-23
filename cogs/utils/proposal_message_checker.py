@@ -135,12 +135,12 @@ async def send_proposal_message(
         assert button_event.user
         await button_event.response.defer()
     except asyncio.TimeoutError:
-        ctx.bot.loop.create_task(message.edit(components=components.disable_components()))
+        ctx.bot.loop.create_task(catch_edit(message, components=components.disable_components()))
         await ctx.send(timeout_message, allowed_mentions=only_mention(ctx.author))
         return None
 
     # Check what they said
-    ctx.bot.loop.create_task(message.edit(components=components.disable_components()))
+    ctx.bot.loop.create_task(catch_edit(message, components=components.disable_components()))
     result = TickPayloadCheckResult.from_payload(button_event)
     if not result.is_tick:
         if button_event.user.id == ctx.author.id:
