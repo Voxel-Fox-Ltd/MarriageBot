@@ -74,6 +74,17 @@ class ProposalLock(object):
         await self.unlock()
 
 
+async def catch_edit(message: discord.Message, **kwargs) -> None:
+    """
+    Edit a message with the given kwargs and catch and discard any 404s.
+    """
+
+    try:
+        await message.edit(**kwargs)
+    except discord.NotFound:
+        pass
+
+
 async def send_proposal_message(
         ctx, user: typing.Union[discord.Member, discord.User], text: str, *, timeout_message: str = None,
         cancel_message: str = None, allow_bots: bool = False) -> typing.Optional[TickPayloadCheckResult]:
