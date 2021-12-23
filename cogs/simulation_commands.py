@@ -532,7 +532,11 @@ class SimulationCommands(vbu.Cog):
             return
 
         # Respond
-        await result.ctx.followup.send(
+        if isinstance(result.ctx, commands.SlashContext):
+            sendable = result.ctx.followup
+        else:
+            sendable = result.ctx
+        await sendable.send(
             random.choice(utils.random_text.Copulate.VALID).format(author=ctx.author, target=target),
         )
 
