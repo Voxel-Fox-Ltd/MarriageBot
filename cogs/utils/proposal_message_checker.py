@@ -81,7 +81,7 @@ async def catch_edit(message: discord.Message, **kwargs) -> None:
 
     try:
         await message.edit(**kwargs)
-    except discord.NotFound:
+    except (discord.NotFound, discord.HTTPException):
         pass
 
 

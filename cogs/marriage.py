@@ -64,8 +64,7 @@ class Marriage(vbu.Cog):
             )
 
         # See if they're already related
-        async with ctx.typing():
-            relation = author_tree.get_relation(target_tree)
+        relation = author_tree.get_relation(target_tree)
         if relation and utils.guild_allows_incest(ctx) is False:
             await lock.unlock()
             return await ctx.send(
@@ -76,22 +75,21 @@ class Marriage(vbu.Cog):
         # Check the size of their trees
         # TODO I can make this a util because I'm going to use it a couple times
         max_family_members = utils.get_max_family_members(ctx)
-        async with ctx.typing():
-            family_member_count = 0
-            for _ in author_tree.span(add_parent=True, expand_upwards=True):
-                if family_member_count >= max_family_members:
-                    break
-                family_member_count += 1
-            for _ in target_tree.span(add_parent=True, expand_upwards=True):
-                if family_member_count >= max_family_members:
-                    break
-                family_member_count += 1
+        family_member_count = 0
+        for _ in author_tree.span(add_parent=True, expand_upwards=True):
             if family_member_count >= max_family_members:
-                await lock.unlock()
-                return await ctx.send(
-                    f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
-                    allowed_mentions=utils.only_mention(ctx.author),
-                )
+                break
+            family_member_count += 1
+        for _ in target_tree.span(add_parent=True, expand_upwards=True):
+            if family_member_count >= max_family_members:
+                break
+            family_member_count += 1
+        if family_member_count >= max_family_members:
+            await lock.unlock()
+            return await ctx.send(
+                f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
+                allowed_mentions=utils.only_mention(ctx.author),
+            )
 
         # Set up the proposal
         try:
