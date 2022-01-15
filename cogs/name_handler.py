@@ -2,7 +2,7 @@ import discord
 from discord.ext import vbu
 
 
-class NameHandler(vbu.Cog):
+class NameHandler(vbu.Cog[vbu.Bot]):
 
     @vbu.Cog.listener()
     async def on_message(self, message: discord.Message):

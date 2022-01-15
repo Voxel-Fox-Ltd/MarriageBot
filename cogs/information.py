@@ -3,8 +3,7 @@ import asyncio
 import collections
 
 import discord
-from discord.ext import commands
-from discord.ext import vbu
+from discord.ext import commands, vbu
 
 from cogs import utils
 
@@ -22,7 +21,7 @@ class TreeCommandCooldown(object):
         return commands.Cooldown(1, 15)
 
 
-class Information(vbu.Cog):
+class Information(vbu.Cog[vbu.Bot]):
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -36,7 +35,19 @@ class Information(vbu.Cog):
 
         return self.locks[user_id]
 
-    @commands.command(aliases=['spouse', 'husband', 'wife', 'marriage'])
+    @commands.command(
+        aliases=['spouse', 'husband', 'wife', 'marriage'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user who you want to check the partner of.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -84,7 +95,19 @@ class Information(vbu.Cog):
             text += f"{'You' if user_id == ctx.author.id else 'They'} got married {duration}."
         await vbu.embeddify(ctx, text, allowed_mentions=discord.AllowedMentions.none())
 
-    @commands.command(aliases=['child', 'kids'])
+    @commands.command(
+        aliases=['child', 'kids'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user who you want to check the children of.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -130,7 +153,19 @@ class Information(vbu.Cog):
             return await ctx.send(f"<@{user_id}>'s children list goes over 2,000 characters. Amazing.")
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
-    @commands.command(aliases=['sib'])
+    @commands.command(
+        aliases=['sib', 'brothers', 'sisters'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user who you want to check the siblings of.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -201,7 +236,19 @@ class Information(vbu.Cog):
             return await ctx.send(f"**{utils.escape_markdown(user_name)}**'s sibling list goes over 2,000 characters. Amazing.")
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
-    @commands.command(aliases=['parents'])
+    @commands.command(
+        aliases=['parents'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user who you want to check the parent of.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -235,7 +282,19 @@ class Information(vbu.Cog):
             output = f"Your parent is **{utils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
-    @commands.command(aliases=['treesize', 'fs', 'ts'])
+    @commands.command(
+        aliases=['treesize', 'fs', 'ts'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user who you want to check the family size of.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -263,7 +322,24 @@ class Information(vbu.Cog):
             output = f"There {'are' if size > 1 else 'is'} {size} {'people' if size > 1 else 'person'} in your family tree."
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
-    @commands.command(aliases=['relation'])
+    @commands.command(
+        aliases=['relation'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The first user who you want to check the relation of.",
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The second user who you want to compare the first to.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -305,7 +381,19 @@ class Information(vbu.Cog):
                 output = f"**{utils.escape_markdown(other_name)}** is your {relation}."
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
-    @commands.command(aliases=['familytree', 't'])
+    @commands.command(
+        aliases=['familytree', 't'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user you want to look at the family tree for.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.dynamic_cooldown(TreeCommandCooldown.cooldown, type=commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -325,7 +413,19 @@ class Information(vbu.Cog):
             except Exception:
                 raise
 
-    @commands.command(aliases=['st', 'stupidtree', 'fulltree', 'bt'])
+    @commands.command(
+        aliases=['st', 'stupidtree', 'fulltree', 'bt'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user you want to look at the family tree for.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.dynamic_cooldown(TreeCommandCooldown.cooldown, type=commands.BucketType.user)
     @utils.checks.has_donator_perks("can_run_bloodtree")

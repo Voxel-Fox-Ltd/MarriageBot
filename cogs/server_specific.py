@@ -28,7 +28,7 @@ Please feel free to direct any questions to the team at `m!support`.
 """.strip()
 
 
-class ServerSpecific(vbu.Cog):
+class ServerSpecific(vbu.Cog[vbu.Bot]):
 
     @vbu.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):

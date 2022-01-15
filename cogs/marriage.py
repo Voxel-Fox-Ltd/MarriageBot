@@ -7,7 +7,7 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class Marriage(vbu.Cog):
+class Marriage(vbu.Cog[vbu.Bot]):
 
     @commands.context_command(name="Marry user")
     async def context_command_marry(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
@@ -15,7 +15,18 @@ class Marriage(vbu.Cog):
         await command.can_run(ctx)
         await ctx.invoke(command, user)  # type: ignore
 
-    @commands.command(aliases=['propose'])
+    @commands.command(
+        aliases=['propose'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="target",
+                    description="The user you want to propose to.",
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
@@ -126,7 +137,9 @@ class Marriage(vbu.Cog):
         await re.disconnect()
         await lock.unlock()
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(),
+    )
     @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()

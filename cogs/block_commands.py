@@ -1,9 +1,20 @@
+import discord
 from discord.ext import commands, vbu
 
 
-class BlockCommands(vbu.Cog):
+class BlockCommands(vbu.Cog[vbu.Bot]):
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user that you want to block.",
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.bot_has_permissions(send_messages=True)
     async def block(self, ctx: vbu.Context, user: vbu.converters.UserID):
@@ -28,7 +39,17 @@ class BlockCommands(vbu.Cog):
         # And respond
         return await ctx.send("That user is now blocked.")
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user that you want to unblock.",
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
     @commands.defer()
     @commands.bot_has_permissions(send_messages=True)
     async def unblock(self, ctx: vbu.Context, user: vbu.converters.UserID):

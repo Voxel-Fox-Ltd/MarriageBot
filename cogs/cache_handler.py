@@ -3,7 +3,7 @@ from discord.ext import vbu
 from cogs import utils
 
 
-class CacheHandler(vbu.Cog):
+class CacheHandler(vbu.Cog[vbu.Bot]):
 
     @staticmethod
     def handle_partner(row):

@@ -6,7 +6,7 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class BotModerator(vbu.Cog, command_attrs={'hidden': True}):
+class BotModerator(vbu.Cog[vbu.Bot], command_attrs={'hidden': True}):
 
     @commands.command()
     @vbu.checks.is_bot_support()
