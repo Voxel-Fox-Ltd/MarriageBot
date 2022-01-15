@@ -9,7 +9,7 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class SimulationCommands(vbu.Cog[vbu.Bot]):
+class SimulationCommands(vbu.Cog):
 
     async def get_reaction_gif(
             self,

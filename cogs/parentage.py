@@ -11,7 +11,7 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class Parentage(vbu.Cog[vbu.Bot]):
+class Parentage(vbu.Cog):
 
     async def get_max_children_for_member(
             self,

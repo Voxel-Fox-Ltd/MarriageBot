@@ -6,7 +6,7 @@ from discord.ext import vbu
 from cogs import utils
 
 
-class RedisHandler(vbu.Cog[vbu.Bot]):
+class RedisHandler(vbu.Cog):
 
     def __init__(self, bot: vbu.Bot):
         super().__init__(bot)

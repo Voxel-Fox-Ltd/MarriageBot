@@ -23,7 +23,7 @@ class TreeCommandCooldown(object):
         return commands.Cooldown(1, 15)
 
 
-class Information(vbu.Cog[vbu.Bot]):
+class Information(vbu.Cog):
 
     def __init__(self, bot):
         super().__init__(bot)

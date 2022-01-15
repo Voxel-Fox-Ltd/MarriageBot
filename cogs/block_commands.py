@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands, vbu
 
 
-class BlockCommands(vbu.Cog[vbu.Bot]):
+class BlockCommands(vbu.Cog):
 
     @commands.command(
         application_command_meta=commands.ApplicationCommandMeta(

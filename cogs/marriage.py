@@ -9,7 +9,7 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class Marriage(vbu.Cog[vbu.Bot]):
+class Marriage(vbu.Cog):
 
     @commands.context_command(name="Marry user")
     async def context_command_marry(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):

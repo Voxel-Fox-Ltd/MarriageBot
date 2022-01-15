@@ -5,7 +5,7 @@ from discord.ext import vbu
 from cogs import utils
 
 
-class CacheHandler(vbu.Cog[vbu.Bot]):
+class CacheHandler(vbu.Cog):
 
     @staticmethod
     def handle_partner(row):
