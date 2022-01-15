@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing
 import asyncio
 from datetime import datetime as dt

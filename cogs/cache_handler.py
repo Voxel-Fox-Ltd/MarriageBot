@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from discord.ext import vbu
 
 from cogs import utils
