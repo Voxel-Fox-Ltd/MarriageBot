@@ -333,7 +333,11 @@ class Parentage(vbu.Cog):
 
         # Make a list of options
         child_options = []
+        added_children = set()
         for index, child_tree in enumerate(user_tree.children):
+            if child_tree.id in added_children:
+                continue
+            added_children.add(child_tree.id)
             child_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, child_tree.id)
             child_options.append(discord.ui.SelectOption(label=child_name, value=f"DISOWN {child_tree.id}"))
             if index >= 25:
