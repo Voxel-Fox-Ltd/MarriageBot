@@ -334,7 +334,7 @@ class Information(vbu.Cog):
                     type=discord.ApplicationCommandOptionType.user,
                 ),
                 discord.ApplicationCommandOption(
-                    name="user",
+                    name="other",
                     description="The second user who you want to compare the first to.",
                     type=discord.ApplicationCommandOptionType.user,
                     required=False,
