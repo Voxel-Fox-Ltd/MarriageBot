@@ -365,8 +365,7 @@ class Information(vbu.Cog):
 
         # Get their relation
         user_info, other_info = utils.FamilyTreeMember.get_multiple(user_id, other_id, guild_id=utils.get_family_guild_id(ctx))
-        async with ctx.typing():
-            relation = user_info.get_relation(other_info)
+        relation = user_info.get_relation(other_info)
 
         # Get names
         user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
