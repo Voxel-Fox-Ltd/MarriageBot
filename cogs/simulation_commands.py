@@ -57,10 +57,6 @@ class SimulationCommands(vbu.Cog):
             self.logger.debug("No API key set for Weeb.sh")
             return None
 
-        # Defer the interaction
-        if isinstance(ctx, commands.SlashContext):
-            await ctx.interaction.response.defer()
-
         # If we can't return images, then don't
         elif ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).embed_links:
             return None
@@ -99,6 +95,7 @@ class SimulationCommands(vbu.Cog):
             ],
         ),
     )
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def hug(self, ctx: vbu.Context, user: discord.Member):
@@ -123,6 +120,7 @@ class SimulationCommands(vbu.Cog):
             ],
         ),
     )
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def kiss(self, ctx: vbu.Context, user: discord.Member):
@@ -147,6 +145,7 @@ class SimulationCommands(vbu.Cog):
             ],
         ),
     )
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def slap(self, ctx: vbu.Context, user: discord.Member):
@@ -191,6 +190,7 @@ class SimulationCommands(vbu.Cog):
             ],
         ),
     )
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def punch(self, ctx: vbu.Context, user: discord.Member):
@@ -333,6 +333,7 @@ class SimulationCommands(vbu.Cog):
             ],
         ),
     )
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def stab(self, ctx: vbu.Context, user: discord.Member):
@@ -370,6 +371,7 @@ class SimulationCommands(vbu.Cog):
             ],
         ),
     )
+    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def kill(self, ctx: vbu.Context, user: discord.Member = None):
