@@ -18,8 +18,14 @@ def escape_markdown(value: str) -> str:
 class TickPayloadCheckResult(object):
 
     def __init__(self, ctx, response):
-        self.ctx = ctx
+        self.ctx: typing.Union[commands.Context, discord.Interaction] = ctx
         self.response = response
+
+    @property
+    def messageable(self) -> discord.abc.Messageable:
+        if isinstance(self.ctx, discord.Interaction):
+            return self.ctx.followup
+        return self.ctx
 
     @classmethod
     def from_payload(cls, payload):

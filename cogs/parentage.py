@@ -167,9 +167,11 @@ class Parentage(vbu.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.followup.send("I ran into an error saving your family data - please try again later.")
+                self.bot.dispatch("recache_user", ctx.author, family_guild_id)
+                self.bot.dispatch("recache_user", target, family_guild_id)
+                return await result.messageable.send("I ran into an error saving your family data - please try again later.")
         await vbu.embeddify(
-            result.ctx.followup,
+            result.messageable,
             f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!",
         )
 
@@ -300,9 +302,11 @@ class Parentage(vbu.Cog):
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.followup.send("I ran into an error saving your family data - please try again later.")
+                self.bot.dispatch("recache_user", ctx.author, family_guild_id)
+                self.bot.dispatch("recache_user", target, family_guild_id)
+                return await result.messageable.send("I ran into an error saving your family data - please try again later.")
         await vbu.embeddify(
-            result.ctx.followup,
+            result.messageable,
             f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!",
         )
 
@@ -421,7 +425,7 @@ class Parentage(vbu.Cog):
 
         # And we're done
         await vbu.embeddify(
-            result.ctx.followup,
+            result.messageable,
             f"You've successfully disowned **{utils.escape_markdown(child_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )
@@ -481,7 +485,7 @@ class Parentage(vbu.Cog):
         # And we're done
         parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, parent_tree.id)
         await vbu.embeddify(
-            result.ctx.followup,
+            result.messageable,
             f"You no longer have **{utils.escape_markdown(parent_name)}** as a parent :c",
         )
 
@@ -538,7 +542,7 @@ class Parentage(vbu.Cog):
 
         # Output to user
         await vbu.embeddify(
-            result.ctx.followup,
+            result.messageable,
             "You've sucessfully disowned all of your children :c",
         )
 
@@ -625,7 +629,7 @@ class Parentage(vbu.Cog):
 
     #     # And we're done
     #     await vbu.embeddify(
-    #         result.ctx.followup,
+    #         result.messageable,
     #         f"You've successfully left your family, {ctx.author.mention} :c",
     #         allowed_mentions=discord.AllowedMentions.none(),
     #     )

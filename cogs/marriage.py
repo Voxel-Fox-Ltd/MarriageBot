@@ -125,9 +125,11 @@ class Marriage(vbu.Cog):
                     )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
-                return await result.ctx.followup.send("I ran into an error saving your family data.")
+                self.bot.dispatch("recache_user", ctx.author, family_guild_id)
+                self.bot.dispatch("recache_user", target, family_guild_id)
+                return await result.messageable.send("I ran into an error saving your family data.")
         await vbu.embeddify(
-            result.ctx.followup,
+            result.messageable,
             f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!",
         )  # Keep allowed mentions on
 
@@ -181,7 +183,7 @@ class Marriage(vbu.Cog):
                 ctx.author.id, target_tree.id, family_guild_id,
             )
         partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, target_tree.id)
-        await result.ctx.followup.send(
+        await result.messageable.send(
             f"You've successfully divorced **{utils.escape_markdown(partner_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )

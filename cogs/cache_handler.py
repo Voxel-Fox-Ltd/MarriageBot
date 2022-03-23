@@ -1,11 +1,41 @@
 from __future__ import annotations
 
+import discord
 from discord.ext import vbu
 
 from cogs import utils
 
 
 class CacheHandler(vbu.Cog):
+
+    async def recache_user(self, user: discord.abc.Snowflake, guild_id: int = 0):
+        """
+        Re-cache a user and in the bot's cache.
+        """
+
+        ftm = utils.FamilyTreeMember.get(user.id, guild_id)
+        async with vbu.Database() as db:
+            partnerships = await db(
+                "SELECT * FROM marriages WHERE user_id=$1 AND guild_id=$2",
+                ftm.id, ftm._guild_id,
+            )
+            parents = await db(
+                "SELECT * FROM parents WHERE child_id=$1 AND guild_id=$2",
+                ftm.id, ftm._guild_id,
+            )
+            children = await db(
+                "SELECT * FROM parents WHERE parent_id=$1 AND guild_id=$2",
+                ftm.id, ftm._guild_id,
+            )
+        ftm._children = [r['child_id'] for r in children]
+        if partnerships:
+            ftm._partner = partnerships[0]['partner_id']
+        if parents:
+            ftm._parent = parents[0]['parent_id']
+
+    @vbu.Cog.listener("on_recache_user")
+    async def _recache_user(self, user, guild_id):
+        await self.recache_user(user, guild_id)
 
     @staticmethod
     def handle_partner(row):
