@@ -262,7 +262,7 @@ class SimulationCommands(vbu.Cog):
                 f"{user.mention} has been stabbed.",
                 f"*stabs {user.mention}.*",
                 "Looks like you don't have a knife, oops!",
-                "You can't legally stab someone without thier consent.",
+                "You can't legally stab someone without their consent.",
                 "Stab? Isn't that, like, illegal?",
                 "I wouldn't recommend doing that tbh.",
             ]
