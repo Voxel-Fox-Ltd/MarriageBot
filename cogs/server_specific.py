@@ -340,7 +340,7 @@ class ServerSpecific(vbu.Cog):
 
         # Update cache
         try:
-            child_tree.parent.add_child(child)
+            child_tree.parent.remove_child(child)
         except ValueError:
             pass
         parent = child_tree.parent
