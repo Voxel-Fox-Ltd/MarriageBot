@@ -97,7 +97,7 @@ p {
 <form id="incest-allowed" class="boxed">
     <p>Incest - sets whether incest is allowed on your server.</p>
     <p>
-        <input name="allowed" {% if guild_settings['allow_incest'] %}checked{% endif %} type="checkbox" {% if not has_gold %}disabled{% endif %} />
+        <input name="enabled" {% if guild_settings['allow_incest'] %}checked{% endif %} type="checkbox" {% if not has_gold %}disabled{% endif %} />
         {% if has_gold -%}
             <button onclick="updateGuildIncestEnabled(this); return false;">Update Incest Allowed</button>
         {%- else -%}
