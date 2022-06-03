@@ -114,7 +114,10 @@ async def send_proposal_message(
         return TickPayloadCheckResult(ctx, "YES")
 
     # Send some buttons
-    components = discord.ui.MessageComponents.boolean_buttons()
+    components = discord.ui.MessageComponents.boolean_buttons(
+        yes=("Yes", "YES",),
+        no=("No", "NO",),
+    )
     message = await vbu.embeddify(ctx, text, components=components)  # f"Hey, {user.mention}, do you want to adopt {ctx.author.mention}?"
 
     # Set up a check
@@ -130,7 +133,7 @@ async def send_proposal_message(
         if payload.user.id == user.id:
             return True
         if payload.user.id == ctx.author.id:
-            if payload.component.custom_id != "NO":
+            if payload.custom_id != "NO":
                 ctx.bot.loop.create_task(payload.response.send_message("You can't accept your own proposal!", ephemeral=True))
                 return False
         return True
