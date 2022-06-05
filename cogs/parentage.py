@@ -187,7 +187,7 @@ class Parentage(vbu.Cog):
     async def context_command_adopt(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
         command = self.adopt
         await command.can_run(ctx)
-        await ctx.invoke(command, user)  # type: ignore
+        await ctx.invoke(command, target=user)  # type: ignore
 
     @commands.command(
         application_command_meta=commands.ApplicationCommandMeta(

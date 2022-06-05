@@ -15,7 +15,7 @@ class Marriage(vbu.Cog):
     async def context_command_marry(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
         command = self.marry
         await command.can_run(ctx)
-        await ctx.invoke(command, user)  # type: ignore
+        await ctx.invoke(command, target=user)  # type: ignore
 
     @commands.command(
         aliases=['propose'],
