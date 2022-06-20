@@ -8,7 +8,13 @@ CREATE TABLE IF NOT EXISTS guild_settings(
     gifs_enabled BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (guild_id)
 );
--- A config for a guild to change their prefix or other bot settings
+-- A config for a guild to change their prefix or other bot settings.
+
+
+CREATE TABLE IF NOT EXISTS user_settings(
+    user_id BIGINT PRIMARY KEY
+);
+-- A user config table; not used but required for VBU.
 
 
 CREATE TABLE IF NOT EXISTS marriages(
@@ -18,9 +24,9 @@ CREATE TABLE IF NOT EXISTS marriages(
     timestamp TIMESTAMP,
     PRIMARY KEY (user_id, guild_id)
 );
--- This table will hold marraiges both in date and divorced pairs
--- marriage_id will be a random 11-character string
--- user_id will be one of the users involved (the other user will get an entry with an identical marriage_id)
+-- A table to hold a user and their partner. The primary key
+-- stops users from getting married twice. This may need revisiting
+-- in the near future.
 
 
 CREATE TABLE IF NOT EXISTS parents(
@@ -30,15 +36,16 @@ CREATE TABLE IF NOT EXISTS parents(
     timestamp TIMESTAMP,
     PRIMARY KEY (child_id, guild_id)
 );
--- Since a child will only appear once, you can set child_id to the primary key
--- A parent can have many children, a child will have only one parent
+-- A table holding a child and their parent. Since a child can only have
+-- one parent (a decision made long ago), the child has been made the
+-- primary key of the table.
 
 
 CREATE TABLE IF NOT EXISTS blacklisted_guilds(
     guild_id BIGINT NOT NULL,
     PRIMARY KEY (guild_id)
 );
--- Basically a big ol' list of blacklisted guild IDs
+-- A list of blacklisted guild IDs - the bot will auto-leave these guilds.
 
 
 CREATE TABLE IF NOT EXISTS guild_specific_families(
@@ -46,7 +53,7 @@ CREATE TABLE IF NOT EXISTS guild_specific_families(
     purchased_by BIGINT,
     PRIMARY KEY (guild_id)
 );
--- A big ol' list of guild IDs of people who've paid
+-- A list of guild IDs of people who've paid for Gold.
 
 
 DO $$ BEGIN
@@ -54,7 +61,6 @@ DO $$ BEGIN
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
-
 CREATE TABLE IF NOT EXISTS customisation(
     user_id BIGINT NOT NULL,
     edge INTEGER DEFAULT NULL,
@@ -66,7 +72,8 @@ CREATE TABLE IF NOT EXISTS customisation(
     direction direction DEFAULT 'TB',
     PRIMARY KEY (user_id)
 );
--- A table for user tree customisations
+-- A table for user tree customisations. The nulls are all set in the
+-- bot's code for defaults.
 
 
 CREATE TABLE IF NOT EXISTS blocked_user(
@@ -74,14 +81,18 @@ CREATE TABLE IF NOT EXISTS blocked_user(
     blocked_user_id BIGINT,
     PRIMARY KEY (user_id, blocked_user_id)
 );
--- A user and how they're blocked ie user_id is the person who blocks blocked_user_id
+-- A user and a person they've blocked.
 
 
-CREATE TABLE IF NOT EXISTS dbl_votes(
-    user_id BIGINT PRIMARY KEY,
-    timestamp TIMESTAMP
-);
--- A table to track the last time a user voted for the bot
+-- CREATE TABLE IF NOT EXISTS ship_percentages(
+--     user_id_1 BIGINT,
+--     user_id_2 BIGINT,
+--     percentage SMALLINT,
+--     PRIMARY KEY (user_id_1, user_id_2)
+-- );
+-- A list of set user pairs for the ship command, to override the
+-- user ID calculation that it uses by default.
+-- Commented out while we don't have the actual ship command added.
 
 
 CREATE TABLE IF NOT EXISTS blog_posts(
@@ -91,32 +102,14 @@ CREATE TABLE IF NOT EXISTS blog_posts(
     created_at TIMESTAMP,
     author_id BIGINT
 );
-
-
-CREATE TABLE IF NOT EXISTS paypal_purchases(
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    customer_id VARCHAR(18),
-    payment_amount INTEGER NOT NULL,
-    discord_id BIGINT NOT NULL,
-    guild_id BIGINT NOT NULL,
-    completed BOOLEAN NOT NULL DEFAULT FALSE,
-    checkout_complete_timestamp TIMESTAMP
-);
-
-
-CREATE TABLE IF NOT EXISTS channel_list(
-    guild_id BIGINT,
-    channel_id BIGINT,
-    key VARCHAR(50),
-    value VARCHAR(50),
-    PRIMARY KEY (guild_id, channel_id, key)
-);
+-- Markdown to render on the website.
 
 
 CREATE TABLE IF NOT EXISTS redirects(
     code VARCHAR(50) PRIMARY KEY,
     location VARCHAR(2000)
 );
+-- Redirects from /r/{code} to the given location for the webiste.
 
 
 CREATE TABLE IF NOT EXISTS disabled_commands(
@@ -125,6 +118,9 @@ CREATE TABLE IF NOT EXISTS disabled_commands(
     disabled BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (command_name, guild_id)
 );
+-- Commands that are disabled for the bot, as specified in the website
+-- settings. Can be removed when the message content intent is removed,
+-- as users can manage this themselves via the slash command dashboard.
 
 
 CREATE TABLE IF NOT EXISTS max_children_amount(
@@ -133,24 +129,5 @@ CREATE TABLE IF NOT EXISTS max_children_amount(
     amount INTEGER DEFAULT 5,
     PRIMARY KEY (guild_id, role_id)
 );
-
-
-CREATE TABLE IF NOT EXISTS user_settings(
-    user_id BIGINT PRIMARY KEY
-);
-
-
-CREATE TABLE IF NOT EXISTS role_list(
-    guild_id BIGINT,
-    role_id BIGINT,
-    key VARCHAR(50),
-    value VARCHAR(50),
-    PRIMARY KEY (guild_id, role_id, key)
-);
-
-CREATE TABLE IF NOT EXISTS ship_percentages(
-    user_id_1 BIGINT,
-    user_id_2 BIGINT,
-    percentage SMALLINT,
-    PRIMARY KEY (user_id_1, user_id_2)
-);
+-- Max children count overrides for Gold to use, as specified in the
+-- website settings.

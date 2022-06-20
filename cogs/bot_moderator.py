@@ -107,26 +107,26 @@ class BotModerator(vbu.Cog, command_attrs={'hidden': True}):
             )
         await ctx.send("Done.")
 
-    @commands.command(hidden=True)
-    @vbu.checks.is_bot_support()
-    @commands.bot_has_permissions(add_reactions=True)
-    async def addship(
-            self, ctx: vbu.Context, user1: discord.Member, user2: discord.Member = None,
-            percentage: float = 0):
-        """
-        Add a custom ship percentage.
-        """
+    # @commands.command(hidden=True)
+    # @vbu.checks.is_bot_support()
+    # @commands.bot_has_permissions(add_reactions=True)
+    # async def addship(
+    #         self, ctx: vbu.Context, user1: discord.Member, user2: discord.Member = None,
+    #         percentage: float = 0):
+    #     """
+    #     Add a custom ship percentage.
+    #     """
 
-        user2 = user2 or ctx.author  # type: ignore
-        assert user2
-        percentage = max([min([percentage * 100, 10_000]), -10_000])
-        async with vbu.Database() as db:
-            await db(
-                """INSERT INTO ship_percentages (user_id_1, user_id_2, percentage) VALUES ($1, $2, $3)
-                ON CONFLICT (user_id_1, user_id_2) DO UPDATE SET percentage=excluded.percentage""",
-                *sorted([user1.id, user2.id]), percentage,
-            )
-        await ctx.send("Done.")
+    #     user2 = user2 or ctx.author  # type: ignore
+    #     assert user2
+    #     percentage = max([min([percentage * 100, 10_000]), -10_000])
+    #     async with vbu.Database() as db:
+    #         await db(
+    #             """INSERT INTO ship_percentages (user_id_1, user_id_2, percentage) VALUES ($1, $2, $3)
+    #             ON CONFLICT (user_id_1, user_id_2) DO UPDATE SET percentage=excluded.percentage""",
+    #             *sorted([user1.id, user2.id]), percentage,
+    #         )
+    #     await ctx.send("Done.")
 
     @commands.command(aliases=['getgoldpurchase'])
     @vbu.checks.is_bot_support()
