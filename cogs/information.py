@@ -383,7 +383,7 @@ class Information(vbu.Cog):
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(
-        aliases=['familytree', 't'],
+        aliases=['familytree', 't', 'wreath'],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(
@@ -415,7 +415,7 @@ class Information(vbu.Cog):
                 raise
 
     @commands.command(
-        aliases=['st', 'stupidtree', 'fulltree', 'bt'],
+        aliases=['st', 'stupidtree', 'fulltree', 'bt', 'stupidwreath', 'bloodwreath'],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(
