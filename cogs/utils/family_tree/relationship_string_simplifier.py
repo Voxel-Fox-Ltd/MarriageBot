@@ -1,6 +1,11 @@
 import re
 
 
+__all__ = (
+    'RelationshipStringSimplifier',
+)
+
+
 class RelationshipStringSimplifier(object):
     """
     A general static class for simplifying a list of relations from
@@ -28,19 +33,30 @@ class RelationshipStringSimplifier(object):
         lambda x: x.replace("parent's niece/nephew", "cousin"),
         lambda x: x.replace("aunt/uncle's child", "cousin"),
         lambda x: x.replace("niece/nephew's sibling", "niece/nephew"),
-        lambda x: x.replace("niece/nephew's child", "grandniece/nephew").replace("grandgrandniece/nephew", "great grandniece/nephew"),
+        lambda x: x.replace("niece/nephew's child", "grandniece/nephew"),
+        lambda x: x.replace("grandgrandniece/nephew", "great grandniece/nephew"),
         lambda x: x.replace("partner's parent", "parent-in-law")
     ]
 
-    # Operations to shorten strings of the same word ("child's child") into more appropriate forms ("grandchild")
+    # Operations to shorten strings of the same word ("child's child")
+    # into more appropriate forms ("grandchild")
     short_operations = [
-        lambda x: re.sub(r"((?:child's )+)child", lambda m: ("great " * (m.group(1).count(" ") - 1)) + "grandchild", x),
-        lambda x: re.sub(r"((?:parent's )+)parent", lambda m: ("great " * (m.group(1).count(" ") - 1)) + "grandparent", x),
+        lambda x: re.sub(
+            r"((?:child's )+)child",
+            lambda m: ("great " * (m.group(1).count(" ") - 1)) + "grandchild",
+            x,
+        ),
+        lambda x: re.sub(
+            r"((?:parent's )+)parent",
+            lambda m: ("great " * (m.group(1).count(" ") - 1)) + "grandparent",
+            x,
+        ),
         lambda x: x.replace("grandsibling", "great aunt/uncle"),
         lambda x: re.sub(r"sibling's (\d+(?:st|nd|rd|th) cousin)", r"\1", x),
     ]
 
-    # Operations to strip out anything that shouldn't really be there, eg double spaces or trailing whitepsace
+    # Operations to strip out anything that shouldn't really be
+    # there, eg double spaces or trailing whitepsace
     post_operations = [
         lambda x: x.replace(" 's", ""),
         lambda x: x.replace("  ", " "),
@@ -57,8 +73,8 @@ class RelationshipStringSimplifier(object):
         Gets the full cousin string.
         """
 
-        p = k.group(0).count('parent')  # p = cls.get_cousin_parent_count(k)  # parent
-        c = k.group(0).count('child')  # c = cls.get_cousin_child_count(k)  # child
+        p = k.group(0).count('parent')
+        c = k.group(0).count('child')
 
         if p < 2:
             # Make sure we're not just working on nieces/children/siblings
@@ -89,12 +105,14 @@ class RelationshipStringSimplifier(object):
             cousin_string += f"{x}th cousin "
         if y == 0:
             return cousin_string.strip()
-        return (cousin_string + {True: "1 time removed", False: f"{y} times removed"}[y == 1]).strip()
+        times_removed = {True: "1 time removed", False: f"{y} times removed"}[y == 1]
+        return (cousin_string + times_removed).strip()
 
     @classmethod
     def simplify(cls, string:str) -> str:
         """
-        Runs the given input through the shortening operations a number of times so as to shorten the input to a nice
+        Runs the given input through the shortening operations a
+        number of times so as to shorten the input to a nice
         family relationship string.
         """
 

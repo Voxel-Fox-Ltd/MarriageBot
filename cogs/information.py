@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import typing
+from typing import Optional
 import asyncio
 import collections
+from uuid import uuid4
 
 import discord
 from discord.ext import commands, vbu
@@ -13,7 +14,7 @@ from cogs import utils
 
 class TreeCommandCooldown(object):
 
-    bot: typing.Optional[vbu.Bot] = None
+    bot: Optional[utils.types.Bot] = None
 
     @classmethod
     def cooldown(cls, message: discord.Message) -> commands.Cooldown:
@@ -23,7 +24,7 @@ class TreeCommandCooldown(object):
         return commands.Cooldown(1, 15)
 
 
-class Information(vbu.Cog):
+class Information(vbu.Cog[utils.types.Bot]):
 
     def __init__(self, bot):
         super().__init__(bot)
@@ -54,7 +55,10 @@ class Information(vbu.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def partner(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
+    async def partner(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
         """
         Tells you who a user is married to.
         """
@@ -75,26 +79,64 @@ class Information(vbu.Cog):
                 f"**{utils.escape_markdown(user_name)}** is not currently married.",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
-        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._partner)
+        partner_name = await utils.DiscordNameManager.fetch_name_by_id(
+            self.bot,
+            user_info._partner,
+        )
 
         # Get timestamp
         async with vbu.Database() as db:
             if self.bot.config.get('is_server_specific', False):
-                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=$2", user_id, user_info._guild_id)
+                data = await db(
+                    """
+                    SELECT
+                        *
+                    FROM
+                        marriages
+                    WHERE
+                        user_id = $1
+                    AND
+                        guild_id = $2
+                    """,
+                    user_id, user_info._guild_id,
+                )
             else:
-                data = await db("SELECT * FROM marriages WHERE user_id=$1 AND guild_id=0", user_id)
+                data = await db(
+                    """
+                    SELECT
+                        *
+                    FROM
+                        marriages
+                    WHERE
+                        user_id = $1
+                    AND
+                        guild_id = 0
+                    """,
+                    user_id,
+                )
         try:
             timestamp = data[0]['timestamp']
         except Exception:
             timestamp = None
 
         # Output
-        text = f"**{utils.escape_markdown(user_name)}** is currently married to **{utils.escape_markdown(partner_name)}** (`{user_info._partner}`). "
+        text = (
+            f"**{utils.escape_markdown(user_name)}** is currently married "
+            f"to **{utils.escape_markdown(partner_name)}** "
+            f"(`{user_info._partner}`). "
+        )
         if user_id == ctx.author.id:
-            text = f"You're currently married to **{utils.escape_markdown(partner_name)}** (`{user_info._partner}`). "
+            text = (
+                f"You're currently married to **{utils.escape_markdown(partner_name)}** "
+                f"(`{user_info._partner}`). "
+            )
         if timestamp:
             duration = discord.utils.format_dt(timestamp, "R")
-            text += f"{'You' if user_id == ctx.author.id else 'They'} got married {duration}."
+            text += vbu.format(
+                "{0:pronoun,You,They} got married {2}",
+                user_id == ctx.author.id,
+                duration,
+            )
         await vbu.embeddify(ctx, text, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(
@@ -114,7 +156,10 @@ class Information(vbu.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def children(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
+    async def children(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
         """
         Tells you who a user's children are.
         """
@@ -138,7 +183,10 @@ class Information(vbu.Cog):
 
         # They do have children!
         children_plural = 'child' if len(user_info._children) == 1 else 'children'
-        output = f"**{utils.escape_markdown(user_name)}** has {len(user_info._children)} {children_plural}:\n"
+        output = (
+            f"**{utils.escape_markdown(user_name)}** has "
+            f"{len(user_info._children)} {children_plural}:\n"
+        )
         if user_id == ctx.author.id:
             output = f"You have {len(user_info._children)} {children_plural}:\n"
         children = [
@@ -172,7 +220,10 @@ class Information(vbu.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def siblings(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
+    async def siblings(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
         """
         Tells you who a user's siblings are.
         """
@@ -235,7 +286,10 @@ class Information(vbu.Cog):
 
         # Return all output
         if len(output) > 2_000:
-            return await ctx.send(f"**{utils.escape_markdown(user_name)}**'s sibling list goes over 2,000 characters. Amazing.")
+            return await ctx.send((
+                f"**{utils.escape_markdown(user_name)}**'s sibling list goes "
+                "over 2,000 characters. Amazing."
+            ))
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(
@@ -255,7 +309,10 @@ class Information(vbu.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def parent(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
+    async def parent(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
         """
         Tells you who someone's parent is.
         """
@@ -279,9 +336,16 @@ class Information(vbu.Cog):
         parent_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_info._parent)
 
         # Output parent
-        output = f"**{utils.escape_markdown(user_name)}**'s parent is **{utils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
+        output = (
+            f"**{utils.escape_markdown(user_name)}**'s parent "
+            f"is **{utils.escape_markdown(parent_name)}** "
+            f"(`{user_info._parent}`)."
+        )
         if user_id == ctx.author.id:
-            output = f"Your parent is **{utils.escape_markdown(parent_name)}** (`{user_info._parent}`)."
+            output = (
+                f"Your parent is **{utils.escape_markdown(parent_name)}** "
+                f"(`{user_info._parent}`)."
+            )
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(
@@ -302,7 +366,10 @@ class Information(vbu.Cog):
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True)
-    async def familysize(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
+    async def familysize(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
         """
         Gives you the size of your family tree.
         """
@@ -321,7 +388,10 @@ class Information(vbu.Cog):
             f"in **{utils.escape_markdown(user_name)}**'s family tree."
         )
         if user_id == ctx.author.id:
-            output = f"There {'are' if size > 1 else 'is'} {size} {'people' if size > 1 else 'person'} in your family tree."
+            output = (
+                f"There {'are' if size > 1 else 'is'} {size} "
+                f"{'people' if size > 1 else 'person'} in your family tree."
+            )
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(
@@ -346,7 +416,11 @@ class Information(vbu.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def relationship(self, ctx: vbu.Context, user: vbu.converters.UserID, other: vbu.converters.UserID = None):
+    async def relationship(
+            self,
+            ctx: vbu.Context,
+            user: vbu.converters.UserID,
+            other: Optional[vbu.converters.UserID] = None):
         """
         Gets the relationship between the two specified users.
         """
@@ -359,12 +433,21 @@ class Information(vbu.Cog):
 
         # See if they're the same person
         if user_id == other_id:
-            if user_id == ctx.author.id:
-                return await ctx.send("Unsurprisingly, you're pretty closely related to yourself.")
-            return await ctx.send("Unsurprisingly, they're pretty closely related to themselves.")
+            text = vbu.format(
+                (
+                    "Unsurprisingly, {0:pronoun,you're,they're} pretty closely "
+                    "related to {0:pronoun,yourself,themselves}."
+                ),
+                user_id == ctx.author.id,
+            )
+            return await vbu.embeddify(ctx, text)
 
         # Get their relation
-        user_info, other_info = utils.FamilyTreeMember.get_multiple(user_id, other_id, guild_id=utils.get_family_guild_id(ctx))
+        user_info, other_info = utils.FamilyTreeMember.get_multiple(
+            user_id,
+            other_id,
+            guild_id=utils.get_family_guild_id(ctx),
+        )
         relation = user_info.get_relation(other_info)
 
         # Get names
@@ -373,11 +456,17 @@ class Information(vbu.Cog):
 
         # Output
         if relation is None:
-            output = f"**{utils.escape_markdown(user_name)}** is not related to **{utils.escape_markdown(other_name)}**."
+            output = (
+                f"**{utils.escape_markdown(user_name)}** is not related "
+                f"to **{utils.escape_markdown(other_name)}**."
+            )
             if user_id == ctx.author.id:
                 output = f"You're not related to **{utils.escape_markdown(other_name)}**."
         else:
-            output = f"**{utils.escape_markdown(other_name)}** is **{utils.escape_markdown(user_name)}**'s {relation}."
+            output = (
+                f"**{utils.escape_markdown(other_name)}** is "
+                f"**{utils.escape_markdown(user_name)}**'s {relation}."
+            )
             if user_id == ctx.author.id:
                 output = f"**{utils.escape_markdown(other_name)}** is your {relation}."
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
@@ -400,7 +489,10 @@ class Information(vbu.Cog):
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def tree(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
+    async def tree(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
         """
         Get the tree of blood-related family members for a user.
         """
@@ -410,7 +502,10 @@ class Information(vbu.Cog):
             return
         async with lock:
             try:
-                return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id)
+                return await self.treemaker(
+                    ctx=ctx,
+                    user_id=user or ctx.author.id,
+                )
             except Exception:
                 raise
 
@@ -432,7 +527,10 @@ class Information(vbu.Cog):
     @utils.checks.has_donator_perks("can_run_bloodtree")
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def bloodtree(self, ctx: vbu.Context, user: vbu.converters.UserID = None):
+    async def bloodtree(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
         """
         Get the entire family of relations for a user, including non-blood relations.
         """
@@ -442,11 +540,19 @@ class Information(vbu.Cog):
             return
         async with lock:
             try:
-                return await self.treemaker(ctx=ctx, user_id=user or ctx.author.id, stupid_tree=True)
+                return await self.treemaker(
+                    ctx=ctx,
+                    user_id=user or ctx.author.id,
+                    stupid_tree=True,
+                )
             except Exception:
                 raise
 
-    async def treemaker(self, ctx: vbu.Context, user_id: int, stupid_tree: bool = False):
+    async def treemaker(
+            self,
+            ctx: vbu.Context,
+            user_id: int,
+            stupid_tree: bool = False):
         """
         Handles the generation and sending of the tree to the user.
         """
@@ -466,18 +572,19 @@ class Information(vbu.Cog):
 
         # Get their customisations
         async with vbu.Database() as db:
-            ctu = await utils.CustomisedTreeUser.fetch_by_id(db, ctx.author.id)
+            customisations = await utils.CustomisedTreeUser.fetch_by_id(db, ctx.author.id)
 
         # Get their dot script
         if not isinstance(ctx, commands.SlashContext):
             await ctx.trigger_typing()
         if stupid_tree:
-            dot_code = await user_info.to_full_dot_script(self.bot, ctu)
+            dot_code = await user_info.to_full_dot_script(self.bot, customisations)
         else:
-            dot_code = await user_info.to_dot_script(self.bot, ctu)
+            dot_code = await user_info.to_dot_script(self.bot, customisations)
 
         # Write the dot to a file
-        dot_filename = f'{self.bot.config["tree_file_location"]}/{ctx.author.id}.gz'
+        filename_id = str(uuid4())
+        dot_filename = f'{self.bot.config["tree_file_location"]}/{filename_id}.gz'
         try:
             with open(dot_filename, 'w', encoding='utf-8') as a:
                 a.write(dot_code)
@@ -487,21 +594,21 @@ class Information(vbu.Cog):
 
         # Convert to an image
         # http://www.graphviz.org/doc/info/output.html#d:png
-        image_filename = f'{self.bot.config["tree_file_location"].rstrip("/")}/{ctx.author.id}.png'
-        perks: utils.MarriageBotPerks = await utils.get_marriagebot_perks(ctx.bot, ctx.author.id)
+        image_filename = f'{self.bot.config["tree_file_location"].rstrip("/")}/{filename_id}.png'
 
-        # highest quality colour, and antialiasing
-        # not using this because not much point
-        # todo: add extra level for better colour, stroke etc, basically like the one in the readme (in addition to antialiasing)
-        # if False:
-        #     format_rendering_option = '-Tpng:cairo'  # -T:png does the same thing but this is clearer
+        # if perks.tree_render_quality >= 1:
+        format_rendering_option = '-Tpng:cairo'  # normal colour, and antialising
+        # else:
+        #     format_rendering_option = '-Tpng:gd'  # normal colour, no antialising
 
-        if perks.tree_render_quality >= 1:
-            format_rendering_option = '-Tpng:cairo'  # normal colour, and antialising
-        else:
-            format_rendering_option = '-Tpng:gd'  # normal colour, no antialising
-
-        dot = await asyncio.create_subprocess_exec('dot', format_rendering_option, dot_filename, '-o', image_filename, '-Gcharset=UTF-8')
+        dot = await asyncio.create_subprocess_exec(
+            'dot',
+            format_rendering_option,
+            dot_filename,
+            '-o',
+            image_filename,
+            '-Gcharset=UTF-8',
+        )
         await asyncio.wait_for(dot.wait(), 30.0)
 
         # Kill subprocess
@@ -516,10 +623,16 @@ class Information(vbu.Cog):
         try:
             file = discord.File(image_filename)
         except FileNotFoundError:
-            return await ctx.send("I was unable to send your family tree image - please try again later.")
+            return await ctx.send((
+                "I was unable to send your family tree image - "
+                "please try again later."
+            ))
         text = "[Click here](https://marriagebot.xyz/) to customise your tree."
         if not stupid_tree:
-            text += f" Use `{ctx.prefix}bloodtree` for your _entire_ family, including non-blood relatives."
+            text += (
+                f" Use `/bloodtree` for your _entire_ family, "
+                "including non-blood relatives."
+            )
         await vbu.embeddify(ctx, text, file=file)
 
         # Delete the files
@@ -527,6 +640,6 @@ class Information(vbu.Cog):
         asyncio.create_task(asyncio.create_subprocess_exec('rm', image_filename))
 
 
-def setup(bot: vbu.Bot):
+def setup(bot: utils.types.Bot):
     x = Information(bot)
     bot.add_cog(x)

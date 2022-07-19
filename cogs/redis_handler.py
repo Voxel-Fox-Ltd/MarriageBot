@@ -6,9 +6,9 @@ from discord.ext import vbu
 from cogs import utils
 
 
-class RedisHandler(vbu.Cog):
+class RedisHandler(vbu.Cog[utils.types.Bot]):
 
-    def __init__(self, bot: vbu.Bot):
+    def __init__(self, bot):
         super().__init__(bot)
         if vbu.RedisConnection.enabled:
             self.update_guild_prefix.start()
@@ -29,15 +29,15 @@ class RedisHandler(vbu.Cog):
         self.tree_member_update.stop()
 
     @vbu.redis_channel_handler("UpdateGuildPrefix")
-    def update_guild_prefix(self, payload):
+    def update_guild_prefix(self, payload: utils.types.GuildPrefixPayload):
         """
         Updates the prefix for the guild.
         """
 
-        self.bot.guild_settings[payload['guild_id']].update(payload)
+        self.bot.guild_settings[payload['guild_id']].update(payload)  # type: ignore - missing additional keys
 
     @vbu.redis_channel_handler("UpdateFamilyMaxMembers")
-    def update_max_family_members(self, payload):
+    def update_max_family_members(self, payload: utils.types.FamilyMaxMembersPayload):
         """
         Updates the max number of family members for the guild.
         """
@@ -46,7 +46,7 @@ class RedisHandler(vbu.Cog):
         self.bot.guild_settings[payload['guild_id']]['max_family_members'] = data
 
     @vbu.redis_channel_handler("UpdateIncestAllowed")
-    def update_incest_alllowed(self, payload):
+    def update_incest_alllowed(self, payload: utils.types.IncestAllowedPayload):
         """
         Updates whether incest is allowed on guild.
         """
@@ -55,7 +55,7 @@ class RedisHandler(vbu.Cog):
         self.bot.guild_settings[payload['guild_id']]['allow_incest'] = data
 
     @vbu.redis_channel_handler("UpdateMaxChildren")
-    def update_max_children(self, payload):
+    def update_max_children(self, payload: utils.types.MaxChildrenPayload):
         """
         Updates the maximum children allowed per role in a guild.
         """
@@ -64,7 +64,7 @@ class RedisHandler(vbu.Cog):
         self.bot.guild_settings[payload['guild_id']]['max_children'] = data
 
     @vbu.redis_channel_handler("UpdateGifsEnabled")
-    def update_gifs_enabled(self, payload):
+    def update_gifs_enabled(self, payload: utils.types.GifsEnabledPayload):
         """
         Updates whether or not gifs are enabled for a guild.
         """
@@ -73,7 +73,7 @@ class RedisHandler(vbu.Cog):
         self.bot.guild_settings[payload['guild_id']]['gifs_enabled'] = data
 
     @vbu.redis_channel_handler("SendUserMessage")
-    async def send_user_message(self, payload):
+    async def send_user_message(self, payload: utils.types.SendUserMessagePayload):
         """
         Sends a message to a given user.
         """
@@ -92,7 +92,7 @@ class RedisHandler(vbu.Cog):
             pass
 
     @vbu.redis_channel_handler("TreeMemberUpdate")
-    def tree_member_update(self, payload):
+    def tree_member_update(self, payload: utils.types.FamilyTreeMemberPayload):
         utils.FamilyTreeMember(**payload)
 
 

@@ -11,15 +11,26 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class Parentage(vbu.Cog):
+class Parentage(vbu.Cog[utils.types.Bot]):
 
     async def get_max_children_for_member(
             self,
             guild: discord.Guild,
-            user: typing.Union[discord.Member, discord.User],
-            ) -> int:
+            user: discord.Member) -> int:
         """
         Get the maximum amount of children a given member can have.
+
+        Parameters
+        ----------
+        guild : discord.Guild
+            The guild that the user is in.
+        user : discord.Member
+            The user that you want to get the max number of children for.
+
+        Returns
+        -------
+        int
+            A number of children that the user can have.
         """
 
         # Bots can do what they want
@@ -32,14 +43,17 @@ class Parentage(vbu.Cog):
             guild_max_children = self.bot.guild_settings[guild.id].get('max_children')
             if guild_max_children:
                 gold_children_amount = max([
-                    amount if int(role_id) in user._roles else 0 for role_id, amount in guild_max_children.items()
+                    amount if discord.Object(role_id) in user.roles else 0
+                    for role_id, amount in guild_max_children.items()
                 ])
 
         # See how many children they're allowed normally (in regard to Patreon tier)
-        marriagebot_perks: utils.MarriageBotPerks = await utils.get_marriagebot_perks(self.bot, user.id)  # type: ignore
+        marriagebot_perks: utils.MarriageBotPerks
+        marriagebot_perks = await utils.get_marriagebot_perks(self.bot, user.id)  # type: ignore
         user_children_amount = marriagebot_perks.max_children
 
-        # Return the largest amount of children they've been assigned that's UNDER the global max children as set in the config
+        # Return the largest amount of children they've been assigned
+        # that's UNDER the global max children as set in the config
         return min([
             max([
                 gold_children_amount,
@@ -50,7 +64,10 @@ class Parentage(vbu.Cog):
         ])
 
     @commands.context_command(name="Make user your parent")
-    async def context_command_makeparent(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
+    async def context_command_makeparent(
+            self,
+            ctx: vbu.Context,
+            user: utils.converters.UnblockedMember):
         command = self.makeparent
         await command.can_run(ctx)
         await ctx.invoke(command, target=user)  # type: ignore
@@ -71,14 +88,22 @@ class Parentage(vbu.Cog):
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def makeparent(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
+    async def makeparent(
+            self,
+            ctx: vbu.Context,
+            *,
+            target: utils.converters.UnblockedMember):
         """
         Picks a user that you want to be your parent.
         """
 
         # Variables we're gonna need for later
         family_guild_id = utils.get_family_guild_id(ctx)
-        author_tree, target_tree = utils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
+        author_tree, target_tree = utils.FamilyTreeMember.get_multiple(
+            ctx.author.id,
+            target.id,
+            guild_id=family_guild_id,
+        )
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -93,7 +118,7 @@ class Parentage(vbu.Cog):
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
+            return await ctx.send("One of you is already waiting on a proposal - please try again later.")
 
         # See if the *target* is already married
         if author_tree.parent:
@@ -229,7 +254,7 @@ class Parentage(vbu.Cog):
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
+            return await ctx.send("One of you is already waiting on a proposal - please try again later.")
 
         # See if the *target* is already married
         if target_tree.parent:
@@ -635,6 +660,6 @@ class Parentage(vbu.Cog):
     #     )
 
 
-def setup(bot: vbu.Bot):
+def setup(bot: utils.types.Bot):
     x = Parentage(bot)
     bot.add_cog(x)

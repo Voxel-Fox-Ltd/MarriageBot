@@ -2,18 +2,35 @@ from __future__ import annotations
 
 import random
 import string
-import typing
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    Tuple,
+    List,
+    Optional,
+    Iterable,
+    Union,
+    Set,
+)
 
-import voxelbotutils as utils
+from discord.ext import vbu
 
+from cogs.utils import types
 from cogs.utils.customised_tree_user import CustomisedTreeUser
 from cogs.utils.family_tree.relationship_string_simplifier import RelationshipStringSimplifier as Simplifier
 from cogs.utils.discord_name_manager import DiscordNameManager
 
+if TYPE_CHECKING:
+    import discord
+    FamilyTreeMemberSetter = Union[
+        "FamilyTreeMember",
+        int,
+        discord.User,
+    ]
 
 
-def get_random_string(length:int=10) -> str:
-    return ''.join(random.choices(string.ascii_letters, k=length))
+def get_random_string(length: int = 10) -> str:
+    return "".join(random.choices(string.ascii_letters, k=length))
 
 
 class FamilyTreeMember(object):
@@ -21,46 +38,69 @@ class FamilyTreeMember(object):
     A class representing a member of a family.
     """
 
-    all_users: typing.Dict[typing.Tuple[int, int], FamilyTreeMember] = {}
+    all_users: Dict[Tuple[int, int], FamilyTreeMember] = {}
     INVISIBLE = "[shape=circle, label=\"\", height=0.001, width=0.001]"  # For the DOT script
 
-    __slots__ = ('id', '_children', '_parent', '_partner', 'tree_id', '_guild_id')
+    __slots__ = (
+        'id',
+        '_children',
+        '_parent',
+        '_partner',
+        '_guild_id',
+    )
 
     def __init__(
-            self, discord_id: int, children: typing.List[int] = None,
-            parent_id: int = None, partner_id: int = None, guild_id: int = 0):
+            self,
+            discord_id: int,
+            children: Optional[List[int]] = None,
+            parent_id: Optional[int] = None,
+            partner_id: Optional[int] = None,
+            guild_id: int = 0):
         self.id: int = discord_id
-        self._children: typing.List[int] = children or list()
-        self._parent: typing.Optional[int] = parent_id
-        self._partner: typing.Optional[int] = partner_id
+        self._children: List[int] = children or list()
+        self._parent: Optional[int] = parent_id
+        self._partner: Optional[int] = partner_id
         self._guild_id: int = guild_id
-        self.tree_id: str = get_random_string()  # Used purely for the dot joining two spouses in the GZ script
         self.all_users[(self.id, self._guild_id)] = self
 
     def __hash__(self):
         return hash((self.id, self._guild_id,))
 
     @classmethod
-    def get(cls, discord_id: int, guild_id: int = 0) -> FamilyTreeMember:
+    def get(
+            cls,
+            discord_id: int,
+            guild_id: int = 0) -> FamilyTreeMember:
         """
         Gives you the object pertaining to the given user ID.
 
-        Args:
-            discord_id (int): The ID of the Discord user we want to get the information off.
-            guild_id (int, optional): The ID of the guild that we want to get the user from.
+        Parameters
+        ----------
+        discord_id : int
+            The ID of the Discord user we want to get the information off.
+        guild_id : int, optional
+            The ID of the guild that we want to get the user from.
 
-        Returns:
-            FamilyTreeMember: The family member we've queried for.
+        Returns
+        -------
+        FamilyTreeMember
+            The family member we've queried for.
         """
 
         assert discord_id
         v = cls.all_users.get((discord_id, guild_id))
         if v:
             return v
-        return cls(discord_id=discord_id, guild_id=guild_id)
+        return cls(
+            discord_id=discord_id,
+            guild_id=guild_id,
+        )
 
     @classmethod
-    def get_multiple(cls, *discord_ids:int, guild_id:int=0) -> typing.Iterable[FamilyTreeMember]:
+    def get_multiple(
+            cls,
+            *discord_ids: int,
+            guild_id: int = 0) -> Iterable[FamilyTreeMember]:
         """
         Gets multiple objects from the cache.
         """
@@ -90,29 +130,41 @@ class FamilyTreeMember(object):
         """
 
         return {
-            'discord_id': self.id,
-            'children': self._children,
-            'parent_id': self._parent,
-            'partner_id': self._partner,
-            'guild_id': self._guild_id,
+            "discord_id": self.id,
+            "children": self._children,
+            "parent_id": self._parent,
+            "partner_id": self._partner,
+            "guild_id": self._guild_id,
         }
 
     @classmethod
-    def from_json(cls, data:dict) -> FamilyTreeMember:
+    def from_json(cls, data: dict) -> FamilyTreeMember:
         """
         Loads an FamilyTreeMember object from JSON.
 
-        Args:
-            data (dict): The JSON object that represent the FamilyTreeMember object.
+        Parameters
+        ----------
+        data : dict
+            The JSON object that represent the FamilyTreeMember object.
 
-        Returns:
-            FamilyTreeMember: The new FamilyTreeMember object.
+        Returns
+        -------
+        FamilyTreeMember
+            The new FamilyTreeMember object.
         """
 
         return cls(**data)
 
     def __repr__(self) -> str:
-        return f"FamilyTreeMember[{self.id} <Partner {self._partner} <{len(self._children)} children>]"
+        attrs = (
+            ("discord_id", "id",),
+            ("children", "_children",),
+            ("parent_id", "_parent_id",),
+            ("partner_id", "_partner_id",),
+            ("guild_id", "_guild_id",),
+        )
+        d = ", ".join(["%s=%r" % (i, getattr(self, o)) for i, o in attrs])
+        return f"{self.__class__.__name__}({d})"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, self.__class__):
@@ -123,7 +175,7 @@ class FamilyTreeMember(object):
         ])
 
     @property
-    def partner(self) -> typing.Optional[FamilyTreeMember]:
+    def partner(self) -> Optional[FamilyTreeMember]:
         """
         Gets you the instance of this user's partner.
         """
@@ -133,7 +185,7 @@ class FamilyTreeMember(object):
         return None
 
     @partner.setter
-    def partner(self, value: typing.Union[FamilyTreeMember, int, None]):
+    def partner(self, value: Optional[FamilyTreeMemberSetter]) -> None:
         if value is None:
             self._partner = None
         elif isinstance(value, int):
@@ -142,7 +194,7 @@ class FamilyTreeMember(object):
             self._partner = value.id
 
     @property
-    def parent(self) -> typing.Optional[FamilyTreeMember]:
+    def parent(self) -> Optional[FamilyTreeMember]:
         """
         Gets you the instance of this user's parent.
         """
@@ -152,7 +204,7 @@ class FamilyTreeMember(object):
         return None
 
     @parent.setter
-    def parent(self, value: typing.Union[FamilyTreeMember, int, None]):
+    def parent(self, value: Optional[FamilyTreeMemberSetter]):
         if value is None:
             self._parent = None
         elif isinstance(value, int):
@@ -161,7 +213,7 @@ class FamilyTreeMember(object):
             self._parent = value.id
 
     @property
-    def children(self) -> typing.Iterable[FamilyTreeMember]:
+    def children(self) -> Iterable[FamilyTreeMember]:
         """
         Gets you the list of children instances for this user.
         """
@@ -169,7 +221,17 @@ class FamilyTreeMember(object):
         for i in self._children:
             yield self.get(i, self._guild_id)
 
-    def get_direct_relations(self) -> typing.List[int]:
+    @children.setter
+    def children(self, value: Iterable[FamilyTreeMemberSetter]):
+        new_children = []
+        for i in value:
+            if isinstance(i, int):
+                new_children.append(i)
+            else:
+                new_children.append(i.id)
+        self._children = new_children
+
+    def get_direct_relations(self) -> List[int]:
         """
         Gets the direct relation IDs for the given user.
         """
@@ -186,21 +248,27 @@ class FamilyTreeMember(object):
         Is this instance useless?
         """
 
-        return all([
-            len(self._children) == 0,
-            self._parent is None,
-            self._partner is None,
-        ])
+        if self._partner is not None:
+            return False
+        if self._parent is not None:
+            return False
+        if len(self._children) > 0:
+            return False
+        return True
 
-    def get_relation(self, target_user: FamilyTreeMember) -> typing.Optional[str]:
+    def get_relation(self, target_user: FamilyTreeMember) -> Optional[str]:
         """
         Gets your relation to another given FamilyTreeMember object.
 
-        Args:
-            target_user (FamilyTreeMember): The user who we want to get the relationship to.
+        Parameters
+        ----------
+        target_user : FamilyTreeMember
+            The user who we want to get the relationship to.
 
-        Returns:
-            typing.Optional[str]: The family tree relationship string.
+        Returns
+        -------
+        Optional[str]
+            The family tree relationship string.
         """
 
         text = self.get_unshortened_relation(target_user)
@@ -219,19 +287,30 @@ class FamilyTreeMember(object):
             family_member_count += 1
         return family_member_count
 
-    def span(self, people_list:set=None, add_parent:bool=False, expand_upwards:bool=False) -> typing.Iterable[FamilyTreeMember]:
+    def span(
+            self,
+            people_list: Union[set, None] = None,
+            add_parent: bool = False,
+            expand_upwards: bool = False) -> Iterable[FamilyTreeMember]:
         """
         Gets a list of every user related to this one
-        If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
-        even if they're related through marriage's parents etc
+        If "add_parent" and "expand_upwards" are True, then it should
+        add every user in a given tree, even if they're related through
+        marriage's parents etc.
 
-        Args:
-            people_list (list, optional): The list of users who are currently in the tree (so as to avoid recursion)
-            add_parent (bool, optional): Whether or not to add the parent of this user to the people list
-            expand_upwards (bool, optional): Whether or not to expand upwards in the tree
+        Parameters
+        ----------
+        people_list : set, optional
+            The list of users who are currently in the tree (so as to avoid recursion)
+        add_parent : bool, optional
+            Whether or not to add the parent of this user to the people list
+        expand_upwards : bool, optional
+            Whether or not to expand upwards in the tree
 
-        Returns:
-            typing.Iterable['FamilyTreeMember']: A list of users that this person is related to.
+        Yields
+        ------
+        Iterable[FamilyTreeMember]
+            A list of users that this person is related to.
         """
 
         # Don't add yourself again
@@ -245,17 +324,29 @@ class FamilyTreeMember(object):
         # Add your parent
         if expand_upwards and add_parent and self._parent:
             assert self.parent
-            yield from self.parent.span(people_list, add_parent=True, expand_upwards=expand_upwards)
+            yield from self.parent.span(
+                people_list,
+                add_parent=True,
+                expand_upwards=expand_upwards,
+            )
 
         # Add your children
         if self._children:
             for child in self.children:
-                yield from child.span(people_list, add_parent=False, expand_upwards=expand_upwards)
+                yield from child.span(
+                    people_list,
+                    add_parent=False,
+                    expand_upwards=expand_upwards,
+                )
 
         # Add your partner
         if self._partner:
             assert self.partner
-            yield from self.partner.span(people_list, add_parent=True, expand_upwards=expand_upwards)
+            yield from self.partner.span(
+                people_list,
+                add_parent=True,
+                expand_upwards=expand_upwards,
+            )
 
     def get_root(self) -> FamilyTreeMember:
         """
@@ -284,8 +375,10 @@ class FamilyTreeMember(object):
                 return root_user
 
     def get_unshortened_relation(
-            self, target_user: FamilyTreeMember, working_relation: list = None,
-            added_already: set = None) -> typing.Optional[str]:
+            self,
+            target_user: FamilyTreeMember,
+            working_relation: Union[list, None] = None,
+            added_already: Union[set, None] = None) -> Optional[str]:
         """
         Gets your relation to the other given user.
 
@@ -295,7 +388,7 @@ class FamilyTreeMember(object):
             added_already (list, optional): So we can keep track of who's been looked at before.
 
         Returns:
-            typing.Optional[str]: The family tree relationship string.
+            Optional[str]: The family tree relationship string.
         """
 
         # Set default values
@@ -319,6 +412,7 @@ class FamilyTreeMember(object):
         # Check parent
         if self._parent and self._parent not in added_already:
             parent = self.parent
+            assert parent
             x = parent.get_unshortened_relation(
                 target_user,
                 working_relation=working_relation + ['parent'],
@@ -330,6 +424,7 @@ class FamilyTreeMember(object):
         # Check partner
         if self._partner and self._partner not in added_already:
             partner = self.partner
+            assert partner
             x = partner.get_unshortened_relation(
                 target_user,
                 working_relation=working_relation + ['partner'],
@@ -339,37 +434,54 @@ class FamilyTreeMember(object):
                 return x
 
         # Check children
-        if self._children:
-            children = self.children
-            for i in [o for o in children if o not in added_already]:
-                x = i.get_unshortened_relation(
-                    target_user,
-                    working_relation=working_relation + ['child'],
-                    added_already=added_already
-                )
-                if x:
-                    return x
+        for i in [o for o in self.children if o not in added_already]:
+            x = i.get_unshortened_relation(
+                target_user,
+                working_relation=working_relation + ['child'],
+                added_already=added_already
+            )
+            if x:
+                return x
 
         return None
 
     def generational_span(
-            self, people_dict: dict = None, depth: int = 0, add_parent: bool = False, expand_upwards: bool = False,
-            all_people: set = None, recursive_depth: int = 0) -> typing.Dict[int, typing.List[FamilyTreeMember]]:
+            self,
+            people_dict: Union[dict, None] = None,
+            depth: int = 0,
+            add_parent: bool = False,
+            expand_upwards: bool = False,
+            all_people: Union[set, None] = None,
+            recursive_depth: int = 0) -> Dict[int, List[FamilyTreeMember]]:
         """
         Gets a list of every user related to this one.
-        If "add_parent" and "expand_upwards" are True, then it should add every user in a given tree,
-        even if they're related through marriage's parents etc.
+        If "add_parent" and "expand_upwards" are True, then it
+        should add every user in a given tree, even if they're
+        related through marriage's parents etc.
 
-        Args:
-            people_dict (dict, optional): The dict of users who are currently in the tree (so as to avoid recursion).
-            depth (int, optional): The current generation of the tree span.
-            add_parent (bool, optional): Whether or not to add the parent of this user to the people list.
-            expand_upwards (bool, optional): Whether or not to expand upwards in the tree.
-            all_people (set, optional): A set of all people who this recursive function would look at.
-            recursive_depth (int, optional): How far into the recursion you have gone - this is so we don't get recursion errors.
+        Parameters
+        ----------
+        people_dict : Union[dict, None], optional
+            The dict of users who are currently in the tree
+            (so as to avoid recursion).
+        depth : int, optional
+            The current generation of the tree span.
+        add_parent : bool, optional
+            Whether or not to add the parent of this user to the
+            people list.
+        expand_upwards : bool, optional
+            Whether or not to expand upwards in the tree.
+        all_people : Union[set, None], optional
+            A set of all people who this recursive function would
+            look at.
+        recursive_depth : int, optional
+            How far into the recursion you have gone - this is so we
+            don't get recursion errors.
 
-        Returns:
-            typing.Dict[int, typing.List['FamilyTreeMember']]: A dictionary of each generation of users.
+        Returns
+        -------
+        Dict[int, List[FamilyTreeMember]]
+            A dictionary of each generation of users.
         """
 
         # Don't add yourself again
@@ -388,61 +500,89 @@ class FamilyTreeMember(object):
         x.append(self)
 
         # Add your children
-        if self._children:
-            children = self.children
-            for child in children:
-                people_dict = child.generational_span(
-                    people_dict, depth=depth + 1, add_parent=False, expand_upwards=expand_upwards,
-                    all_people=all_people, recursive_depth=recursive_depth + 1
-                )
+        for child in self.children:
+            people_dict = child.generational_span(
+                people_dict,
+                depth=depth + 1,
+                add_parent=False,
+                expand_upwards=expand_upwards,
+                all_people=all_people,
+                recursive_depth=recursive_depth + 1,
+            )
 
         # Add your partner
         if self._partner:
             partner = self.partner
+            assert partner
             people_dict = partner.generational_span(
-                people_dict, depth=depth, add_parent=True, expand_upwards=expand_upwards,
-                all_people=all_people, recursive_depth=recursive_depth + 1
+                people_dict,
+                depth=depth,
+                add_parent=True,
+                expand_upwards=expand_upwards,
+                all_people=all_people,
+                recursive_depth=recursive_depth + 1,
             )
 
         # Add your parent
         if expand_upwards and add_parent and self._parent:
             parent = self.parent
+            assert parent
             people_dict = parent.generational_span(
-                people_dict, depth=depth - 1, add_parent=True, expand_upwards=expand_upwards,
-                all_people=all_people, recursive_depth=recursive_depth + 1
+                people_dict,
+                depth=depth - 1,
+                add_parent=True,
+                expand_upwards=expand_upwards,
+                all_people=all_people,
+                recursive_depth=recursive_depth + 1,
             )
 
         # Remove dupes, should they be in there
         return people_dict
 
-    async def to_dot_script(self, bot: utils.Bot, customised_tree_user: typing.Optional[CustomisedTreeUser] = None) -> str:
+    async def to_dot_script(
+            self,
+            bot: types.Bot,
+            customised_tree_user: CustomisedTreeUser) -> str:
         """
         Gives you a string of the current family tree that will go through DOT.
 
-        Args:
-            bot (utils.Bot): The bot instance that should be used to get the names of users.
-            customised_tree_user (CustomisedTreeUser, optional): The customised tree object that should be used to alter how the
-                dot script looks.
+        Parameters
+        ----------
+        bot : types.Bot
+            The bot instance that should be used to get the names of users.
+        customised_tree_user : CustomisedTreeUser
+            The customised tree object that should be used to alter how the
+            dot script looks.
 
-        Returns:
-            str: The generated DOT code.
+        Returns
+        -------
+        str
+            The generated DOT code.
         """
 
         root_user = self.get_root()
         gen_span = root_user.generational_span()
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
-    async def to_full_dot_script(self, bot: utils.Bot, customised_tree_user: typing.Optional[CustomisedTreeUser] = None) -> str:
+    async def to_full_dot_script(
+            self,
+            bot: types.Bot,
+            customised_tree_user: CustomisedTreeUser) -> str:
         """
         Gives you the string of the FULL current family.
 
-        Args:
-            bot (utils.Bot): The bot instance that should be used to get the names of users.
-            customised_tree_user (CustomisedTreeUser, optional): The customised tree object that should be used to alter how the
-                dot script looks.
+        Parameters
+        ----------
+        bot : types.Bot
+            The bot instance that should be used to get the names of users.
+        customised_tree_user : CustomisedTreeUser
+            The customised tree object that should be used to alter how the
+            dot script looks.
 
-        Returns:
-            str: The generated DOT code.
+        Returns
+        -------
+        str
+            The generated DOT code.
         """
 
         root_user = self.get_root()
@@ -450,23 +590,31 @@ class FamilyTreeMember(object):
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
     async def to_dot_script_from_generational_span(
-            self, bot: utils.Bot, gen_span: dict,
-            customised_tree_user: typing.Optional[CustomisedTreeUser]) -> str:
+            self,
+            bot: types.Bot,
+            gen_span: Dict[int, List[FamilyTreeMember]],
+            customised_tree_user: CustomisedTreeUser) -> str:
         """
         Generates the DOT script from a given generational span.
 
-        Args:
-            bot (utils.Bot): The bot instance that should be used to get the names of users.
-            gen_span (dict): The generational span.
-            customised_tree_user (CustomisedTreeUser, optional): The customised tree object that should be used to alter how the
-                dot script looks.
+        Parameters
+        ----------
+        bot : types.Bot
+            The bot instance that should be used to get the names of users.
+        gen_span : Dict[int, List[FamilyTreeMember]]
+            The generational span.
+        customised_tree_user : CustomisedTreeUser
+            The customised tree object that should be used to alter how the
+            dot script looks.
 
-        Returns:
-            str: The generated DOT code.
+        Returns
+        -------
+        str
+            The generated DOT code.
         """
 
         # Find my own depth
-        my_depth: int = None or 0
+        my_depth: int = 0
         for depth, depth_list in gen_span.items():
             if self in depth_list:
                 my_depth = depth
@@ -475,12 +623,14 @@ class FamilyTreeMember(object):
         # Add my partner and parent
         if self._partner:
             partner = self.partner
+            assert partner
             if partner not in gen_span.get(my_depth, list()):
                 x = gen_span.get(my_depth, list())
                 x.append(partner)
                 gen_span[my_depth] = x
         if self._parent:
             parent = self.parent
+            assert parent
             if parent not in gen_span.get(my_depth - 1, list()):
                 x = gen_span.get(my_depth - 1, list())
                 x.append(parent)
@@ -489,7 +639,8 @@ class FamilyTreeMember(object):
         # Make some initial digraph stuff
         all_text: str = (
             "digraph {"
-            f"node [shape=box,fontcolor={customised_tree_user.hex['font']},color={customised_tree_user.hex['edge']},"
+            f"node [shape=box,fontcolor={customised_tree_user.hex['font']},"
+            f"color={customised_tree_user.hex['edge']},"
             f"fillcolor={customised_tree_user.hex['node']},style=filled];"
             f"edge [dir=none,color={customised_tree_user.hex['edge']}];"
             f"bgcolor={customised_tree_user.hex['background']};"
@@ -497,8 +648,9 @@ class FamilyTreeMember(object):
         )
 
         # Set up some stuff for later
-        all_users: typing.Set['FamilyTreeMember'] = set()
-        user_parent_tree: typing.Dict['FamilyTreeMember', str] = {}  # Connects a parent to a random string used to connect the children
+        all_users: Set[FamilyTreeMember] = set()
+        user_parent_tree: Dict[int, str] = {}
+        # Connects a parent to a random string used to connect the children
 
         # Add the username for each user (from unflattened list)
         for generation in gen_span.values():
@@ -509,19 +661,26 @@ class FamilyTreeMember(object):
                 all_users.add(i)
                 name = name.replace('"', '\\"')
                 if i == self:
-                    all_text += f'{i.id}[label="{name}", fillcolor={customised_tree_user.hex["highlighted_node"]}, fontcolor={customised_tree_user.hex["highlighted_font"]}];'
+                    all_text += (
+                        f'{i.id}[label="{name}",'
+                        f'fillcolor={customised_tree_user.hex["highlighted_node"]},'
+                        f'fontcolor={customised_tree_user.hex["highlighted_font"]}];'
+                    )
                 else:
                     all_text += f'{i.id}[label="{name}"];'
 
         # Order the generations
-        generation_numbers: typing.List[int] = sorted(list(gen_span.keys()))  # The ordered list of generation numbers - just a list of sequential numbers
+        generation_numbers: List[int] = sorted(list(gen_span.keys()))
+        # The ordered list of generation numbers - just a list of sequential numbers
 
         # Go through the members for each generation
         for generation_number in generation_numbers:
             generation = gen_span.get(generation_number)
+            if generation is None:
+                continue
 
             # Make sure you don't add a spouse twice
-            added_already: typing.List[self.__class__] = []
+            added_already: List[FamilyTreeMember] = []
 
             # Add a ranking for this generation
             all_text += "{rank=same;"
@@ -539,7 +698,7 @@ class FamilyTreeMember(object):
                 partner = person.partner
 
                 # Give them something in the dict so it doesn't make a keyerror
-                user_parent_tree[person.id] = person.id
+                user_parent_tree[person.id] = str(person.id)
 
                 # Make sure they stay in line
                 if previous_person:
@@ -573,17 +732,20 @@ class FamilyTreeMember(object):
             all_text += "}"
 
             # Add the lines from parent to node to child
-            added_already.clear()
+            child_added_already: List[str] = []
             for person in generation:
                 if person._children:
                     if any([i in all_users for i in person.children]):
-                        if user_parent_tree[person.id] in added_already:
+                        if user_parent_tree[person.id] in child_added_already:
                             pass
                         else:
-                            all_text += f"\t\t{user_parent_tree[person.id]} -> h{user_parent_tree[person.id]};"
-                            added_already.append(user_parent_tree[person.id])
+                            all_text += (
+                                f"{user_parent_tree[person.id]} -> "
+                                f"h{user_parent_tree[person.id]};"
+                            )
+                            child_added_already.append(user_parent_tree[person.id])
                         for child in [i for i in person.children if i in all_users]:
-                            all_text += f"\t\th{user_parent_tree[person.id]} -> {child.id};"
+                            all_text += f"h{user_parent_tree[person.id]} -> {child.id};"
 
         # And we're done!
         all_text += "}"

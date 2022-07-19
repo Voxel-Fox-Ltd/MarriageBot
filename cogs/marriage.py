@@ -12,7 +12,7 @@ from cogs import utils
 class Marriage(vbu.Cog):
 
     @commands.context_command(name="Marry user")
-    async def context_command_marry(self, ctx: vbu.Context, user: utils.converters.UnblockedMember):
+    async def context_command_marry(self, ctx: vbu.Context, user: discord.User):
         command = self.marry
         await command.can_run(ctx)
         await ctx.invoke(command, target=user)  # type: ignore
@@ -33,15 +33,23 @@ class Marriage(vbu.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def marry(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
+    @commands.bot_has_permissions(send_messages=True)
+    async def marry(
+            self,
+            ctx: vbu.Context,
+            *,
+            target: utils.converters.UnblockedMember):
         """
         Lets you propose to another Discord user.
         """
 
         # Get the family tree member objects
         family_guild_id = utils.get_family_guild_id(ctx)
-        author_tree, target_tree = utils.FamilyTreeMember.get_multiple(ctx.author.id, target.id, guild_id=family_guild_id)
+        author_tree, target_tree = utils.FamilyTreeMember.get_multiple(
+            ctx.author.id,
+            target.id,
+            guild_id=family_guild_id,
+        )
 
         # Check they're not themselves
         if target.id == ctx.author.id:
@@ -58,22 +66,31 @@ class Marriage(vbu.Cog):
         try:
             lock = await utils.ProposalLock.lock(re, ctx.author.id, target.id)
         except utils.ProposalInProgress:
-            return await ctx.send("Aren't you popular! One of you is already waiting on a proposal - please try again later.")
+            return await ctx.send((
+                "One of you is already waiting on a proposal - "
+                "please try again later."
+            ))
 
         # See if we're already married
         if author_tree._partner:
             await lock.unlock()
             return await ctx.send(
-                f"Hey, {ctx.author.mention}, you're already married! Try divorcing your partner first \N{FACE WITH ROLLING EYES}",
-                allowed_mentions=utils.only_mention(ctx.author),
+                (
+                    f"Hey, {ctx.author.mention}, you're already married! "
+                    "Try divorcing your partner first \N{FACE WITH ROLLING EYES}"
+                ),
+                allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
 
         # See if the *target* is already married
         if target_tree._partner:
             await lock.unlock()
             return await ctx.send(
-                f"Sorry, {ctx.author.mention}, it looks like {target.mention} is already married \N{PENSIVE FACE}",
-                allowed_mentions=utils.only_mention(ctx.author),
+                (
+                    f"Sorry, {ctx.author.mention}, it looks like "
+                    f"{target.mention} is already married \N{PENSIVE FACE}"
+                ),
+                allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
 
         # See if they're already related
@@ -81,8 +98,11 @@ class Marriage(vbu.Cog):
         if relation and utils.guild_allows_incest(ctx) is False:
             await lock.unlock()
             return await ctx.send(
-                f"Woah woah woah, it looks like you guys are already related! {target.mention} is your {relation}!",
-                allowed_mentions=utils.only_mention(ctx.author),
+                (
+                    f"Woah woah woah, it looks like you guys are already "
+                    f"related! {target.mention} is your {relation}!"
+                ),
+                allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
 
         # Check the size of their trees
@@ -100,15 +120,22 @@ class Marriage(vbu.Cog):
         if family_member_count >= max_family_members:
             await lock.unlock()
             return await ctx.send(
-                f"If you added {target.mention} to your family, you'd have over {max_family_members} in your family. Sorry!",
+                (
+                    f"If you added {target.mention} to your family, you'd "
+                    f"have over {max_family_members} in your family. Sorry!"
+                ),
                 allowed_mentions=utils.only_mention(ctx.author),
             )
 
         # Set up the proposal
         try:
             result = await utils.send_proposal_message(
-                ctx, target,
-                f"Hey, {target.mention}, it would make {ctx.author.mention} really happy if you would marry them. What do you say?",
+                ctx,
+                target,
+                (
+                    f"Hey, {target.mention}, it would make {ctx.author.mention} "
+                    "really happy if you would marry them. What do you say?"
+                ),
             )
         except Exception:
             result = None
@@ -118,11 +145,32 @@ class Marriage(vbu.Cog):
         # They said yes!
         async with vbu.Database() as db:
             try:
-                async with db.transaction() as trans:
-                    await trans.call(
-                        "INSERT INTO marriages (user_id, partner_id, guild_id, timestamp) VALUES ($1, $2, $3, $4), ($2, $1, $3, $4)",
-                        ctx.author.id, target.id, family_guild_id, dt.utcnow(),
-                    )
+                await db.call(
+                    """
+                    INSERT INTO
+                        marriages
+                        (
+                            user_id,
+                            partner_id,
+                            guild_id,
+                            timestamp
+                        )
+                    VALUES
+                        (
+                            $1,
+                            $2,
+                            $3,
+                            $4
+                        ),
+                        (
+                            $2,
+                            $1,
+                            $3,
+                            $4
+                        )
+                    """,
+                    ctx.author.id, target.id, family_guild_id, dt.utcnow(),
+                )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
                 self.bot.dispatch("recache_user", ctx.author, family_guild_id)
@@ -148,8 +196,10 @@ class Marriage(vbu.Cog):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def divorce(self, ctx: vbu.Context):
+    @commands.bot_has_permissions(send_messages=True)
+    async def divorce(
+            self,
+            ctx: vbu.Context):
         """
         Divorces you from your current partner.
         """
@@ -166,7 +216,8 @@ class Marriage(vbu.Cog):
         # See if they're sure
         try:
             result = await utils.send_proposal_message(
-                ctx, ctx.author,
+                ctx,
+                ctx.author,
                 f"Are you sure you want to divorce your partner, {ctx.author.mention}?",
                 timeout_message=f"Timed out making sure you want to divorce, {ctx.author.mention} :<",
                 cancel_message="Alright, I've cancelled your divorce!",
@@ -179,7 +230,18 @@ class Marriage(vbu.Cog):
         # Remove them from the database
         async with vbu.Database() as db:
             await db(
-                """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
+                """
+                DELETE FROM
+                    marriages
+                WHERE
+                    (
+                        user_id=$1
+                        OR
+                        user_id=$2
+                    )
+                AND
+                    guild_id=$3
+                """,
                 ctx.author.id, target_tree.id, family_guild_id,
             )
         partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, target_tree.id)

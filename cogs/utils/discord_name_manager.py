@@ -1,27 +1,41 @@
-import typing
+from __future__ import annotations
+
+from typing import Dict, Optional
 
 from discord.ext import vbu
 
 
-class DiscordNameManager(object):
+__all__ = (
+    'DiscordNameManager',
+)
 
-    cached_names: typing.Dict[int, 'DiscordNameManager'] = {}
 
-    __slots__ = ("user_id", "_name", "age",)
+class DiscordNameManager:
 
-    def __init__(self, user_id: int, name: str = None):
+    cached_names: Dict[int, DiscordNameManager] = {}
+
+    __slots__ = (
+        "user_id",
+        "_name",
+        "age",
+    )
+
+    def __init__(
+            self,
+            user_id: int,
+            name: Optional[str] = None):
         self.user_id: int = user_id
-        self._name: typing.Optional[str] = name
+        self._name: Optional[str] = name
         self.age: int = 0 if self._name else 1_000
         self.cached_names[self.user_id] = self
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
         self.age += 1
         return self._name
 
     @name.setter
-    def name(self, new_name:str):
+    def name(self, new_name: str):
         if new_name is None:
             return None
         self.age = 0
@@ -31,40 +45,61 @@ class DiscordNameManager(object):
     def name_is_valid(self):
         return self.age <= 3
 
-    async def fetch_name(self, bot:vbu.Bot) -> str:
+    async def fetch_name(self, bot: vbu.Bot) -> str:
         """
-        Fetch the name of the current user - first trying from Redis, then trying from the
-        API (if we couldn't get from Redis the first time then we add it after fetching from
-        the API).
+        Fetch the name of the current user - first trying from Redis,
+        then trying from the API (if we couldn't get from Redis the
+        first time then we add it after fetching from the API).
         """
 
+        # Get the name from redis
         async with vbu.Redis() as re:
             v = await re.get(f"UserName-{self.user_id}")
+
+        # If it exists on Redis, update local cache
         if v:
             self.name = v
             return v
+
+        # Fetch the user
         try:
             user = await bot.fetch_user(self.user_id)
             name = str(user)
+
+        # User doesn't exist
         except Exception:
             name = "Deleted User"
+
+        # Store in redis
         async with vbu.Redis() as re:
             await re.set(f"UserName-{self.user_id}", name)
+
+        # Update and return
         self.name = name
         return name
 
     @classmethod
-    async def fetch_name_by_id(cls, bot: vbu.Bot, user_id: int, ignore_name_validity: bool = False) -> str:
+    async def fetch_name_by_id(
+            cls,
+            bot: vbu.Bot,
+            user_id: int,
+            ignore_name_validity: bool = False) -> str:
         """
         Get the name for a user given their ID.
 
-        Args:
-            bot (vbu.Bot): The bot instance that we can use to fetch from the API/Redis with.
-            user_id (int): The ID of the user we want to grab the name of.
-            ignore_name_validity (bool): Whether to ignore the "should we re-fetch the name" check.
+        Parameters
+        ----------
+        bot : vbu.Bot
+            The bot instance that we can use to fetch from the API/Redis with.
+        user_id : int
+            The ID of the user we want to grab the name of.
+        ignore_name_validity : bool, optional
+            Whether to ignore the "should we re-fetch the name" check.
 
-        Returns:
-            str: The user's name.
+        Returns
+        -------
+        str
+            The user's name.
         """
 
         # Grab our cached object

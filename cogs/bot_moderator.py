@@ -6,11 +6,11 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class BotModerator(vbu.Cog, command_attrs={'hidden': True}):
+class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
 
     @commands.command()
     @vbu.checks.is_bot_support()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    @commands.bot_has_permissions(send_messages=True)
     async def runstartupmethod(self, ctx: vbu.Context):
         """
         Runs the bot startup method, recaching everything of interest.
@@ -23,9 +23,14 @@ class BotModerator(vbu.Cog, command_attrs={'hidden': True}):
     @commands.command()
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguildwithdelete(self, ctx: vbu.Context, user: vbu.converters.UserID, guild_id: int):
+    async def copyfamilytoguildwithdelete(
+            self,
+            ctx: vbu.Context,
+            user: vbu.converters.UserID,
+            guild_id: int):
         """
-        Copies a family's span to a given guild ID for server specific families.
+        Copies a family's span to a given guild ID for server
+        specific families.
         """
 
         await self.copy_family(ctx, user, guild_id, True)
@@ -33,14 +38,24 @@ class BotModerator(vbu.Cog, command_attrs={'hidden': True}):
     @commands.command()
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def copyfamilytoguild(self, ctx: vbu.Context, user: vbu.converters.UserID, guild_id: int):
+    async def copyfamilytoguild(
+            self,
+            ctx: vbu.Context,
+            user: vbu.converters.UserID,
+            guild_id: int):
         """
-        Copies a family's span to a given guild ID for server specific families.
+        Copies a family's span to a given guild ID for server
+        specific families.
         """
 
         await self.copy_family(ctx, user, guild_id, False)
 
-    async def copy_family(self, ctx: vbu.Context, user_id: int, guild_id: int, delete_members: bool):
+    async def copy_family(
+            self,
+            ctx: vbu.Context,
+            user_id: int,
+            guild_id: int,
+            delete_members: bool):
         """
         Copy a family to a given Gold guild.
         """
@@ -66,85 +81,125 @@ class BotModerator(vbu.Cog, command_attrs={'hidden': True}):
         partners = ((i.id, i._partner, guild_id) for i in users if i._partner)
 
         # Push to db
+        assert db.conn
         try:
-            await db.conn.copy_records_to_table('parents', columns=['child_id', 'parent_id', 'guild_id'], records=parents)
-            await db.conn.copy_records_to_table('marriages', columns=['user_id', 'partner_id', 'guild_id'], records=partners)
+            await db.conn.copy_records_to_table(
+                'parents',
+                columns=['child_id', 'parent_id', 'guild_id'],
+                records=parents,
+            )
+            await db.conn.copy_records_to_table(
+                'marriages',
+                columns=['user_id', 'partner_id', 'guild_id'],
+                records=partners,
+            )
         except Exception:
             return await ctx.send("I encountered an error copying that family over.")
 
         # Send to user
         await db.disconnect()
-        await ctx.send(f"Copied over `{len(users)}` users. Be sure to run the `runstartupmethod` command")
+        await ctx.send((
+            f"Copied over `{len(users)}` users. "
+            "Be sure to run the `runstartupmethod` command"
+        ))
 
     @commands.command()
     @vbu.checks.is_bot_support()
-    @commands.bot_has_permissions(add_reactions=True)
-    async def addserverspecific(self, ctx: vbu.Context, guild_id: int, user_id: vbu.converters.UserID):
+    @commands.bot_has_permissions(send_messages=True)
+    async def addserverspecific(
+            self,
+            ctx: vbu.Context,
+            guild_id: int,
+            user_id: vbu.converters.UserID):
         """
         Adds a guild to the MarriageBot Gold whitelist.
         """
 
         async with vbu.Database() as db:
             await db(
-                """INSERT INTO guild_specific_families (guild_id, purchased_by) VALUES ($1, $2)
-                ON CONFLICT (guild_id) DO UPDATE SET purchased_by=excluded.purchased_by""",
+                """
+                INSERT INTO
+                    guild_specific_families
+                    (
+                        guild_id,
+                        purchased_by
+                    )
+                VALUES
+                    (
+                        $1,
+                        $2
+                    )
+                ON CONFLICT (guild_id)
+                DO UPDATE
+                SET
+                    purchased_by = excluded.purchased_by
+                """,
                 guild_id, user_id,
             )
         await ctx.send("Done.")
 
     @commands.command()
     @vbu.checks.is_bot_support()
-    @commands.bot_has_permissions(add_reactions=True)
-    async def removeserverspecific(self, ctx: vbu.Context, guild_id: int):
+    @commands.bot_has_permissions(send_messages=True)
+    async def removeserverspecific(
+            self,
+            ctx: vbu.Context,
+            guild_id: int):
         """
         Remove a guild from the MarriageBot Gold whitelist.
         """
 
         async with vbu.Database() as db:
             await db(
-                """DELETE FROM guild_specific_families WHERE guild_id=$1""",
+                """
+                DELETE FROM
+                    guild_specific_families
+                WHERE
+                    guild_id = $1
+                """,
                 guild_id,
             )
         await ctx.send("Done.")
 
-    # @commands.command(hidden=True)
-    # @vbu.checks.is_bot_support()
-    # @commands.bot_has_permissions(add_reactions=True)
-    # async def addship(
-    #         self, ctx: vbu.Context, user1: discord.Member, user2: discord.Member = None,
-    #         percentage: float = 0):
-    #     """
-    #     Add a custom ship percentage.
-    #     """
-
-    #     user2 = user2 or ctx.author  # type: ignore
-    #     assert user2
-    #     percentage = max([min([percentage * 100, 10_000]), -10_000])
-    #     async with vbu.Database() as db:
-    #         await db(
-    #             """INSERT INTO ship_percentages (user_id_1, user_id_2, percentage) VALUES ($1, $2, $3)
-    #             ON CONFLICT (user_id_1, user_id_2) DO UPDATE SET percentage=excluded.percentage""",
-    #             *sorted([user1.id, user2.id]), percentage,
-    #         )
-    #     await ctx.send("Done.")
-
     @commands.command(aliases=['getgoldpurchase'])
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
-    async def getgoldpurchases(self, ctx: vbu.Context, user: vbu.converters.UserID):
+    async def getgoldpurchases(
+            self,
+            ctx: vbu.Context,
+            user_id: vbu.converters.UserID):
         """
         Remove a guild from the MarriageBot Gold whitelist.
         """
 
+        # Get the rows
         async with vbu.Database() as db:
-            rows = await db('SELECT * FROM guild_specific_families WHERE purchased_by=$1', user)
+            rows = await db(
+                """
+                SELECT
+                    guild_id
+                FROM
+                    guild_specific_families
+                WHERE
+                    purchased_by = $1
+                """,
+                user_id,
+            )
+
+        # They haven't purchased anything
         if not rows:
             return await ctx.send("That user has purchased no instances of MarriageBot Gold.")
-        runsql = self.bot.get_command("runsql")
-        assert isinstance(runsql, commands.Command)
-        return await ctx.invoke(runsql, sql="SELECT * FROM guild_specific_families WHERE purchased_by={}".format(user))  # type: ignore
+
+        # Spit out their guild IDs
+        format_text = (
+            "<@{user_id}> has purchased {0} "
+            "{0:plural,instance,instances} of MarriageBot Gold:\n"
+        )
+        text = vbu.format(format_text, len(rows))
+        text += "\n".join([f"\N{BULLET} `{i['guild_id']}`" for i in rows])
+        return await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
 
 
-def setup(bot: vbu.Bot):
+def setup(bot: utils.types.Bot):
     x = BotModerator(bot)
     bot.add_cog(x)

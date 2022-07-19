@@ -2,21 +2,42 @@ import asyncio
 import collections
 from datetime import datetime as dt, timedelta
 import functools
+from typing import Awaitable, Callable, Dict, Optional, Tuple
 
-import voxelbotutils as vbu
+from discord.ext import vbu
+
+
+__all__ = (
+    'MarriageBotPerks',
+    'get_marriagebot_perks',
+    'TIER_THREE',
+    'TIER_TWO',
+    'TIER_ONE',
+    'TIER_VOTER',
+    'TIER_NONE',
+)
 
 
 class MarriageBotPerks(object):
 
     __slots__ = (
-        "max_children", "max_partners", "can_run_bloodtree",
-        "can_run_disownall", "tree_command_cooldown", "tree_render_quality",
+        "max_children",
+        "max_partners",
+        "can_run_bloodtree",
+        "can_run_disownall",
+        "tree_command_cooldown",
+        "tree_render_quality",
         "can_run_abandon",
     )
 
     def __init__(
-            self, max_children: int = 5, max_partners: int = 1, can_run_bloodtree: bool = False,
-            can_run_disownall: bool = False, tree_command_cooldown: int = 60, tree_render_quality: int = 0,
+            self,
+            max_children: int = 5,
+            max_partners: int = 1,
+            can_run_bloodtree: bool = False,
+            can_run_disownall: bool = False,
+            tree_command_cooldown: int = 60,
+            tree_render_quality: int = 0,
             can_run_abandon: bool = False):
         self.max_children = max_children
         self.max_partners = max_partners
@@ -33,7 +54,7 @@ TIER_THREE = MarriageBotPerks(
     can_run_disownall=True,
     can_run_abandon=True,
     tree_command_cooldown=5,
-    tree_render_quality=3
+    tree_render_quality=3,
 )
 TIER_TWO = MarriageBotPerks(
     max_children=15,
@@ -41,13 +62,13 @@ TIER_TWO = MarriageBotPerks(
     can_run_disownall=True,
     can_run_abandon=True,
     tree_command_cooldown=15,
-    tree_render_quality=2
+    tree_render_quality=2,
 )
 TIER_ONE = MarriageBotPerks(
     max_children=10,
     can_run_disownall=True,
     tree_command_cooldown=15,
-    tree_render_quality=1
+    tree_render_quality=1,
 )
 TIER_VOTER = MarriageBotPerks(
     tree_command_cooldown=30,
@@ -55,27 +76,28 @@ TIER_VOTER = MarriageBotPerks(
 TIER_NONE = MarriageBotPerks()
 
 
-CACHED_PERK_ITEMS = collections.defaultdict(lambda: (None, dt(2000, 1, 1),))
+_CACHED_PERK_ITEMS: Dict[int, Tuple[Optional[MarriageBotPerks], dt]]
+_CACHED_PERK_ITEMS = collections.defaultdict(lambda: (None, dt(2000, 1, 1),))
 
 
-def cache_response(**lifetime: int):
+def perks_cache(func: Callable[[vbu.Bot, int], Awaitable[MarriageBotPerks]]):
+    lifetime = {"minutes": 2}
 
-    def inner(func):
+    @functools.wraps(func)
+    async def wrapper(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
+        perks, expiry_time = _CACHED_PERK_ITEMS[user_id]
+        if expiry_time > dt.utcnow() and perks:
+            return perks  # Cache not expired
+        perks = await func(bot, user_id)
+        _CACHED_PERK_ITEMS[user_id] = (
+            perks,
+            dt.utcnow() + timedelta(**lifetime),
+        )
+        return perks
+    return wrapper
 
-        @functools.wraps(func)
-        async def wrapper(bot: vbu.Bot, user_id: int):
-            perks, expiry_time = CACHED_PERK_ITEMS[user_id]
-            if expiry_time > dt.utcnow():
-                return perks  # Cache not expired
-            perks = await func(bot, user_id)
-            CACHED_PERK_ITEMS[user_id] = (perks, dt.utcnow() + timedelta(**lifetime),)
-            return perks
 
-        return wrapper
-    return inner  # type: ignore
-
-
-@cache_response(minutes=2)
+@perks_cache
 async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
     """
     Get the specific perks that any given user has.
@@ -94,13 +116,24 @@ async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
 
     # Check if they have a purchase
     async with bot.database() as db:
-        rows = await db("SELECT * FROM guild_specific_families WHERE purchased_by=$1", user_id)
+        rows = await db(
+            """
+            SELECT
+                *
+            FROM
+                guild_specific_families
+            WHERE
+                purchased_by = $1
+            """,
+            user_id,
+        )
     if rows:
         return TIER_THREE
 
     # Check UpgradeChat purchases
     try:
-        purchases = await asyncio.wait_for(bot.upgrade_chat.get_orders(discord_id=user_id), timeout=5)
+        aw = bot.upgrade_chat.get_orders(discord_id=user_id)
+        purchases = await asyncio.wait_for(aw, timeout=5)
     except asyncio.TimeoutError:
         purchases = []
     except Exception:
@@ -116,7 +149,8 @@ async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
 
     # Check Top.gg votes
     try:
-        data = await asyncio.wait_for(bot.get_user_topgg_vote(user_id), timeout=3)
+        aw = bot.get_user_topgg_vote(user_id)
+        data = await asyncio.wait_for(aw, timeout=3)
         if data:
             return TIER_VOTER
     except asyncio.TimeoutError:

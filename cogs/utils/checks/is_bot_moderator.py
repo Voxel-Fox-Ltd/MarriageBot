@@ -1,7 +1,13 @@
-from discord.ext import commands
-import voxelbotutils as utils
+import discord
+from discord.ext import commands, vbu
 
 from cogs.utils.checks.guild_is_server_specific import guild_is_server_specific
+
+
+__all__ = (
+    'NotServerSpecificBotModerator',
+    'is_server_specific_bot_moderator',
+)
 
 
 class NotServerSpecificBotModerator(commands.MissingRole):
@@ -18,10 +24,10 @@ def is_server_specific_bot_moderator():
     Check to see if the user has a role called 'MarriageBot Moderator'.
     """
 
-    async def predicate(ctx:utils.Context):
+    async def predicate(ctx: vbu.Context):
         # Bot support can do anything
         try:
-            await utils.checks.is_bot_support().predicate(ctx)
+            await vbu.checks.is_bot_support().predicate(ctx)
             return True
         except Exception:
             pass
@@ -34,6 +40,7 @@ def is_server_specific_bot_moderator():
 
         # Make sure this is in a guild
         await commands.guild_only().predicate(ctx)
+        assert isinstance(ctx.author, discord.Member)
 
         # Make sure they have the role
         mb_mod_roles = [i for i in ctx.guild.roles if i.name.casefold() == 'marriagebot moderator']

@@ -6,25 +6,55 @@ from discord.ext import vbu
 from cogs import utils
 
 
-class CacheHandler(vbu.Cog):
+class CacheHandler(vbu.Cog[utils.types.Bot]):
 
-    async def recache_user(self, user: discord.abc.Snowflake, guild_id: int = 0):
+    async def recache_user(
+            self,
+            user: discord.abc.Snowflake,
+            guild_id: int = 0):
         """
-        Re-cache a user and in the bot's cache.
+        Grab a user from the database and re-read them into cache.
         """
 
         ftm = utils.FamilyTreeMember.get(user.id, guild_id)
         async with vbu.Database() as db:
             partnerships = await db(
-                "SELECT * FROM marriages WHERE user_id=$1 AND guild_id=$2",
+                """
+                SELECT
+                    *
+                FROM
+                    marriages
+                WHERE
+                    user_id = $1
+                AND
+                    guild_id = $2
+                """,
                 ftm.id, ftm._guild_id,
             )
             parents = await db(
-                "SELECT * FROM parents WHERE child_id=$1 AND guild_id=$2",
+                """
+                SELECT
+                    *
+                FROM
+                    parents
+                WHERE
+                    child_id = $1
+                AND
+                    guild_id = $2
+                """,
                 ftm.id, ftm._guild_id,
             )
             children = await db(
-                "SELECT * FROM parents WHERE parent_id=$1 AND guild_id=$2",
+                """
+                SELECT
+                    *
+                FROM
+                    parents
+                WHERE
+                    parent_id = $1
+                AND
+                    guild_id = $2
+                """,
                 ftm.id, ftm._guild_id,
             )
         ftm._children = [r['child_id'] for r in children]
@@ -41,7 +71,7 @@ class CacheHandler(vbu.Cog):
     def handle_partner(row):
         user = utils.FamilyTreeMember.get(row['user_id'], row['guild_id'])
         user.partner = row['partner_id']
-        user.partner.partner = user
+        user.partner.partner = user  # type: ignore - Pyright doesn't like this completely valid code
 
     @staticmethod
     def handle_parent(row):
@@ -58,13 +88,55 @@ class CacheHandler(vbu.Cog):
         # Get family data from database
         try:
             if self.bot.config['is_server_specific']:
-                partnerships = await db("SELECT * FROM marriages WHERE guild_id<>0")
-                parents = await db("SELECT * FROM parents WHERE guild_id<>0")
+                partnerships = await db(
+                    """
+                    SELECT
+                        *
+                    FROM
+                        marriages
+                    WHERE
+                        guild_id <> 0
+                    """,
+                )
+                parents = await db(
+                    """
+                    SELECT
+                        *
+                    FROM
+                        parents
+                    WHERE
+                        guild_id <> 0
+                    """,
+                )
             else:
-                partnerships = await db("SELECT * FROM marriages WHERE guild_id=0")
-                parents = await db("SELECT * FROM parents WHERE guild_id=0")
+                partnerships = await db(
+                    """
+                    SELECT
+                        *
+                    FROM
+                        marriages
+                    WHERE
+                        guild_id = 0
+                    """,
+                )
+                parents = await db(
+                    """
+                    SELECT
+                        *
+                    FROM
+                        parents
+                    WHERE
+                        guild_id = 0
+                    """,
+                )
         except Exception as e:
-            self.logger.critical(f"Ran into an error selecting either marriages or parents: {e}", exc_info=e)
+            self.logger.critical(
+                (
+                    f"Ran into an error selecting either "
+                    f"marriages or parents: {e}"
+                ),
+                exc_info=e,
+            )
             exit(1)
 
         # Clear the current cache
@@ -86,6 +158,6 @@ class CacheHandler(vbu.Cog):
         return True
 
 
-def setup(bot: vbu.Bot):
+def setup(bot: utils.types.Bot):
     x = CacheHandler(bot)
     bot.add_cog(x)

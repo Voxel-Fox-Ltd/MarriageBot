@@ -1,6 +1,12 @@
 from discord.ext import commands
 
 
+__all__ = (
+    'NotServerSpecific',
+    'guild_is_server_specific',
+)
+
+
 class NotServerSpecific(commands.CheckFailure):
     """
     The error thrown when the bot is not set to server specific.
