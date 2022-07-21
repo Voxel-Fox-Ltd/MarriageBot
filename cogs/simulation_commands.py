@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import random
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import discord
 from discord.ext import commands, vbu
 
+if TYPE_CHECKING:
+    from cogs import utils
 
-class SimulationCommands(vbu.Cog):
+
+class SimulationCommands(vbu.Cog[utils.types.Bot]):
 
     async def get_reaction_gif(
             self,
@@ -24,8 +27,8 @@ class SimulationCommands(vbu.Cog):
         ctx : vbu.Context
             The context for the command.
         reaction_type : Optional[str], optional
-            The type of reaction that you want to get. If not provided, then the name of the command
-            in the context is used.
+            The type of reaction that you want to get. If not provided,
+            then the name of the command in the context is used.
         nsfw : bool, optional
             Whether or not to include NSFW results.
         ignore_checks : bool, optional
@@ -267,6 +270,6 @@ class SimulationCommands(vbu.Cog):
         await ctx.send(random.choice(responses))
 
 
-def setup(bot: vbu.Bot):
+def setup(bot: utils.types.Bot):
     x = SimulationCommands(bot)
     bot.add_cog(x)
