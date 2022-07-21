@@ -58,7 +58,7 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
             return None
 
         # If we can't return images, then don't
-        elif ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).embed_links:  # type: ignore
+        if not hasattr(ctx, "interaction") and ctx.guild and not ctx.channel.permissions_for(ctx.guild.me).embed_links:  # type: ignore
             return None
 
         # Set up our headers and params
