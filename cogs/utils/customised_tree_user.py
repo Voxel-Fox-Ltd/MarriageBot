@@ -99,6 +99,8 @@ class CustomisedTreeUser:
                 v = default_hex[i]
             elif v <= 0:
                 v = "transparent"
+            else:
+                v = f'"#{v:X}"'
             ret[i] = v
         ret["direction"] = self.direction
 
