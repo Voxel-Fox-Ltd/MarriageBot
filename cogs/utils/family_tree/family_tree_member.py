@@ -159,8 +159,8 @@ class FamilyTreeMember(object):
         attrs = (
             ("discord_id", "id",),
             ("children", "_children",),
-            ("parent_id", "_parent_id",),
-            ("partner_id", "_partner_id",),
+            ("parent_id", "_parent",),
+            ("partner_id", "_partner",),
             ("guild_id", "_guild_id",),
         )
         d = ", ".join(["%s=%r" % (i, getattr(self, o)) for i, o in attrs])
