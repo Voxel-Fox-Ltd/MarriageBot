@@ -65,7 +65,7 @@ class TickPayloadCheckResult:
 
     @property
     def is_tick(self) -> bool:
-        return self.response == "YES"
+        return self.response.endswith("YES")
 
 
 class ProposalInProgress(commands.CommandError):
