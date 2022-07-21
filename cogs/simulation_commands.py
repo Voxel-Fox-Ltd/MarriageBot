@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 import discord
 from discord.ext import commands, vbu
 
-if TYPE_CHECKING:
-    from cogs import utils
+from cogs import utils
 
 
 class SimulationCommands(vbu.Cog[utils.types.Bot]):
