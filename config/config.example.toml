@@ -1,14 +1,15 @@
-token = "bot_token"  # The token for the bot
-owners = [ 141231597155385344 ]  # List of owner IDs - these people override all permission checks
-dm_uncaught_errors = false  # Whether or not to DM the owners when unhandled errors are encountered
-user_agent = ""  # A custom string to populate Bot.user_agent with
-default_prefix = "m!"  # The prefix for the bot's commands
-support_guild_id = 208895639164026880  # The ID for the support guild - used by `Bot.fetch_support_guild()`
-bot_support_role_id = 522072743273824262  # The ID used to determine whether or not the user is part of the bot's support team - used for `.checks.is_bot_support()` check
-guild_settings_prefix_column = "prefix"  # Used if multiple bots connect to the same database and need to seperate their prefixes
+token = ""
+owners = [
+    141231597155385344,
+]
+pubkey = ""
+dm_uncaught_errors = true
+user_agent = "MarriageBot (email@example.com)"
+support_guild_id = 0
+bot_support_role_id = 0
 ephemeral_error_messages = true
 owners_ignore_check_failures = true
-cached_messages = 1_000
+cached_messages = 0
 
 # MarriageBot-specific config items
 max_family_members = 750  # The maximum amount of people you can have in a family
@@ -18,37 +19,37 @@ is_server_specific = false
 # Event webhook information - some of the events (noted) will be sent to the specified url
 [event_webhook]
     event_webhook_url = ""
-    [event_webhook.events]  # If you use true then your `event_webhook_url` will be used. If it's a string it'll assume that's a different webhook
+    [event_webhook.events]
         guild_join = false
         guild_remove = false
         shard_connect = false
         shard_disconnect = false
         shard_ready = false
         bot_ready = false
-        unhandled_error = true
+        unhandled_error = false
 
 # The intents that the bot should start with
 [intents]
-    guilds = true  # Guilds - Used for guild join/remove, channel create/delete/update, Bot.get_channel, Bot.guilds, Bot.get_guild.
-    members = false  # Members (privileged intent) - Used for member join/remove/update, Member.roles, Member.nick, User.name, Bot.get_user, Guild.get_member etc.
-    bans = false  # Bans - Used for member ban/unban.
-    emojis = false  # Emojis - Used for guild emojis update, Bot.get_emoji, Guild.emojis.
-    integrations = false  # Integrations - Used for guild integrations update.
-    webhooks = false  # Webhooks - Used for guild webhooks update.
-    invites = false  # Invites - Used for invite create/delete.
-    voice_states = false  # Voice states - Used for voice state update, VoiceChannel.members, Member.voice.
-    presences = false  # Presences (privileged intent) - Used for member update (for activities and status), Member.status.
-    guild_messages = true  # Guild messages - Used for message events in guilds.
-    dm_messages = true  # DM messages - Used for message events in DMs.
-    guild_reactions = true  # Guild reactions - Used for [raw] reaction add/remove/clear events in guilds.
-    dm_reactions = true  # DM reactions - Used for [raw] reaction add/remove/clear events in DMs.
-    guild_typing = false  # Guild typing - Used for the typing event in guilds.
-    dm_typing = false  # DM typing - Used for the typing event in Dms.
+    guilds = false
+    members = false
+    bans = false
+    emojis = false
+    integrations = false
+    webhooks = false
+    invites = false
+    voice_states = false
+    presences = false
+    guild_messages = false
+    dm_messages = false
+    guild_reactions = false
+    dm_reactions = false
+    guild_typing = false
+    dm_typing = false
 
 # Data used to send API requests to whatever service
 [bot_listing_api_keys]
-    topgg_token = ""  # The token used to post data to top.gg
-    discordbotlist_token = ""  # The token used to post data to discordbotlist.com
+    topgg_token = ""
+    discordbotlist_token = ""
 
 # Add our API keys
 [api_keys]
@@ -56,23 +57,30 @@ is_server_specific = false
 
 [bot_info]
     enabled = true
+    include_stats = true
     content = """
-        **MarriageBot** is a bot that lets you marry your friends, and adopt your enemies. Using commands like `adopt`, `makeparent`, and `marry`, you're able to create your own in-Discord family tree, which you can then check out with the `tree` command!
+        **MarriageBot** is a bot that lets you marry your friends, and adopt your enemies. Using commands like `adopt`, `makeparent`, and `marry`, you're able to create your own in-Discord family tree, which you can then check out with the `/tree` command!
     """
     thumbnail = ""
     image = "https://marriagebot.xyz/static/images/tree.png"
     links.Website = {url = "https://marriagebot.xyz"}
     links."Support Server" = {url = "https://discord.gg/vfl"}
     links.Github = {url = "https://github.com/Voxel-Fox-Ltd/MarriageBot"}
-    links.Donate = {url = "https://upgrade.chat/checkout/208895639164026880"}
+    links."Donate (Upgrade.Chat)" = {url = "https://upgrade.chat/checkout/208895639164026880"}
     links.Vote = {url = "https://top.gg/bot/marriagebot/vote"}
 
 # Used to generate the invite link
 [oauth]
     enabled = true
-    client_id = "468281173072805889"  #  If not set then will use the bot's ID, which is correct as of around 2017 I think
-    scope = "bot applications.commands"  # The scope that will be generated with the invite link, space seperated (applications.commands for slash)
-    permissions = [ "send_messages", "attach_files", "embed_links", "add_reactions", "external_emojis"]  # args here are passed directly to discord.Permissions as True
+    client_id = "468281173072805889"
+    scope = "bot applications.commands"
+    permissions = [
+        "send_messages",
+        "attach_files",
+        "embed_links",
+        "add_reactions",
+        "external_emojis",
+    ]
     response_type = ""
     redirect_uri = ""
 
@@ -80,9 +88,9 @@ is_server_specific = false
 [database]
     enabled = true
     type = "postgres"
-    user = "database_username"
-    password = "database_password"
-    database = "database_name"
+    user = "marriagebot"
+    password = ""
+    database = "marriagebot"
     host = "127.0.0.1"
     port = 5432
 
@@ -94,7 +102,7 @@ is_server_specific = false
     db = 0
 
 [shard_manager]
-    enabled = true
+    enabled = false
     host = "127.0.0.1"
     port = 8888
 
@@ -103,34 +111,23 @@ is_server_specific = false
     enabled = true  # whether or not to embed messages by default
     content = ""  # default content to be added to the embed message
     colour = 0  # a specific colour for the embed - 0 means random
-    [embed.author]
-        enabled = false
-        name = "{ctx.bot.user}"
-        url = ""  # the url added to the author
-    [[embed.footer]]  # an array of possible footers
-        text = "Add the bot to your server! ({ctx.clean_prefix}invite)"  # text to appear in the footer
-        amount = 3  # the amount of times this particular text is added to the pool
-    [[embed.footer]]
-        text = "Learn how to get more children ({ctx.clean_prefix}perks)"
-        amount = 3
-    [[embed.footer]]
-        text = "Join the official Discord server ({ctx.clean_prefix}info)"
-        amount = 3
-    [[embed.footer]]
-        text = "Learn more about MarriageBot Gold ({ctx.clean_prefix}gold)"
-        amount = 3
-    [[embed.footer]]
-        text = "Donate to keep MarriageBot alive ({ctx.clean_prefix}info)"
-        amount = 10
+    footer = [
+        {text = "Learn how to get more children (/perks)", amount = 3},
+        {text = "Join the official Discord server (/info)", amount = 3},
+        {text = "Learn more about MarriageBot Gold (/gold)", amount = 3},
+        {text = "Donate to keep MarriageBot alive (/donate)", amount = 10},
+    ]
 
 # What the bot is playing
 [presence]
-    activity_type = "watching"  # Should be one of 'playing', 'listening', 'watching', 'competing'
+    activity_type = "watching"
     text = "you build families"
-    status = "online"  # Should be one of 'online', 'invisible', 'idle', 'dnd'
-    include_shard_id = true  # Whether or not to append "(shard N)" to the presence; only present if there's more than 1 shard
-    [presence.streaming]  # This is used to automatically set the bot's status to your Twitch stream when you go live
-        twitch_usernames = []  # The username of your Twitch.tv channel
+    status = "online"
+    include_shard_id = false
+    [presence.streaming]
+        twitch_usernames = [
+            "VoxelFoxKae",
+        ]
         twitch_client_id = ""  # Your client ID - https://dev.twitch.tv/console/apps
         twitch_client_secret = ""  # Your client secret
 
@@ -143,4 +140,4 @@ is_server_specific = false
 [statsd]
     host = "127.0.0.1"
     port = 8125  # This is the DataDog default, 9125 is the general statsd default
-    constant_tags.service = ""  # Put your bot name here - leave blank to disable stats collection
+    constant_tags.service = "marriagebot"  # Put your bot name here - leave blank to disable stats collection
