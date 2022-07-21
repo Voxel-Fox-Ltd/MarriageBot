@@ -66,10 +66,15 @@ class GuildConfig(TypedDict):
     max_children: Dict[int, int]
 
 
+class APIKeysConfig(TypedDict):
+    weebsh: str
+
+
 class MarriageBotConfig(vbu.types.BotConfig):
     max_family_members: int
     tree_file_location: str
     is_server_specific: bool
+    api_keys: APIKeysConfig
 
 
 class Bot(vbu.Bot):
