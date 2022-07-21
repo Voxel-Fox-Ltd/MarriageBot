@@ -100,7 +100,7 @@ class CustomisedTreeUser:
             elif v <= 0:
                 v = "transparent"
             else:
-                v = f'"#{v:X}"'
+                v = f'"#{v:0>6X}"'
             ret[i] = v
         ret["direction"] = self.direction
 
