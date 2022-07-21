@@ -133,7 +133,7 @@ class Information(vbu.Cog[utils.types.Bot]):
         if timestamp:
             duration = discord.utils.format_dt(timestamp, "R")
             text += vbu.format(
-                "{0:pronoun,You,They} got married {2}",
+                "{0:pronoun,You,They} got married {1}",
                 user_id == ctx.author.id,
                 duration,
             )
