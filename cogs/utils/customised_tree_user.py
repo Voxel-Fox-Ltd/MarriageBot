@@ -97,7 +97,7 @@ class CustomisedTreeUser:
             v = getattr(self, i)
             if v is None:
                 v = default_hex[i]
-            elif v <= 0:
+            elif v < 0:
                 v = "transparent"
             else:
                 v = f'"#{v:0>6X}"'
