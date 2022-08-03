@@ -425,7 +425,7 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
                 AND
                     guild_id = $2
                 """,
-                user_a, family_guild_id,
+                user_a.id, family_guild_id,
             )
 
         # Update cache
