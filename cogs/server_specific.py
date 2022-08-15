@@ -319,20 +319,6 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             guild_id=family_guild_id,
         )
 
-        # See if they have partners
-        if user_a_tree._partner is not None:
-            user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_a.id)
-            return await ctx.send(
-                f"**{user_name}** already has a partner.",
-                allowed_mentions=discord.AllowedMentions.none(),
-            )
-        if user_b_tree._partner is not None:
-            user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_b.id)
-            return await ctx.send(
-                f"**{user_name}** already has a partner.",
-                allowed_mentions=discord.AllowedMentions.none(),
-            )
-
         # Update database
         async with vbu.Database() as db:
             try:
@@ -354,6 +340,9 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
                                 $3,
                                 $4
                             )
+                        ON CONFLICT
+                            (user_id, partner_id, guild_id)
+                        DO NOTHING
                         """,
                         *sorted([user_a_tree.id, user_b_tree.id]), family_guild_id, dt.utcnow(),
                     )
