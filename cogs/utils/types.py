@@ -1,9 +1,12 @@
 from typing import List, TypedDict, Dict
+from datetime import datetime as dt
 
 from discord.ext import vbu
 
 
 __all__ = (
+    'ParentageDB',
+    'MarriagesDB',
     'FamilyTreeMemberPayload',
     'GuildPrefixPayload',
     'FamilyMaxMembersPayload',
@@ -15,6 +18,20 @@ __all__ = (
     'MarriageBotConfig',
     'Bot',
 )
+
+
+class ParentageDB(TypedDict):
+    child_id: int
+    parent_id: int
+    guild_id: int
+    timestamp: dt
+
+
+class MarriagesDB(TypedDict):
+    user_id: int
+    partner_id: int
+    guild_id: int
+    timestamp: dt
 
 
 class FamilyTreeMemberPayload(TypedDict):

@@ -1,12 +1,14 @@
 from __future__ import annotations
+from typing import List
 
 import discord
 from discord.ext import vbu
 
 from cogs import utils
+from cogs.utils import types
 
 
-class CacheHandler(vbu.Cog[utils.types.Bot]):
+class CacheHandler(vbu.Cog[types.Bot]):
 
     async def recache_user(
             self,
@@ -14,8 +16,11 @@ class CacheHandler(vbu.Cog[utils.types.Bot]):
             guild_id: int = 0):
         """
         Grab a user from the database and re-read them into cache.
+        This does not handle the people attached to that user (eg
+        adding this user to the parent's list of children, etc)
         """
 
+        # Get a cached person
         ftm = utils.FamilyTreeMember.get(user.id, guild_id)
         async with vbu.Database() as db:
             partnerships = await db(
@@ -25,7 +30,11 @@ class CacheHandler(vbu.Cog[utils.types.Bot]):
                 FROM
                     marriages
                 WHERE
-                    user_id = $1
+                    (
+                        user_id = $1
+                    OR
+                        partner_id = $1
+                    )
                 AND
                     guild_id = $2
                 """,
@@ -57,9 +66,18 @@ class CacheHandler(vbu.Cog[utils.types.Bot]):
                 """,
                 ftm.id, ftm._guild_id,
             )
-        ftm._children = [r['child_id'] for r in children]
-        if partnerships:
-            ftm._partner = partnerships[0]['partner_id']
+
+        # Add children
+        ftm.children = [r['child_id'] for r in children]
+
+        # Add partners
+        partner_ids = set()
+        for p in partnerships:
+            partner_ids.update((p['user_id'], p['partner_id'],))
+        partner_ids.remove(ftm.id)
+        ftm.partners = list(partner_ids)
+
+        # Add parent
         if parents:
             ftm._parent = parents[0]['parent_id']
 
@@ -68,16 +86,15 @@ class CacheHandler(vbu.Cog[utils.types.Bot]):
         await self.recache_user(user, guild_id)
 
     @staticmethod
-    def handle_partner(row):
+    def handle_partner(row: types.MarriagesDB):
         user = utils.FamilyTreeMember.get(row['user_id'], row['guild_id'])
-        user.partner = row['partner_id']
-        user.partner.partner = user  # type: ignore - Pyright doesn't like this completely valid code
+        partner = user.add_partner(row['partner_id'], return_added=True)
+        partner.add_partner(user)
 
     @staticmethod
-    def handle_parent(row):
+    def handle_parent(row: types.ParentageDB):
         parent = utils.FamilyTreeMember.get(row['parent_id'], row['guild_id'])
-        parent.add_child(row['child_id'])
-        child = utils.FamilyTreeMember.get(row['child_id'], row['guild_id'])
+        child = parent.add_child(row['child_id'], return_added=True)
         child.parent = row['parent_id']
 
     async def cache_setup(self, db: vbu.Database):
@@ -86,49 +103,32 @@ class CacheHandler(vbu.Cog[utils.types.Bot]):
         """
 
         # Get family data from database
+        where: str
+        if self.bot.config['is_server_specific']:
+            where = "guild_id <> 0"
+        else:
+            where = "guild_id = 0"
         try:
-            if self.bot.config['is_server_specific']:
-                partnerships = await db(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        marriages
-                    WHERE
-                        guild_id <> 0
-                    """,
-                )
-                parents = await db(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        parents
-                    WHERE
-                        guild_id <> 0
-                    """,
-                )
-            else:
-                partnerships = await db(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        marriages
-                    WHERE
-                        guild_id = 0
-                    """,
-                )
-                parents = await db(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        parents
-                    WHERE
-                        guild_id = 0
-                    """,
-                )
+            partnerships: List[types.MarriagesDB] = await db(
+                """
+                SELECT
+                    *
+                FROM
+                    marriages
+                WHERE
+                    {0}
+                """.format(where),
+            )
+            parents: List[types.ParentageDB] = await db(
+                """
+                SELECT
+                    *
+                FROM
+                    parents
+                WHERE
+                    {0}
+                """.format(where),
+            )
         except Exception as e:
             self.logger.critical(
                 (
@@ -158,6 +158,6 @@ class CacheHandler(vbu.Cog[utils.types.Bot]):
         return True
 
 
-def setup(bot: utils.types.Bot):
+def setup(bot: types.Bot):
     x = CacheHandler(bot)
     bot.add_cog(x)

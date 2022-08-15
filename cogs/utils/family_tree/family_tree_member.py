@@ -11,9 +11,9 @@ from typing import (
     Iterable,
     Union,
     Set,
+    overload,
+    Literal,
 )
-
-from discord.ext import vbu
 
 from cogs.utils import types
 from cogs.utils.customised_tree_user import CustomisedTreeUser
@@ -26,6 +26,7 @@ if TYPE_CHECKING:
         "FamilyTreeMember",
         int,
         discord.User,
+        discord.Member,
     ]
 
 
@@ -33,7 +34,7 @@ def get_random_string(length: int = 10) -> str:
     return "".join(random.choices(string.ascii_letters, k=length))
 
 
-class FamilyTreeMember(object):
+class FamilyTreeMember:
     """
     A class representing a member of a family.
     """
@@ -45,7 +46,7 @@ class FamilyTreeMember(object):
         'id',
         '_children',
         '_parent',
-        '_partner',
+        '_partners',
         '_guild_id',
     )
 
@@ -54,17 +55,32 @@ class FamilyTreeMember(object):
             discord_id: int,
             children: Optional[List[int]] = None,
             parent_id: Optional[int] = None,
-            partner_id: Optional[int] = None,
+            partners: Optional[List[int]] = None,
             guild_id: int = 0):
         self.id: int = discord_id
         self._children: List[int] = children or list()
         self._parent: Optional[int] = parent_id
-        self._partner: Optional[int] = partner_id
+        self._partners: List[int] = partners or list()
         self._guild_id: int = guild_id
         self.all_users[(self.id, self._guild_id)] = self
 
     def __hash__(self):
         return hash((self.id, self._guild_id,))
+
+    @overload
+    def _get_user_id(self, value: FamilyTreeMemberSetter) -> int:
+        ...
+
+    @overload
+    def _get_user_id(self, value: None) -> None:
+        ...
+
+    def _get_user_id(self, value: Optional[FamilyTreeMemberSetter]) -> Optional[int]:
+        if value is None:
+            return None
+        if isinstance(value, int):
+            return value
+        return value.id
 
     @classmethod
     def get(
@@ -108,21 +124,133 @@ class FamilyTreeMember(object):
         for i in discord_ids:
             yield cls.get(i, guild_id)
 
-    def add_child(self, child_id: int) -> None:
+    @overload
+    def add_child(
+            self,
+            child: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[True]) -> FamilyTreeMember:
+        ...
+
+    @overload
+    def add_child(
+            self,
+            child: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[False] = False) -> None:
+        ...
+
+    def add_child(
+            self,
+            child: FamilyTreeMemberSetter,
+            *,
+            return_added: bool = False) -> Optional[FamilyTreeMember]:
         """
         Add a new child to this user's children list.
         """
 
+        child_id = self._get_user_id(child)
         if child_id not in self._children:
             self._children.append(child_id)
 
-    def remove_child(self, child_id: int) -> None:
+        if return_added:
+            return self.get(child_id, self._guild_id)
+
+    @overload
+    def remove_child(
+            self,
+            child: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[True]) -> FamilyTreeMember:
+        ...
+
+    @overload
+    def remove_child(
+            self,
+            child: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[False] = False) -> None:
+        ...
+
+    def remove_child(
+            self,
+            child: FamilyTreeMemberSetter,
+            *,
+            return_added: bool = False) -> Optional[FamilyTreeMember]:
         """
         Remove a child from this user's children list.
         """
 
+        child_id = self._get_user_id(child)
         while child_id in self._children:
             self._children.remove(child_id)
+
+        if return_added:
+            return self.get(child_id, self._guild_id)
+
+    @overload
+    def add_partner(
+            self,
+            partner: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[True]) -> FamilyTreeMember:
+        ...
+
+    @overload
+    def add_partner(
+            self,
+            partner: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[False] = False) -> None:
+        ...
+
+    def add_partner(
+            self,
+            partner: FamilyTreeMemberSetter,
+            *,
+            return_added: bool = False) -> Optional[FamilyTreeMember]:
+        """
+        Add a new partner to this user's partner list.
+        """
+
+        partner_id = self._get_user_id(partner)
+        if partner_id not in self._partners:
+            self._partners.append(partner_id)
+
+        if return_added:
+            return self.get(partner_id, self._guild_id)
+
+    @overload
+    def remove_partner(
+            self,
+            partner: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[True]) -> FamilyTreeMember:
+        ...
+
+    @overload
+    def remove_partner(
+            self,
+            partner: FamilyTreeMemberSetter,
+            *,
+            return_added: Literal[False] = False) -> None:
+        ...
+
+    def remove_partner(
+            self,
+            partner: FamilyTreeMemberSetter,
+            *,
+            return_added: bool = False) -> Optional[FamilyTreeMember]:
+        """
+        Remove a partner from this user's partner list.
+        """
+
+        partner_id = self._get_user_id(partner)
+        while partner_id in self._partners:
+            self._partners.remove(partner_id)
+
+        if return_added:
+            return self.get(partner_id, self._guild_id)
 
     def to_json(self) -> dict:
         """
@@ -133,7 +261,7 @@ class FamilyTreeMember(object):
             "discord_id": self.id,
             "children": self._children,
             "parent_id": self._parent,
-            "partner_id": self._partner,
+            "partners": self._partners,
             "guild_id": self._guild_id,
         }
 
@@ -160,7 +288,7 @@ class FamilyTreeMember(object):
             ("discord_id", "id",),
             ("children", "_children",),
             ("parent_id", "_parent",),
-            ("partner_id", "_partner",),
+            ("partners", "_partners",),
             ("guild_id", "_guild_id",),
         )
         d = ", ".join(["%s=%r" % (i, getattr(self, o)) for i, o in attrs])
@@ -175,42 +303,18 @@ class FamilyTreeMember(object):
         ])
 
     @property
-    def partner(self) -> Optional[FamilyTreeMember]:
-        """
-        Gets you the instance of this user's partner.
-        """
-
-        if self._partner:
-            return self.get(self._partner, self._guild_id)
-        return None
-
-    @partner.setter
-    def partner(self, value: Optional[FamilyTreeMemberSetter]) -> None:
-        if value is None:
-            self._partner = None
-        elif isinstance(value, int):
-            self._partner = value
-        else:
-            self._partner = value.id
-
-    @property
     def parent(self) -> Optional[FamilyTreeMember]:
         """
         Gets you the instance of this user's parent.
         """
 
-        if self._parent:
+        if self._parent and self._parent != self.id:
             return self.get(self._parent, self._guild_id)
         return None
 
     @parent.setter
     def parent(self, value: Optional[FamilyTreeMemberSetter]):
-        if value is None:
-            self._parent = None
-        elif isinstance(value, int):
-            self._parent = value
-        else:
-            self._parent = value.id
+        self._parent = self._get_user_id(value)
 
     @property
     def children(self) -> Iterable[FamilyTreeMember]:
@@ -219,17 +323,28 @@ class FamilyTreeMember(object):
         """
 
         for i in self._children:
+            if i == self.id:
+                continue
             yield self.get(i, self._guild_id)
 
     @children.setter
     def children(self, value: Iterable[FamilyTreeMemberSetter]):
-        new_children = []
-        for i in value:
-            if isinstance(i, int):
-                new_children.append(i)
-            else:
-                new_children.append(i.id)
-        self._children = new_children
+        self._children = [self._get_user_id(i) for i in value]
+
+    @property
+    def partners(self) -> Iterable[FamilyTreeMember]:
+        """
+        Gets you the list of partner instances for this user.
+        """
+
+        for i in self._partners:
+            if i == self.id:
+                continue
+            yield self.get(i, self._guild_id)
+
+    @partners.setter
+    def partners(self, value: Iterable[FamilyTreeMemberSetter]):
+        self._partners = [self._get_user_id(i) for i in value]
 
     def get_direct_relations(self) -> List[int]:
         """
@@ -239,22 +354,21 @@ class FamilyTreeMember(object):
         output = []
         output.extend(self._children)
         output.append(self._parent)
-        output.append(self._partner)
+        output.extend(self._partners)
         return [i for i in output if i is not None]
 
     @property
     def is_empty(self) -> bool:
         """
-        Is this instance useless?
+        Does this instance have any family members? Does not check
+        for loops etc, and is only used before a tree generation.
         """
 
-        if self._partner is not None:
-            return False
-        if self._parent is not None:
-            return False
-        if len(self._children) > 0:
-            return False
-        return True
+        return all((
+            len(self._partners) > 0,
+            self._parent is not None,
+            len(self._children) > 0
+        ))
 
     def get_relation(self, target_user: FamilyTreeMember) -> Optional[str]:
         """
@@ -283,7 +397,7 @@ class FamilyTreeMember(object):
         """
 
         family_member_count = 0
-        for i in self.span(add_parent=True, expand_upwards=True):
+        for _ in self.span(add_parent=True, expand_upwards=True):
             family_member_count += 1
         return family_member_count
 
@@ -331,18 +445,16 @@ class FamilyTreeMember(object):
             )
 
         # Add your children
-        if self._children:
-            for child in self.children:
-                yield from child.span(
-                    people_list,
-                    add_parent=False,
-                    expand_upwards=expand_upwards,
-                )
+        for child in self.children:
+            yield from child.span(
+                people_list,
+                add_parent=False,
+                expand_upwards=expand_upwards,
+            )
 
         # Add your partner
-        if self._partner:
-            assert self.partner
-            yield from self.partner.span(
+        for partner in self.partners:
+            yield from partner.span(
                 people_list,
                 add_parent=True,
                 expand_upwards=expand_upwards,
@@ -358,27 +470,45 @@ class FamilyTreeMember(object):
         root_user = self
         already_processed = set()
 
+        # Loop until we get someone
         while True:
+
+            # The person we're looking at has been processed before,
+            # and as such they should be the top of our tree
             if root_user in already_processed:
                 return root_user
+
+            # Keep track of people we've looked at already
             already_processed.add(root_user)
+
+            # If this user has a parent, they must be higher than
+            # this instance by default
             if root_user._parent:
                 assert root_user.parent
                 root_user = root_user.parent
-            elif root_user._partner:
-                assert root_user.partner
-                partner = root_user.partner
-                if partner._parent:
-                    assert partner.parent
-                    root_user = partner.parent
+
+            # If they have any partners, one of THEM could have a parent
+            elif root_user._partners:
+
+                # Have to iterate through them to get the cached values
+                for p in root_user.partners:
+
+                    # See if a partner has a parent
+                    if p._parent:
+                        assert p.parent
+                        root_user = p.parent
+                        break
+
+            # If this user has no parents or partners, they must be the
+            # top of our tree
             else:
                 return root_user
 
     def get_unshortened_relation(
             self,
             target_user: FamilyTreeMember,
-            working_relation: Union[list, None] = None,
-            added_already: Union[set, None] = None) -> Optional[str]:
+            working_relation: Union[List[str], None] = None,
+            added_already: Union[Set[int], None] = None) -> Optional[str]:
         """
         Gets your relation to the other given user.
 
@@ -422,10 +552,8 @@ class FamilyTreeMember(object):
                 return x
 
         # Check partner
-        if self._partner and self._partner not in added_already:
-            partner = self.partner
-            assert partner
-            x = partner.get_unshortened_relation(
+        for i in [o for o in self.partners if o.id not in added_already]:
+            x = i.get_unshortened_relation(
                 target_user,
                 working_relation=working_relation + ['partner'],
                 added_already=added_already
@@ -434,7 +562,7 @@ class FamilyTreeMember(object):
                 return x
 
         # Check children
-        for i in [o for o in self.children if o not in added_already]:
+        for i in [o for o in self.children if o.id not in added_already]:
             x = i.get_unshortened_relation(
                 target_user,
                 working_relation=working_relation + ['child'],
@@ -447,7 +575,7 @@ class FamilyTreeMember(object):
 
     def generational_span(
             self,
-            people_dict: Union[dict, None] = None,
+            people_dict: Union[Dict[int, List[FamilyTreeMember]], None] = None,
             depth: int = 0,
             add_parent: bool = False,
             expand_upwards: bool = False,
@@ -511,9 +639,7 @@ class FamilyTreeMember(object):
             )
 
         # Add your partner
-        if self._partner:
-            partner = self.partner
-            assert partner
+        for partner in self.partners:
             people_dict = partner.generational_span(
                 people_dict,
                 depth=depth,
@@ -621,68 +747,71 @@ class FamilyTreeMember(object):
                 break
 
         # Add my partner and parent
-        if self._partner:
-            partner = self.partner
-            assert partner
-            if partner not in gen_span.get(my_depth, list()):
-                x = gen_span.get(my_depth, list())
+        for partner in self.partners:
+            if partner not in (x := gen_span.get(my_depth, list())):
                 x.append(partner)
                 gen_span[my_depth] = x
-        if self._parent:
-            parent = self.parent
-            assert parent
-            if parent not in gen_span.get(my_depth - 1, list()):
-                x = gen_span.get(my_depth - 1, list())
+        if (parent := self.parent):
+            if parent not in (x := gen_span.get(my_depth - 1, list())):
                 x.append(parent)
                 gen_span[my_depth - 1] = x
+
+        # Long var names suck
+        ctu = customised_tree_user
 
         # Make some initial digraph stuff
         all_text: str = (
             "digraph {"
-            f"node [shape=box,fontcolor={customised_tree_user.hex['font']},"
-            f"color={customised_tree_user.hex['edge']},"
-            f"fillcolor={customised_tree_user.hex['node']},style=filled];"
-            f"edge [dir=none,color={customised_tree_user.hex['edge']}];"
-            f"bgcolor={customised_tree_user.hex['background']};"
-            f"rankdir={customised_tree_user.hex['direction']};"
+            f"node [shape=box,fontcolor={ctu.hex['font']},"
+            f"color={ctu.hex['edge']},"
+            f"fillcolor={ctu.hex['node']},style=filled];"
+            f"edge [dir=none,color={ctu.hex['edge']}];"
+            f"bgcolor={ctu.hex['background']};"
+            f"rankdir={ctu.hex['direction']};"
         )
 
         # Set up some stuff for later
-        all_users: Set[FamilyTreeMember] = set()
-        user_parent_tree: Dict[int, str] = {}
-        # Connects a parent to a random string used to connect the children
+        added_users: Set[FamilyTreeMember] = set()  # A list of people in this dot graph
 
         # Add the username for each user (from unflattened list)
         for generation in gen_span.values():
+
+            # Go through each person in a generation to add their name
             for i in generation:
+
+                # Get their name and ignore if they don't have one
                 name = await DiscordNameManager.fetch_name_by_id(bot, i.id)
-                if name is None:
-                    continue
-                all_users.add(i)
                 name = name.replace('"', '\\"')
+
+                # Generate dot for both ourselves and others
                 if i == self:
                     all_text += (
                         f'{i.id}[label="{name}",'
-                        f'fillcolor={customised_tree_user.hex["highlighted_node"]},'
-                        f'fontcolor={customised_tree_user.hex["highlighted_font"]}];'
+                        f'fillcolor={ctu.hex["highlighted_node"]},'
+                        f'fontcolor={ctu.hex["highlighted_font"]}];'
                     )
                 else:
                     all_text += f'{i.id}[label="{name}"];'
 
-        # Order the generations
+        # The ordered list of generation numbers -
+        # just a list of sequential numbers
+        # Done so we can make sure we have each generation in the
+        # right order
         generation_numbers: List[int] = sorted(list(gen_span.keys()))
-        # The ordered list of generation numbers - just a list of sequential numbers
 
         # Go through the members for each generation
-        for generation_number in generation_numbers:
-            generation = gen_span.get(generation_number)
-            if generation is None:
+        for _, generation_number in enumerate(generation_numbers):
+            if (generation := gen_span.get(generation_number)) is None:
                 continue
 
-            # Make sure you don't add a spouse twice
+            # Make sure you don't add a spouse twice (as they will
+            # be added both by the partner loop and they'll be in the
+            # generation list)
             added_already: List[FamilyTreeMember] = []
 
-            # Add a ranking for this generation
+            # Add a ranking for this generation; only necessary if this
+            # if our first runthrough (the child adding section adds this
+            # on subsequent loops)
             all_text += "{rank=same;"
 
             # Add linking
@@ -695,57 +824,42 @@ class FamilyTreeMember(object):
                 if person in added_already:
                     continue
                 added_already.append(person)
-                partner = person.partner
-
-                # Give them something in the dict so it doesn't make a keyerror
-                user_parent_tree[person.id] = str(person.id)
 
                 # Make sure they stay in line
                 if previous_person:
                     all_text += f"{previous_person.id} -> {person.id} [style=invis];"
 
                 # Add the user and their partner
-                if partner and partner in generation:
+                previous_partner = person
+                for partner in person.partners:
+                    if partner in generation:
+                        all_text += f"{previous_partner.id} -> {partner.id};"
+                        added_already.append(partner)
+                        previous_partner = partner
 
-                    # Set their user parent tree so they share a family value
-                    user_parent_tree[partner.id] = user_parent_tree[person.id] = get_random_string()
-
-                    # Add the users and family value
-                    all_text += f"{person.id} -> {user_parent_tree[person.id]} -> {partner.id};"
-                    all_text += f"{user_parent_tree[person.id]} {self.INVISIBLE};"
-                    added_already.append(partner)
-                    previous_person = partner
-
-                # No partner? No problem
-                else:
+                # No partner, so they weren't added to the graph
+                if not person._partners:
                     all_text += f"{person.id};"
                     previous_person = person
 
-            # Close off the generation and open a new ranking for adding children
+            # Close off the generation and open a new ranking for
+            # adding children links
             all_text += "}{"
 
-            # Go through the people in the generation and add add links
+            # Go through the people in the generation and see if they have
+            # any children to add
             for person in generation:
                 if person._children:
-                    if any([i in all_users for i in person.children]):
-                        all_text += f"h{user_parent_tree[person.id]} {self.INVISIBLE};"
+                    all_text += f"p{person.id} {self.INVISIBLE};"
             all_text += "}"
 
             # Add the lines from parent to node to child
-            child_added_already: List[str] = []
             for person in generation:
                 if person._children:
-                    if any([i in all_users for i in person.children]):
-                        if user_parent_tree[person.id] in child_added_already:
-                            pass
-                        else:
-                            all_text += (
-                                f"{user_parent_tree[person.id]} -> "
-                                f"h{user_parent_tree[person.id]};"
-                            )
-                            child_added_already.append(user_parent_tree[person.id])
-                        for child in [i for i in person.children if i in all_users]:
-                            all_text += f"h{user_parent_tree[person.id]} -> {child.id};"
+                    all_text += f"{person.id} -> p{person.id};"
+                for child in person.children:
+                    all_text += f"p{person.id} -> {child.id};"
+
 
         # And we're done!
         all_text += "}"

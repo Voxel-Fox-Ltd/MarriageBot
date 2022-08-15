@@ -161,15 +161,9 @@ class Marriage(vbu.Cog):
                             $2,
                             $3,
                             $4
-                        ),
-                        (
-                            $2,
-                            $1,
-                            $3,
-                            $4
                         )
                     """,
-                    ctx.author.id, target.id, family_guild_id, dt.utcnow(),
+                    *sorted([ctx.author.id, target.id]), family_guild_id, dt.utcnow(),
                 )
             except asyncpg.UniqueViolationError:
                 await lock.unlock()
