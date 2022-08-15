@@ -30,8 +30,21 @@ if TYPE_CHECKING:
     ]
 
 
-def get_random_string(length: int = 10) -> str:
-    return "".join(random.choices(string.ascii_letters, k=length))
+def sort_generation(generation: List[FamilyTreeMember]) -> List[FamilyTreeMember]:
+    """
+    Sort a list of family tree members into groups of
+    [USER, PARTNER, PARTNER]... to make them easier to just throw into a
+    DOT script.
+    """
+
+    new_generation: List[FamilyTreeMember] = list()
+    for person in sorted(generation, key=lambda p: p.id):
+        if person not in new_generation:
+            new_generation.append(person)
+        for partner in person.partners:
+            if partner in generation and partner not in new_generation:
+                new_generation.append(person)
+    return new_generation
 
 
 class FamilyTreeMember:
@@ -803,6 +816,7 @@ class FamilyTreeMember:
         for _, generation_number in enumerate(generation_numbers):
             if (generation := gen_span.get(generation_number)) is None:
                 continue
+            generation = sort_generation(generation)
 
             # Make sure you don't add a spouse twice (as they will
             # be added both by the partner loop and they'll be in the
