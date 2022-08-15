@@ -7,9 +7,10 @@ import discord
 from discord.ext import commands, vbu
 
 from cogs import utils
+from cogs.utils import types
 
 
-class Marriage(vbu.Cog):
+class Marriage(vbu.Cog[types.Bot]):
 
     @commands.context_command(name="Marry user")
     async def context_command_marry(self, ctx: vbu.Context, user: discord.User):
@@ -72,7 +73,7 @@ class Marriage(vbu.Cog):
             ))
 
         # See if we're already married
-        if author_tree._partner:
+        if author_tree._partners and author_tree.id not in self.bot.owner_ids:
             await lock.unlock()
             return await ctx.send(
                 (
@@ -83,7 +84,7 @@ class Marriage(vbu.Cog):
             )
 
         # See if the *target* is already married
-        if target_tree._partner:
+        if target_tree._partners and author_tree.id not in self.bot.owner_ids:
             await lock.unlock()
             return await ctx.send(
                 (
@@ -109,23 +110,24 @@ class Marriage(vbu.Cog):
         # TODO I can make this a util because I'm going to use it a couple times
         max_family_members = utils.get_max_family_members(ctx)
         family_member_count = 0
-        for _ in author_tree.span(add_parent=True, expand_upwards=True):
+        if author_tree.id not in self.bot.owner_ids:
+            for _ in author_tree.span(add_parent=True, expand_upwards=True):
+                if family_member_count >= max_family_members:
+                    break
+                family_member_count += 1
+            for _ in target_tree.span(add_parent=True, expand_upwards=True):
+                if family_member_count >= max_family_members:
+                    break
+                family_member_count += 1
             if family_member_count >= max_family_members:
-                break
-            family_member_count += 1
-        for _ in target_tree.span(add_parent=True, expand_upwards=True):
-            if family_member_count >= max_family_members:
-                break
-            family_member_count += 1
-        if family_member_count >= max_family_members:
-            await lock.unlock()
-            return await ctx.send(
-                (
-                    f"If you added {target.mention} to your family, you'd "
-                    f"have over {max_family_members} in your family. Sorry!"
-                ),
-                allowed_mentions=utils.only_mention(ctx.author),
-            )
+                await lock.unlock()
+                return await ctx.send(
+                    (
+                        f"If you added {target.mention} to your family, you'd "
+                        f"have over {max_family_members} in your family. Sorry!"
+                    ),
+                    allowed_mentions=utils.only_mention(ctx.author),
+                )
 
         # Set up the proposal
         try:
@@ -176,8 +178,8 @@ class Marriage(vbu.Cog):
         )  # Keep allowed mentions on
 
         # Ping over redis
-        author_tree.partner = target.id
-        target_tree.partner = ctx.author.id
+        author_tree.add_partner(target.id)
+        target_tree.add_partner(ctx.author.id)
         await re.publish("TreeMemberUpdate", author_tree.to_json())
         await re.publish("TreeMemberUpdate", target_tree.to_json())
         await re.disconnect()
@@ -203,8 +205,9 @@ class Marriage(vbu.Cog):
         author_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
 
         # See if they're married
-        target_tree = author_tree.partner
-        if not target_tree:
+        try:
+            target_tree = list(author_tree.partners)[0]
+        except IndexError:
             return await ctx.send("It doesn't look like you're married yet!")
 
         # See if they're sure
@@ -228,15 +231,13 @@ class Marriage(vbu.Cog):
                 DELETE FROM
                     marriages
                 WHERE
-                    (
-                        user_id=$1
-                        OR
-                        user_id=$2
-                    )
+                    user_id = $1
+                AND
+                    partner_id = $2
                 AND
                     guild_id=$3
                 """,
-                ctx.author.id, target_tree.id, family_guild_id,
+                *sorted([ctx.author.id, target_tree.id]), family_guild_id,
             )
         partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, target_tree.id)
         await result.messageable.send(
@@ -245,13 +246,13 @@ class Marriage(vbu.Cog):
         )
 
         # Ping over redis
-        author_tree.partner = None
-        target_tree.partner = None
+        author_tree.remove_partner(target_tree)
+        target_tree.remove_partner(author_tree)
         async with vbu.Redis() as re:
             await re.publish("TreeMemberUpdate", author_tree.to_json())
             await re.publish("TreeMemberUpdate", target_tree.to_json())
 
 
-def setup(bot: vbu.Bot):
+def setup(bot: types.Bot):
     x = Marriage(bot)
     bot.add_cog(x)
