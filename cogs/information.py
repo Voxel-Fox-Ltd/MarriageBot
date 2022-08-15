@@ -39,7 +39,7 @@ class Information(vbu.Cog[utils.types.Bot]):
         return self.locks[user_id]
 
     @commands.command(
-        aliases=['spouse', 'husband', 'wife', 'marriage'],
+        aliases=['spouse', 'husband', 'wife', 'marriage', 'partner'],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(

@@ -377,7 +377,7 @@ class FamilyTreeMember:
         for loops etc, and is only used before a tree generation.
         """
 
-        return not all((
+        return not any((
             len(self._partners) > 0,
             self._parent is not None,
             len(self._children) > 0
@@ -877,7 +877,6 @@ class FamilyTreeMember:
                     new_text = f"p{person.id} -> {child.id};"
                     if new_text not in all_text:
                         all_text += new_text
-
 
         # And we're done!
         all_text += "}"
