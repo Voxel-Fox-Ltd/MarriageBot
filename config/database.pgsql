@@ -41,13 +41,6 @@ CREATE TABLE IF NOT EXISTS parents(
 -- primary key of the table.
 
 
-CREATE TABLE IF NOT EXISTS blacklisted_guilds(
-    guild_id BIGINT NOT NULL,
-    PRIMARY KEY (guild_id)
-);
--- A list of blacklisted guild IDs - the bot will auto-leave these guilds.
-
-
 CREATE TABLE IF NOT EXISTS guild_specific_families(
     guild_id BIGINT NOT NULL,
     purchased_by BIGINT,
@@ -103,24 +96,6 @@ CREATE TABLE IF NOT EXISTS blog_posts(
     author_id BIGINT
 );
 -- Markdown to render on the website.
-
-
-CREATE TABLE IF NOT EXISTS redirects(
-    code VARCHAR(50) PRIMARY KEY,
-    location VARCHAR(2000)
-);
--- Redirects from /r/{code} to the given location for the webiste.
-
-
-CREATE TABLE IF NOT EXISTS disabled_commands(
-    command_name VARCHAR(50) NOT NULL,
-    guild_id BIGINT NOT NULL,
-    disabled BOOLEAN DEFAULT TRUE,
-    PRIMARY KEY (command_name, guild_id)
-);
--- Commands that are disabled for the bot, as specified in the website
--- settings. Can be removed when the message content intent is removed,
--- as users can manage this themselves via the slash command dashboard.
 
 
 CREATE TABLE IF NOT EXISTS max_children_amount(
