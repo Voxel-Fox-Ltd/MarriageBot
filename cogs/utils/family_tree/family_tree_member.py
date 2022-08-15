@@ -591,6 +591,7 @@ class FamilyTreeMember:
             people_dict: Union[Dict[int, List[FamilyTreeMember]], None] = None,
             depth: int = 0,
             add_parent: bool = False,
+            add_partners: bool = True,
             expand_upwards: bool = False,
             all_people: Union[set, None] = None,
             recursive_depth: int = 0) -> Dict[int, List[FamilyTreeMember]]:
@@ -646,21 +647,24 @@ class FamilyTreeMember:
                 people_dict,
                 depth=depth + 1,
                 add_parent=False,
+                add_partners=True,
                 expand_upwards=expand_upwards,
                 all_people=all_people,
                 recursive_depth=recursive_depth + 1,
             )
 
         # Add your partner
-        for partner in self.partners:
-            people_dict = partner.generational_span(
-                people_dict,
-                depth=depth,
-                add_parent=True,
-                expand_upwards=expand_upwards,
-                all_people=all_people,
-                recursive_depth=recursive_depth + 1,
-            )
+        if add_partners:
+            for partner in self.partners:
+                people_dict = partner.generational_span(
+                    people_dict,
+                    depth=depth,
+                    add_parent=True,
+                    add_partners=False,
+                    expand_upwards=expand_upwards,
+                    all_people=all_people,
+                    recursive_depth=recursive_depth + 1,
+                )
 
         # Add your parent
         if expand_upwards and add_parent and self._parent:
@@ -670,6 +674,7 @@ class FamilyTreeMember:
                 people_dict,
                 depth=depth - 1,
                 add_parent=True,
+                add_partners=True,
                 expand_upwards=expand_upwards,
                 all_people=all_people,
                 recursive_depth=recursive_depth + 1,
