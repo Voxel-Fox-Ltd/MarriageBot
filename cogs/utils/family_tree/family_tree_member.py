@@ -846,7 +846,7 @@ class FamilyTreeMember:
                 # Make sure they stay in line
                 # if previous_person:
                 #     all_text += f"{previous_person.id} -> {person.id} [style=invis];"
-                # all_text += f"{person.id};"
+                all_text += f"{person.id};"
 
                 # Add the user and their partner
                 possible_partners: Set[FamilyTreeMember] = {person}
