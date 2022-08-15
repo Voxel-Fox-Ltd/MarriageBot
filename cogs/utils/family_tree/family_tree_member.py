@@ -364,7 +364,7 @@ class FamilyTreeMember:
         for loops etc, and is only used before a tree generation.
         """
 
-        return all((
+        return not all((
             len(self._partners) > 0,
             self._parent is not None,
             len(self._children) > 0
