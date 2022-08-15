@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS marriages(
     partner_id BIGINT NOT NULL,
     guild_id BIGINT NOT NULL DEFAULT 0,
     timestamp TIMESTAMP,
-    PRIMARY KEY (user_id, guild_id)
+    PRIMARY KEY (user_id, partner_id, guild_id)
 );
 -- A table to hold a user and their partner. The primary key
 -- stops users from getting married twice. This may need revisiting

@@ -37,6 +37,8 @@ class CacheHandler(vbu.Cog[types.Bot]):
                     )
                 AND
                     guild_id = $2
+                AND
+                    user_id > partner_id  -- don't delete old data for now
                 """,
                 ftm.id, ftm._guild_id,
             )
