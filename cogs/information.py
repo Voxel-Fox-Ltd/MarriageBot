@@ -119,10 +119,11 @@ class Information(vbu.Cog[utils.types.Bot]):
         # Work out the partner names
         partner_names = []
         for p in partners:
-            await utils.DiscordNameManager.fetch_name_by_id(
+            name = await utils.DiscordNameManager.fetch_name_by_id(
                 self.bot,
                 p.id,
             )
+            partner_names.append(name)
         escaped_partner_names = [
             f"**{utils.escape_markdown(i)}**"
             for i in partner_names
