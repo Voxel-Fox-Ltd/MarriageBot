@@ -37,7 +37,7 @@ def sort_generation(generation: List[FamilyTreeMember]) -> List[FamilyTreeMember
     """
 
     new_generation: List[FamilyTreeMember] = list()
-    for person in sorted(generation, key=lambda p: p.id):
+    for person in sorted(generation, key=lambda p: (p._parent or 0, p.id,)):
         if person not in new_generation:
             new_generation.append(person)
         for partner in person.partners:
