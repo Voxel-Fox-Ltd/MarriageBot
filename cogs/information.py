@@ -135,7 +135,7 @@ class Information(vbu.Cog[utils.types.Bot]):
                 "{0:pronoun,You are,**{1}** is} currently married to "
                 "{2:humanjoin}."
             ),
-            user_id == ctx.author.id, user or ctx.author, escaped_partner_names
+            user_id == ctx.author.id, user_name, escaped_partner_names
         )
         await vbu.embeddify(
             ctx,
