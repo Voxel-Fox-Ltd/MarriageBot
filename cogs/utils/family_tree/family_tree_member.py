@@ -322,7 +322,7 @@ class FamilyTreeMember:
         Gets you the list of children instances for this user.
         """
 
-        for i in self._children:
+        for i in sorted(self._children):
             if i == self.id:
                 continue
             yield self.get(i, self._guild_id)
@@ -337,7 +337,7 @@ class FamilyTreeMember:
         Gets you the list of partner instances for this user.
         """
 
-        for i in self._partners:
+        for i in sorted(self._partners):
             if i == self.id:
                 continue
             yield self.get(i, self._guild_id)
