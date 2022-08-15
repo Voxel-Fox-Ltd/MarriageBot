@@ -244,6 +244,10 @@ async def send_proposal_message(
             return
         assert payload.user
 
+        # See if the user is an owner
+        if payload.user.id in ctx.bot.owner_ids:
+            return True
+
         # See if this user is valid
         if payload.user.id not in [user.id, ctx.author.id]:
             ctx.bot.loop.create_task(payload.response.send_message(

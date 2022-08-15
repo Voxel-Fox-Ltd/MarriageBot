@@ -132,8 +132,8 @@ class Information(vbu.Cog[utils.types.Bot]):
         # And output
         text = vbu.format(
             (
-                "{0:pronoun,You are,**{1}** is} currently married to"
-                "{2:humanjoin}"
+                "{0:pronoun,You are,**{1}** is} currently married to "
+                "{2:humanjoin}."
             ),
             user_id == ctx.author.id, user or ctx.author, escaped_partner_names
         )
