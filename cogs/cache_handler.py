@@ -76,7 +76,8 @@ class CacheHandler(vbu.Cog[types.Bot]):
         partner_ids = set()
         for p in partnerships:
             partner_ids.update((p['user_id'], p['partner_id'],))
-        partner_ids.remove(ftm.id)
+        while ftm.id in partner_ids:
+            partner_ids.remove(ftm.id)
         ftm.partners = list(partner_ids)
 
         # Add parent
