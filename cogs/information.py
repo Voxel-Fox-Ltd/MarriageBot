@@ -55,7 +55,7 @@ class Information(vbu.Cog[utils.types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True)
-    async def partner(
+    async def partners(
             self,
             ctx: vbu.Context,
             user: Optional[vbu.converters.UserID] = None):
@@ -69,7 +69,8 @@ class Information(vbu.Cog[utils.types.Bot]):
         user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
 
         # Check they have a partner
-        if user_info._partner is None:
+        partners = list(user_info.partners)
+        if not partners:
             if user_id == ctx.author.id:
                 return await ctx.send(
                     "You're not currently married.",
@@ -79,65 +80,67 @@ class Information(vbu.Cog[utils.types.Bot]):
                 f"**{utils.escape_markdown(user_name)}** is not currently married.",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
-        partner_name = await utils.DiscordNameManager.fetch_name_by_id(
-            self.bot,
-            user_info._partner,
-        )
 
         # Get timestamp
-        async with vbu.Database() as db:
-            if self.bot.config.get('is_server_specific', False):
-                data = await db(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        marriages
-                    WHERE
-                        user_id = $1
-                    AND
-                        guild_id = $2
-                    """,
-                    user_id, user_info._guild_id,
-                )
-            else:
-                data = await db(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        marriages
-                    WHERE
-                        user_id = $1
-                    AND
-                        guild_id = 0
-                    """,
-                    user_id,
-                )
-        try:
-            timestamp = data[0]['timestamp']
-        except Exception:
-            timestamp = None
+        # async with vbu.Database() as db:
+        #     if self.bot.config.get('is_server_specific', False):
+        #         data = await db(
+        #             """
+        #             SELECT
+        #                 *
+        #             FROM
+        #                 marriages
+        #             WHERE
+        #                 user_id = $1
+        #             AND
+        #                 guild_id = $2
+        #             """,
+        #             user_id, user_info._guild_id,
+        #         )
+        #     else:
+        #         data = await db(
+        #             """
+        #             SELECT
+        #                 *
+        #             FROM
+        #                 marriages
+        #             WHERE
+        #                 user_id = $1
+        #             AND
+        #                 guild_id = 0
+        #             """,
+        #             user_id,
+        #         )
+        # try:
+        #     timestamp = data[0]['timestamp']
+        # except Exception:
+        #     timestamp = None
 
-        # Output
-        text = (
-            f"**{utils.escape_markdown(user_name)}** is currently married "
-            f"to **{utils.escape_markdown(partner_name)}** "
-            f"(`{user_info._partner}`). "
+        # Work out the partner names
+        partner_names = []
+        for p in partners:
+            await utils.DiscordNameManager.fetch_name_by_id(
+                self.bot,
+                p.id,
+            )
+        escaped_partner_names = [
+            f"**{utils.escape_markdown(i)}**"
+            for i in partner_names
+        ]
+
+        # And output
+        text = vbu.format(
+            (
+                "{0:pronoun,You are,**{1}** is} currently married to"
+                "{2:humanjoin}"
+            ),
+            user_id == ctx.author.id, user or ctx.author, escaped_partner_names
         )
-        if user_id == ctx.author.id:
-            text = (
-                f"You're currently married to **{utils.escape_markdown(partner_name)}** "
-                f"(`{user_info._partner}`). "
-            )
-        if timestamp:
-            duration = discord.utils.format_dt(timestamp, "R")
-            text += vbu.format(
-                "{0:pronoun,You,They} got married {1}",
-                user_id == ctx.author.id,
-                duration,
-            )
-        await vbu.embeddify(ctx, text, allowed_mentions=discord.AllowedMentions.none())
+        await vbu.embeddify(
+            ctx,
+            text,
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
     @commands.command(
         aliases=['child', 'kids'],
