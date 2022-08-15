@@ -870,9 +870,13 @@ class FamilyTreeMember:
             # Add the lines from parent to node to child
             for person in generation:
                 if person._children:
-                    all_text += f"{person.id} -> p{person.id};"
+                    new_text = f"{person.id} -> p{person.id};"
+                    if new_text not in all_text:
+                        all_text += new_text
                 for child in person.children:
-                    all_text += f"p{person.id} -> {child.id};"
+                    new_text = f"p{person.id} -> {child.id};"
+                    if new_text not in all_text:
+                        all_text += new_text
 
 
         # And we're done!
