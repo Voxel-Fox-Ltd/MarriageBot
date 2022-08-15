@@ -843,9 +843,7 @@ class FamilyTreeMember:
                     continue
                 added_already.append(person)
 
-                # Make sure they stay in line
-                # if previous_person:
-                #     all_text += f"{previous_person.id} -> {person.id} [style=invis];"
+                # Make sure they stay in this line
                 all_text += f"{person.id};"
 
                 # Add the user and their partner
@@ -867,11 +865,6 @@ class FamilyTreeMember:
                     all_text += f"{previous_partner.id} -> {partner.id};"
                     added_already.append(partner)
                     previous_partner = partner
-
-                # No partner, so they weren't added to the graph
-                # if not person._partners:
-                #     all_text += f"{person.id};"
-                #     previous_person = person
 
             # Close off the generation and open a new ranking for
             # adding children links
