@@ -850,6 +850,7 @@ class FamilyTreeMember:
 
                 # Add the user and their partner
                 possible_partners: Set[FamilyTreeMember] = set(person.partners)
+                possible_partners.add(person)
                 for partner in person.partners:
                     possible_partners.update(partner.partners)
                 filtered_possible_partners: List[FamilyTreeMember] = [
