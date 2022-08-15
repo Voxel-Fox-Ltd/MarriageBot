@@ -156,6 +156,22 @@ class CustomisedTreeUser:
         Saves the cached data from this object into the database.
         """
 
+        # Work out if there are any non-default values
+        attrs = [
+            self.edge,
+            self.node,
+            self.font,
+            self.highlighted_font,
+            self.highlighted_node,
+            self.background,
+            self.direction,
+        ]
+        while None in attrs:
+            attrs.remove(None)
+        if not attrs:
+            return
+
+        # Save to database
         await db(
             """
             INSERT INTO
