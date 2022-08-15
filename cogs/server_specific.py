@@ -353,28 +353,22 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
                                 $2,
                                 $3,
                                 $4
-                            ),
-                            (
-                                $2,
-                                $1,
-                                $3,
-                                $4
                             )
                         """,
-                        user_a_tree.id, user_b_tree.id, family_guild_id, dt.utcnow(),
+                        *sorted([user_a_tree.id, user_b_tree.id]), family_guild_id, dt.utcnow(),
                     )
             except asyncpg.UniqueViolationError:
                 return await ctx.send("I ran into an error saving your family data.")
-        usera_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_a_tree.id)
-        userb_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_b_tree.id)
+        user_a_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_a_tree.id)
+        user_b_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_b_tree.id)
         await ctx.send(
-            f"Married **{usera_name}** and **{userb_name}**.",
+            f"Married **{user_a_name}** and **{user_b_name}**.",
             allowed_mentions=discord.AllowedMentions.none(),
         )
 
         # Update cache
-        user_a_tree._partner = user_b.id
-        user_b_tree._partner = user_a.id
+        user_a_tree.add_partner(user_b)
+        user_b_tree.add_partner(user_a)
         async with vbu.Redis() as re:
             await re.publish("TreeMemberUpdate", user_a_tree.to_json())
             await re.publish("TreeMemberUpdate", user_b_tree.to_json())
@@ -387,6 +381,11 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
                     description="The user you want to force divorce.",
                     type=discord.ApplicationCommandOptionType.user,
                 ),
+                discord.ApplicationCommandOption(
+                    name="user_a",
+                    description="The other user you want to force divorce.",
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
             ],
         ),
     )
@@ -395,7 +394,8 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
     async def forcedivorce(
             self,
             ctx: vbu.Context,
-            user_a: discord.User):
+            user_a: discord.User,
+            user_b: discord.User):
         """
         Divorces a user from their spouse.
         """
@@ -403,12 +403,6 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
         # Get user
         family_guild_id = utils.get_family_guild_id(ctx)
         user_a_tree = utils.FamilyTreeMember.get(user_a.id, guild_id=family_guild_id)
-        user_a_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_a.id)
-        if not user_a_tree.partner:
-            return await ctx.send(
-                f"**{user_a_name}** isn't even married .-.",
-                allowed_mentions=discord.AllowedMentions.none(),
-            )
 
         # Update database
         async with vbu.Database() as db:
@@ -417,21 +411,18 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
                 DELETE FROM
                     marriages
                 WHERE
-                    (
-                        user_id=$1
-                        OR
-                        partner_id=$1
-                    )
+                    user_id = $1
                 AND
-                    guild_id = $2
+                    partner_id = $2
+                AND
+                    guild_id = $3
                 """,
-                user_a.id, family_guild_id,
+                *sorted([user_a.id, user_b.id]), family_guild_id,
             )
 
         # Update cache
-        user_a_tree.partner.partner = None
-        user_b_tree = user_a_tree.partner
-        user_a_tree.partner = None
+        user_b_tree = user_a_tree.remove_partner(user_b, return_added=True)
+        user_b_tree.remove_partner(user_a)
         async with vbu.Redis() as re:
             await re.publish("TreeMemberUpdate", user_a_tree.to_json())
             await re.publish("TreeMemberUpdate", user_b_tree.to_json())
