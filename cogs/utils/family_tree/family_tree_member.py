@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import random
-import string
+import operator
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -845,21 +844,33 @@ class FamilyTreeMember:
                 added_already.append(person)
 
                 # Make sure they stay in line
-                if previous_person:
-                    all_text += f"{previous_person.id} -> {person.id} [style=invis];"
+                # if previous_person:
+                #     all_text += f"{previous_person.id} -> {person.id} [style=invis];"
+                # all_text += f"{person.id};"
 
                 # Add the user and their partner
-                previous_partner = person
+                possible_partners: Set[FamilyTreeMember] = {person}
                 for partner in person.partners:
-                    if partner in generation:
-                        all_text += f"{previous_partner.id} -> {partner.id};"
-                        added_already.append(partner)
-                        previous_partner = partner
+                    possible_partners.update(partner.partners)
+                filtered_possible_partners: List[FamilyTreeMember] = [
+                    i
+                    for i in possible_partners
+                    if i in generation
+                ]
+                filtered_possible_partners = sorted(
+                    filtered_possible_partners,
+                    key=operator.attrgetter("id"),
+                )
+                previous_partner = filtered_possible_partners[0]
+                for partner in filtered_possible_partners[1:]:
+                    all_text += f"{previous_partner.id} -> {partner.id};"
+                    added_already.append(partner)
+                    previous_partner = partner
 
                 # No partner, so they weren't added to the graph
-                if not person._partners:
-                    all_text += f"{person.id};"
-                    previous_person = person
+                # if not person._partners:
+                #     all_text += f"{person.id};"
+                #     previous_person = person
 
             # Close off the generation and open a new ranking for
             # adding children links
