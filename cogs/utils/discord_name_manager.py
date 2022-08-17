@@ -29,6 +29,13 @@ class DiscordNameManager:
         self.age: int = 0 if self._name else 1_000
         self.cached_names[self.user_id] = self
 
+    @classmethod
+    def get(cls, id: int) -> DiscordNameManager:
+        try:
+            return cls.cached_names[id]
+        except KeyError:
+            return cls(id)
+
     @property
     def name(self) -> Optional[str]:
         self.age += 1
