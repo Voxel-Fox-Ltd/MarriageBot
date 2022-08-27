@@ -81,41 +81,6 @@ class Information(vbu.Cog[utils.types.Bot]):
                 allowed_mentions=discord.AllowedMentions.none(),
             )
 
-        # Get timestamp
-        # async with vbu.Database() as db:
-        #     if self.bot.config.get('is_server_specific', False):
-        #         data = await db(
-        #             """
-        #             SELECT
-        #                 *
-        #             FROM
-        #                 marriages
-        #             WHERE
-        #                 user_id = $1
-        #             AND
-        #                 guild_id = $2
-        #             """,
-        #             user_id, user_info._guild_id,
-        #         )
-        #     else:
-        #         data = await db(
-        #             """
-        #             SELECT
-        #                 *
-        #             FROM
-        #                 marriages
-        #             WHERE
-        #                 user_id = $1
-        #             AND
-        #                 guild_id = 0
-        #             """,
-        #             user_id,
-        #         )
-        # try:
-        #     timestamp = data[0]['timestamp']
-        # except Exception:
-        #     timestamp = None
-
         # Work out the partner names
         partner_names = []
         for p in partners:
