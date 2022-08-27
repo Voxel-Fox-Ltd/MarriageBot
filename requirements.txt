@@ -1,3 +1,4 @@
 novus[vbu,speed]
 markdown2
 typing_extensions
+aioredlock

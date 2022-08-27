@@ -12,6 +12,7 @@ from discord.ext import commands, vbu
 
 MISSING = discord.utils.MISSING
 only_mention = discord.AllowedMentions.only
+vbu.Redis.lock_manager = aioredlock.Aioredlock([vbu.Redis.pool])
 
 
 __all__ = (
