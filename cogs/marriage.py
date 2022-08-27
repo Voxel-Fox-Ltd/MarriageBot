@@ -84,7 +84,7 @@ class Marriage(vbu.Cog[types.Bot]):
             )
 
         # See if the *target* is already married
-        if target_tree._partners and author_tree.id not in self.bot.owner_ids:
+        if target_tree._partners and target_tree.id not in self.bot.owner_ids:
             await lock.unlock()
             return await ctx.send(
                 (
