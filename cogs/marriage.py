@@ -231,9 +231,19 @@ class Marriage(vbu.Cog[types.Bot]):
                 DELETE FROM
                     marriages
                 WHERE
-                    user_id = $1
-                AND
-                    partner_id = $2
+                    (
+                        (
+                            user_id = $1
+                        AND
+                            partner_id = $2
+                        )
+                        OR
+                        (
+                            partner_id = $1
+                        AND
+                            user_id = $2
+                        )
+                    )
                 AND
                     guild_id = $3
                 """,
