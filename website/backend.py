@@ -165,19 +165,18 @@ async def set_max_allowed_children(request: Request):
     guild_id = int(data.pop("guild_id"))
     max_children_dict = {}
     async with request.app['database']() as db:
-        await db.start_transaction()
-        await db("""DELETE FROM max_children_amount WHERE guild_id=$1""", guild_id)
-        for role_id, amount in data.items():
-            try:
-                await db(
-                    """INSERT INTO max_children_amount (guild_id, role_id, amount) VALUES ($1, $2, $3)
-                    ON CONFLICT DO NOTHING""",
-                    guild_id, int(role_id), int(amount),
-                )
-                max_children_dict[int(role_id)] = int(amount)
-            except ValueError:
-                pass
-        await db.commit_transaction()
+        async with db.transaction() as trans:
+            await trans.call("""DELETE FROM max_children_amount WHERE guild_id=$1""", guild_id)
+            for role_id, amount in data.items():
+                try:
+                    await trans.call(
+                        """INSERT INTO max_children_amount (guild_id, role_id, amount) VALUES ($1, $2, $3)
+                        ON CONFLICT DO NOTHING""",
+                        guild_id, int(role_id), int(amount),
+                    )
+                    max_children_dict[int(role_id)] = int(amount)
+                except ValueError:
+                    pass
     async with request.app['redis']() as re:
         await re.publish('UpdateMaxChildren', {
             'guild_id': checked_data['guild_id'],
