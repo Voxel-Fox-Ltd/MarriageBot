@@ -371,7 +371,7 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
                     type=discord.ApplicationCommandOptionType.user,
                 ),
                 discord.ApplicationCommandOption(
-                    name="user_a",
+                    name="user_b",
                     description="The other user you want to force divorce.",
                     type=discord.ApplicationCommandOptionType.user,
                 ),
