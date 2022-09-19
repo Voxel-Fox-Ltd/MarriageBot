@@ -833,7 +833,7 @@ class FamilyTreeMember:
             all_text += "{rank=same;"
 
             # Add linking
-            previous_person = None
+            # previous_person = None
 
             # Go through each person in the generation
             for person in generation:
@@ -862,7 +862,10 @@ class FamilyTreeMember:
                 )
                 previous_partner = filtered_possible_partners[0]
                 for partner in filtered_possible_partners[1:]:
-                    all_text += f"{previous_partner.id} -> {partner.id};"
+                    partner_link = f"{previous_partner.id} -> {partner.id};"
+                    alt_partner_link = f"{partner.id} -> {previous_partner.id};"
+                    if partner_link not in all_text and alt_partner_link not in all_text:
+                        all_text += partner_link
                     added_already.append(partner)
                     previous_partner = partner
 
