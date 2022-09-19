@@ -38,7 +38,8 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             self,
             guild: discord.Guild):
         """
-        Looks for when the bot is added to a guild, leaving if it's not whitelisted.
+        Looks for when the bot is added to a guild, leaving if it's not
+        whitelisted.
         """
 
         # See if we're server specific
@@ -64,7 +65,50 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             return
 
         # Leave invalid server
-        self.logger.warn(f"Automatically left guild {guild.name} ({guild.id}) for non-subscription")
+        self.logger.warn(
+            (
+                f"Automatically left guild {guild.name} ({guild.id}) "
+                "for non-subscription"
+            )
+        )
+        await guild.leave()
+
+    @vbu.Cog.listener()
+    async def on_ready(self):
+        """
+        Looks for when the bot is added to a guild, leaving if it's not
+        whitelisted.
+        """
+
+        # See if we're server specific
+        if not self.bot.config['is_server_specific']:
+            return
+
+        # If we are, see if this guild is valid
+        async with vbu.Database() as db:
+            data = await db(
+                """
+                SELECT
+                    guild_id
+                FROM
+                    guild_specific_families
+                WHERE
+                    guild_id = $1
+                """,
+                guild.id,
+            )
+
+        # We valid
+        if data:
+            return
+
+        # Leave invalid server
+        self.logger.warn(
+            (
+                f"Automatically left guild {guild.name} ({guild.id}) "
+                "for non-subscription"
+            )
+        )
         await guild.leave()
 
     @commands.command()
