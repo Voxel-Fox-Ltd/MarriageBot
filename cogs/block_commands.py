@@ -54,7 +54,13 @@ class BlockCommands(vbu.Cog[utils.types.Bot]):
                 ctx.author.id, user,
             )
         async with vbu.Redis() as re:
-            await re.publish("BlockedUserAdd", {"user_id": ctx.author.id, "blocked_user_id": user})
+            await re.publish(
+                "BlockedUserAdd",
+                {
+                    "user_id": ctx.author.id,
+                    "blocked_user_id": user,
+                },
+            )
 
         # And respond
         return await ctx.send("That user is now blocked.")
@@ -98,7 +104,13 @@ class BlockCommands(vbu.Cog[utils.types.Bot]):
                 ctx.author.id, user,
             )
         async with vbu.Redis() as re:
-            await re.publish("BlockedUserRemove", {"user_id": ctx.author.id, "blocked_user_id": user})
+            await re.publish(
+                "BlockedUserRemove",
+                {
+                    "user_id": ctx.author.id,
+                    "blocked_user_id": user,
+                },
+            )
 
         # And respond
         return await ctx.send("That user is now unblocked.")

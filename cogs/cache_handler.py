@@ -120,6 +120,8 @@ class CacheHandler(vbu.Cog[types.Bot]):
                     marriages
                 WHERE
                     {0}
+                AND
+                    user_id > partner_id
                 """.format(where),
             )
             parents: List[types.ParentageDB] = await db(

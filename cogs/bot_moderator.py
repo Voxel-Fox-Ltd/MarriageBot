@@ -73,28 +73,33 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
 
         # Delete current guild data
         if delete_members:
-            await db("DELETE FROM marriages WHERE guild_id=$1", guild_id)
-            await db("DELETE FROM parents WHERE guild_id=$1", guild_id)
+            await db("DELETE FROM marriages WHERE guild_id = $1", guild_id)
+            await db("DELETE FROM parents WHERE guild_id = $1", guild_id)
 
         # Generate new data to copy
-        parents = ((i.id, i._parent, guild_id) for i in users if i._parent)
-        partners = ((i.id, i._partner, guild_id) for i in users if i._partner)
+        parents = [(i.id, i._parent, guild_id) for i in users if i._parent]
+        partners = []
+        for i in users:
+            partners.extend((i.id, p.id, guild_id) for p in i.partners)
+        partners = list(set(partners))
 
         # Push to db
         assert db.conn
         try:
             await db.conn.copy_records_to_table(
-                'parents',
-                columns=['child_id', 'parent_id', 'guild_id'],
+                "parents",
+                columns=["child_id", "parent_id", "guild_id"],
                 records=parents,
             )
             await db.conn.copy_records_to_table(
-                'marriages',
-                columns=['user_id', 'partner_id', 'guild_id'],
+                "marriages",
+                columns=["user_id", "partner_id", "guild_id"],
                 records=partners,
             )
         except Exception:
-            return await ctx.send("I encountered an error copying that family over.")
+            return await ctx.send(
+                "I encountered an error copying that family over."
+            )
 
         # Send to user
         await db.disconnect()
@@ -188,7 +193,12 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
 
         # They haven't purchased anything
         if not rows:
-            return await ctx.send("That user has purchased no instances of MarriageBot Gold.")
+            return await ctx.send(
+                (
+                    "That user has purchased no "
+                    "instances of MarriageBot Gold."
+                )
+            )
 
         # Spit out their guild IDs
         format_text = (
@@ -197,7 +207,10 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
         )
         text = vbu.format(format_text, len(rows))
         text += "\n".join([f"\N{BULLET} `{i['guild_id']}`" for i in rows])
-        return await ctx.send(text, allowed_mentions=discord.AllowedMentions.none())
+        return await ctx.send(
+            text,
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
 
 def setup(bot: utils.types.Bot):

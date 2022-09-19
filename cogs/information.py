@@ -17,9 +17,10 @@ class TreeCommandCooldown(object):
     bot: Optional[utils.types.Bot] = None
 
     @classmethod
-    def cooldown(cls, message: discord.Message) -> commands.Cooldown:
+    def cooldown(cls, _: discord.Message) -> commands.Cooldown:
         assert cls.bot
-        # perks: utils.MarriageBotPerks = cls.bot.loop.(utils.get_marriagebot_perks(cls.bot, message.author.id))
+        # perks: utils.MarriageBotPerks
+        # perks = cls.bot.loop.(utils.get_marriagebot_perks(cls.bot, message.author.id))
         # return commands.Cooldown(1, perks.tree_command_cooldown)
         return commands.Cooldown(1, 15)
 
@@ -39,7 +40,7 @@ class Information(vbu.Cog[utils.types.Bot]):
         return self.locks[user_id]
 
     @commands.command(
-        aliases=['spouse', 'husband', 'wife', 'marriage', 'partner'],
+        aliases=["spouse", "husband", "wife", "marriage", "partner"],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(
@@ -66,7 +67,8 @@ class Information(vbu.Cog[utils.types.Bot]):
         # Get the user's info
         user_id = user or ctx.author.id
         user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
-        user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
+        guild_id = utils.get_family_guild_id(ctx)
+        user_info = utils.FamilyTreeMember.get(user_id, guild_id)
 
         # Check they have a partner
         partners = list(user_info.partners)
@@ -109,7 +111,7 @@ class Information(vbu.Cog[utils.types.Bot]):
         )
 
     @commands.command(
-        aliases=['child', 'kids'],
+        aliases=["child", "kids"],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(
@@ -136,7 +138,8 @@ class Information(vbu.Cog[utils.types.Bot]):
         # Get the user's info
         user_id = user or ctx.author.id
         user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
-        user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
+        guild_id = utils.get_family_guild_id(ctx)
+        user_info = utils.FamilyTreeMember.get(user_id, guild_id)
 
         # See if the user has no children
         if len(user_info._children) == 0:
@@ -151,7 +154,7 @@ class Information(vbu.Cog[utils.types.Bot]):
             )
 
         # They do have children!
-        children_plural = 'child' if len(user_info._children) == 1 else 'children'
+        children_plural = "child" if len(user_info._children) == 1 else "children"
         output = (
             f"**{utils.escape_markdown(user_name)}** has "
             f"{len(user_info._children)} {children_plural}:\n"
@@ -173,7 +176,7 @@ class Information(vbu.Cog[utils.types.Bot]):
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(
-        aliases=['sib', 'brothers', 'sisters'],
+        aliases=["sib", "brothers", "sisters"],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(
@@ -200,7 +203,8 @@ class Information(vbu.Cog[utils.types.Bot]):
         # Get the user's info
         user_id = user or ctx.author.id
         user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
-        user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
+        guild_id = utils.get_family_guild_id(ctx)
+        user_info = utils.FamilyTreeMember.get(user_id, guild_id)
 
         # Make sure they have a parent
         parent_id = user_info._parent
@@ -236,7 +240,7 @@ class Information(vbu.Cog[utils.types.Bot]):
             )
 
         # They do have siblings!
-        sibling_plural = 'sibling' if len(sibling_list) == 1 else 'siblings'
+        sibling_plural = "sibling" if len(sibling_list) == 1 else "siblings"
 
         # Count the siblings
         output = f"**{utils.escape_markdown(user_name)}** has {len(sibling_list)} {sibling_plural}:\n"
@@ -262,7 +266,7 @@ class Information(vbu.Cog[utils.types.Bot]):
         await vbu.embeddify(ctx, output, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(
-        aliases=['parents'],
+        aliases=["parents"],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(
@@ -289,7 +293,8 @@ class Information(vbu.Cog[utils.types.Bot]):
         # Get the user's info
         user_id = user or ctx.author.id
         user_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, user_id)
-        user_info = utils.FamilyTreeMember.get(user_id, utils.get_family_guild_id(ctx))
+        guild_id = utils.get_family_guild_id(ctx)
+        user_info = utils.FamilyTreeMember.get(user_id, guild_id)
 
         # Make sure they have a parent
         if user_info._parent is None:
