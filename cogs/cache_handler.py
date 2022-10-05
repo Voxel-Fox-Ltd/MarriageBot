@@ -23,6 +23,14 @@ class CacheHandler(vbu.Cog[types.Bot]):
         # Get a cached person
         ftm = utils.FamilyTreeMember.get(user.id, guild_id)
         async with vbu.Database() as db:
+            await db(
+                """
+                DELETE FROM
+                    marriages
+                WHERE
+                    user_id = partner_id
+                """,
+            )
             partnerships = await db(
                 """
                 SELECT
@@ -41,6 +49,14 @@ class CacheHandler(vbu.Cog[types.Bot]):
                     user_id > partner_id  -- don't delete old data for now
                 """,
                 ftm.id, ftm._guild_id,
+            )
+            await db(
+                """
+                DELETE FROM
+                    parents
+                WHERE
+                    parent_id = child_id
+                """,
             )
             parents = await db(
                 """
