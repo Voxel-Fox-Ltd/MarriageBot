@@ -85,31 +85,32 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             return
 
         # If we are, see if this guild is valid
-        async with vbu.Database() as db:
-            data = await db(
-                """
-                SELECT
-                    guild_id
-                FROM
-                    guild_specific_families
-                WHERE
-                    guild_id = $1
-                """,
-                guild.id,
-            )
+        for guild in self.bot.guilds:
+            async with vbu.Database() as db:
+                data = await db(
+                    """
+                    SELECT
+                        guild_id
+                    FROM
+                        guild_specific_families
+                    WHERE
+                        guild_id = $1
+                    """,
+                    guild.id,
+                )
 
-        # We valid
-        if data:
-            return
+            # We valid
+            if data:
+                return
 
-        # Leave invalid server
-        self.logger.warn(
-            (
-                f"Automatically left guild {guild.name} ({guild.id}) "
-                "for non-subscription"
+            # Leave invalid server
+            self.logger.warn(
+                (
+                    f"Automatically left guild {guild.name} ({guild.id}) "
+                    "for non-subscription"
+                )
             )
-        )
-        await guild.leave()
+            await guild.leave()
 
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
