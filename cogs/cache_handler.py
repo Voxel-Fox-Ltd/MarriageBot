@@ -70,7 +70,11 @@ class CacheHandler(vbu.Cog[types.Bot]):
             )
 
         # Add children
-        ftm.children = [r['child_id'] for r in children]
+        ftm.children = [
+            r['child_id']
+            for r in children
+            if r['child_id'] != ftm.id
+        ]
 
         # Add partners
         partner_ids = set()
@@ -82,7 +86,9 @@ class CacheHandler(vbu.Cog[types.Bot]):
 
         # Add parent
         if parents:
-            ftm._parent = parents[0]['parent_id']
+            parent_id = parents[0]['parent_id']
+            if parent_id != ftm.id:
+                ftm._parent = parent_id
 
     @vbu.Cog.listener("on_recache_user")
     async def _recache_user(self, user, guild_id):
@@ -97,6 +103,8 @@ class CacheHandler(vbu.Cog[types.Bot]):
     @staticmethod
     def handle_parent(row: types.ParentageDB):
         parent = utils.FamilyTreeMember.get(row['parent_id'], row['guild_id'])
+        if parent.id == row['child_id']:
+            return
         child = parent.add_child(row['child_id'], return_added=True)
         child.parent = row['parent_id']
 

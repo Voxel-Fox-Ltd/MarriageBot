@@ -494,6 +494,10 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
         else:
             parent, child = parent, child
 
+        # Make sure the parent and child are different people
+        if parent.id == child.id:
+            return await ctx.send("Someone can't be their own parent!")
+
         # Check users
         family_guild_id = utils.get_family_guild_id(ctx)
         parent_tree, child_tree = utils.FamilyTreeMember.get_multiple(
