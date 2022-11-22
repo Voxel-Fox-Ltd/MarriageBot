@@ -206,12 +206,11 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
             ],
         ),
     )
-    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def stab(
             self,
-            ctx: vbu.Context,
+            ctx: vbu.SlashContext,
             user: discord.Member):
         """
         Stabs a mentioned user.
@@ -233,7 +232,7 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
                 "Stab? Isn't that, like, illegal?",
                 "I wouldn't recommend doing that tbh.",
             ]
-        await ctx.send(random.choice(responses))
+        await ctx.interaction.response.send_message(random.choice(responses))
 
     @commands.command(
         aliases=['murder'],
@@ -247,12 +246,11 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
             ],
         ),
     )
-    @commands.defer()
     @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages=True)
     async def kill(
             self,
-            ctx: vbu.Context,
+            ctx: vbu.SlashContext,
             user: discord.Member):
         """
         Kills a person :/
@@ -268,7 +266,47 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
             f"*Kills {user.mention}*.",
             f"You have successfully murdered {user.mention}.",
         ]
-        await ctx.send(random.choice(responses))
+        await ctx.interaction.response.send_message(random.choice(responses))
+
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user you want bite.",
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def bite(
+            self,
+            ctx: vbu.SlashContext,
+            user: discord.Member):
+        """
+        Bites you bites you bites you.
+        """
+
+        if user == ctx.author:
+            responses = [
+                "You missed and bit yourself! Loser.",
+                f"You failed to bite {user.mention}!",
+                "You thought! You bit yourself.",
+                "We'll act like you didn't just bite yourself.",
+                "Your aim is terrible, you bit yourself instead.",
+            ]
+        else:
+            responses = [
+                f"You bite {user.mention}.",
+                f"*Bites {user.mention}.*",
+                f"{user.mention} was bitten.",
+                f"{user.mention} has been bitten.",
+                "Why would you bite someone?",
+                "Biting people isn’t nice.",
+                "Stop biting people!",
+            ]
+        await ctx.interaction.response.send_message(random.choice(responses))
 
 
 def setup(bot: utils.types.Bot):
