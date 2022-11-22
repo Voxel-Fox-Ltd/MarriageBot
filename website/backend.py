@@ -268,7 +268,7 @@ async def colour_settings_post_handler(request: Request):
 @routes.post('/change_gold_guild')
 async def change_gold_guild(request: Request):
     """
-    Handles users changing thier Gold guild.
+    Handles users changing their Gold guild.
     """
 
     # Make sure the user is allowed to make this request

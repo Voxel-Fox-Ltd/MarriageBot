@@ -229,7 +229,7 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
                 f"{user.mention} has been stabbed.",
                 f"*stabs {user.mention}.*",
                 "Looks like you don't have a knife, oops!",
-                "You can't legally stab someone without thier consent.",
+                "You can't legally stab someone without their consent.",
                 "Stab? Isn't that, like, illegal?",
                 "I wouldn't recommend doing that tbh.",
             ]
@@ -253,7 +253,7 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
     async def kill(
             self,
             ctx: vbu.Context,
-            user: Optional[discord.Member] = None):
+            user: discord.Member):
         """
         Kills a person :/
         """
@@ -265,6 +265,8 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
             "Haha good joke there, but I'd never kill a person! >.>",
             "To my knowledge, you can't kill via the internet. Let me know when that changes.",
             "I am designed to bring people together, not murder them.",
+            f"*Kills {user.mention}*.",
+            f"You have successfully murdered {user.mention}.",
         ]
         await ctx.send(random.choice(responses))
 
