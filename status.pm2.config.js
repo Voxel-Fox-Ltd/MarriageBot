@@ -17,7 +17,7 @@ function generateStatus(index) {
     let max = ((index + 1) * (SHARD_COUNT / CLUSTER_COUNT)) - 1;
     return generate(
         `status${index}`,
-        `.venv/bin/vbu run-bot --no-startup --min ${min} --max ${max} --shardcount ${SHARD_COUNT}`,
+        `vbu run-bot --no-startup --min ${min} --max ${max} --shardcount ${SHARD_COUNT}`,
     )
 }
 
