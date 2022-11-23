@@ -522,11 +522,50 @@ class Information(vbu.Cog[utils.types.Bot]):
             except Exception:
                 raise
 
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user you want to look at the family tree for.",
+                    type=discord.ApplicationCommandOptionType.user,
+                    required=False,
+                ),
+            ],
+        ),
+    )
+    @commands.defer()
+    @commands.dynamic_cooldown(TreeCommandCooldown.cooldown, type=commands.BucketType.user)
+    @vbu.checks.bot_is_ready()
+    async def rawtree(
+            self,
+            ctx: vbu.Context,
+            user: Optional[vbu.converters.UserID] = None):
+        """
+        Get the entire family of relations for a user, including non-blood relations.
+        """
+
+        lock = self.get_lock(ctx.author.id)
+        if lock.locked():
+            return
+        async with lock:
+            try:
+                return await self.treemaker(
+                    ctx=ctx,
+                    user_id=user or ctx.author.id,
+                    stupid_tree=True,
+                    send_dot=True,
+                )
+            except Exception:
+                raise
+
     async def treemaker(
             self,
             ctx: vbu.Context,
             user_id: int,
-            stupid_tree: bool = False):
+            stupid_tree: bool = False,
+            *,
+            send_dot: bool = False):
         """
         Handles the generation and sending of the tree to the user.
         """
@@ -565,6 +604,9 @@ class Information(vbu.Cog[utils.types.Bot]):
         except Exception as e:
             self.logger.error(f"Could not write to {dot_filename}")
             raise e
+        if send_dot:
+            file = discord.File(dot_filename)
+            await ctx.send(file=file)
 
         # Convert to an image
         # http://www.graphviz.org/doc/info/output.html#d:png
