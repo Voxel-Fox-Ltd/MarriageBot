@@ -112,7 +112,7 @@ is_server_specific = false
     content = ""  # default content to be added to the embed message
     colour = 0  # a specific colour for the embed - 0 means random
     footer = [
-        {text = "Learn how to get more children (/perks)", amount = 3},
+        {text = "Learn how to get more children (/donate)", amount = 3},
         {text = "Join the official Discord server (/info)", amount = 3},
         {text = "Learn more about MarriageBot Gold (/gold)", amount = 3},
         {text = "Donate to keep MarriageBot alive (/donate)", amount = 10},
