@@ -6,9 +6,15 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
+class BotModerator(vbu.Cog[utils.types.Bot]):
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            guild_ids=[
+                208895639164026880,
+            ]
+        )
+    )
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def runstartupmethod(self, ctx: vbu.Context):
@@ -20,7 +26,27 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
             await self.bot.startup()
         await ctx.send("Done.")
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            guild_ids=[
+                208895639164026880,
+            ],
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user ID to copy",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+                discord.ApplicationCommandOption(
+                    name="guild_id",
+                    description="The guild ID to copy to",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.integer,
+                ),
+            ],
+        ),
+    )
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def copyfamilytoguildwithdelete(
@@ -35,7 +61,27 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
 
         await self.copy_family(ctx, user, guild_id, True)
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            guild_ids=[
+                208895639164026880,
+            ],
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user ID to copy",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+                discord.ApplicationCommandOption(
+                    name="guild_id",
+                    description="The guild ID to copy to",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.integer,
+                ),
+            ],
+        ),
+    )
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def copyfamilytoguild(
@@ -108,7 +154,27 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
             "Be sure to run the `runstartupmethod` command"
         ))
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            guild_ids=[
+                208895639164026880,
+            ],
+            options=[
+                discord.ApplicationCommandOption(
+                    name="guild_id",
+                    description="The guild ID to add.",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.integer,
+                ),
+                discord.ApplicationCommandOption(
+                    name="user_id",
+                    description="The user to assign the guild to.",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def addserverspecific(
@@ -143,7 +209,21 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
             )
         await ctx.send("Done.")
 
-    @commands.command()
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            guild_ids=[
+                208895639164026880,
+            ],
+            options=[
+                discord.ApplicationCommandOption(
+                    name="guild_id",
+                    description="The guild ID to remove.",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.integer,
+                ),
+            ],
+        ),
+    )
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def removeserverspecific(
@@ -166,7 +246,22 @@ class BotModerator(vbu.Cog[utils.types.Bot], command_attrs={'hidden': True}):
             )
         await ctx.send("Done.")
 
-    @commands.command(aliases=['getgoldpurchase'])
+    @commands.command(
+        aliases=['getgoldpurchase'],
+        application_command_meta=commands.ApplicationCommandMeta(
+            guild_ids=[
+                208895639164026880,
+            ],
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user_id",
+                    description="The user to check.",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
     @vbu.checks.is_bot_support()
     @commands.bot_has_permissions(send_messages=True)
     async def getgoldpurchases(

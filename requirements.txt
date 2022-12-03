@@ -1,4 +1,4 @@
-novus[vbu,speed]
+novus[vbu,speed]>=0.2.4
 markdown2
 typing_extensions
 aioredlock
