@@ -1,11 +1,18 @@
 from __future__ import annotations
 from typing import List
+import asyncio
 
 import discord
 from discord.ext import vbu
 
 from cogs import utils
 from cogs.utils import types
+
+
+async def aiterator(iterable):
+    for i in iterable:
+        await asyncio.sleep(0)
+        yield i
 
 
 class CacheHandler(vbu.Cog[types.Bot]):
@@ -90,7 +97,7 @@ class CacheHandler(vbu.Cog[types.Bot]):
 
         # Add partners
         partner_ids = set()
-        for p in partnerships:
+        async for p in aiterator(partnerships):
             partner_ids.update((p['user_id'], p['partner_id'],))
         while ftm.id in partner_ids:
             partner_ids.remove(ftm.id)
@@ -164,12 +171,12 @@ class CacheHandler(vbu.Cog[types.Bot]):
 
         # Cache the family data - partners
         self.logger.info(f"Caching {len(partnerships)} partnerships from partnerships")
-        for i in partnerships:
+        async for i in aiterator(partnerships):
             self.handle_partner(i)
 
         # - children
         self.logger.info(f"Caching {len(parents)} parents/children from parents")
-        for i in parents:
+        async for i in aiterator(parents):
             self.handle_parent(i)
 
         # And done
