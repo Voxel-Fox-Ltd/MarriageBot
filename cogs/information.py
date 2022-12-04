@@ -19,9 +19,6 @@ class TreeCommandCooldown(object):
     @classmethod
     def cooldown(cls, _: discord.Message) -> commands.Cooldown:
         assert cls.bot
-        # perks: utils.MarriageBotPerks
-        # perks = cls.bot.loop.(utils.get_marriagebot_perks(cls.bot, message.author.id))
-        # return commands.Cooldown(1, perks.tree_command_cooldown)
         return commands.Cooldown(1, 15)
 
 
@@ -249,7 +246,7 @@ class Information(vbu.Cog[utils.types.Bot]):
 
         # Get the name of the siblings
         sibling_list = [
-            (await utils.DiscordNameManager.fetch_name_by_id(self.bot, sibling.id), sibling,)
+            (await utils.DiscordNameManager.fetch_name_by_id(self.bot, sibling.id), sibling.id,)
             for sibling in sibling_list
         ]
         output += "\n".join([
