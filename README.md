@@ -8,29 +8,29 @@ This is a Discord bot intended to bring love and drama to your Discord servers. 
 
 # Commands
 
-* `m!marry @User#1231`
+* `/marry @User#1231`
   * This command lets you propose to another user. They can, of course, then deny your proposal, but that's unimportant
-* `m!divorce @User#1231`
+* `/divorce @User#1231`
   * This does the opposite of the marry command, as you can imagine. It opens you back up to the dating pool.
-* `m!adopt @User#1231`
+* `/adopt @User#1231`
   * Lets you try and adopt the mentioned user.
-* `m!makeparent @User#1231`
+* `/makeparent @User#1231`
   * Asks the person to be your parent. This will further restrict you from the dating pool, but makes your fake family trees look cooler.
-* `m!disown @User#1231`
+* `/disown @User#1231`
   * Lets you to disown one of your children.
-* `m!emancipate @User#1231`
+* `/emancipate @User#1231`
   * The equivelant of running away from home. Removes your parent.
-* `m!partner [@User#1231]`
+* `/partner [@User#1231]`
   * Shows who the someone's partner is. Defaults to yourself.
-* `m!parent [@User#1231]`
+* `/parent [@User#1231]`
   * Shows who the someone's parent is. Defaults to yourself.
-* `m!relationship @User#1231 [@User2#4564]`
+* `/relationship @User#1231 [@User2#4564]`
   * Shows you the relationship beteween the two given users (or the first user and yourself).
-* `m!familysize [@User#1231]`
+* `/familysize [@User#1231]`
   * Gives you the amount of people in your family tree.
-* `m!tree [@User#1231]`
+* `/tree [@User#1231]`
   * Shows your family tree of blood relatives. Defaults to yourself. The bot needs to be able to send images to do this.
-* `m!bloodtree [@User#1231]`
+* `/fulltree [@User#1231]`
   * Shows you your entire family tree - non-blood relatives included. Defaults to yourself. The bot needs to be able to send images to do this.
 
 # Testimonials

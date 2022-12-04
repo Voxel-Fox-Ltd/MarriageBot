@@ -481,7 +481,7 @@ class Information(vbu.Cog[utils.types.Bot]):
                 raise
 
     @commands.command(
-        aliases=['st', 'stupidtree', 'fulltree', 'bt', 'stupidwreath', 'bloodwreath'],
+        aliases=['st', 'stupidtree', 'bloodtree', 'bt', 'stupidwreath', 'bloodwreath'],
         application_command_meta=commands.ApplicationCommandMeta(
             options=[
                 discord.ApplicationCommandOption(
@@ -495,15 +495,15 @@ class Information(vbu.Cog[utils.types.Bot]):
     )
     @commands.defer()
     @commands.dynamic_cooldown(TreeCommandCooldown.cooldown, type=commands.BucketType.user)
-    @utils.checks.has_donator_perks("can_run_bloodtree")
+    @utils.checks.has_donator_perks("can_run_fulltree")
     @vbu.checks.bot_is_ready()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def bloodtree(
+    async def fulltree(
             self,
             ctx: vbu.Context,
             user: Optional[vbu.converters.UserID] = None):
         """
-        Get the entire family of relations for a user, including non-blood relations.
+        Get the entire family of relations for a user.
         """
 
         lock = self.get_lock(ctx.author.id)
@@ -643,7 +643,7 @@ class Information(vbu.Cog[utils.types.Bot]):
         text = "[Click here](https://marriagebot.xyz/) to customise your tree."
         if not stupid_tree:
             text += (
-                f" Use `/bloodtree` for your _entire_ family, "
+                f" Use `/fulltree` for your _entire_ family, "
                 "including non-blood relatives."
             )
         await vbu.embeddify(ctx, text, file=file)

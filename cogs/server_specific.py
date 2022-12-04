@@ -147,7 +147,7 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             "15s tree cooldown",
             "15 children",
             "`disownall` command (disowns all of your children at once)",
-            "`bloodtree` command (shows all relations, not just blood relatives)",
+            "`fulltree` command (shows all relations, not just blood relatives)",
         ]
 
         # Perks for $5 Patrons
@@ -155,7 +155,7 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             "5s tree cooldown",
             "20 children",
             "`disownall` command (disowns all of your children at once)",
-            "`bloodtree` command (shows all relations, not just blood relatives)",
+            "`fulltree` command (shows all relations, not just blood relatives)",
         ]
 
         # Perks for MarriageBot Gold
