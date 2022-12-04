@@ -234,39 +234,39 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
             ]
         await ctx.interaction.response.send_message(random.choice(responses))
 
-    @commands.command(
-        aliases=['murder'],
-        application_command_meta=commands.ApplicationCommandMeta(
-            options=[
-                discord.ApplicationCommandOption(
-                    name="user",
-                    description="The user you want murder.",
-                    type=discord.ApplicationCommandOptionType.user,
-                ),
-            ],
-        ),
-    )
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.bot_has_permissions(send_messages=True)
-    async def kill(
-            self,
-            ctx: vbu.SlashContext,
-            user: discord.Member):
-        """
-        Kills a person :/
-        """
+    # @commands.command(
+    #     aliases=['murder'],
+    #     application_command_meta=commands.ApplicationCommandMeta(
+    #         options=[
+    #             discord.ApplicationCommandOption(
+    #                 name="user",
+    #                 description="The user you want murder.",
+    #                 type=discord.ApplicationCommandOptionType.user,
+    #             ),
+    #         ],
+    #     ),
+    # )
+    # @commands.cooldown(1, 3, commands.BucketType.user)
+    # @commands.bot_has_permissions(send_messages=True)
+    # async def kill(
+    #         self,
+    #         ctx: vbu.SlashContext,
+    #         user: discord.Member):
+    #     """
+    #     Kills a person :/
+    #     """
 
-        responses = [
-            "That would violate at least one of the laws of robotics.",
-            "I am a text-based bot. I cannot kill.",
-            "Unfortunately, murder isn't supported in this version of MarriageBot.",
-            "Haha good joke there, but I'd never kill a person! >.>",
-            "To my knowledge, you can't kill via the internet. Let me know when that changes.",
-            "I am designed to bring people together, not murder them.",
-            f"*Kills {user.mention}*.",
-            f"You have successfully murdered {user.mention}.",
-        ]
-        await ctx.interaction.response.send_message(random.choice(responses))
+    #     responses = [
+    #         "That would violate at least one of the laws of robotics.",
+    #         "I am a text-based bot. I cannot kill.",
+    #         "Unfortunately, murder isn't supported in this version of MarriageBot.",
+    #         "Haha good joke there, but I'd never kill a person! >.>",
+    #         "To my knowledge, you can't kill via the internet. Let me know when that changes.",
+    #         "I am designed to bring people together, not murder them.",
+    #         f"*Kills {user.mention}*.",
+    #         f"You have successfully murdered {user.mention}.",
+    #     ]
+    #     await ctx.interaction.response.send_message(random.choice(responses))
 
     @commands.command(
         application_command_meta=commands.ApplicationCommandMeta(
