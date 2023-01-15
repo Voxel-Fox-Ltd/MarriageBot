@@ -206,11 +206,11 @@ async def guild_settings(request: Request):
     try:
         guild_object = await request.app['bots']['bot'].fetch_guild(guild_id)
         normal_bot_in_guild = True
-    except discord.Forbidden:
+    except discord.HTTPException:
         try:
             guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
             gold_bot_in_guild = True
-        except discord.Forbidden:
+        except discord.HTTPException:
             location = request.app['bots']['bot'].get_invite_link(
                 redirect_uri=request.app['config']['website_base_url'].rstrip('/') + '/guilds',
                 response_type='code',
@@ -222,7 +222,7 @@ async def guild_settings(request: Request):
         try:
             guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
             gold_bot_in_guild = True
-        except discord.Forbidden:
+        except discord.HTTPException:
             pass
 
     # Get the data for this guild
