@@ -11,8 +11,7 @@ from discord.ext import commands, vbu
 from cogs import utils
 
 
-
-class TreeCommandCooldown(object):
+class TreeCommandCooldown:
 
     bot: Optional[utils.types.Bot] = None
 
@@ -519,42 +518,42 @@ class Information(vbu.Cog[utils.types.Bot]):
             except Exception:
                 raise
 
-    @commands.command(
-        application_command_meta=commands.ApplicationCommandMeta(
-            options=[
-                discord.ApplicationCommandOption(
-                    name="user",
-                    description="The user you want to look at the family tree for.",
-                    type=discord.ApplicationCommandOptionType.user,
-                    required=False,
-                ),
-            ],
-        ),
-    )
-    @commands.defer()
-    @commands.dynamic_cooldown(TreeCommandCooldown.cooldown, type=commands.BucketType.user)
-    @vbu.checks.bot_is_ready()
-    async def rawtree(
-            self,
-            ctx: vbu.Context,
-            user: Optional[vbu.converters.UserID] = None):
-        """
-        Get the entire family of relations for a user, including non-blood relations.
-        """
+    # @commands.command(
+    #     application_command_meta=commands.ApplicationCommandMeta(
+    #         options=[
+    #             discord.ApplicationCommandOption(
+    #                 name="user",
+    #                 description="The user you want to look at the family tree for.",
+    #                 type=discord.ApplicationCommandOptionType.user,
+    #                 required=False,
+    #             ),
+    #         ],
+    #     ),
+    # )
+    # @commands.defer()
+    # @commands.dynamic_cooldown(TreeCommandCooldown.cooldown, type=commands.BucketType.user)
+    # @vbu.checks.bot_is_ready()
+    # async def rawtree(
+    #         self,
+    #         ctx: vbu.Context,
+    #         user: Optional[vbu.converters.UserID] = None):
+    #     """
+    #     Get the entire family of relations for a user, including non-blood relations.
+    #     """
 
-        lock = self.get_lock(ctx.author.id)
-        if lock.locked():
-            return
-        async with lock:
-            try:
-                return await self.treemaker(
-                    ctx=ctx,
-                    user_id=user or ctx.author.id,
-                    stupid_tree=True,
-                    send_dot=True,
-                )
-            except Exception:
-                raise
+    #     lock = self.get_lock(ctx.author.id)
+    #     if lock.locked():
+    #         return
+    #     async with lock:
+    #         try:
+    #             return await self.treemaker(
+    #                 ctx=ctx,
+    #                 user_id=user or ctx.author.id,
+    #                 stupid_tree=True,
+    #                 send_dot=True,
+    #             )
+    #         except Exception:
+    #             raise
 
     async def treemaker(
             self,
