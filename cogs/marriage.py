@@ -110,7 +110,8 @@ class Marriage(vbu.Cog[types.Bot]):
             await lock.unlock()
             return await ctx.send(
                 (
-                    f"Hey, {ctx.author.mention}, you're already at your partner limit!"
+                    f"Hey, {ctx.author.mention}, you're already at your partner limit! "
+                    "You need to divorce someone to get another partner."
                 ),
             )
 
@@ -121,7 +122,9 @@ class Marriage(vbu.Cog[types.Bot]):
             return await ctx.send(
                 (
                     f"Sorry, {ctx.author.mention}, it looks like "
-                    f"{target.mention} is already at their partner limit \N{PENSIVE FACE}"
+                    f"{target.mention} is already at their partner limit \N{PENSIVE FACE} "
+                    "If you both want to, you can have them divorce one of their "
+                    "current partners."
                 ),
                 allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
