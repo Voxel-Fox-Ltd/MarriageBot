@@ -19,8 +19,8 @@ MARRIAGEBOT_GOLD_INFORMATION = """
 > The tree command cooldown is reduced _massively_ to just 5s per command call, instead of the 60s that the regular MarriageBot has.
 **"force" Commands**
 > Users with a role named "MarriageBot Moderator" will be able to run commands like `forceadopt` and `forcemarry` in order to construct trees exactly how you want them.
-**Configurable Max Family Members**
-> Via the MarriageBot website, you're able to set the maximum number of members in a family to a number up to 2,000 people, putting it far above the amount offered normally.
+**Larger Max Family Member**
+> The maximum number of members in a family with Gold is up to 2,000 people, putting it far above the amount offered normally.
 **Configurable Max Children Amount**
 > Stuck with only 5 children? Using the MarriageBot website, you're able to set the maximum number of children that a given role can have, allowing you to tier your users.
 **Togglable Incest**
