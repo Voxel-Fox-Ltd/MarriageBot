@@ -30,23 +30,6 @@ if TYPE_CHECKING:
     ]
 
 
-def sort_generation(generation: List[FamilyTreeMember]) -> List[FamilyTreeMember]:
-    """
-    Sort a list of family tree members into groups of
-    [USER, PARTNER, PARTNER]... to make them easier to just throw into a
-    DOT script.
-    """
-
-    new_generation: List[FamilyTreeMember] = list()
-    for person in sorted(generation, key=lambda p: (p._parent or 0, p.id,)):
-        if person not in new_generation:
-            new_generation.append(person)
-        for partner in person.partners:
-            if partner in generation and partner not in new_generation:
-                new_generation.append(person)
-    return new_generation
-
-
 class FamilyTreeMember:
     """
     A class representing a member of a family.
@@ -783,11 +766,11 @@ class FamilyTreeMember:
 
         # Add my partner and parent
         for partner in self.partners:
-            if partner not in (x := gen_span.get(my_depth, list())):
+            if partner not in (x := gen_span.get(my_depth, [])):
                 x.append(partner)
                 gen_span[my_depth] = x
         if (parent := self.parent):
-            if parent not in (x := gen_span.get(my_depth - 1, list())):
+            if parent not in (x := gen_span.get(my_depth - 1, [])):
                 x.append(parent)
                 gen_span[my_depth - 1] = x
 
@@ -815,7 +798,6 @@ class FamilyTreeMember:
         for generation_number in generation_numbers:
             if (generation := gen_span.get(generation_number)) is None:
                 continue
-            generation = sort_generation(generation)
 
             # Make sure you don't add a spouse twice (as they will
             # be added both by the partner loop and they'll be in the
@@ -839,32 +821,29 @@ class FamilyTreeMember:
                 added_already.append(person)
 
                 # Add the person to this ranking
-                name = await DiscordNameManager.fetch_name_by_id(bot, person.id)
-                name = name.replace('"', '\\"')
+                name = (
+                    (
+                        await DiscordNameManager
+                        .fetch_name_by_id(bot, person.id)
+                    )
+                    .replace('"', '\\"')
+                )
                 if person == self:
                     all_text += person.to_graphviz_label(name, ctu)
                 else:
                     all_text += person.to_graphviz_label(name)
 
                 # Work out who the user's partners are
-                possible_partners: Set[FamilyTreeMember] = set(person.partners)
-                for partner in person.partners:
-                    possible_partners.update(partner.partners)
-                filtered_possible_partners: List[FamilyTreeMember] = [
-                    i
-                    for i in possible_partners
-                    if i in generation
-                ]
-                filtered_possible_partners = sorted(
-                    filtered_possible_partners,
-                    key=operator.attrgetter("id"),
-                )
-                filtered_possible_partners.insert(0, person)
-                previous_partner = filtered_possible_partners[0]
+                previous_partner = person  # Set so we have an initial partner to build off of
+                filtered_possible_partners = [*person.partners]
+                for p in filtered_possible_partners.copy():
+                    filtered_possible_partners.extend(p.partners)
+                filtered_possible_partners = [person, *list(set(filtered_possible_partners))]
 
                 # Link the base user to the previous section of the generation
                 if previous_person is not None:
                     all_text += f"{previous_person.id} -> {previous_partner.id} [style=invis];"
+                previous_person = person  # Set so we have a person to link from (after adding partners)
 
                 # Add the user's partners
                 for partner in filtered_possible_partners[1:]:
@@ -874,7 +853,7 @@ class FamilyTreeMember:
                         all_text += partner_link
                     added_already.append(partner)
                     previous_partner = partner
-                previous_person = previous_partner
+                    previous_person = partner
 
             # Close off the generation and open a new ranking for
             # adding children links
