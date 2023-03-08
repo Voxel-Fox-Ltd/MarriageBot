@@ -823,15 +823,6 @@ class FamilyTreeMember:
                     continue
                 added_already.append(person)
 
-                # Add the person to this ranking
-                name = (
-                    (
-                        await DiscordNameManager
-                        .fetch_name_by_id(bot, person.id)
-                    )
-                    .replace('"', '\\"')
-                )
-
                 # Work out who the user's partners are
                 previous_partner = None
                 filtered_possible_partners = [*person.partners]
@@ -847,6 +838,13 @@ class FamilyTreeMember:
                 # Add the user's partners
                 all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
                 for partner in filtered_possible_partners:
+                    name = (
+                        (
+                            await DiscordNameManager
+                            .fetch_name_by_id(bot, partner.id)
+                        )
+                        .replace('"', '\\"')
+                    )
                     if partner == self:
                         all_text += partner.to_graphviz_label(name, ctu)
                     else:
