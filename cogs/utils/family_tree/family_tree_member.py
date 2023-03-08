@@ -849,7 +849,10 @@ class FamilyTreeMember:
                 for partner in filtered_possible_partners[1:]:
                     partner_link = f"{previous_partner.id} -> {partner.id};"
                     alt_partner_link = f"{partner.id} -> {previous_partner.id};"
-                    if partner_link not in all_text and alt_partner_link not in all_text:
+                    if (
+                            partner_link not in all_text
+                            and alt_partner_link not in all_text
+                            and partner != previous_partner):
                         all_text += partner_link
                     added_already.append(partner)
                     previous_partner = partner
