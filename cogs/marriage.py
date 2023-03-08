@@ -104,6 +104,18 @@ class Marriage(vbu.Cog[types.Bot]):
                 "please try again later."
             ))
 
+        # See if they're already related
+        relation = author_tree.get_relation(target_tree)
+        if relation and utils.guild_allows_incest(ctx) is False:
+            await lock.unlock()
+            return await ctx.send(
+                (
+                    f"Woah woah woah, it looks like you guys are already "
+                    f"related! {target.mention} is your {relation}!"
+                ),
+                allowed_mentions=discord.AllowedMentions.only(ctx.author),
+            )
+
         # See if we're already married
         author_partner_amount = await self.get_max_partners_for_member(author_tree)  # pyright: ignore
         if len(author_tree._partners) >= author_partner_amount:
@@ -125,18 +137,6 @@ class Marriage(vbu.Cog[types.Bot]):
                     f"{target.mention} is already at their partner limit \N{PENSIVE FACE} "
                     "If you both want to, you can have them divorce one of their "
                     "current partners."
-                ),
-                allowed_mentions=discord.AllowedMentions.only(ctx.author),
-            )
-
-        # See if they're already related
-        relation = author_tree.get_relation(target_tree)
-        if relation and utils.guild_allows_incest(ctx) is False:
-            await lock.unlock()
-            return await ctx.send(
-                (
-                    f"Woah woah woah, it looks like you guys are already "
-                    f"related! {target.mention} is your {relation}!"
                 ),
                 allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
