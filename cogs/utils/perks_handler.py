@@ -48,6 +48,7 @@ class MarriageBotPerks(object):
         self.can_run_abandon = can_run_abandon
 
 
+# £7
 TIER_THREE = MarriageBotPerks(
     max_children=20,
     can_run_fulltree=True,
@@ -55,7 +56,11 @@ TIER_THREE = MarriageBotPerks(
     can_run_abandon=True,
     tree_command_cooldown=5,
     tree_render_quality=3,
+    # max_partners=10,
+    max_partners=2,
 )
+
+# £5
 TIER_TWO = MarriageBotPerks(
     max_children=15,
     can_run_fulltree=True,
@@ -63,16 +68,25 @@ TIER_TWO = MarriageBotPerks(
     can_run_abandon=True,
     tree_command_cooldown=15,
     tree_render_quality=2,
+    # max_partners=5,
+    max_partners=2,
 )
+
+# £3
 TIER_ONE = MarriageBotPerks(
     max_children=10,
     can_run_disownall=True,
     tree_command_cooldown=15,
     tree_render_quality=1,
+    max_partners=2,
 )
+
+# Vote
 TIER_VOTER = MarriageBotPerks(
     tree_command_cooldown=30,
 )
+
+# Default
 TIER_NONE = MarriageBotPerks()
 
 
