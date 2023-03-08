@@ -838,7 +838,10 @@ class FamilyTreeMember:
                 for p in filtered_possible_partners.copy():
                     filtered_possible_partners.extend(p.partners)
                 filtered_possible_partners = [*list(set(filtered_possible_partners))]
-                filtered_possible_partners.remove(person)
+                try:
+                    filtered_possible_partners.remove(person)
+                except ValueError:
+                    pass
                 filtered_possible_partners.insert(0, person)
 
                 # Add the user's partners
