@@ -21,6 +21,7 @@ from cogs.utils.discord_name_manager import DiscordNameManager
 
 if TYPE_CHECKING:
     import discord
+
     FamilyTreeMemberSetter = Union[
         "FamilyTreeMember",
         int,
@@ -817,7 +818,7 @@ class FamilyTreeMember:
         generation_numbers: List[int] = sorted(list(gen_span.keys()))
 
         # Go through the members for each generation
-        for _, generation_number in enumerate(generation_numbers):
+        for generation_number in generation_numbers:
             if (generation := gen_span.get(generation_number)) is None:
                 continue
             generation = sort_generation(generation)
