@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import operator
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -13,6 +12,8 @@ from typing import (
     overload,
     Literal,
 )
+import string
+import random
 
 from cogs.utils import types
 from cogs.utils.customised_tree_user import CustomisedTreeUser
@@ -28,6 +29,10 @@ if TYPE_CHECKING:
         discord.User,
         discord.Member,
     ]
+
+
+def get_cluster_name(k: int = 5) -> str:
+    return "".join([random.choice(string.ascii_uppercase) for _ in range(k)])
 
 
 class FamilyTreeMember:
@@ -804,13 +809,11 @@ class FamilyTreeMember:
             # generation list)
             added_already: List[FamilyTreeMember] = []
 
-            # Add a ranking for this generation; only necessary if this
-            # if our first runthrough (the child adding section adds this
-            # on subsequent loops)
-            all_text += "{rank=same;"
+            # # Add a ranking for this generation; only necessary if this
+            # # if our first runthrough (the child adding section adds this
+            # # on subsequent loops)
+            # all_text += "{rank=same;"
 
-            # Add linking
-            previous_person: FamilyTreeMember | None = None
 
             # Go through each person in the generation
             for person in generation:
@@ -828,25 +831,24 @@ class FamilyTreeMember:
                     )
                     .replace('"', '\\"')
                 )
-                if person == self:
-                    all_text += person.to_graphviz_label(name, ctu)
-                else:
-                    all_text += person.to_graphviz_label(name)
 
                 # Work out who the user's partners are
-                previous_partner = person  # Set so we have an initial partner to build off of
+                previous_partner = None
                 filtered_possible_partners = [*person.partners]
                 for p in filtered_possible_partners.copy():
                     filtered_possible_partners.extend(p.partners)
                 filtered_possible_partners = [person, *list(set(filtered_possible_partners))]
 
-                # Link the base user to the previous section of the generation
-                if previous_person is not None:
-                    all_text += f"{previous_person.id} -> {previous_partner.id} [style=invis];"
-                previous_person = person  # Set so we have a person to link from (after adding partners)
-
                 # Add the user's partners
-                for partner in filtered_possible_partners[1:]:
+                all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
+                for partner in filtered_possible_partners:
+                    if partner == self:
+                        all_text += partner.to_graphviz_label(name, ctu)
+                    else:
+                        all_text += partner.to_graphviz_label(name)
+                    if previous_partner is None:
+                        previous_partner = partner
+                        continue
                     partner_link = f"{previous_partner.id} -> {partner.id};"
                     alt_partner_link = f"{partner.id} -> {previous_partner.id};"
                     if (
@@ -856,11 +858,11 @@ class FamilyTreeMember:
                         all_text += partner_link
                     added_already.append(partner)
                     previous_partner = partner
-                    previous_person = partner
+                all_text += "}" + "}"
 
-            # Close off the generation and open a new ranking for
-            # adding children links
-            all_text += "}"
+            # # Close off the generation and open a new ranking for
+            # # adding children links
+            # all_text += "}"
 
             # Go through the people in the generation and see if they have
             # any children to add
