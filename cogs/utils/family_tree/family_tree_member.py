@@ -837,7 +837,9 @@ class FamilyTreeMember:
                 filtered_possible_partners = [*person.partners]
                 for p in filtered_possible_partners.copy():
                     filtered_possible_partners.extend(p.partners)
-                filtered_possible_partners = [person, *list(set(filtered_possible_partners))]
+                filtered_possible_partners = [*list(set(filtered_possible_partners))]
+                filtered_possible_partners.remove(person)
+                filtered_possible_partners.insert(0, person)
 
                 # Add the user's partners
                 all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
