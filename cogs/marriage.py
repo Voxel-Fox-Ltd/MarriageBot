@@ -12,6 +12,38 @@ from cogs.utils import types
 
 class Marriage(vbu.Cog[types.Bot]):
 
+    async def get_max_partners_for_member(
+            self,
+            user: discord.Member) -> int:
+        """
+        Get the maximum amount of partners a given member can have.
+
+        Parameters
+        ----------
+        user : discord.Member
+            The user that you want to get the max number of partners for.
+
+        Returns
+        -------
+        int
+            A number of partners that the user can have.
+        """
+
+        # See how many partners they're allowed normally (in regard to Patreon tier)
+        marriagebot_perks: utils.MarriageBotPerks
+        marriagebot_perks = await utils.get_marriagebot_perks(self.bot, user.id)  # type: ignore
+        user_children_amount = marriagebot_perks.max_partners
+
+        # Return the largest amount of partners they've been assigned
+        # that's UNDER the global max partners as set in the config
+        return min([
+            max([
+                user_children_amount,
+                utils.TIER_NONE.max_partners,
+            ]),
+            utils.TIER_THREE.max_partners,
+        ])
+
     @commands.context_command(name="Marry user")
     async def context_command_marry(self, ctx: vbu.Context, user: discord.User):
         command = self.marry
@@ -73,23 +105,24 @@ class Marriage(vbu.Cog[types.Bot]):
             ))
 
         # See if we're already married
-        if author_tree._partners and author_tree.id not in self.bot.owner_ids:
+        author_partner_amount = await get_max_partners_for_member(author_tree)  # pyright: ignore
+        if len(author_tree._partners) >= author_partner_amount:
             await lock.unlock()
             return await ctx.send(
                 (
-                    f"Hey, {ctx.author.mention}, you're already married! "
-                    "Try divorcing your partner first \N{FACE WITH ROLLING EYES}"
+                    f"Hey, {ctx.author.mention}, you're already at your partner limit! "
                 ),
                 allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
 
         # See if the *target* is already married
-        if target_tree._partners and target_tree.id not in self.bot.owner_ids:
+        target_partner_amount = await get_max_partners_for_member(target_tree)  # pyright: ignore
+        if len(target_tree._partners) >= target_partner_amount:
             await lock.unlock()
             return await ctx.send(
                 (
                     f"Sorry, {ctx.author.mention}, it looks like "
-                    f"{target.mention} is already married \N{PENSIVE FACE}"
+                    f"{target.mention} is already at their partner limit \N{PENSIVE FACE}"
                 ),
                 allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
