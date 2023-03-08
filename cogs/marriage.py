@@ -192,30 +192,79 @@ class Marriage(vbu.Cog[types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True)
-    async def divorce(
-            self,
-            ctx: vbu.Context):
+    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
+    async def divorce(self, ctx: vbu.Context):
         """
-        Divorces you from your current partner.
+        Divorce you from one of your partners.
         """
+
+        # Get the user family tree member
+        family_guild_id = utils.get_family_guild_id(ctx)
+        user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+
+        # Make a list of options
+        partner_options = []
+        added_partner = set()
+        for index, partner_tree in enumerate(user_tree.partners):
+            if partner_tree.id in added_partner:
+                continue
+            added_partner.add(partner_tree.id)
+            partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, partner_tree.id)
+            partner_options.append(discord.ui.SelectOption(label=partner_name, value=f"DIVORCE {partner_tree.id}"))
+            if index >= 25:
+                return await ctx.send((
+                    "I couldn't work out which of your partners you want to remove."
+                ))
+
+        # See if they don't have any children
+        if not partner_options:
+            return await ctx.send("You don't have any partners!")
+
+        # Wait for them to pick one
+        components = discord.ui.MessageComponents(discord.ui.ActionRow(
+            discord.ui.SelectMenu(custom_id="DIVORCE_USER", options=partner_options),
+        ))
+        m = await vbu.embeddify(
+            ctx,
+            "Which of your partners would you like to divorce?",
+            components=components,
+        )
+
+        # Make our check
+        def check(interaction: discord.Interaction):
+            assert interaction.message
+            if interaction.message.id != m.id:
+                return False
+            assert interaction.user
+            if interaction.user.id != ctx.author.id:
+                self.bot.loop.create_task(interaction.response.send_message("You can't respond to this message!", ephemeral=True))
+                return False
+            return True
+        try:
+            interaction = await self.bot.wait_for("component_interaction", check=check, timeout=60)
+            await interaction.response.defer_update()
+        except asyncio.TimeoutError:
+            return await ctx.send("Timed out asking for which partner you want to divorce :<")
+
+        # Get the child's ID that they selected
+        target = int(interaction.values[0][len("DIVORCE "):])
 
         # Get the family tree member objects
-        family_guild_id = utils.get_family_guild_id(ctx)
-        author_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
+        partner_tree = utils.FamilyTreeMember.get(target, guild_id=family_guild_id)
+        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, partner_tree.id)
 
-        # See if they're married
-        try:
-            target_tree = list(author_tree.partners)[0]
-        except IndexError:
-            return await ctx.send("It doesn't look like you're married yet!")
+        # Make sure they're actually children
+        if partner_tree.id not in user_tree._partners:
+            return await ctx.send(
+                f"It doesn't look like **{utils.escape_markdown(partner_name)}** is one of your partners!",
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
 
         # See if they're sure
         try:
             result = await utils.send_proposal_message(
-                ctx,
-                ctx.author,
-                f"Are you sure you want to divorce your partner, {ctx.author.mention}?",
+                ctx, ctx.author,
+                f"Are you sure you want to divorce **{utils.escape_markdown(partner_name)}**, {ctx.author.mention}?",
                 timeout_message=f"Timed out making sure you want to divorce, {ctx.author.mention} :<",
                 cancel_message="Alright, I've cancelled your divorce!",
             )
@@ -224,43 +273,28 @@ class Marriage(vbu.Cog[types.Bot]):
         if result is None:
             return
 
-        # Remove them from the database
+        # Remove from cache
+        user_tree.remove_child(partner_tree.id)
+        partner_tree.parent = None
+
+        # Remove from redis
+        async with vbu.Redis() as re:
+            await re.publish("TreeMemberUpdate", user_tree.to_json())
+            await re.publish("TreeMemberUpdate", partner_tree.to_json())
+
+        # Remove from database
         async with vbu.Database() as db:
             await db(
-                """
-                DELETE FROM
-                    marriages
-                WHERE
-                    (
-                        (
-                            user_id = $1
-                        AND
-                            partner_id = $2
-                        )
-                        OR
-                        (
-                            partner_id = $1
-                        AND
-                            user_id = $2
-                        )
-                    )
-                AND
-                    guild_id = $3
-                """,
-                *sorted([ctx.author.id, target_tree.id]), family_guild_id,
+                """DELETE FROM marriages WHERE user_id=$1 AND partner_id=$2 AND guild_id=$3""",
+                *sorted([partner_tree.id, ctx.author.id]), family_guild_id,
             )
-        partner_name = await utils.DiscordNameManager.fetch_name_by_id(self.bot, target_tree.id)
-        await result.messageable.send(
+
+        # And we're done
+        await vbu.embeddify(
+            result.messageable,
             f"You've successfully divorced **{utils.escape_markdown(partner_name)}** :c",
             allowed_mentions=discord.AllowedMentions.none(),
         )
-
-        # Ping over redis
-        author_tree.remove_partner(target_tree)
-        target_tree.remove_partner(author_tree)
-        async with vbu.Redis() as re:
-            await re.publish("TreeMemberUpdate", author_tree.to_json())
-            await re.publish("TreeMemberUpdate", target_tree.to_json())
 
 
 def setup(bot: types.Bot):
