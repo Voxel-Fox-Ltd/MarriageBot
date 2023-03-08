@@ -53,7 +53,7 @@ class FamilyTreeMember:
     """
 
     all_users: Dict[Tuple[int, int], FamilyTreeMember] = {}
-    INVISIBLE = "[shape=circle, label=\"\", height=0.001, width=0.001]"  # For the DOT script
+    INVISIBLE = "[shape=point,width=0.001,style=invis]"  # For the DOT script
 
     __slots__ = (
         'id',
@@ -828,7 +828,7 @@ class FamilyTreeMember:
             all_text += "{rank=same;"
 
             # Add linking
-            # previous_person = None
+            previous_person: FamilyTreeMember | None = None
 
             # Go through each person in the generation
             for person in generation:
@@ -846,7 +846,7 @@ class FamilyTreeMember:
                 else:
                     all_text += person.to_graphviz_label(name)
 
-                # Add the user and their partner
+                # Work out who the user's partners are
                 possible_partners: Set[FamilyTreeMember] = set(person.partners)
                 possible_partners.add(person)
                 for partner in person.partners:
@@ -861,6 +861,12 @@ class FamilyTreeMember:
                     key=operator.attrgetter("id"),
                 )
                 previous_partner = filtered_possible_partners[0]
+
+                # Link the base user to the previous section of the generation
+                if previous_person is not None:
+                    all_text += f"{previous_person.id} -> {previous_partner.id} [style=invis];"
+
+                # Add the user's partners
                 for partner in filtered_possible_partners[1:]:
                     partner_link = f"{previous_partner.id} -> {partner.id};"
                     alt_partner_link = f"{partner.id} -> {previous_partner.id};"
@@ -868,6 +874,7 @@ class FamilyTreeMember:
                         all_text += partner_link
                     added_already.append(partner)
                     previous_partner = partner
+                previous_person = previous_partner
 
             # Close off the generation and open a new ranking for
             # adding children links
