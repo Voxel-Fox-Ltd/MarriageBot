@@ -848,7 +848,6 @@ class FamilyTreeMember:
 
                 # Work out who the user's partners are
                 possible_partners: Set[FamilyTreeMember] = set(person.partners)
-                possible_partners.add(person)
                 for partner in person.partners:
                     possible_partners.update(partner.partners)
                 filtered_possible_partners: List[FamilyTreeMember] = [
@@ -860,6 +859,7 @@ class FamilyTreeMember:
                     filtered_possible_partners,
                     key=operator.attrgetter("id"),
                 )
+                filtered_possible_partners.insert(0, person)
                 previous_partner = filtered_possible_partners[0]
 
                 # Link the base user to the previous section of the generation
