@@ -105,18 +105,17 @@ class Marriage(vbu.Cog[types.Bot]):
             ))
 
         # See if we're already married
-        author_partner_amount = await get_max_partners_for_member(author_tree)  # pyright: ignore
+        author_partner_amount = await self.get_max_partners_for_member(author_tree)  # pyright: ignore
         if len(author_tree._partners) >= author_partner_amount:
             await lock.unlock()
             return await ctx.send(
                 (
-                    f"Hey, {ctx.author.mention}, you're already at your partner limit! "
+                    f"Hey, {ctx.author.mention}, you're already at your partner limit!"
                 ),
-                allowed_mentions=discord.AllowedMentions.only(ctx.author),
             )
 
         # See if the *target* is already married
-        target_partner_amount = await get_max_partners_for_member(target_tree)  # pyright: ignore
+        target_partner_amount = await self.get_max_partners_for_member(target_tree)  # pyright: ignore
         if len(target_tree._partners) >= target_partner_amount:
             await lock.unlock()
             return await ctx.send(
