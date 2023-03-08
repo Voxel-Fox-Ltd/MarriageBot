@@ -733,6 +733,23 @@ class FamilyTreeMember:
         gen_span = root_user.generational_span(expand_upwards=True, add_parent=True)
         return await self.to_dot_script_from_generational_span(bot, gen_span, customised_tree_user)
 
+    def to_graphviz_label(
+            self,
+            name: str,
+            customised_tree_user: CustomisedTreeUser | None = None) -> str:
+        """
+        Convert the current family tree member into a label applicable for Graphviz.
+        """
+
+        # Generate dot for both ourselves and others
+        if customised_tree_user:
+            return (
+                f'{self.id}[label="{name}",'
+                f'fillcolor={customised_tree_user.hex["highlighted_node"]},'
+                f'fontcolor={customised_tree_user.hex["highlighted_font"]}];'
+            )
+        return f'{self.id}[label="{name}"];'
+
     async def to_dot_script_from_generational_span(
             self,
             bot: types.Bot,
@@ -788,29 +805,6 @@ class FamilyTreeMember:
             f"rankdir={ctu.hex['direction']};"
         )
 
-        # Set up some stuff for later
-        added_users: Set[FamilyTreeMember] = set()  # A list of people in this dot graph
-
-        # Add the username for each user (from unflattened list)
-        for generation in gen_span.values():
-
-            # Go through each person in a generation to add their name
-            for i in generation:
-
-                # Get their name and ignore if they don't have one
-                name = await DiscordNameManager.fetch_name_by_id(bot, i.id)
-                name = name.replace('"', '\\"')
-
-                # Generate dot for both ourselves and others
-                if i == self:
-                    all_text += (
-                        f'{i.id}[label="{name}",'
-                        f'fillcolor={ctu.hex["highlighted_node"]},'
-                        f'fontcolor={ctu.hex["highlighted_font"]}];'
-                    )
-                else:
-                    all_text += f'{i.id}[label="{name}"];'
-
         # The ordered list of generation numbers -
         # just a list of sequential numbers
         # Done so we can make sure we have each generation in the
@@ -844,8 +838,13 @@ class FamilyTreeMember:
                     continue
                 added_already.append(person)
 
-                # Make sure they stay in this line
-                all_text += f"{person.id};"
+                # Add the person to this ranking
+                name = await DiscordNameManager.fetch_name_by_id(bot, person.id)
+                name = name.replace('"', '\\"')
+                if person == self:
+                    all_text += person.to_graphviz_label(name, ctu)
+                else:
+                    all_text += person.to_graphviz_label(name)
 
                 # Add the user and their partner
                 possible_partners: Set[FamilyTreeMember] = set(person.partners)
@@ -872,23 +871,22 @@ class FamilyTreeMember:
 
             # Close off the generation and open a new ranking for
             # adding children links
-            all_text += "}{"
+            all_text += "}"
 
             # Go through the people in the generation and see if they have
             # any children to add
             for person in generation:
                 if person._children:
                     all_text += f"p{person.id} {self.INVISIBLE};"
-            all_text += "}"
 
             # Add the lines from parent to node to child
             for person in generation:
                 if person._children:
-                    new_text = f"{person.id} -> p{person.id};"
+                    new_text = f"{person.id}:s -> p{person.id}:c;"
                     if new_text not in all_text:
                         all_text += new_text
                 for child in person.children:
-                    new_text = f"p{person.id} -> {child.id};"
+                    new_text = f"p{person.id}:c -> {child.id}:n;"
                     if new_text not in all_text:
                         all_text += new_text
 
