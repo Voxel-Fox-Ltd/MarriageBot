@@ -309,8 +309,8 @@ class Marriage(vbu.Cog[types.Bot]):
             return
 
         # Remove from cache
-        user_tree.remove_child(partner_tree.id)
-        partner_tree.parent = None
+        user_tree.remove_partner(partner_tree.id)
+        partner_tree.remove_partner(user_tree.id)
 
         # Remove from redis
         async with vbu.Redis() as re:
