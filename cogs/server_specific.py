@@ -112,100 +112,100 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             )
             await guild.leave()
 
-    @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    @vbu.checks.is_config_set("bot_info", "links", "Donate")
-    async def perks(self, ctx: vbu.Context):
-        """
-        Shows you the perks associated with different support tiers.
-        """
+    # @commands.command()
+    # @commands.cooldown(1, 5, commands.BucketType.user)
+    # @commands.bot_has_permissions(send_messages=True, embed_links=True)
+    # @vbu.checks.is_config_set("bot_info", "links", "Donate")
+    # async def perks(self, ctx: vbu.Context):
+    #     """
+    #     Shows you the perks associated with different support tiers.
+    #     """
 
-        # Normies
-        normal_users = [
-            "60s tree cooldown",
-            "5 children",
-        ]
+    #     # Normies
+    #     normal_users = [
+    #         "60s tree cooldown",
+    #         "5 children",
+    #     ]
 
-        # Perks for voting
-        voting_perks = [
-            "30s tree cooldown",
-            "5 children",
-        ]
+    #     # Perks for voting
+    #     voting_perks = [
+    #         "30s tree cooldown",
+    #         "5 children",
+    #     ]
 
-        # The Nitro perks would go here but I want to keep them mostly undocumented
+    #     # The Nitro perks would go here but I want to keep them mostly undocumented
 
-        # Perks for $1 Patrons
-        t1_donate_perks = [
-            "15s tree cooldown",
-            "10 children",
-            "`disownall` command (disowns all of your children at once)",
-        ]
+    #     # Perks for $1 Patrons
+    #     t1_donate_perks = [
+    #         "15s tree cooldown",
+    #         "10 children",
+    #         "`disownall` command (disowns all of your children at once)",
+    #     ]
 
-        # $3 Patrons
-        t2_donate_perks = [
-            "15s tree cooldown",
-            "15 children",
-            "`disownall` command (disowns all of your children at once)",
-            "`fulltree` command (shows all relations, not just blood relatives)",
-        ]
+    #     # $3 Patrons
+    #     t2_donate_perks = [
+    #         "15s tree cooldown",
+    #         "15 children",
+    #         "`disownall` command (disowns all of your children at once)",
+    #         "`fulltree` command (shows all relations, not just blood relatives)",
+    #     ]
 
-        # Perks for $5 Patrons
-        t3_donate_perks = [
-            "5s tree cooldown",
-            "20 children",
-            "`disownall` command (disowns all of your children at once)",
-            "`fulltree` command (shows all relations, not just blood relatives)",
-        ]
+    #     # Perks for $5 Patrons
+    #     t3_donate_perks = [
+    #         "5s tree cooldown",
+    #         "20 children",
+    #         "`disownall` command (disowns all of your children at once)",
+    #         "`fulltree` command (shows all relations, not just blood relatives)",
+    #     ]
 
-        # Perks for MarriageBot Gold
-        gold_perks = [
-            "5s tree cooldown for all users",
-            "Togglable incest",
-            "Server specific families",
-            "Access to the `forcemarry`, `forcedivorce`, and `forceemancipate` commands",
-            f"Maximum 2000 family members (as opposed to the normal {self.bot.config['max_family_members']})",
-            "Configurable maximum children per role",
-        ]
+    #     # Perks for MarriageBot Gold
+    #     gold_perks = [
+    #         "5s tree cooldown for all users",
+    #         "Togglable incest",
+    #         "Server specific families",
+    #         "Access to the `forcemarry`, `forcedivorce`, and `forceemancipate` commands",
+    #         f"Maximum 2000 family members (as opposed to the normal {self.bot.config['max_family_members']})",
+    #         "Configurable maximum children per role",
+    #     ]
 
-        # Make embed
-        e = discord.Embed()
-        e.add_field(
-            name='Normal Users',
-            value="Gives you access to:\n* " + '\n* '.join(normal_users),
-            inline=False,
-        )
-        e.add_field(
-            name=f'Voting ({ctx.prefix}info - vote)',
-            value="Gives you access to:\n* " + '\n* '.join(voting_perks),
-            inline=False,
-        )
-        e.add_field(
-            name=f'T1 Subscriber ({ctx.prefix}info - donate)',
-            value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks),
-            inline=False,
-        )
-        e.add_field(
-            name=f'T2 Subscriber ({ctx.prefix}info - donate)',
-            value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks),
-            inline=False,
-        )
-        e.add_field(
-            name=f'T3 Subscriber ({ctx.prefix}info - donate)',
-            value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks),
-            inline=False,
-        )
-        e.add_field(
-            name=f'MarriageBot Gold ({ctx.prefix}gold)',
-            value=(
-                (
-                    "Gold is a seperate bot for your server, which "
-                    "gives you perks such as:\n* "
-                )  + '\n* '.join(gold_perks)
-            ),
-            inline=False,
-        )
-        await ctx.send(embed=e)
+    #     # Make embed
+    #     e = discord.Embed()
+    #     e.add_field(
+    #         name='Normal Users',
+    #         value="Gives you access to:\n* " + '\n* '.join(normal_users),
+    #         inline=False,
+    #     )
+    #     e.add_field(
+    #         name=f'Voting ({ctx.prefix}info - vote)',
+    #         value="Gives you access to:\n* " + '\n* '.join(voting_perks),
+    #         inline=False,
+    #     )
+    #     e.add_field(
+    #         name=f'T1 Subscriber ({ctx.prefix}info - donate)',
+    #         value="Gives you access to:\n* " + '\n* '.join(t1_donate_perks),
+    #         inline=False,
+    #     )
+    #     e.add_field(
+    #         name=f'T2 Subscriber ({ctx.prefix}info - donate)',
+    #         value="Gives you access to:\n* " + '\n* '.join(t2_donate_perks),
+    #         inline=False,
+    #     )
+    #     e.add_field(
+    #         name=f'T3 Subscriber ({ctx.prefix}info - donate)',
+    #         value="Gives you access to:\n* " + '\n* '.join(t3_donate_perks),
+    #         inline=False,
+    #     )
+    #     e.add_field(
+    #         name=f'MarriageBot Gold ({ctx.prefix}gold)',
+    #         value=(
+    #             (
+    #                 "Gold is a seperate bot for your server, which "
+    #                 "gives you perks such as:\n* "
+    #             )  + '\n* '.join(gold_perks)
+    #         ),
+    #         inline=False,
+    #     )
+    #     await ctx.send(embed=e)
 
     @commands.group(
         application_command_meta=commands.ApplicationCommandMeta(),

@@ -66,7 +66,7 @@ is_server_specific = false
     links.Website = {url = "https://marriagebot.xyz"}
     links."Support Server" = {url = "https://discord.gg/vfl"}
     links.Github = {url = "https://github.com/Voxel-Fox-Ltd/MarriageBot"}
-    links."Donate (Upgrade.Chat)" = {url = "https://upgrade.chat/checkout/208895639164026880"}
+    links."Donate" = {url = "https://voxelfox.co.uk/portal/marriagebot"}
     links.Vote = {url = "https://top.gg/bot/marriagebot/vote"}
 
 # Used to generate the invite link
@@ -130,11 +130,6 @@ is_server_specific = false
         ]
         twitch_client_id = ""  # Your client ID - https://dev.twitch.tv/console/apps
         twitch_client_secret = ""  # Your client secret
-
-# UpgradeChat API key data - https://upgrade.chat/developers
-[upgrade_chat]
-    client_id = ""
-    client_secret = ""
 
 # Statsd analytics port using the aiodogstatsd package
 [statsd]

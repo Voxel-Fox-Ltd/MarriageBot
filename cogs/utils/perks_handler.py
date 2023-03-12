@@ -56,8 +56,7 @@ TIER_THREE = MarriageBotPerks(
     can_run_abandon=True,
     tree_command_cooldown=5,
     tree_render_quality=3,
-    # max_partners=10,
-    max_partners=2,
+    max_partners=8,
 )
 
 # £5
@@ -68,8 +67,7 @@ TIER_TWO = MarriageBotPerks(
     can_run_abandon=True,
     tree_command_cooldown=15,
     tree_render_quality=2,
-    # max_partners=5,
-    max_partners=2,
+    max_partners=4,
 )
 
 # £3
