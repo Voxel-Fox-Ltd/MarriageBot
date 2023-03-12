@@ -121,6 +121,15 @@ class Marriage(vbu.Cog[types.Bot]):
         author_partner_amount = await self.get_max_partners_for_member(author_tree)  # pyright: ignore
         if len(author_tree._partners) >= author_partner_amount:
             await lock.unlock()
+            if author_partner_amount < utils.TIER_THREE.max_partners:
+                comm = self.bot.get_command("info").mention  # pyright: ignore
+                return await ctx.send(
+                    (
+                        f"Hey, {ctx.author.mention}, you're already at your "
+                        "partner limit! You need to divorce someone (or donate "
+                        f"at {comm}) to get another partner."
+                    ),
+                )
             return await ctx.send(
                 (
                     f"Hey, {ctx.author.mention}, you're already at your partner limit! "
