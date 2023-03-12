@@ -90,6 +90,14 @@ TIER_VOTER = MarriageBotPerks(
 TIER_NONE = MarriageBotPerks()
 
 
+tier_mapping = {
+    3: TIER_THREE,
+    2: TIER_TWO,
+    1: TIER_ONE,
+    0: TIER_NONE,
+}
+
+
 _CACHED_PERK_ITEMS: Dict[int, Tuple[Optional[MarriageBotPerks], dt]]
 _CACHED_PERK_ITEMS = collections.defaultdict(lambda: (None, dt(2000, 1, 1),))
 
@@ -144,22 +152,31 @@ async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
     if rows:
         return TIER_THREE
 
-    # Check UpgradeChat purchases
+    # Check VFL purchases
+    url = "https://voxelfox.co.uk/api/portal/check"
+    params = {
+        "product_id": "b6586947-0ce4-4b1c-bf27-6713b33409d3",
+        "discord_user_id": user_id,
+    }
     try:
-        aw = bot.upgrade_chat.get_orders(discord_id=user_id)
-        purchases = await asyncio.wait_for(aw, timeout=5)
-    except asyncio.TimeoutError:
-        purchases = []
+        async with bot.session.get(url, params=params, timeout=3) as r:
+            data = await r.json()
     except Exception:
-        purchases = []
-    purchased_item_names = []
-    [purchased_item_names.extend(i.order_item_names) for i in purchases]
-    if "MarriageBot Subscription Tier 3" in purchased_item_names:
-        return TIER_THREE
-    elif "MarriageBot Subscription Tier 2" in purchased_item_names:
-        return TIER_TWO
-    elif "MarriageBot Subscription Tier 1" in purchased_item_names:
-        return TIER_ONE
+        data = {}
+    if data.get("success", False) and data.get("result"):
+        purchase_item_ids = [
+            i["product_id"]
+            for i in data["purchases"]
+        ]
+        purchased_products = [
+            data["products"][i]["product_name"]
+            for i in purchase_item_ids
+        ]
+        tier = max([
+            int(i.split(" ")[-1])
+            for i in purchased_products
+        ])
+        return tier_mapping[tier]
 
     # Check Top.gg votes
     try:
@@ -169,6 +186,4 @@ async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
             return TIER_VOTER
     except asyncio.TimeoutError:
         pass
-
-    # Return default
-    return MarriageBotPerks()
+    return tier_mapping[0]
