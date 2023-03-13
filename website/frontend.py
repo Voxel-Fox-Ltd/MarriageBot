@@ -211,12 +211,14 @@ async def guild_settings(request: Request):
             guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
             gold_bot_in_guild = True
         except discord.HTTPException:
-            location = request.app['bots']['bot'].get_invite_link(
-                redirect_uri=request.app['config']['website_base_url'].rstrip('/') + '/guilds',
-                response_type='code',
-                scope='bot applications.commands identify guilds',
-                guild_id=guild_id,
-            )
+            base = request.app['config']['website_base_url'].rstrip('/')
+            location = "https://discord.com/api/oauth2/authorize?" + urlencode({
+                "client_id": "603608141434716171",
+                "scope": "bot applications.commands identify guilds",
+                "response_type": "code",
+                "redirect_uri": base + "/guilds",
+                "guild_id": guild_id,
+            })
             return HTTPFound(location=location)
     else:
         try:
