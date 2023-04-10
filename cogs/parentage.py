@@ -184,6 +184,7 @@ class Parentage(vbu.Cog[utils.types.Bot]):
             return await lock.unlock()
 
         # Database it up
+        dispatch_tmu: bool = True
         async with vbu.Database() as db:
             try:
                 await db(
@@ -191,10 +192,9 @@ class Parentage(vbu.Cog[utils.types.Bot]):
                     target.id, ctx.author.id, family_guild_id, dt.utcnow(),
                 )
             except asyncpg.UniqueViolationError:
-                await lock.unlock()
+                dispatch_tmu = False
                 self.bot.dispatch("recache_user", ctx.author, family_guild_id)
                 self.bot.dispatch("recache_user", target, family_guild_id)
-                return await result.messageable.send("I ran into an error saving your family data - please try again later.")
         await vbu.embeddify(
             result.messageable,
             f"I'm happy to introduce {ctx.author.mention} as your child, {target.mention}!",
@@ -203,8 +203,9 @@ class Parentage(vbu.Cog[utils.types.Bot]):
         # And we're done
         target_tree._children.append(author_tree.id)
         author_tree._parent = target.id
-        await re.publish("TreeMemberUpdate", author_tree.to_json())
-        await re.publish("TreeMemberUpdate", target_tree.to_json())
+        if dispatch_tmu:
+            await re.publish("TreeMemberUpdate", author_tree.to_json())
+            await re.publish("TreeMemberUpdate", target_tree.to_json())
         await re.disconnect()
         await lock.unlock()
 
@@ -319,17 +320,33 @@ class Parentage(vbu.Cog[utils.types.Bot]):
             return await lock.unlock()
 
         # Database it up
+        dispatch_tmu: bool = True
         async with vbu.Database() as db:
             try:
                 await db(
-                    """INSERT INTO parents (parent_id, child_id, guild_id, timestamp) VALUES ($1, $2, $3, $4)""",
+                    """
+                    INSERT INTO
+                        parents
+                        (
+                            parent_id,
+                            child_id,
+                            guild_id,
+                            timestamp
+                        )
+                    VALUES
+                        (
+                            $1,
+                            $2,
+                            $3,
+                            $4
+                        )
+                    """,
                     ctx.author.id, target.id, family_guild_id, dt.utcnow(),
                 )
             except asyncpg.UniqueViolationError:
-                await lock.unlock()
+                dispatch_tmu = False
                 self.bot.dispatch("recache_user", ctx.author, family_guild_id)
                 self.bot.dispatch("recache_user", target, family_guild_id)
-                return await result.messageable.send("I ran into an error saving your family data - please try again later.")
         await vbu.embeddify(
             result.messageable,
             f"I'm happy to introduce {ctx.author.mention} as your parent, {target.mention}!",
@@ -338,8 +355,9 @@ class Parentage(vbu.Cog[utils.types.Bot]):
         # And we're done
         author_tree._children.append(target.id)
         target_tree._parent = author_tree.id
-        await re.publish('TreeMemberUpdate', author_tree.to_json())
-        await re.publish('TreeMemberUpdate', target_tree.to_json())
+        if dispatch_tmu:
+            await re.publish('TreeMemberUpdate', author_tree.to_json())
+            await re.publish('TreeMemberUpdate', target_tree.to_json())
         await re.disconnect()
         await lock.unlock()
 
@@ -444,7 +462,14 @@ class Parentage(vbu.Cog[utils.types.Bot]):
         # Remove from database
         async with vbu.Database() as db:
             await db(
-                """DELETE FROM parents WHERE child_id=$1 AND parent_id=$2 AND guild_id=$3""",
+                """
+                DELETE FROM
+                    parents
+                WHERE
+                    child_id = $1
+                    AND parent_id = $2
+                    AND guild_id = $3
+                """,
                 child_tree.id, ctx.author.id, family_guild_id,
             )
 
@@ -556,7 +581,14 @@ class Parentage(vbu.Cog[utils.types.Bot]):
         # Save em
         async with vbu.Database() as db:
             await db(
-                """DELETE FROM parents WHERE parent_id=$1 AND guild_id=$2 AND child_id=ANY($3::BIGINT[])""",
+                """
+                DELETE FROM
+                    parents
+                WHERE
+                    parent_id = $1
+                    AND guild_id = $2
+                    AND child_id = ANY($3::BIGINT[])
+                """,
                 ctx.author.id, family_guild_id, [child.id for child in child_trees],
             )
 
@@ -570,94 +602,6 @@ class Parentage(vbu.Cog[utils.types.Bot]):
             result.messageable,
             "You've sucessfully disowned all of your children :c",
         )
-
-    # @commands.command(
-    #     aliases=["desert", "leave", "dessert"],
-    # )
-    # @commands.defer()
-    # @utils.checks.has_donator_perks("can_run_abandon")
-    # @commands.cooldown(1, 3, commands.BucketType.user)
-    # @vbu.checks.bot_is_ready()
-    # @commands.guild_only()
-    # @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    # async def abandon(self, ctx: vbu.Context):
-    #     """
-    #     Completely removes you from the tree.
-    #     """
-
-    #     # Set up some variables
-    #     family_guild_id = utils.get_family_guild_id(ctx)
-    #     user_tree = utils.FamilyTreeMember.get(ctx.author.id, guild_id=family_guild_id)
-
-    #     # See if they're sure
-    #     try:
-    #         result = await utils.send_proposal_message(
-    #             ctx, ctx.author,
-    #             (
-    #                 f"Are you sure you want to completely abandon your family, {ctx.author.mention}? "
-    #                 "This will disown all your kids, emancipate, and divorce you"
-    #             ),
-    #             timeout_message=f"Timed out making sure you want to abandon your family, {ctx.author.mention} :<",
-    #             cancel_message="Alright, I've cancelled your abandonment!",
-    #         )
-    #     except Exception:
-    #         result = None
-    #     if result is None:
-    #         return
-
-    #     # Grab the users from the cache
-    #     parent_tree = user_tree.parent
-    #     child_trees = list(user_tree.children)
-    #     partner_tree = user_tree.partner
-
-    #     # Remove children from cache
-    #     for child in child_trees:
-    #         child.parent = None
-    #     user_tree._children = []
-
-    #     # Remove parent from cache
-    #     if parent_tree:
-    #         user_tree.parent = None
-    #         parent_tree.remove_child(ctx.author.id)
-
-    #     # Remove partner from cache
-    #     if partner_tree:
-    #         user_tree.partner = None
-    #         partner_tree.partner = None
-
-    #     # Remove from database
-    #     async with vbu.Database() as db:
-    #         await db(
-    #             """DELETE FROM parents WHERE parent_id=$1 AND guild_id=$2 AND child_id=ANY($3::BIGINT[])""",
-    #             ctx.author.id, family_guild_id, [child.id for child in child_trees],
-    #         )
-    #         if parent_tree:
-    #             await db(
-    #                 """DELETE FROM parents WHERE parent_id=$1 AND child_id=$2 AND guild_id=$3""",
-    #                 parent_tree.id, ctx.author.id, family_guild_id,
-    #             )
-    #         if partner_tree:
-    #             await db(
-    #                 """DELETE FROM marriages WHERE (user_id=$1 OR user_id=$2) AND guild_id=$3""",
-    #                 ctx.author.id, partner_tree.id, family_guild_id,
-    #             )
-
-    #     # Remove from redis
-    #     async with vbu.Redis() as re:
-    #         for person in child_trees:
-    #             await re.publish("TreeMemberUpdate", person.to_json())
-    #         if parent_tree:
-    #             await re.publish("TreeMemberUpdate", parent_tree.to_json())
-    #         if partner_tree:
-    #             await re.publish("TreeMemberUpdate", partner_tree.to_json())
-    #         await re.publish("TreeMemberUpdate", user_tree.to_json())
-
-    #     # And we're done
-    #     await vbu.embeddify(
-    #         result.messageable,
-    #         f"You've successfully left your family, {ctx.author.mention} :c",
-    #         allowed_mentions=discord.AllowedMentions.none(),
-    #     )
 
 
 def setup(bot: utils.types.Bot):

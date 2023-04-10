@@ -190,6 +190,7 @@ class Marriage(vbu.Cog[types.Bot]):
             return await lock.unlock()
 
         # They said yes!
+        dispatch_tmu: bool = True
         async with vbu.Database() as db:
             try:
                 await db.call(
@@ -213,10 +214,9 @@ class Marriage(vbu.Cog[types.Bot]):
                     *sorted([ctx.author.id, target.id]), family_guild_id, dt.utcnow(),
                 )
             except asyncpg.UniqueViolationError:
-                await lock.unlock()
+                dispatch_tmu = False
                 self.bot.dispatch("recache_user", ctx.author, family_guild_id)
                 self.bot.dispatch("recache_user", target, family_guild_id)
-                return await result.messageable.send("I ran into an error saving your family data.")
         await vbu.embeddify(
             result.messageable,
             f"I'm happy to introduce {target.mention} into the family of {ctx.author.mention}!",
@@ -225,8 +225,9 @@ class Marriage(vbu.Cog[types.Bot]):
         # Ping over redis
         author_tree.add_partner(target.id)
         target_tree.add_partner(ctx.author.id)
-        await re.publish("TreeMemberUpdate", author_tree.to_json())
-        await re.publish("TreeMemberUpdate", target_tree.to_json())
+        if dispatch_tmu:
+            await re.publish("TreeMemberUpdate", author_tree.to_json())
+            await re.publish("TreeMemberUpdate", target_tree.to_json())
         await re.disconnect()
         await lock.unlock()
 

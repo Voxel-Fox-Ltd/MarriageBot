@@ -108,7 +108,11 @@ class CacheHandler(vbu.Cog[types.Bot]):
             ftm._parent = parents[0]['parent_id']
 
     @vbu.Cog.listener("on_recache_user")
-    async def _recache_user(self, user, guild_id):
+    async def _recache_user(
+            self,
+            user: discord.User | discord.Member,
+            guild_id: int = 0):
+        self.logger.info("Asked to recache user %s (guild %s)", user, guild_id)
         await self.recache_user(user, guild_id)
 
     @staticmethod
