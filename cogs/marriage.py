@@ -330,7 +330,21 @@ class Marriage(vbu.Cog[types.Bot]):
         # Remove from database
         async with vbu.Database() as db:
             await db(
-                """DELETE FROM marriages WHERE user_id=$1 AND partner_id=$2 AND guild_id=$3""",
+                """
+                DELETE FROM
+                    marriages
+                WHERE
+                    (
+                        user_id = $1
+                        AND partner_id = $2
+                    )
+                    OR (
+                        user_id = $2
+                        AND partner_id = $1
+                    )
+                    AND guild_id = $3
+                LIMIT 2
+                """,
                 *sorted([partner_tree.id, ctx.author.id]), family_guild_id,
             )
 
