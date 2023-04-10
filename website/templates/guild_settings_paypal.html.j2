@@ -41,39 +41,6 @@ p {
 </div>
 
 
-<form id="prefix" class="boxed">
-    <p>Bot prefix - the prefix used to activate the bot on your server.</p>
-    <p>
-        <input
-            name="prefix"
-            value="{{ guild_settings['prefix'] if guild_settings['prefix'] != app['bots']['bot'].config['default_prefix'] else ''}}"
-            placeholder="{{ app['bots']['bot'].config['default_prefix'] }}"
-            maxlength="30" />
-        <label for="prefix">
-            Normal Bot Prefix
-            {% if not normal_bot_in_guild %}
-            (<a href="https://discord.com/api/oauth2/authorize?client_id=468281173072805889&scope=bot%20applications.commands%20identify%20guilds&response_type=code&redirect_uri=https%3A%2F%2Fmarriagebot.xyz%2Fguilds&guild_id={{ guild.id }}">add bot</a>)
-            {% endif %}
-        </label>
-        <br />
-        <input
-            name="gold_prefix"
-            value="{{ guild_settings['gold_prefix'] if guild_settings['gold_prefix'] != app['bots']['gold_bot'].config['default_prefix'] else ''}}"
-            placeholder="{{ app['bots']['gold_bot'].config['default_prefix'] }}"
-            maxlength="30" {% if not has_gold %}disabled{% endif %} />
-        <label for="gold_prefix">
-            Gold Prefix
-            {% if has_gold and not gold_bot_in_guild %}
-            (<a href="https://discord.com/api/oauth2/authorize?client_id=603608141434716171&scope=bot%20applications.commands%20identify%20guilds&response_type=code&redirect_uri=https%3A%2F%2Fmarriagebot.xyz%2Fguilds&guild_id={{ guild.id }}">add Gold bot</a>)
-            {% endif %}
-        </label>
-        <br /><br />
-        <button onclick="updateGuildPrefix(this); return false;">Update Guild Prefix</button>
-    </p>
-    <input name="guild_id" value="{{ guild.id }}" type="hidden" />
-</form> <!-- prefix -->
-
-
 <form id="gifs-enabled" class="boxed">
     <p>Gifs - sets whether gifs are enabled for your server's simulation commands.</p>
     <p>
