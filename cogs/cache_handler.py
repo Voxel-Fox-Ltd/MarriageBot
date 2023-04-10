@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import List
 import asyncio
 
@@ -19,8 +20,8 @@ class CacheHandler(vbu.Cog[types.Bot]):
 
     async def recache_user(
             self,
-            user: discord.abc.Snowflake,
-            guild_id: int = 0):
+            ftm: utils.FamilyTreeMember,
+            db: vbu.Database | None = None):
         """
         Grab a user from the database and re-read them into cache.
         This does not handle the people attached to that user (eg
@@ -28,69 +29,70 @@ class CacheHandler(vbu.Cog[types.Bot]):
         """
 
         # Get a cached person
-        ftm = utils.FamilyTreeMember.get(user.id, guild_id)
-        async with vbu.Database() as db:
-            await db(
-                """
-                DELETE FROM
-                    marriages
-                WHERE
-                    user_id = partner_id
-                """,
-            )
-            partnerships = await db(
-                """
-                SELECT
-                    *
-                FROM
-                    marriages
-                WHERE
-                    (
-                        user_id = $1
-                    OR
-                        partner_id = $1
-                    )
-                AND
-                    guild_id = $2
-                AND
-                    user_id > partner_id  -- don't delete old data for now
-                """,
-                ftm.id, ftm._guild_id,
-            )
-            await db(
-                """
-                DELETE FROM
-                    parents
-                WHERE
-                    parent_id = child_id
-                """,
-            )
-            parents = await db(
-                """
-                SELECT
-                    *
-                FROM
-                    parents
-                WHERE
-                    child_id = $1
-                AND
-                    guild_id = $2
-                """,
-                ftm.id, ftm._guild_id,
-            )
-            children = await db(
-                """
-                SELECT
-                    *
-                FROM
-                    parents
-                WHERE
-                    parent_id = $1
-                AND
-                    guild_id = $2
-                """,
-                ftm.id, ftm._guild_id,
-            )
+        if db is None:
+            _db = await vbu.Database.get_connection()
+        else:
+            _db = db
+        # await _db.call(
+        #     """
+        #     DELETE FROM
+        #         marriages
+        #     WHERE
+        #         user_id = partner_id
+        #     """,
+        # )
+        partnerships = await _db.call(
+            """
+            SELECT
+                *
+            FROM
+                marriages
+            WHERE
+                (
+                    user_id = $1
+                    OR partner_id = $1
+                )
+                AND guild_id = $2
+                AND user_id < partner_id  -- don't delete old data for now
+            """,
+            ftm.id, ftm._guild_id,
+        )
+        # await _db.call(
+        #     """
+        #     DELETE FROM
+        #         parents
+        #     WHERE
+        #         parent_id = child_id
+        #     """,
+        # )
+        parents = await _db.call(
+            """
+            SELECT
+                *
+            FROM
+                parents
+            WHERE
+                child_id = $1
+            AND
+                guild_id = $2
+            """,
+            ftm.id, ftm._guild_id,
+        )
+        children = await _db.call(
+            """
+            SELECT
+                *
+            FROM
+                parents
+            WHERE
+                parent_id = $1
+            AND
+                guild_id = $2
+            """,
+            ftm.id, ftm._guild_id,
+        )
+        if db is not None:
+            await _db.disconnect()
 
         # Add children
         ftm.children = [r['child_id'] for r in children]
@@ -116,7 +118,18 @@ class CacheHandler(vbu.Cog[types.Bot]):
             "Asked to recache user ID %s (guild ID %s)",
             user.id, guild_id,
         )
-        await self.recache_user(user, guild_id)
+        ftm = utils.FamilyTreeMember.get(user.id, guild_id)
+        # tasks: list[asyncio.Task] = []
+        # changed_users: list[utils.FamilyTreeMember] = []
+        async with vbu.Database() as db:
+            await self.recache_user(ftm, db)
+        #     for uf in ftm.span():
+        #         changed_users.append(uf)
+        #         tasks.append(asyncio.create_task(self.recache_user(uf, db)))
+        #     await asyncio.gather(*tasks)
+        # async with vbu.Redis() as re:
+        #     for uf in changed_users:
+        #         await re.publish("TreeMemberUpdate", uf.to_json())
 
     @staticmethod
     def handle_partner(row: types.MarriagesDB):
