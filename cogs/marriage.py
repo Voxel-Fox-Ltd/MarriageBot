@@ -343,7 +343,6 @@ class Marriage(vbu.Cog[types.Bot]):
                         AND partner_id = $1
                     )
                     AND guild_id = $3
-                LIMIT 2
                 """,
                 *sorted([partner_tree.id, ctx.author.id]), family_guild_id,
             )
