@@ -91,7 +91,7 @@ class CacheHandler(vbu.Cog[types.Bot]):
             """,
             ftm.id, ftm._guild_id,
         )
-        if db is not None:
+        if db is None:
             await _db.disconnect()
 
         # Add children
