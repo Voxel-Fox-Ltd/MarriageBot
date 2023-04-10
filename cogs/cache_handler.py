@@ -119,17 +119,16 @@ class CacheHandler(vbu.Cog[types.Bot]):
             user.id, guild_id,
         )
         ftm = utils.FamilyTreeMember.get(user.id, guild_id)
-        # tasks: list[asyncio.Task] = []
-        # changed_users: list[utils.FamilyTreeMember] = []
+        tasks: list[asyncio.Task] = []
+        changed_users: list[utils.FamilyTreeMember] = []
         async with vbu.Database() as db:
-            await self.recache_user(ftm, db)
-        #     for uf in ftm.span():
-        #         changed_users.append(uf)
-        #         tasks.append(asyncio.create_task(self.recache_user(uf, db)))
-        #     await asyncio.gather(*tasks)
-        # async with vbu.Redis() as re:
-        #     for uf in changed_users:
-        #         await re.publish("TreeMemberUpdate", uf.to_json())
+            for uf in ftm.span():
+                changed_users.append(uf)
+                tasks.append(asyncio.create_task(self.recache_user(uf, db)))
+            await asyncio.gather(*tasks)
+        async with vbu.Redis() as re:
+            for uf in changed_users:
+                await re.publish("TreeMemberUpdate", uf.to_json())
 
     @staticmethod
     def handle_partner(row: types.MarriagesDB):
