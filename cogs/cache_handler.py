@@ -112,7 +112,10 @@ class CacheHandler(vbu.Cog[types.Bot]):
             self,
             user: discord.User | discord.Member,
             guild_id: int = 0):
-        self.logger.info("Asked to recache user %s (guild %s)", user, guild_id)
+        self.logger.info(
+            "Asked to recache user ID %s (guild ID %s)",
+            user.id, guild_id,
+        )
         await self.recache_user(user, guild_id)
 
     @staticmethod
