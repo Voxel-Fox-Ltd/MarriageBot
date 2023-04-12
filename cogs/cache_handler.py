@@ -33,14 +33,6 @@ class CacheHandler(vbu.Cog[types.Bot]):
             _db = await vbu.Database.get_connection()
         else:
             _db = db
-        # await _db.call(
-        #     """
-        #     DELETE FROM
-        #         marriages
-        #     WHERE
-        #         user_id = partner_id
-        #     """,
-        # )
         partnerships = await _db.call(
             """
             SELECT
@@ -53,18 +45,11 @@ class CacheHandler(vbu.Cog[types.Bot]):
                     OR partner_id = $1
                 )
                 AND guild_id = $2
-                AND user_id < partner_id  -- don't delete old data for now
+                -- AND user_id < partner_id  -- don't delete old data for now
             """,
             ftm.id, ftm._guild_id,
         )
-        # await _db.call(
-        #     """
-        #     DELETE FROM
-        #         parents
-        #     WHERE
-        #         parent_id = child_id
-        #     """,
-        # )
+
         parents = await _db.call(
             """
             SELECT
@@ -102,7 +87,7 @@ class CacheHandler(vbu.Cog[types.Bot]):
         async for p in aiterator(partnerships):
             partner_ids.update((p['user_id'], p['partner_id'],))
         while ftm.id in partner_ids:
-            partner_ids.remove(ftm.id)
+            partner_ids.remove(ftm.id)  # remove circular marriage references
         ftm.partners = list(partner_ids)
 
         # Add parent
@@ -160,7 +145,7 @@ class CacheHandler(vbu.Cog[types.Bot]):
                     marriages
                 WHERE
                     {0}
-                    AND user_id > partner_id
+                    -- AND user_id > partner_id
                 """.format(where),
             )
             parents: List[types.ParentageDB] = await db(
