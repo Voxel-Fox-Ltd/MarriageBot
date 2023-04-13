@@ -200,32 +200,39 @@ async def guild_settings(request: Request):
         return HTTPFound(location='/')
     guild_id = int(guild_id)
 
+    # Set up some invite links
+    base = request.app['config']['website_base_url'].rstrip('/')
+    params = {
+        "scope": "bot applications.commands identify guilds",
+        "response_type": "code",
+        "redirect_uri": base + "/guilds",
+        "guild_id": guild_id,
+    }
+    normal_invite_link = (
+        "https://discord.com/api/oauth2/authorize?"
+        + urlencode({**params, "client_id": "468281173072805889"})
+    )
+    gold_invite_link = (
+        "https://discord.com/api/oauth2/authorize?"
+        + urlencode({**params, "client_id": "603608141434716171"})
+    )
+
     # See if the bot is in the guild
+    guild_object = None
     normal_bot_in_guild = False
     gold_bot_in_guild = False
     try:
         guild_object = await request.app['bots']['bot'].fetch_guild(guild_id)
         normal_bot_in_guild = True
     except discord.HTTPException:
-        try:
-            guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
-            gold_bot_in_guild = True
-        except discord.HTTPException:
-            base = request.app['config']['website_base_url'].rstrip('/')
-            location = "https://discord.com/api/oauth2/authorize?" + urlencode({
-                "client_id": "603608141434716171",
-                "scope": "bot applications.commands identify guilds",
-                "response_type": "code",
-                "redirect_uri": base + "/guilds",
-                "guild_id": guild_id,
-            })
-            return HTTPFound(location=location)
-    else:
-        try:
-            guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
-            gold_bot_in_guild = True
-        except discord.HTTPException:
-            pass
+        pass
+    try:
+        guild_object = await request.app['bots']['gold_bot'].fetch_guild(guild_id)
+        gold_bot_in_guild = True
+    except discord.HTTPException:
+        pass
+    if guild_object is None:
+        return HTTPFound(normal_invite_link)
 
     # Get the data for this guild
     session = await aiohttp_session.get_session(request)
@@ -241,22 +248,58 @@ async def guild_settings(request: Request):
 
         # Get guild settings
         guild_settings = await db(
-            """SELECT * FROM guild_settings WHERE guild_id=$1 OR guild_id=0 ORDER BY guild_id DESC""",
+            """
+            SELECT
+                *
+            FROM
+                guild_settings
+            WHERE
+                guild_id = $1
+                OR guild_id = 0
+            ORDER BY guild_id DESC
+            """,
             guild_id,
         )
 
         # See if this guild has gold
         gold_settings = await db(
-            """SELECT * FROM guild_specific_families WHERE guild_id=$1""",
+            """
+            SELECT
+                *
+            FROM
+                guild_specific_families
+            WHERE
+                guild_id = $1
+            """,
             guild_id,
         )
 
         # Get children amount that they've set
-        max_children_data = await db('SELECT * FROM max_children_amount WHERE guild_id=$1', guild_id)
-        max_children_amount = {i['role_id']: i['amount'] for i in max_children_data}
+        max_children_data = await db(
+            """
+            SELECT
+                *
+            FROM
+                max_children_amount
+            WHERE
+                guild_id = $1
+            """,
+            guild_id,
+        )
+        max_children_amount = {
+            i['role_id']: i['amount']
+            for i in max_children_data
+        }
 
     # Sort the role object
-    guild_roles = sorted([i for i in await guild_object.fetch_roles()], key=lambda c: c.position, reverse=True)
+    guild_roles = sorted(
+        [
+            i
+            for i in await guild_object.fetch_roles()
+        ],
+        key=lambda c: c.position,
+        reverse=True,
+    )
 
     # Return info to the page
     return {
@@ -269,6 +312,8 @@ async def guild_settings(request: Request):
         "given_max_children": max_children_amount,  # Get the max children that is set for this guild
         "max_children_hard_cap": botutils.TIER_THREE.max_children,
         "min_children_hard_cap": botutils.TIER_NONE.max_children,
+        "normal_invite_link": normal_invite_link,
+        "gold_invite_link": gold_invite_link,
     }
 
 
@@ -286,24 +331,41 @@ async def change_gold_guild(request: Request):
     all_guilds = await webutils.get_user_guilds_from_session(request)
 
     # Get which guilds they're allowed to manage
-    guilds = [i for i in all_guilds if i.guild.owner_id == i.id or i.guild_permissions.manage_guild]
+    guilds = [
+        i
+        for i in all_guilds
+        if i.guild.owner_id == i.id
+        or i.guild_permissions.manage_guild
+    ]
     guild_ids = [i.guild.id for i in guilds]
 
     # Get guilds that have gold attached
     async with request.app['database']() as db:
         gold_guild_data = await db(
-            """SELECT * FROM guild_specific_families WHERE purchased_by=$1 OR guild_id=ANY($2::BIGINT[])""",
+            """
+            SELECT
+                *
+            FROM
+                guild_specific_families
+            WHERE
+                purchased_by = $1
+                OR guild_id=ANY($2::BIGINT[])
+            """,
             session['user_id'], guild_ids,
         )
     gold_guild_ids = [i['guild_id'] for i in gold_guild_data]
     for i in guilds:
         if i.guild.id in gold_guild_ids:
-            i.guild.gold = True
+            i.guild.gold = True  # pyright: ignore
         else:
-            i.guild.gold = False
+            i.guild.gold = False  # pyright: ignore
 
     # Send off guilds to the page
     return {
-        "user_gold_guilds": [i['guild_id'] for i in gold_guild_data if i['purchased_by'] == session['user_id']],
+        "user_gold_guilds": [
+            i['guild_id']
+            for i in gold_guild_data
+            if i['purchased_by'] == session['user_id']
+        ],
         "guilds": guilds,
     }
