@@ -28,7 +28,7 @@ p {
 
 
 <div class="content-header-data" style="flex-direction: column;">
-    {% if normal_bot_in_guild %}
+    {% if not normal_bot_in_guild %}
         <h2><a href="{{ normal_invite_link }}">MarriageBot Invite</a></h2>
     {% endif %}
     {% if not has_gold %}
@@ -43,7 +43,7 @@ p {
             </form>
         </div>
     {% else %}
-        {% if gold_bot_in_guild %}
+        {% if not gold_bot_in_guild %}
             <h2><a href="{{ gold_invite_link }}">Gold Bot Invite</a></h2>
         {% endif %}
     {% endif %}
