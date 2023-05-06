@@ -77,7 +77,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                     name="guild_id",
                     description="The guild ID to copy to",
                     required=True,
-                    type=discord.ApplicationCommandOptionType.integer,
+                    type=discord.ApplicationCommandOptionType.string,
                 ),
             ],
         ),
@@ -86,19 +86,21 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
     @commands.bot_has_permissions(send_messages=True)
     async def copyfamilytoguild(
             self,
-            ctx: vbu.Context,
+            ctx: vbu.SlashContext,
             user: vbu.converters.UserID,
-            guild_id: int):
+            guild_id: str):
         """
         Copies a family's span to a given guild ID for server
         specific families.
         """
 
-        await self.copy_family(ctx, user, guild_id, False)
+        if not guild_id.isdigit():
+            return await ctx.interaction.response.send_message("That is not a valid guild ID.")
+        await self.copy_family(ctx, user, int(guild_id), False)
 
     async def copy_family(
             self,
-            ctx: vbu.Context,
+            ctx: vbu.SlashContext,
             user_id: int,
             guild_id: int,
             delete_members: bool):
@@ -107,12 +109,12 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
         """
 
         if guild_id == 0:
-            return await ctx.send("No.")
+            return await ctx.interaction.response.send_message("No.")
 
         # Get their current family
         tree = utils.FamilyTreeMember.get(user_id, guild_id=0)
         users = list(tree.span(expand_upwards=True, add_parent=True))
-        await ctx.channel.trigger_typing()
+        await ctx.interaction.response.defer()
 
         # Database it to the new guild
         db = await self.bot.database.get_connection()
@@ -164,7 +166,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                     name="guild_id",
                     description="The guild ID to add.",
                     required=True,
-                    type=discord.ApplicationCommandOptionType.integer,
+                    type=discord.ApplicationCommandOptionType.string,
                 ),
                 discord.ApplicationCommandOption(
                     name="user_id",
@@ -179,13 +181,15 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
     @commands.bot_has_permissions(send_messages=True)
     async def addserverspecific(
             self,
-            ctx: vbu.Context,
-            guild_id: int,
+            ctx: vbu.SlashContext,
+            guild_id: str,
             user_id: vbu.converters.UserID):
         """
         Adds a guild to the MarriageBot Gold whitelist.
         """
 
+        if not guild_id.isdigit():
+            return await ctx.interaction.response.send_message("That is not a valid guild ID.")
         async with vbu.Database() as db:
             await db(
                 """
@@ -205,7 +209,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                 SET
                     purchased_by = excluded.purchased_by
                 """,
-                guild_id, user_id,
+                int(guild_id), user_id,
             )
         await ctx.send("Done.")
 
@@ -219,7 +223,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                     name="guild_id",
                     description="The guild ID to remove.",
                     required=True,
-                    type=discord.ApplicationCommandOptionType.integer,
+                    type=discord.ApplicationCommandOptionType.string,
                 ),
             ],
         ),
@@ -228,12 +232,14 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
     @commands.bot_has_permissions(send_messages=True)
     async def removeserverspecific(
             self,
-            ctx: vbu.Context,
-            guild_id: int):
+            ctx: vbu.SlashContext,
+            guild_id: str):
         """
         Remove a guild from the MarriageBot Gold whitelist.
         """
 
+        if not guild_id.isdigit():
+            return await ctx.interaction.response.send_message("That is not a valid guild ID.")
         async with vbu.Database() as db:
             await db(
                 """
@@ -242,7 +248,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                 WHERE
                     guild_id = $1
                 """,
-                guild_id,
+                int(guild_id),
             )
         await ctx.send("Done.")
 
