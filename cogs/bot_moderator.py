@@ -134,15 +134,48 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
         # Push to db
         assert db.conn
         try:
-            await db.conn.copy_records_to_table(
-                "parents",
-                columns=["child_id", "parent_id", "guild_id"],
-                records=parents,
+            await db.executemany(
+                """
+                INSERT INTO
+                    parents
+                    (
+                        child_id,
+                        parent_id,
+                        guild_id
+                    )
+                VALUES
+                    (
+                        $1,
+                        $2,
+                        $3
+                    )
+                ON CONFLICT
+                    (parent_id, child_id, guild_id)
+                DO NOTHING
+                """,
+                *parents,
             )
-            await db.conn.copy_records_to_table(
-                "marriages",
-                columns=["user_id", "partner_id", "guild_id"],
-                records=partners,
+
+            await db.executemany(
+                """
+                INSERT INTO
+                    marriages
+                    (
+                        user_id,
+                        partner_id,
+                        guild_id
+                    )
+                VALUES
+                    (
+                        $1,
+                        $2,
+                        $3
+                    )
+                ON CONFLICT
+                    (parent_id, child_id, guild_id)
+                DO NOTHING
+                """,
+                *partners,
             )
         except Exception:
             return await ctx.send(
