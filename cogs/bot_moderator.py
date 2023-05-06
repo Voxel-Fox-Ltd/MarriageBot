@@ -155,7 +155,6 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                 """,
                 *parents,
             )
-
             await db.executemany(
                 """
                 INSERT INTO
@@ -177,9 +176,9 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                 """,
                 *partners,
             )
-        except Exception:
+        except Exception as e:
             return await ctx.send(
-                "I encountered an error copying that family over."
+                f"I encountered an error copying that family over - `{e}`."
             )
 
         # Send to user
