@@ -128,7 +128,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
         parents = [(i.id, i._parent, guild_id) for i in users if i._parent]
         partners = []
         for i in users:
-            partners.extend((i.id, p.id, guild_id) for p in i.partners)
+            partners.extend((*sorted([i.id, p.id]), guild_id) for p in i.partners)
         partners = list(set(partners))
 
         # Push to db
@@ -150,7 +150,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                         $3
                     )
                 ON CONFLICT
-                    (parent_id, child_id, guild_id)
+                    (child_id, guild_id)
                 DO NOTHING
                 """,
                 *parents,
