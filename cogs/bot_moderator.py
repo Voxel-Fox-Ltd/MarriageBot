@@ -171,7 +171,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                         $3
                     )
                 ON CONFLICT
-                    (user_id, patner_id, guild_id)
+                    (user_id, partner_id, guild_id)
                 DO NOTHING
                 """,
                 *partners,
