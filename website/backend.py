@@ -322,26 +322,29 @@ async def paypal_purchase_complete(request: Request):
         refund = data.get('refund', False) or data.get('refunded', False)
         if refund is False:
             await db(
-                """INSERT INTO guild_specific_families VALUES ($1, $2) ON CONFLICT (guild_id) DO NOTHING""",
+                """
+                INSERT INTO
+                    guild_specific_families
+                VALUES
+                    (
+                        $1,
+                        $2
+                    )
+                ON CONFLICT (guild_id)
+                DO NOTHING
+                """,
                 int(data['discord_guild_id']), int(data['discord_user_id']),
             )
-            discord_channel_send_text = f"<@{data['discord_user_id']}> has purchased MarriageBot Gold."
         else:
             await db(
-                """DELETE FROM guild_specific_families WHERE guild_id=$1""",
+                """
+                DELETE FROM
+                    guild_specific_families
+                WHERE
+                    guild_id = $1
+                """,
                 int(data['discord_guild_id']),
             )
-            discord_channel_send_text = f"<@{data['discord_user_id']}> has refunded their purchase of MarriageBot Gold."
-
-    # Send data to channel
-    bot = request.app['bots']['bot']
-    channel_id = request.app['config']['payment_info']['notification_channel_id']
-    if channel_id and discord_channel_send_text:
-        try:
-            channel = await bot.fetch_channel(channel_id)
-            await channel.send(discord_channel_send_text, embeddify=False)
-        except Exception:
-            pass
 
     # And we done
     return Response(status=200)
