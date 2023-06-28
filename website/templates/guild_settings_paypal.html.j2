@@ -33,14 +33,18 @@ p {
     {% endif %}
     {% if not has_gold %}
         <div class="content-header-data">
-            <h2 style="margin-right: 10px;">Buy MarriageBot Gold for this guild</h2>
-            <form style="top: 2px; position: relative;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <h2 style="margin-right: 10px;">
+                <a href="https://voxelfox.co.uk/portal/marriagebot">
+                    Buy MarriageBot Gold for this guild
+                </a>
+            </h2>
+            <!-- <form style="top: 2px; position: relative;" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                 <input type="hidden" name="cmd" value="_s-xclick">
                 <input type="hidden" name="hosted_button_id" value="83N4P9WB294EL">
                 <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
                 <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
                 <input type="hidden" name="custom" value='{"discord_user_id": {{ user_info.id }}, "discord_guild_id": {{ guild.id }}}'>
-            </form>
+            </form> -->
         </div>
     {% else %}
         {% if not gold_bot_in_guild %}
