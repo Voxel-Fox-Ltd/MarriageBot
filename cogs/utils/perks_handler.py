@@ -134,6 +134,10 @@ async def get_marriagebot_perks(bot: vbu.Bot, user_id: int) -> MarriageBotPerks:
     if user_id in bot.owner_ids:
         return TIER_THREE
 
+    # If we gold we golden
+    if bot.config["is_server_specific"]:
+        return TIER_THREE
+
     # Check if they have a purchase
     async with bot.database() as db:
         rows = await db(

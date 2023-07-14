@@ -21,8 +21,8 @@ MARRIAGEBOT_GOLD_INFORMATION = """
 > Users with a role named "MarriageBot Moderator" will be able to run commands like `forceadopt` and `forcemarry` in order to construct trees exactly how you want them.
 **Larger Max Family Member**
 > The maximum number of members in a family with Gold is up to 2,000 people, putting it far above the amount offered normally.
-**Configurable Max Children Amount**
-> Stuck with only 5 children? Using the MarriageBot website, you're able to set the maximum number of children that a given role can have, allowing you to tier your users.
+**Larger Max Children Amount**
+> Stuck with only 5 children? With Gold, everyone's maximum children is set to 20.
 **Togglable Incest**
 > You love your family? With Gold you're able to show them... a lot _more_ love.
 
