@@ -335,10 +335,10 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
 
         # Spit out their guild IDs
         format_text = (
-            "<@{user_id}> has purchased {0} "
+            "<@{1}> has purchased {0} "
             "{0:plural,instance,instances} of MarriageBot Gold:\n"
         )
-        text = vbu.format(format_text, len(rows))
+        text = vbu.format(format_text, len(rows), user_id)
         text += "\n".join([f"\N{BULLET} `{i['guild_id']}`" for i in rows])
         return await ctx.send(
             text,
