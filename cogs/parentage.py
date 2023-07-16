@@ -87,7 +87,6 @@ class Parentage(vbu.Cog[utils.types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def makeparent(
             self,
             ctx: vbu.Context,
@@ -230,7 +229,6 @@ class Parentage(vbu.Cog[utils.types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def adopt(self, ctx: vbu.Context, *, target: utils.converters.UnblockedMember):
         """
         Adopt another user into your family.
@@ -368,7 +366,6 @@ class Parentage(vbu.Cog[utils.types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def disown(self, ctx: vbu.Context):
         """
         Remove someone from being your child.
@@ -488,7 +485,6 @@ class Parentage(vbu.Cog[utils.types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def runaway(self, ctx: vbu.Context):
         """
         Removes your parent.
@@ -547,7 +543,6 @@ class Parentage(vbu.Cog[utils.types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def disownall(self, ctx: vbu.Context):
         """
         Disowns all of your children.

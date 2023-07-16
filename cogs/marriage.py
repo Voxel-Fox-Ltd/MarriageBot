@@ -238,7 +238,6 @@ class Marriage(vbu.Cog[types.Bot]):
     @commands.cooldown(1, 3, commands.BucketType.user)
     @vbu.checks.bot_is_ready()
     @commands.guild_only()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def divorce(self, ctx: vbu.Context):
         """
         Divorce you from one of your partners.
