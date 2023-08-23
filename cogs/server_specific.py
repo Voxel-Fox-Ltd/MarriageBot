@@ -602,55 +602,6 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
             await re.publish("TreeMemberUpdate", child_tree.to_json())
             await re.publish("TreeMemberUpdate", parent.to_json())
         await ctx.send("Consider it done.")
-    
-    @commands.command(
-        application_command_meta=commands.ApplicationCommandMeta(
-            options=[
-                discord.ApplicationCommandOption(
-                    name="guild_id",
-                    description="The ID of the guild to reset.",
-                    type=discord.ApplicationCommandOptionType.string,
-                    required=False
-                ),
-            ],
-        ),
-    )
-    @utils.checks.is_server_specific_bot_moderator()
-    @commands.bot_has_permissions(send_messages=True)
-    async def forcereset(
-            self,
-            ctx: vbu.Context,
-            guild_id: str | None = None):
-        """Completely resets a server-specific tree given a guild ID."""
-
-        if not guild_id.isdigit():
-            return await ctx.send("No guild found.")
-
-        await self.reset_family(ctx, int(guild_id))
-        
-
-    async def reset_family(
-            self,
-            ctx: vbu.Context,
-            guild_id: int):
-        """Resets a family tree for a guild"""
-        
-        if guild_id == 0:
-            return await ctx.send("Absolutely not.")
-
-        try:
-            guild_id = guild_id or ctx.guild.id
-        except: # I'm assuming if it's run in DMs `ctx.guild` would be None
-            return await ctx.send("No guild found.")
-
-        assert guild_id # Let's not erase global tree <3
-
-        # Update database
-        async with vbu.Database() as db:
-            await db("DELETE FROM parents WHERE guild_id = $1", guild_id)
-            await db("DELETE FROM marriages WHERE guild_id = $1", guild_id)
-
-        await ctx.send("Reset tree. Run the `runstartupmethod` command.")
 
 
 def setup(bot: utils.types.Bot):
