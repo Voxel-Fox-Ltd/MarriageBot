@@ -33,7 +33,7 @@ class MarriageBotPerks(object):
     def __init__(
             self,
             max_children: int = 5,
-            max_partners: int = 1,
+            max_partners: int = 2,
             can_run_fulltree: bool = False,
             can_run_disownall: bool = False,
             tree_command_cooldown: int = 60,
@@ -67,7 +67,7 @@ TIER_TWO = MarriageBotPerks(
     can_run_abandon=True,
     tree_command_cooldown=15,
     tree_render_quality=2,
-    max_partners=4,
+    max_partners=6,
 )
 
 # £3
@@ -76,7 +76,7 @@ TIER_ONE = MarriageBotPerks(
     can_run_disownall=True,
     tree_command_cooldown=15,
     tree_render_quality=1,
-    max_partners=2,
+    max_partners=4,
 )
 
 # Vote
