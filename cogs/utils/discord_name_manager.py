@@ -120,7 +120,12 @@ class DiscordNameManager:
             if name:
                 if ignore_name_validity:
                     v.age -= 1  # Don't count this towards name validity so we don't deal with the cache
+                if name.endswith("#0"):
+                    return name[:-2]
                 return name
 
         # Grab a new name from the cache for them
-        return await v.fetch_name(bot)
+        ret = await v.fetch_name(bot)
+        if ret.endswith("#0"):
+            return ret[:-2]
+        return ret
