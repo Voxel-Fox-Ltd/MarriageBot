@@ -3,7 +3,7 @@ function generate(name, script) {
         name: name,
         autorestart: false,
         script: script,
-        cwd: "/home/kae/MarriageBot",
+        cwd: "/home/kae/MBStatus",
     }
 }
 
@@ -17,7 +17,7 @@ function generateStatus(index) {
     let max = ((index + 1) * (SHARD_COUNT / CLUSTER_COUNT)) - 1;
     return generate(
         `status${index}`,
-        `vbu run-bot --no-startup --min ${min} --max ${max} --shardcount ${SHARD_COUNT}`,
+        `.venv/bin/novus run --shard-ids ${min}..${max} --shard-count ${SHARD_COUNT} --no-sync`,
     )
 }
 
