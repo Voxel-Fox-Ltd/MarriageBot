@@ -383,6 +383,42 @@ class SimulationCommands(vbu.Cog[utils.types.Bot]):
         await ctx.interaction.response.send_message(random.choice(responses))
 
     @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            options=[
+                discord.ApplicationCommandOption(
+                    name="user",
+                    description="The user you want to throw.",
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def throw(
+            self,
+            ctx: vbu.SlashContext,
+            user: discord.Member):
+        """
+        Throws a mentioned user.
+        """
+        if user == ctx.author:
+            responses = [
+                "You threw... yourself?",
+                f"You failed to throw {user.mention}!",
+            ]
+        else:
+            responses = [
+                f"You throw {user.mention}.",
+                f"*Throws {user.mention}.*",
+                f"{user.mention} was thrown.",
+                f"{user.mention} has been thrown.",
+                f"You failed to throw {user.mention}."
+                "It's a bit rude to throw people.",
+                "Stop throwing people!",
+            ]
+        await ctx.interaction.response.send_message(random.choice(responses))
+
+    @commands.command(
         application_command_meta=commands.ApplicationCommandMeta(),
     )
     @commands.cooldown(1, 3, commands.BucketType.user)
