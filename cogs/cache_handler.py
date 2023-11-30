@@ -132,7 +132,7 @@ class CacheHandler(vbu.Cog[types.Bot]):
 
         # Get family data from database
         where: str
-        if self.bot.config['is_server_specific']:
+        if self.bot.config.get('is_server_specific', False):
             where = "guild_id <> 0"
         else:
             where = "guild_id = 0"
