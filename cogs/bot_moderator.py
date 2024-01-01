@@ -284,6 +284,82 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                 int(guild_id),
             )
         await ctx.send("Done.")
+    
+    @commands.command(
+        application_command_meta=commands.ApplicationCommandMeta(
+            guild_ids=[
+                208895639164026880,
+            ],
+            options=[
+                discord.ApplicationCommandOption(
+                    name="old_guild_id",
+                    description="The guild ID to remove.",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.string,
+                ),
+                discord.ApplicationCommandOption(
+                    name="new_guild_id",
+                    description="The guild ID to add.",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.string,
+                ),
+                discord.ApplicationCommandOption(
+                    name="user_id",
+                    description="The user to assign the guild to.",
+                    required=True,
+                    type=discord.ApplicationCommandOptionType.user,
+                ),
+            ],
+        ),
+    )
+    @vbu.checks.is_bot_support()
+    @commands.bot_has_permissions(send_messages=True)
+    async def transferserverspecific(
+                self,
+                ctx: vbu.SlashContext,
+                old_guild_id: str,
+                new_guild_id: str,
+                user_id: vbu.converters.UserID):
+        """
+        Transfers a MarriageBot Gold purchase to another server.
+        """
+
+        if not old_guild_id.isdigit() or not new_guild_id.isdigit():
+            return await ctx.interaction.response.send_message("That is not a valid guild ID.")
+        
+        async with vbu.Database() as db:
+            await db(
+                """
+                DELETE FROM
+                    guild_specific_families
+                WHERE
+                    guild_id = $1
+                """,
+                int(old_guild_id),
+            )
+
+            await db(
+                """
+                INSERT INTO
+                    guild_specific_families
+                    (
+                        guild_id,
+                        purchased_by
+                    )
+                VALUES
+                    (
+                        $1,
+                        $2
+                    )
+                ON CONFLICT (guild_id)
+                DO UPDATE
+                SET
+                    purchased_by = excluded.purchased_by
+                """,
+                int(new_guild_id), user_id,
+            )
+
+        await ctx.send("Done.")
 
     @commands.command(
         aliases=['getgoldpurchase'],
