@@ -303,12 +303,6 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                     required=True,
                     type=discord.ApplicationCommandOptionType.string,
                 ),
-                discord.ApplicationCommandOption(
-                    name="user_id",
-                    description="The user to assign the guild to.",
-                    required=True,
-                    type=discord.ApplicationCommandOptionType.user,
-                ),
             ],
         ),
     )
@@ -318,8 +312,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
                 self,
                 ctx: vbu.SlashContext,
                 old_guild_id: str,
-                new_guild_id: str,
-                user_id: vbu.converters.UserID):
+                new_guild_id: str):
         """
         Transfers a MarriageBot Gold purchase to another server.
         """
@@ -328,36 +321,26 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
             return await ctx.interaction.response.send_message("That is not a valid guild ID.")
         
         async with vbu.Database() as db:
-            await db(
-                """
-                DELETE FROM
-                    guild_specific_families
-                WHERE
-                    guild_id = $1
-                """,
-                int(old_guild_id),
-            )
+            try:
+                success = await db(
+                    """
+                    UPDATE
+                        guild_specific_families
+                    SET
+                        guild_id = $1
+                    WHERE
+                        guild_id = $2
+                    RETURNING 
+                        *
+                    """,
+                    int(new_guild_id),
+                    int(old_guild_id)
+                )
+            except Exception:
+                return await ctx.send("That guild already has MarriageBot Gold.")
 
-            await db(
-                """
-                INSERT INTO
-                    guild_specific_families
-                    (
-                        guild_id,
-                        purchased_by
-                    )
-                VALUES
-                    (
-                        $1,
-                        $2
-                    )
-                ON CONFLICT (guild_id)
-                DO UPDATE
-                SET
-                    purchased_by = excluded.purchased_by
-                """,
-                int(new_guild_id), user_id,
-            )
+        if not success:
+            return await ctx.send("The previous guild did not have MarriageBot Gold.")
 
         await ctx.send("Done.")
 
