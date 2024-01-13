@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Final, Optional
 
 import discord
 from discord.ext import commands, vbu
@@ -394,12 +394,19 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
             )
 
         # Spit out their guild IDs
+        gold_app_id: Final[int] = 603608141434716171
+        get_url = lambda guild_id: (
+            f"https://discord.com/oauth2/authorize"
+            f"?client_id={gold_app_id}"
+            f"&scope=bot+applications.commands"
+            f"&guild_id={guild_id}"
+        )
         format_text = (
             "<@{1}> has purchased {0} "
             "{0:plural,instance,instances} of MarriageBot Gold:\n"
         )
         text = vbu.format(format_text, len(rows), user_id)
-        text += "\n".join([f"\N{BULLET} `{i['guild_id']}`" for i in rows])
+        text += "\n".join([f"\N{BULLET} [`{i['guild_id']}`]({get_url(i['guild_id'])})" for i in rows])
         return await ctx.send(
             text,
             allowed_mentions=discord.AllowedMentions.none(),
