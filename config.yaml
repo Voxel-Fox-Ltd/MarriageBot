@@ -1,0 +1,29 @@
+token: ''
+pubkey: ''
+shard_ids: null
+shard_count: 1
+intents:
+  guilds: false
+  guild_members: false
+  guild_moderation: false
+  guild_emojis_and_stickers: false
+  guild_integrations: false
+  guild_webhooks: false
+  guild_invites: false
+  guild_voice_states: false
+  guild_presences: false
+  guild_messages: false
+  guild_message_reactions: false
+  guild_message_typing: false
+  direct_messages: false
+  direct_message_reactions: false
+  direct_message_typing: false
+  message_content: false
+  guild_scheduled_events: false
+  auto_moderation_configuration: false
+  auto_moderation_execution: false
+plugins:
+- novus.ext.database:Database
+database_dsn: ''
+database_max_connections: 10
+

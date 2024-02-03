@@ -1,0 +1,17 @@
+[flake8]
+exclude = .git,.idea,.mypy_cache,.venv,__pycache__,docs,tests
+select = E,F,W
+# E133 - closing bracket is missing indentation
+# W503 - line break before binary operator
+# F403 - star import used
+# F405 - name could be undefined but flake8 doesn't know bc of star imports
+ignore = E133,W503
+quiet = 0
+count = true
+statistics = true
+hang_closing = true
+indent_size = 4
+max_line_length = 120
+max_doc_length = 120
+max_complexity = 10
+disable_noqa = false
