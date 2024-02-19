@@ -53,94 +53,12 @@ class Marriage(client.Plugin):
         Propose to another user.
         """
 
-        # See if they're the same person or a blacklisted user
-        if ctx.user == user:
-            return await ctx.send(ctx._("You can't marry yourself :/"))
-        if user.bot:
-            return await ctx.send(ctx._("You can't marry bots :/"))
-        self.log.info(u.ProposalLock.PROPOSAL_LOCKS)
-        match u.ProposalLock.locked(ctx.user.id, user.id):
-            case 0:
-                return await ctx.send(
-                    ctx._("You're already waiting on a proposal."),
-                    ephemeral=True,
-                )
-            case 1:
-                return await ctx.send(
-                    (
-                        ctx._("{user} is already waiting on a proposal.")
-                        .format(user=user.mention)
-                    ),
-                    ephemeral=True,
-                )
-        unlock_f = await u.ProposalLock.lock(ctx.user.id, user.id)
-        if unlock_f is None:
-            return  # Failed to lock
-        await ctx.defer()
-
-        # See if they're already related
-        guild_id: int = ctx.guild.id if self.bot.config.gold else 0
-        author_ft, user_ft = u.FamilyMember.get_multiple(ctx.user.id, user.id, guild_id=guild_id)
-        if author_ft.get_related(user_ft):
-            unlock_f()
-            return await ctx.send(
-                (
-                    ctx._("You and {user} are already related!")
-                    .format(user=user.mention)
-                ),
-                allowed_mentions=n.AllowedMentions.none(),
-            )
-
-        # See if they're above a certain family size limit
-        family_size_limit: int = 2_000 if self.bot.config.gold else 750
-        kwargs = {
-            "people_list": None,
-            "add_parent": True,
-            "add_partners": True,
-            "add_partner_parents": True,
-        }
-        for counter, _ in enumerate(itertools.chain(
-                author_ft.span(**kwargs),
-                user_ft.span(**kwargs))):
-            if counter > family_size_limit:
-                unlock_f()
-                return await ctx.send(
-                    ctx._(
-                        "You can't do that! If your families combine, you'd "
-                        "have over {family_size} members in your tree!"
-                    )
-                    .format(family_size=family_size_limit)
-                )
-
-        # Send proposal message
-        time_ = int(time.time() + u.PROPOSAL_TIMEOUT)
-        m = await ctx.followup(
-            (
-                ctx._("Hey {user}, {author} wants to propose to you! What do you say?")
-                .format(user=user.mention, author=ctx.user.mention)
-            ),
-            components=[
-                n.ActionRow([
-                    n.Button(
-                        ctx._("Accept"),
-                        style=n.ButtonStyle.green,
-                        custom_id=f"PROPOSE MARRY 1 {ctx.user.id} {user.id} {time_}",
-                    ),
-                    n.Button(
-                        ctx._("Decline"),
-                        style=n.ButtonStyle.red,
-                        custom_id=f"PROPOSE MARRY 0 {ctx.user.id} {user.id} {time_}",
-                    ),
-                ]),
-            ],
-        )
-        u.AutoDelete.autodelete(
-            m, time_,
-            content=(
-                ctx._("Sorry, {author}, your proposal to {user} has timed out!")
-                .format(author=ctx.user.mention, user=user.mention)
-            ),
-            components=None,
+        await u.handle_proposal(
+            self.bot,
+            ctx,
+            user,
+            ctx._("Hey {user}, {author} wants to marry you! What do you say?"),
+            "MARRY",
         )
 
     @client.command(

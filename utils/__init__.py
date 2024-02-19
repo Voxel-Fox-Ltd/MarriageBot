@@ -27,5 +27,6 @@ __all__: tuple[str, ...] = (
     'FamilyMember',
     'PROPOSAL_TIMEOUT',
     'ProposalLock',
+    'handle_proposal',
     'mint',
 )
