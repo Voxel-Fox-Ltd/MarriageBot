@@ -1,5 +1,6 @@
-token: ''
+token: '$DISCORD_TEST_TOKEN'
 pubkey: ''
+gold: false
 shard_ids: null
 shard_count: 1
 intents:
@@ -24,6 +25,12 @@ intents:
   auto_moderation_execution: false
 plugins:
 - novus.ext.database:Database
-database_dsn: ''
-database_max_connections: 10
+# - plugins.children:Children
+# - plugins.information:Information
+- plugins.marriage:Marriage
+# - plugins.parents:Parents
+- plugins.proposal_handler:ProposalHandler
+# - plugins.simulation:Simulation
+database_dsn: '$MARRIAGEBOT_TEST_DSN'
+database_max_connections: 1
 
