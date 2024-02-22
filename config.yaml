@@ -26,6 +26,7 @@ intents:
 plugins:
 - novus.ext.database:Database
 - plugins.cache_handler:CacheHandler
+- plugins.name_handler:NameHandler
 # - plugins.children:Children
 # - plugins.information:Information
 - plugins.marriage:Marriage
