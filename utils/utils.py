@@ -17,9 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import asyncpg
 
 __all__ = (
+    'get_names',
     'mint',
 )
 
@@ -30,3 +34,20 @@ def mint(*x: Any) -> tuple[int, ...]:
     """
 
     return tuple(int(i) for i in x)
+
+
+async def get_names(
+        conn: asyncpg.Connection | asyncpg.Pool,
+        *ids: int) -> dict[int, str]:
+    """
+    Get names from the database.
+    """
+
+    rows = await conn.fetch(
+        "SELECT * FROM usernames WHERE id = ANY($1::BIGINT[])",
+        ids,
+    )
+    base = {i: f"User[{i}]" for i in ids}
+    for r in rows:
+        base[r["id"]] = r["name"]
+    return base

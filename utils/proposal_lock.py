@@ -31,8 +31,8 @@ from .autodelete import AutoDelete
 from .family_member import FamilyMember
 
 if TYPE_CHECKING:
-    from novus.ext import client
     from novus import types as t
+    from novus.ext import client
 
 __all__ = (
     'ProposalLock',

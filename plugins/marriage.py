@@ -17,13 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-import time
-import itertools
-
 import novus as n
 from novus import types as t
-from novus.utils import Localization as LC
 from novus.ext import client
+from novus.ext import database as db
+from novus.utils import Localization as LC
 
 import utils as u
 
@@ -40,7 +38,7 @@ class Marriage(client.Plugin):
                 type=n.ApplicationOptionType.user,
                 # TRANSLATORS: Option name (/marry user); must be lowercase
                 name_localizations=LC._("user"),
-                # TRANSLATORS: Option name description (/marry user)
+                # TRANSLATORS: Option name description (/marry user); max 100 characters
                 description_localizations=LC._("The user that you want to marry."),
             )
         ],
@@ -64,7 +62,7 @@ class Marriage(client.Plugin):
     @client.command(
         # TRANSLATORS: Command name; must be lowercase
         name_localizations=LC._("divorce"),
-        # TRANSLATORS: Command description
+        # TRANSLATORS: Command description; max 100 characters
         description_localizations=LC._("Divorce one of your partners."),
         dm_permission=False,
     )

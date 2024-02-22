@@ -17,20 +17,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generator, TypeAlias, Union
-
-from typing_extensions import Self
-
 import collections
 import itertools
 import random
 import string
+from typing import TYPE_CHECKING, Any, Generator, TypeAlias, Union
 
 from novus.ext import database as db
+from typing_extensions import Self
 
 if TYPE_CHECKING:
-    import novus
     import asyncpg
+    import novus
 
     from .custom_tree import CustomTree
 

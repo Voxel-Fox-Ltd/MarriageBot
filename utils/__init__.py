@@ -15,11 +15,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from .autodelete import *
 from .custom_tree import *
 from .family_member import *
-from .autodelete import *
-from .utils import *
 from .proposal_lock import *
+from .utils import *
 
 __all__: tuple[str, ...] = (
     'AutoDelete',
@@ -28,5 +28,6 @@ __all__: tuple[str, ...] = (
     'PROPOSAL_TIMEOUT',
     'ProposalLock',
     'handle_proposal',
+    'get_names',
     'mint',
 )

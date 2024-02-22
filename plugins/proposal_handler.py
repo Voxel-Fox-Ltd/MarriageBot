@@ -21,7 +21,8 @@ import time
 
 import novus as n
 from novus import types as t
-from novus.ext import client, database as db
+from novus.ext import client
+from novus.ext import database as db
 
 import utils as u
 
