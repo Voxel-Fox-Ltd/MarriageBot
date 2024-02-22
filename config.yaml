@@ -25,6 +25,7 @@ intents:
   auto_moderation_execution: false
 plugins:
 - novus.ext.database:Database
+- plugins.cache_handler:CacheHandler
 # - plugins.children:Children
 # - plugins.information:Information
 - plugins.marriage:Marriage
