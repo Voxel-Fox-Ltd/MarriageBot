@@ -28,7 +28,7 @@ plugins:
 - plugins.cache_handler:CacheHandler
 - plugins.name_handler:NameHandler
 # - plugins.children:Children
-# - plugins.information:Information
+- plugins.information:Information
 - plugins.marriage:Marriage
 # - plugins.parents:Parents
 - plugins.proposal_handler:ProposalHandler
