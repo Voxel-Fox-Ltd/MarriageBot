@@ -23,12 +23,12 @@ import random
 import string
 from typing import TYPE_CHECKING, Any, Generator, TypeAlias, Union
 
+import novus as n
 from novus.ext import database as db
 from typing_extensions import Self
 
 if TYPE_CHECKING:
     import asyncpg
-    import novus
 
     from .custom_tree import CustomTree
 
@@ -37,8 +37,8 @@ if TYPE_CHECKING:
 
     AnyUser: TypeAlias = Union[
         int,
-        novus.GuildMember,
-        novus.User,
+        n.GuildMember,
+        n.User,
         "FamilyMember",
     ]
 
@@ -227,15 +227,117 @@ class FamilyMember:
         self.ALL_MEMBERS[(self.guild_id, self.id,)] = self
 
     @classmethod
-    def get(cls, user: AnyUser, guild_id: int = 0) -> Self:
+    async def fetch_partners(
+            cls,
+            conn: asyncpg.Connection,
+            user: AnyUser,
+            guild_id: int = 0) -> list[tuple[int, n.utils.DiscordDatetime]]:
         """
-        Get a family member object from the cache.
+        Fetch partners from the database.
+        """
+
+        user = cls._get_id(user)
+        rows = await conn.fetch(
+            """
+            SELECT
+                user_id,
+                partner_id,
+                timestamp
+            FROM
+                marriages
+            WHERE
+                (
+                    user_id = $1
+                    OR partner_id = $1
+                )
+                AND guild_id = $2
+            """,
+            user, guild_id,
+        )
+        ret = []
+        for r in rows:
+            u = r["user_id"]
+            if u == user:
+                u = r["partner_id"]
+            ret.append((u, n.utils.DiscordDatetime.from_native(r["timestamp"]),))
+        return ret
+
+    @classmethod
+    async def fetch_children(
+            cls,
+            conn: asyncpg.Connection,
+            user: AnyUser,
+            guild_id: int = 0) -> list[tuple[int, n.utils.DiscordDatetime]]:
+        """
+        Fetch children from the database.
+        """
+
+        user = cls._get_id(user)
+        rows = await conn.fetch(
+            """
+            SELECT
+                child_id,
+                timestamp
+            FROM
+                parents
+            WHERE
+                parent_id = $1
+                AND guild_id = $2
+            """,
+            user, guild_id,
+        )
+        return [
+            (r["child_id"], n.utils.DiscordDatetime.from_native(r["timestamp"]),)
+            for r in rows
+        ]
+
+    @classmethod
+    async def fetch_parent(
+            cls,
+            conn: asyncpg.Connection,
+            user: AnyUser,
+            guild_id: int = 0) -> tuple[int, n.utils.DiscordDatetime] | None:
+        """
+        Fetch a parent from the database.
+        """
+
+        user = cls._get_id(user)
+        rows = await conn.fetch(
+            """
+            SELECT
+                parent_id,
+                timestamp
+            FROM
+                parents
+            WHERE
+                child_id = $1
+                AND guild_id = $2
+            """,
+            user, guild_id,
+        )
+        if not rows:
+            return None
+        return (rows[0]["child_id"], n.utils.DiscordDatetime.from_native(rows[0]["timestamp"]),)
+
+    @staticmethod
+    def _get_id(user: AnyUser) -> int:
+        """
+        Get the user ID from an anyuser instance.
         """
 
         if isinstance(user, int):
             pass
         else:
             user = user.id
+        return user
+
+    @classmethod
+    def get(cls, user: AnyUser, guild_id: int = 0) -> Self:
+        """
+        Get a family member object from the cache.
+        """
+
+        user = cls._get_id(user)
         v = cls.ALL_MEMBERS.get((guild_id, user))
         if v is None:
             v = cls(user, guild_id)
