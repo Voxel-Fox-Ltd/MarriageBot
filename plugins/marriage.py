@@ -81,12 +81,12 @@ class Marriage(client.Plugin):
 
         if not names:
             return await ctx.send(
-                embeds=[u.e(ctx._("You don't have any partners right now :<"))],
+                embeds=u.e(ctx._("You don't have any partners right now :<")),
                 ephemeral=True,
             )
 
         return await ctx.send(
-            embeds=[u.e(ctx._("Which of your partners do you want to divorce?"))],
+            embeds=u.e(ctx._("Which of your partners do you want to divorce?")),
             components=[
                 n.ActionRow([
                     n.StringSelectMenu(
@@ -129,22 +129,18 @@ class Marriage(client.Plugin):
         # And done
         if probable_success:
             await ctx.update(
-                embeds=[
-                    u.e(
-                        ctx._("You have been divorced from {user} :(")
-                        .format(user=f"<@{clicked_user}>")
-                    ),
-                ],
+                embeds=u.e(
+                    ctx._("You have been divorced from {user} :(")
+                    .format(user=f"<@{clicked_user}>")
+                ),
                 components=None,
             )
             return
         await ctx.update(
-            embeds=[
-                u.e(
-                    ctx._("You have been divorced from {user} :(")
-                    .format(user=f"<@{clicked_user}>")
-                ),
-            ],
+            embeds=u.e(
+                ctx._("You have been divorced from {user} :(")
+                .format(user=f"<@{clicked_user}>")
+            ),
             components=None,
         )
         return

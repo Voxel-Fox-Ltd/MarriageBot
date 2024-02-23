@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import time
 
-import novus as n
 from novus import types as t
 from novus.ext import client
 from novus.ext import database as db
@@ -30,7 +29,7 @@ import utils as u
 class ProposalHandler(client.Plugin):
 
     @client.event.filtered_component(r"PROPOSE \w+ \d+ \d+ \d+")
-    async def on_propose_button_press(self, ctx: t.ComponentGI):
+    async def on_propose_button_press(self, ctx: t.ComponentGI) -> None:
         """
         Pinged when a propose message is pressed.
         """
@@ -56,7 +55,7 @@ class ProposalHandler(client.Plugin):
                 ephemeral=True,
             )
             try:
-                await ctx.message.delete()  # type: ignore
+                await ctx.message.delete()
             except Exception:
                 pass
             return
@@ -71,9 +70,9 @@ class ProposalHandler(client.Plugin):
         # Starting user cancelled their own proposal
         elif not accepted and ctx.user.id == author_id:
             u.ProposalLock.unlock(author_id, user_id)
-            u.AutoDelete.cancel(ctx.message)  # type: ignore
+            u.AutoDelete.cancel(ctx.message)
             return await ctx.update(
-                content=(
+                embeds=u.e(
                     ctx._("Alright, {author}, your proposal to {user} has been cancelled :)")
                     .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
                 ),
@@ -83,9 +82,9 @@ class ProposalHandler(client.Plugin):
         # Target user said no to the proposal
         elif not accepted:
             u.ProposalLock.unlock(author_id, user_id)
-            u.AutoDelete.cancel(ctx.message)  # type: ignore
+            u.AutoDelete.cancel(ctx.message)
             return await ctx.update(
-                content=(
+                embeds=u.e(
                     ctx._("Sorry, {author}, {user} said no to your proposal :<")
                     .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
                 ),
@@ -109,9 +108,9 @@ class ProposalHandler(client.Plugin):
 
         # Generic response output
         u.ProposalLock.unlock(author_id, user_id)
-        u.AutoDelete.cancel(ctx.message)  # type: ignore
+        u.AutoDelete.cancel(ctx.message)
         return await ctx.update(
-            content=(
+            embeds=u.e(
                 ctx._("Welcome to the family, {user}!")
                 .format(user=f"<@{user_id}>")
             ),

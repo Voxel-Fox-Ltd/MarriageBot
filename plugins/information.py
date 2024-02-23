@@ -75,29 +75,23 @@ class Information(client.Plugin):
         if not partner_info:
             if user == ctx.user:
                 return await ctx.send(
-                    embeds=[
-                        u.e(ctx._("You don't have any partners right now :<")),
-                    ],
+                    embeds=u.e(ctx._("You don't have any partners right now :<")),
                 )
             return await ctx.send(
-                embeds=[
-                    u.e(
-                        ctx._("{user} doesn't have any partners right now :<")
-                        .format(user=user.mention)
-                    ),
-                ],
+                embeds=u.e(
+                    ctx._("{user} doesn't have any partners right now :<")
+                    .format(user=user.mention)
+                ),
             )
 
         # One partner
         if len(partner_info) == 1:
             pi = list(partner_info.values())[0]
             return await ctx.send(
-                embeds=[
-                    u.e(
-                        ctx._("{user} is married to **{partner}** ({timestamp}).")
-                        .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
-                    ),
-                ],
+                embeds=u.e(
+                    ctx._("{user} is married to **{partner}** ({timestamp}).")
+                    .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
+                ),
             )
 
         # Multiple partners
@@ -106,13 +100,11 @@ class Information(client.Plugin):
             for i in partner_info.values()
         ])
         return await ctx.send(
-            embeds=[
-                u.e(
-                    ctx._("{user} is married to:").format(user=user.mention)
-                    + "\n"
-                    + lines
-                ),
-            ],
+            embeds=u.e(
+                ctx._("{user} is married to:").format(user=user.mention)
+                + "\n"
+                + lines
+            ),
         )
 
     # @client.command(name="children")
