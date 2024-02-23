@@ -17,14 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import random
 from typing import TYPE_CHECKING, Any
+
+import novus as n
 
 if TYPE_CHECKING:
     import asyncpg
+    from novus.ext import client
 
 __all__ = (
     'get_names',
     'mint',
+    'get_guild_id',
+    'e',
 )
 
 
@@ -51,3 +57,24 @@ async def get_names(
     for r in rows:
         base[r["id"]] = r["name"]
     return base
+
+
+def get_guild_id(bot: client.Client, ctx: n.Interaction) -> int:
+    """
+    Get the relevant guild ID for the current running instance of the bot.
+    """
+
+    if ctx.guild:
+        return ctx.guild.id if bot.config.gold else 0
+    return 0
+
+
+def e(content: str) -> n.Embed:
+    """
+    Take a string and shove it into an embed.
+    """
+
+    return (
+        n.Embed(color=random.randint(0x0, 0xFFFFFF), description=content)
+        .set_footer("Thanks for using MarriageBot :)")
+    )
