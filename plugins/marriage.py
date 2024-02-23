@@ -29,16 +29,16 @@ import utils as u
 class Marriage(client.Plugin):
 
     @client.command(
-        # TRANSLATORS: Command name; must be lowercase
+        # TRANSLATORS: Command name
         name_localizations=LC._("marry"),
         options=[
             n.ApplicationCommandOption(
                 name="user",
                 description="The user that you want to marry.",
                 type=n.ApplicationOptionType.user,
-                # TRANSLATORS: Option name (/marry user); must be lowercase
+                # TRANSLATORS: Option name (/marry user)
                 name_localizations=LC._("user"),
-                # TRANSLATORS: Option name description (/marry user); max 100 characters
+                # TRANSLATORS: Option name description (/marry user)
                 description_localizations=LC._("The user that you want to marry."),
             )
         ],
@@ -60,9 +60,9 @@ class Marriage(client.Plugin):
         )
 
     @client.command(
-        # TRANSLATORS: Command name; must be lowercase
+        # TRANSLATORS: Command name
         name_localizations=LC._("divorce"),
-        # TRANSLATORS: Command description; max 100 characters
+        # TRANSLATORS: Command description
         description_localizations=LC._("Divorce one of your partners."),
         dm_permission=False,
     )
@@ -71,19 +71,22 @@ class Marriage(client.Plugin):
         Divorce one of your partners.
         """
 
-        guild_id: int = ctx.guild.id if self.bot.config.gold else 0
-        fm = u.FamilyMember.get(ctx.user.id, guild_id)
         async with db.Database.acquire() as conn:
-            names = await u.get_names(conn, *fm._partner_ids)
+            partners = await u.FamilyMember.fetch_partners(
+                conn,
+                ctx.user,
+                u.get_guild_id(self.bot, ctx),
+            )
+            names = await u.get_names(conn, *[i[0] for i in partners])
 
         if not names:
             return await ctx.send(
-                ctx._("You don't have any partners right now!"),
+                embeds=[u.e(ctx._("You don't have any partners right now :<"))],
                 ephemeral=True,
             )
 
         return await ctx.send(
-            ctx._("Which of your partners do you want to divorce?"),
+            embeds=[u.e(ctx._("Which of your partners do you want to divorce?"))],
             components=[
                 n.ActionRow([
                     n.StringSelectMenu(
@@ -118,7 +121,7 @@ class Marriage(client.Plugin):
         # Divorce them from whomever they clicked on
         clicked_user_str = ctx.data.values[0].value
         clicked_user = int(clicked_user_str)
-        ft = u.FamilyMember.get(ctx.user.id)
+        ft = u.FamilyMember.get(ctx.user.id, guild_id=u.get_guild_id(self.bot, ctx))
         probable_success = clicked_user in ft._partner_ids
         async with db.Database.acquire() as conn:
             await ft.db.remove_partner(conn, u.FamilyMember.get(clicked_user))
@@ -126,18 +129,22 @@ class Marriage(client.Plugin):
         # And done
         if probable_success:
             await ctx.update(
-                content=(
-                    ctx._("You have been divorced from {user} :(")
-                    .format(user=f"<@{clicked_user}>")
-                ),
+                embeds=[
+                    u.e(
+                        ctx._("You have been divorced from {user} :(")
+                        .format(user=f"<@{clicked_user}>")
+                    ),
+                ],
                 components=None,
             )
             return
         await ctx.update(
-            content=(
-                ctx._("You have been divorced from {user} :(")
-                .format(user=f"<@{clicked_user}>")
-            ),
+            embeds=[
+                u.e(
+                    ctx._("You have been divorced from {user} :(")
+                    .format(user=f"<@{clicked_user}>")
+                ),
+            ],
             components=None,
         )
         return

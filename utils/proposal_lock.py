@@ -29,6 +29,7 @@ import novus as n
 
 from .autodelete import AutoDelete
 from .family_member import FamilyMember
+from .utils import get_guild_id
 
 if TYPE_CHECKING:
     from novus import types as t
@@ -95,7 +96,7 @@ async def handle_proposal(
     await ctx.defer()
 
     # See if they're already related
-    guild_id: int = ctx.guild.id if bot.config.gold else 0
+    guild_id: int = get_guild_id(bot, ctx)
     author_ft, user_ft = FamilyMember.get_multiple(ctx.user.id, user.id, guild_id=guild_id)
     if author_ft.get_related(user_ft):
         unlock_f()
