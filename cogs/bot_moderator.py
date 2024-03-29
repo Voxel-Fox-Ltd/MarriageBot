@@ -437,7 +437,7 @@ class BotModerator(vbu.Cog[utils.types.Bot]):
 
         if guild_id and not guild_id.isdigit():
             return await ctx.send("No guild found.")
-        await self.reset_family(ctx, int(guild_id) if isinstance(guild_id, int) else None)
+        await self.reset_family(ctx, int(guild_id) if guild_id.isdigit() else None)
 
 
     async def reset_family(
