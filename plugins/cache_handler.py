@@ -20,7 +20,8 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
-from novus.ext import client, database as db
+from novus.ext import client
+from novus.ext import database as db
 
 import utils as u
 
@@ -31,8 +32,12 @@ if TYPE_CHECKING:
 class CacheHandler(client.Plugin):
 
     async def on_load(self) -> None:
+        """
+        Start the bot, get all rows, load into cache.
+        """
+
         self.log.info("Starting cache process")
-        for i in range(5):
+        for _ in range(5):
             try:
                 conn: asyncpg.Connection = await db.Database.pool.acquire()
                 break
@@ -41,17 +46,24 @@ class CacheHandler(client.Plugin):
         else:
             raise SystemExit("Failed to cache any users")
         partner_rows = await conn.fetch(
-            "SELECT * FROM marriages WHERE guild_id = $1",
-            0,
+            "SELECT * FROM marriages",
         )
         for r in partner_rows:
-            u.FamilyMember.get(r["user_id"], guild_id=0).add_partner(r["partner_id"])
+            (
+                u.FamilyMember
+                .get(r["user_id"], guild_id=r["guild_id"])
+                .add_partner(r["partner_id"])
+            )
             await asyncio.sleep(0)
         child_rows = await conn.fetch(
-            "SELECT * FROM parents WHERE guild_id = $1",
-            0,
+            "SELECT * FROM parents",
         )
         for r in child_rows:
-            u.FamilyMember.get(r["child_id"], guild_id=0).add_parent(r["parent_id"])
+            (
+                u.FamilyMember
+                .get(r["child_id"], guild_id=r["guild_id"])
+                .add_parent(r["parent_id"])
+            )
+            await asyncio.sleep(0)
         await conn.close()
         self.log.info("Cached %s users", len(u.FamilyMember.ALL_MEMBERS))

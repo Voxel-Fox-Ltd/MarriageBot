@@ -21,6 +21,7 @@ import novus as n
 from novus import types as t
 from novus.ext import client
 from novus.ext import database as db
+from novus.utils import CommandDefault
 from novus.utils import Localization as LC
 
 import utils as u
@@ -35,7 +36,7 @@ class Information(client.Plugin):
             n.ApplicationCommandOption(
                 name="user",
                 description="The user whose partners you want to see.",
-                type=n.ApplicationOptionType.user,
+                type=n.ApplicationOptionType.USER,
                 # TRANSLATORS: Option name (/partners user?)
                 name_localizations=LC._("user"),
                 # TRANSLATORS: Option name description (/partners user?)
@@ -50,13 +51,12 @@ class Information(client.Plugin):
     async def partners(
             self,
             ctx: t.CommandI,
-            user: n.User | n.GuildMember | None = None) -> None:
+            user: n.User | n.GuildMember = CommandDefault.AUTHOR) -> None:
         """
         Shows you a list of partners for a user.
         """
 
         # Get user and their partner names
-        user = user or ctx.user
         async with db.Database.acquire() as conn:
             partners = await u.FamilyMember.fetch_partners(
                 conn,
@@ -107,21 +107,145 @@ class Information(client.Plugin):
             ),
         )
 
-    # @client.command(name="children")
-    # async def children(self, ctx: t.CommandI) -> None:
-    #     """
-    #     Dolor eiusmod do et cillum nulla velit enim do.
-    #     """
+    @client.command(
+        # TRANSLATORS: Command name
+        name_localizations=LC._("children"),
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The user whose children you want to see.",
+                type=n.ApplicationOptionType.USER,
+                # TRANSLATORS: Option name (/children user?)
+                name_localizations=LC._("user"),
+                # TRANSLATORS: Option name description (/children user?)
+                description_localizations=LC._("The user whose children you want to see."),
+                required=False,
+            )
+        ],
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Shows you a list of children for a user."),
+        dm_permission=False,
+    )
+    async def children(
+            self,
+            ctx: t.CommandI,
+            user: n.User | n.GuildMember = CommandDefault.AUTHOR) -> None:
+        """
+        Shows you a list of children for a user.
+        """
 
-    #     ...
+        # Get user and their child names
+        async with db.Database.acquire() as conn:
+            children = await u.FamilyMember.fetch_children(
+                conn,
+                user,
+                u.get_guild_id(self.bot, ctx),
+            )
+            children_names = await u.get_names(conn, *[i[0] for i in children])
 
-    # @client.command(name="parent")
-    # async def parent(self, ctx: t.CommandI) -> None:
-    #     """
-    #     Lorem ipsum in labore labore in voluptate ex ullamco qui eu fugiat.
-    #     """
+        # Sort into a dict
+        children_info = {
+            i[0]: (children_names[i[0]], i[1])
+            for i in children
+        }
 
-    #     ...
+        # No children
+        if not children_info:
+            if user == ctx.user:
+                return await ctx.send(
+                    embeds=u.e(ctx._("You don't have any children right now :<")),
+                )
+            return await ctx.send(
+                embeds=u.e(
+                    ctx._("{user} doesn't have any children right now :<")
+                    .format(user=user.mention)
+                ),
+            )
+
+        # One partner
+        if len(children_info) == 1:
+            pi = list(children_info.values())[0]
+            return await ctx.send(
+                embeds=u.e(
+                    ctx._("{user} is parent to **{partner}** ({timestamp}).")
+                    .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
+                ),
+            )
+
+        # Multiple children
+        lines = "\n".join([
+            f"* **{i[0]}** ({i[1].format('R')})"
+            for i in children_info.values()
+        ])
+        return await ctx.send(
+            embeds=u.e(
+                ctx._("{user} is parent to:").format(user=user.mention)
+                + "\n"
+                + lines
+            ),
+        )
+
+    @client.command(
+        # TRANSLATORS: Command name
+        name_localizations=LC._("parent"),
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The user whose parent you want to see.",
+                type=n.ApplicationOptionType.USER,
+                # TRANSLATORS: Option name (/parent user?)
+                name_localizations=LC._("user"),
+                # TRANSLATORS: Option name description (/parent user?)
+                description_localizations=LC._("The user whose parent you want to see."),
+                required=False,
+            )
+        ],
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Show you the parent for a user."),
+        dm_permission=False,
+    )
+    async def parent(
+            self,
+            ctx: t.CommandI,
+            user: n.User | n.GuildMember = CommandDefault.AUTHOR) -> None:
+        """
+        Show you the parent for a user.
+        """
+
+        # Get parent and name
+        async with db.Database.acquire() as conn:
+            parent = await u.FamilyMember.fetch_parent(
+                conn,
+                user,
+                u.get_guild_id(self.bot, ctx),
+            )
+            parent_name: dict[int, str] = {}
+            if parent:
+                parent_name = await u.get_names(conn, parent[0])
+
+        # No parent
+        if not parent:
+            if user == ctx.user:
+                return await ctx.send(
+                    embeds=u.e(ctx._("You don't have a parent right now :<")),
+                )
+            return await ctx.send(
+                embeds=u.e(
+                    ctx._("{user} doesn't have a parent right now :<")
+                    .format(user=user.mention)
+                ),
+            )
+
+        return await ctx.send(
+            embeds=u.e(
+                ctx._("{user}'s parent is **{parent}** ({timestamp}).")
+                .format(
+                    user=user.mention,
+                    parent=parent_name[parent[0]],
+                    timestamp=parent[1].format("R")
+                )
+            ),
+        )
 
     # @client.command(name="familysize")
     # async def familysize(self, ctx: t.CommandI) -> None:

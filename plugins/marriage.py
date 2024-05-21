@@ -35,7 +35,7 @@ class Marriage(client.Plugin):
             n.ApplicationCommandOption(
                 name="user",
                 description="The user that you want to marry.",
-                type=n.ApplicationOptionType.user,
+                type=n.ApplicationOptionType.USER,
                 # TRANSLATORS: Option name (/marry user)
                 name_localizations=LC._("user"),
                 # TRANSLATORS: Option name description (/marry user)
