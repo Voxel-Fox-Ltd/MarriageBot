@@ -22,10 +22,10 @@ import itertools
 import random
 import string
 from typing import TYPE_CHECKING, Any, Generator, TypeAlias, Union
+from typing_extensions import Self
 
 import novus as n
 from novus.ext import database as db
-from typing_extensions import Self
 
 if TYPE_CHECKING:
     import asyncpg
@@ -202,7 +202,7 @@ class FamilyMember:
     An object representing a family member.
     """
 
-    ALL_MEMBERS: dict[tuple[GuildID, UserID], Self] = {}
+    ALL_MEMBERS: dict[tuple[GuildID, UserID], FamilyMember] = {}
 
     __slots__ = (
         'id',
@@ -259,7 +259,7 @@ class FamilyMember:
             u = r["user_id"]
             if u == user:
                 u = r["partner_id"]
-            ret.append((u, n.utils.DiscordDatetime.from_native(r["timestamp"]),))
+            ret.append((u, n.utils.parse_timestamp(r["timestamp"]),))
         return ret
 
     @classmethod
@@ -287,7 +287,7 @@ class FamilyMember:
             user, guild_id,
         )
         return [
-            (r["child_id"], n.utils.DiscordDatetime.from_native(r["timestamp"]),)
+            (r["child_id"], n.utils.parse_timestamp(r["timestamp"]),)
             for r in rows
         ]
 
@@ -317,7 +317,7 @@ class FamilyMember:
         )
         if not rows:
             return None
-        return (rows[0]["child_id"], n.utils.DiscordDatetime.from_native(rows[0]["timestamp"]),)
+        return (rows[0]["child_id"], n.utils.parse_timestamp(rows[0]["timestamp"]),)
 
     @staticmethod
     def _get_id(user: AnyUser) -> int:
@@ -574,7 +574,7 @@ class FamilyMember:
             groupings[generation].add(user)
 
         while groupings:
-            v = groupings.pop(lowest_generation)
+            v = groupings.pop(lowest_generation, None)
             if v is None:
                 continue
             yield v
