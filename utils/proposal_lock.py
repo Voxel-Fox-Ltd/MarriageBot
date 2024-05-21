@@ -140,13 +140,13 @@ async def handle_proposal(
                 n.Button(
                     # TRANSLATORS: Label on a button
                     ctx._("Yes"),
-                    style=n.ButtonStyle.green,
+                    style=n.ButtonStyle.GREEN,
                     custom_id=f"PROPOSE {button_action} 1 {ctx.user.id} {user.id} {time_}",
                 ),
                 n.Button(
                     # TRANSLATORS: Label on a button
                     ctx._("No"),
-                    style=n.ButtonStyle.red,
+                    style=n.ButtonStyle.RED,
                     custom_id=f"PROPOSE {button_action} 0 {ctx.user.id} {user.id} {time_}",
                 ),
             ]),
@@ -207,10 +207,10 @@ class ProposalLock:
                 created.append(id)
 
                 # Anonymous function for use with timeout
-                async def wrapper(l: asyncio.Lock):
+                async def wrapper(lock_: asyncio.Lock) -> None:
                     await asyncio.sleep(timeout or 0)
                     try:
-                        l.release()
+                        lock_.release()
                     except RuntimeError:
                         pass
                     except Exception as e:
@@ -220,7 +220,8 @@ class ProposalLock:
                 if timeout is not None:
                     t = asyncio.create_task(wrapper(lock))
                     cls._lock_timeouts[id] = t
-                    def discard(i: int):
+
+                    def discard(i: int) -> None:
                         cls._lock_timeouts.pop(i, None)
                         cls.PROPOSAL_LOCKS.pop(i, None)
                     t.add_done_callback(lambda _: discard(id))
