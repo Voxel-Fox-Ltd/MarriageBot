@@ -22,10 +22,10 @@ import itertools
 import random
 import string
 from typing import TYPE_CHECKING, Any, Generator, TypeAlias, Union
-from typing_extensions import Self
 
 import novus as n
 from novus.ext import database as db
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     import asyncpg
@@ -126,7 +126,7 @@ class FamilyMemberDB:
 
     async def remove_parent(
             self,
-            conn: asyncpg.Connection | asyncpg.Pool) -> None:
+            conn: asyncpg.Connection | asyncpg.Pool) -> FamilyMember | None:
         """
         Remove a parent from the user in the database. Does the same for the
         current parent, also affecting the cache.
@@ -142,12 +142,12 @@ class FamilyMemberDB:
             """,
             self.f.id, self.f.guild_id,
         )
-        self.f.remove_parent()
+        return self.f.remove_parent()
 
     async def remove_partner(
             self,
             conn: asyncpg.Connection | asyncpg.Pool,
-            user: FamilyMember) -> None:
+            user: FamilyMember) -> FamilyMember:
         """
         Remove a partner from the user in the database. Does the same for the
         other specified user, also affecting the cache.
@@ -172,7 +172,7 @@ class FamilyMemberDB:
             """,
             self.f.id, user.id, self.f.guild_id,
         )
-        self.f.remove_partner(user)
+        return self.f.remove_partner(user)
 
     async def remove_child(
             self,

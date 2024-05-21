@@ -20,16 +20,192 @@ from __future__ import annotations
 import novus as n
 from novus import types as t
 from novus.ext import client
+from novus.ext import database as db
 from novus.utils import Localization as LC
+
+import utils as u
 
 
 class Parents(client.Plugin):
 
-    @client.command(name="adopt")
-    async def adopt(self, ctx: t.CommandI) -> None:
-        ...
+    @client.command(
+        # TRANSLATORS: Command name
+        name_localizations=LC._("adopt"),
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The user that you want to adopt.",
+                type=n.ApplicationOptionType.USER,
+                # TRANSLATORS: Option name (/adopt user)
+                name_localizations=LC._("user"),
+                # TRANSLATORS: Option name description (/adopt user)
+                description_localizations=LC._("The user that you want to adopt."),
+            )
+        ],
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Ask to adopt another user."),
+        dm_permission=False,
+    )
+    async def adopt(self, ctx: t.CommandGI, user: n.GuildMember) -> None:
+        """
+        Ask to adopt another user.
+        """
 
-    @client.command(name="disown")
-    async def disown(self, ctx: t.CommandI) -> None:
-        ...
+        await u.handle_proposal(
+            self.bot,
+            ctx,
+            user,
+            ctx._("Hey {user}, {author} wants to adopt you! What do you say?"),
+            "ADOPT",
+        )
 
+    @client.command(
+        # TRANSLATORS: Command name
+        name="makeparent",
+        name_localizations=LC._("makeparent"),
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The user that you want to make into your parent.",
+                type=n.ApplicationOptionType.USER,
+                # TRANSLATORS: Option name (/makeparent user)
+                name_localizations=LC._("user"),
+                # TRANSLATORS: Option name description (/makeparent user)
+                description_localizations=LC._("The user that you want to make into your parent."),
+            )
+        ],
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Ask to make another user into your parent."),
+        dm_permission=False,
+    )
+    async def makeparent(self, ctx: t.CommandGI, user: n.GuildMember) -> None:
+        """
+        Ask to make another user into your parent.
+        """
+
+        await u.handle_proposal(
+            self.bot,
+            ctx,
+            user,
+            ctx._("Hey {user}, {author} wants you to be their parent! What do you say?"),
+            "MAKEPARENT",
+        )
+
+    @client.command(
+        # TRANSLATORS: Command name
+        name_localizations=LC._("Runaway"),
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Run away from your parent."),
+        dm_permission=False,
+    )
+    async def runaway(self, ctx: t.CommandI) -> None:
+        """
+        Run away from your parent.
+        """
+
+        ft = u.FamilyMember.get(ctx.user, u.get_guild_id(self.bot, ctx))
+
+        if not ft.parent:
+            return await ctx.send(
+                embeds=u.e(ctx._("You don't have any children right now :<")),
+                ephemeral=True,
+            )
+
+        async with db.Database.acquire() as conn:
+            parent = await ft.db.remove_parent(conn)
+            if not parent:
+                raise TypeError("Somehow, they both did have and didn't have a parent.")
+
+        return await ctx.send(
+            embeds=u.e(
+                ctx._("You have run away from {user} :(")
+                .format(user=f"<@{parent.id}>")
+            ),
+            ephemeral=True,
+        )
+
+    @client.command(
+        # TRANSLATORS: Command name
+        name_localizations=LC._("disown"),
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Disown one of your children."),
+        dm_permission=False,
+    )
+    async def disown(self, ctx: t.CommandGI) -> None:
+        """
+        Disown one of your children.
+        """
+
+        async with db.Database.acquire() as conn:
+            children = await u.FamilyMember.fetch_children(
+                conn,
+                ctx.user,
+                u.get_guild_id(self.bot, ctx),
+            )
+            names = await u.get_names(conn, *[i[0] for i in children])
+
+        if not names:
+            return await ctx.send(
+                embeds=u.e(ctx._("You don't have any children right now :<")),
+                ephemeral=True,
+            )
+
+        return await ctx.send(
+            embeds=u.e(ctx._("Which of your children do you want to disown?")),
+            components=[
+                n.ActionRow([
+                    n.StringSelectMenu(
+                        custom_id=f"DISOWN {ctx.user.id}",
+                        options=[
+                            n.SelectOption(label=o, value=str(i))
+                            for i, o in names.items()
+                        ],
+                    ),
+                ]),
+            ],
+        )
+
+    @client.event.filtered_component(r"DISOWN \d+")
+    async def disown_dropdown_clicked(self, ctx: t.ComponentGI) -> None:
+        """
+        Pinged when a disown button is clicked.
+        """
+
+        # Make sure that the user who clicked the button is the same user
+        # that the button was made for
+        # It SHOULD be because the message is ephemeral, but we should check
+        _, required_user_id_str = ctx.data.custom_id.split(" ")
+        required_user_id = int(required_user_id_str)
+        if required_user_id != ctx.user.id:
+            await ctx.send(
+                ctx._("You cannot interact with these buttons."),
+                ephemeral=True,
+            )
+            return
+
+        # Divorce them from whomever they clicked on
+        clicked_user_str = ctx.data.values[0].value
+        clicked_user = int(clicked_user_str)
+        ft = u.FamilyMember.get(ctx.user.id, guild_id=u.get_guild_id(self.bot, ctx))
+        probable_success = clicked_user in ft._partner_ids
+        async with db.Database.acquire() as conn:
+            await ft.db.remove_child(conn, u.FamilyMember.get(clicked_user))
+
+        # And done
+        if probable_success:
+            await ctx.update(
+                embeds=u.e(
+                    ctx._("You have now disowned {user} :(")
+                    .format(user=f"<@{clicked_user}>")
+                ),
+                components=None,
+            )
+            return
+        await ctx.update(
+            embeds=u.e(
+                ctx._("You have now disowned {user} :(")
+                .format(user=f"<@{clicked_user}>")
+            ),
+            components=None,
+        )
+        return
