@@ -109,10 +109,12 @@ class ProposalHandler(client.Plugin):
         # Generic response output
         u.ProposalLock.unlock(author_id, user_id)
         u.AutoDelete.cancel(ctx.message)
+        message: str = {
+            "MARRY": ctx._("Welcome {user}! You're now married to {author} :3c"),
+            "ADOPT": ctx._("Welcome to the family, {user}! You're now the child of {author} :3c"),
+            "MAKEPARENT": ctx._("Welcome to the family, {user}! You're now the parent of {author} :3c"),
+        }[action]
         return await ctx.update(
-            embeds=u.e(
-                ctx._("Welcome to the family, {user}!")
-                .format(user=f"<@{user_id}>")
-            ),
+            embeds=u.e(message.format(user=f"<@{user_id}>", author=f"<@{author_id}>")),
             components=None,
         )

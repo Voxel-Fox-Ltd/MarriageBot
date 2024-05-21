@@ -35,6 +35,7 @@ class NameHandler(client.Plugin):
         }
         for k, v in ctx.data.resolved.users.items():
             valid_names[k] = str(v)
+
         async with db.Database.acquire() as conn:
             for k, v in valid_names.items():
                 await conn.execute(
