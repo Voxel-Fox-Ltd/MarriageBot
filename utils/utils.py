@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from novus.ext import client
 
 __all__ = (
+    'get_name',
     'get_names',
     'mint',
     'get_guild_id',
@@ -40,6 +41,15 @@ def mint(*x: Any) -> tuple[int, ...]:
     """
 
     return tuple(int(i) for i in x)
+
+
+async def get_name(conn: asyncpg.Connection | asyncpg.Pool, id: int) -> str:
+    """
+    Get a single name from the database.
+    """
+
+    res = await get_names(conn, id)
+    return res[id]
 
 
 async def get_names(

@@ -29,6 +29,7 @@ __all__: tuple[str, ...] = (
     'ProposalLock',
     'e',
     'get_guild_id',
+    'get_name',
     'get_names',
     'handle_proposal',
     'mint',

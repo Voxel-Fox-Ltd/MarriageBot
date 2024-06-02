@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import asyncio
+
 import novus as n
 from novus import types as t
 from novus.ext import client
@@ -51,7 +53,7 @@ class Information(client.Plugin):
     async def partners(
             self,
             ctx: t.CommandI,
-            user: n.User | n.GuildMember = CommandDefault.AUTHOR) -> None:
+            user: n.User = CommandDefault.AUTHOR) -> None:
         """
         Shows you a list of partners for a user.
         """
@@ -129,7 +131,7 @@ class Information(client.Plugin):
     async def children(
             self,
             ctx: t.CommandI,
-            user: n.User | n.GuildMember = CommandDefault.AUTHOR) -> None:
+            user: n.User = CommandDefault.AUTHOR) -> None:
         """
         Shows you a list of children for a user.
         """
@@ -207,7 +209,7 @@ class Information(client.Plugin):
     async def parent(
             self,
             ctx: t.CommandI,
-            user: n.User | n.GuildMember = CommandDefault.AUTHOR) -> None:
+            user: n.User = CommandDefault.AUTHOR) -> None:
         """
         Show you the parent for a user.
         """
@@ -219,9 +221,9 @@ class Information(client.Plugin):
                 user,
                 u.get_guild_id(self.bot, ctx),
             )
-            parent_name: dict[int, str] = {}
+            parent_name: str | None = None
             if parent:
-                parent_name = await u.get_names(conn, parent[0])
+                parent_name = await u.get_name(conn, parent[0])
 
         # No parent
         if not parent:
@@ -235,25 +237,65 @@ class Information(client.Plugin):
                     .format(user=user.mention)
                 ),
             )
+        assert parent_name
 
         return await ctx.send(
             embeds=u.e(
                 ctx._("{user}'s parent is **{parent}** ({timestamp}).")
                 .format(
                     user=user.mention,
-                    parent=parent_name[parent[0]],
+                    parent=parent_name,
                     timestamp=parent[1].format("R")
                 )
             ),
         )
 
-    # @client.command(name="familysize")
-    # async def familysize(self, ctx: t.CommandI) -> None:
-    #     """
-    #     Lorem ipsum pariatur ea laborum elit excepteur minim officia culpa non ullamco sed excepteur et.
-    #     """
+    @client.command(
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The user who you want to see the family size of.",
+                type=n.ApplicationOptionType.USER,
+                # TRANSLATORS: Command option name (/familysize [user])
+                name_localizations=LC._("user"),
+                # TRANSLATORS: Command option description (/familysize [user])
+                description_localizations=LC._("The user who you want to see the family size of."),
+                required=False,
+            ),
+        ],
+        # TRANSLATORS: Command name (/familysize)
+        name_localizations=LC._("familysize"),
+        # TRANSLATORS: Command description (/familysize)
+        description_localizations=LC._("Get the family size of another user.")
+    )
+    async def familysize(
+            self,
+            ctx: t.CommandI,
+            user: n.User = n.utils.CommandDefault.AUTHOR) -> None:
+        """
+        Get the family size of another user.
+        """
 
-    #     ...
+        # Get the user's info and family size
+        ft = u.FamilyMember.get(user.id, u.get_guild_id(self.bot, ctx))
+        span = set()
+        for _, span_user in ft.span(add_parent=True, add_partners=True, add_partner_parents=True):
+            span.add(span_user)
+            await asyncio.sleep(0)
+        size = len(span)
+
+        # Output
+        if size == 1:
+            output = (
+                ctx._("There is **1** person in {user}'s family tree.")
+                .format(user=user.mention)
+            )
+        else:
+            output = (
+                ctx._("There are **{number}** people in {user}'s family tree.")
+                .format(user=user.mention, number=size)
+            )
+        await ctx.send(embeds=u.e(output))
 
     # @client.command(name="tree")
     # async def tree(self, ctx: t.CommandI) -> None:
