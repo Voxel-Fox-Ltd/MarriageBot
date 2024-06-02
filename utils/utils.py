@@ -69,17 +69,18 @@ def get_guild_id(bot: client.Client, ctx: n.Interaction) -> int:
     return 0
 
 
-def e(content: str) -> list[n.Embed]:
+def e(content: str, image_url: str | None = None) -> list[n.Embed]:
     """
     Take a string and shove it into an embed.
     """
 
-    return [
-        (
-            n.Embed(
-                color=random.randint(0x0, 0xFFFFFF),
-                description=content,
-            )
-            .set_footer("Thanks for using MarriageBot :)")
+    e = (
+        n.Embed(
+            color=random.randint(0x0, 0xFFFFFF),
+            description=content,
         )
-    ]
+        .set_footer("Thanks for using MarriageBot :)")
+    )
+    if image_url:
+        e.set_image(image_url)
+    return [e]
