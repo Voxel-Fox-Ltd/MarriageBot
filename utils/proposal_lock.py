@@ -46,7 +46,7 @@ log = logging.getLogger("proposallock")
 
 
 # PROPOSAL_TIMEOUT: float = 60.0
-PROPOSAL_TIMEOUT: float = 5.0
+PROPOSAL_TIMEOUT: float = 10.0
 
 
 async def handle_proposal(
@@ -100,6 +100,13 @@ async def handle_proposal(
 
     # Show the users a loading screen
     await ctx.defer()
+
+    # See if they're already married [to each other]
+    ...
+
+    # See if they're already married [and past the limit]
+    ...  # Get user perks
+    ...
 
     # See if they're already related
     guild_id: int = get_guild_id(bot, ctx)
