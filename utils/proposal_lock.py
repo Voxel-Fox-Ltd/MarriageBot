@@ -29,7 +29,7 @@ import novus as n
 
 from .autodelete import AutoDelete
 from .family_member import FamilyMember
-from .utils import get_guild_id
+from .utils import get_guild_id, e
 
 if TYPE_CHECKING:
     from novus import types as t
@@ -61,12 +61,18 @@ async def handle_proposal(
 
     # Check they're not the same user
     if ctx.user == user:
-        await ctx.send(ctx._("You can't run this on yourself :/"))
+        await ctx.send(
+            ctx._("You can't run this on yourself :/"),
+            ephemeral=True
+        )
         return False
 
     # Check against bots
     if user.bot:
-        await ctx.send(ctx._("You can't run this on bots :/"))
+        await ctx.send(
+            ctx._("You can't run this on bots :/"),
+            ephemeral=True
+        )
         return False
 
     # Check if either user is currently waiting on a proposal
@@ -101,7 +107,7 @@ async def handle_proposal(
     if author_ft.get_related(user_ft):
         unlock_f()
         await ctx.send(
-            (
+            embeds=e(
                 ctx._("You and {user} are already related!")
                 .format(user=user.mention)
             ),
@@ -123,18 +129,20 @@ async def handle_proposal(
         if counter > family_size_limit:
             unlock_f()
             await ctx.send(
-                ctx._(
-                    "You can't do that! If your families combine, you'd "
-                    "have over {family_size} members in your tree!"
+                embeds=e(
+                    ctx._(
+                        "You can't do that! If your families combine, you'd "
+                        "have over {family_size} members in your tree!"
+                    )
+                    .format(family_size=family_size_limit)
                 )
-                .format(family_size=family_size_limit)
             )
             return False
 
     # Send the actual proposal message
     time_ = int(time.time() + PROPOSAL_TIMEOUT)
     m = await ctx.followup(
-        message.format(user=user.mention, author=ctx.user.mention),
+        embeds=e(message.format(user=user.mention, author=ctx.user.mention)),
         components=[
             n.ActionRow([
                 n.Button(
@@ -154,7 +162,8 @@ async def handle_proposal(
     )
     AutoDelete.autodelete(
         m, time_,
-        content=(
+        content=None,
+        embeds=e(
             ctx._("Sorry, {author}, your proposal to {user} has timed out!")
             .format(author=ctx.user.mention, user=user.mention)
         ),
@@ -213,8 +222,8 @@ class ProposalLock:
                         lock_.release()
                     except RuntimeError:
                         pass
-                    except Exception as e:
-                        log.error("Failed to release lock", exc_info=e)
+                    except Exception as e_:
+                        log.error("Failed to release lock", exc_info=e_)
 
                 # Create timeout background task
                 if timeout is not None:

@@ -72,6 +72,7 @@ class ProposalHandler(client.Plugin):
             u.ProposalLock.unlock(author_id, user_id)
             u.AutoDelete.cancel(ctx.message)
             return await ctx.update(
+                content=None,
                 embeds=u.e(
                     ctx._("Alright, {author}, your proposal to {user} has been cancelled :)")
                     .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
@@ -84,6 +85,7 @@ class ProposalHandler(client.Plugin):
             u.ProposalLock.unlock(author_id, user_id)
             u.AutoDelete.cancel(ctx.message)
             return await ctx.update(
+                content=None,
                 embeds=u.e(
                     ctx._("Sorry, {author}, {user} said no to your proposal :<")
                     .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
@@ -115,6 +117,7 @@ class ProposalHandler(client.Plugin):
             "MAKEPARENT": ctx._("Welcome to the family, {user}! You're now the parent of {author} :3c"),
         }[action]
         return await ctx.update(
+            content=None,
             embeds=u.e(message.format(user=f"<@{user_id}>", author=f"<@{author_id}>")),
             components=None,
         )
