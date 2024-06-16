@@ -37,11 +37,15 @@ class CacheHandler(client.Plugin):
         """
 
         self.log.info("Starting cache process")
+        if (loaded_db := self.bot.get_plugin("Database")) is None:
+            raise SystemExit("Database not loaded before cache handler.")
+        await loaded_db.loaded.wait()
         for _ in range(5):
             try:
                 conn: asyncpg.Connection = await db.Database.pool.acquire()
                 break
-            except Exception:
+            except Exception as e:
+                self.log.error("Couldn't open database connection - %s", e)
                 await asyncio.sleep(1)
         else:
             raise SystemExit("Failed to cache any users")
