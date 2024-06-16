@@ -121,9 +121,11 @@ class CustomTree:
         ret = {}
         for i in attrs:
             v = getattr(self, i, self.DEFAULT_COLOURS[i])
-            if v < 0:
+            if v is None:
+                v = self.DEFAULT_COLOURS[i]
+            if isinstance(v, int) and v < 0:
                 v = "transparent"
-            else:
+            elif isinstance(v, int):
                 v = f'"#{v:0>6X}"'
             ret[i] = v
         ret["direction"] = f'"{self.direction}"'
