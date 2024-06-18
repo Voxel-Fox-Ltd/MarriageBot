@@ -26,13 +26,12 @@ intents:
 plugins:
 - novus.ext.database:Database
 - plugins.cache_handler:CacheHandler
-- plugins.name_handler:NameHandler
-# - plugins.children:Children
 - plugins.information:Information
 - plugins.marriage:Marriage
-# - plugins.parents:Parents
+- plugins.name_handler:NameHandler
+- plugins.parents:Parents
 - plugins.proposal_handler:ProposalHandler
-# - plugins.simulation:Simulation
+- plugins.simulation:Simulation
 database_dsn: '$MARRIAGEBOT_TEST_DSN'
 database_max_connections: 1
 

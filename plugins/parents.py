@@ -36,9 +36,9 @@ class Parents(client.Plugin):
                 name="user",
                 description="The user that you want to adopt.",
                 type=n.ApplicationOptionType.USER,
-                # TRANSLATORS: Option name (/adopt user)
+                # TRANSLATORS: Command option name (/adopt user)
                 name_localizations=LC._("user"),
-                # TRANSLATORS: Option name description (/adopt user)
+                # TRANSLATORS: Command option name description (/adopt user)
                 description_localizations=LC._("The user that you want to adopt."),
             )
         ],
@@ -68,9 +68,9 @@ class Parents(client.Plugin):
                 name="user",
                 description="The user that you want to make into your parent.",
                 type=n.ApplicationOptionType.USER,
-                # TRANSLATORS: Option name (/makeparent user)
+                # TRANSLATORS: Command option name (/makeparent user)
                 name_localizations=LC._("user"),
-                # TRANSLATORS: Option name description (/makeparent user)
+                # TRANSLATORS: Command option name description (/makeparent user)
                 description_localizations=LC._("The user that you want to make into your parent."),
             )
         ],
