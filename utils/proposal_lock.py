@@ -29,7 +29,7 @@ import novus as n
 
 from .autodelete import AutoDelete
 from .family_member import FamilyMember
-from .utils import get_guild_id, e
+from .utils import e, get_guild_id
 
 if TYPE_CHECKING:
     from novus import types as t
@@ -111,7 +111,7 @@ async def handle_proposal(
     # See if they're already related
     guild_id: int = get_guild_id(bot, ctx)
     author_ft, user_ft = FamilyMember.get_multiple(ctx.user.id, user.id, guild_id=guild_id)
-    if author_ft.get_related(user_ft):
+    if await author_ft.get_related(user_ft):
         unlock_f()
         await ctx.send(
             embeds=e(
@@ -130,9 +130,17 @@ async def handle_proposal(
         "add_partners": True,
         "add_partner_parents": True,
     }
-    for counter, _ in enumerate(itertools.chain(
-            author_ft.span(**kwargs),
-            user_ft.span(**kwargs))):
+
+    async def chained():
+        async for i in author_ft.span(**kwargs):
+            yield i
+            await asyncio.sleep(0)
+        async for i in user_ft.span(**kwargs):
+            yield i
+            await asyncio.sleep(0)
+
+    counter: int = 0
+    async for counter, _ in chained():
         if counter > family_size_limit:
             unlock_f()
             await ctx.send(
@@ -145,6 +153,7 @@ async def handle_proposal(
                 )
             )
             return False
+        counter += 1
 
     # Send the actual proposal message
     time_ = int(time.time() + PROPOSAL_TIMEOUT)

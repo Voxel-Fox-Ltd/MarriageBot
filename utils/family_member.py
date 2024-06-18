@@ -17,11 +17,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import asyncio
 import collections
 import itertools
+import logging
 import random
 import string
-from typing import TYPE_CHECKING, Any, Generator, TypeAlias, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    AsyncIterable,
+    Generator,
+    Iterable,
+    TypeAlias,
+    Union,
+)
 
 import novus as n
 from novus.ext import database as db
@@ -45,6 +56,9 @@ if TYPE_CHECKING:
 __all__ = (
     'FamilyMember',
 )
+
+
+log = logging.getLogger("familymember")
 
 
 def get_cluster_name(k: int = 5) -> str:
@@ -353,6 +367,20 @@ class FamilyMember:
             yield cls.get(i, guild_id)
 
     @property
+    def is_empty(self) -> bool:
+        """
+        Whether or not this user has any family member attached to it.
+        """
+
+        if self._parent_id:
+            return False
+        if self._partner_ids:
+            return False
+        if self._child_ids:
+            return False
+        return True
+
+    @property
     def db(self) -> FamilyMemberDB:
         return FamilyMemberDB(self)
 
@@ -504,13 +532,13 @@ class FamilyMember:
             return True
         return False
 
-    def span(
+    async def span(
             self,
             people_list: set[Self] | None = None,
             add_parent: bool = True,
             add_partners: bool = True,
             add_partner_parents: bool = False,
-            generation: int = 0) -> Generator[tuple[int, Self], None, None]:
+            generation: int = 0) -> AsyncGenerator[tuple[int, Self], None]:
         """
         Get all users related to the current user, in no particular order.
         """
@@ -523,45 +551,57 @@ class FamilyMember:
         if self in people_list:
             return
         yield (generation, self,)
+        await asyncio.sleep(0)
         people_list.add(self)
 
         # Return parent and their relations
         if add_parent:
             if self.parent:
-                yield from self.parent.span(
-                    people_list,
-                    generation=generation - 1,
-                )
+                async for temp in self.parent.span(
+                            people_list,
+                            add_parent=True,
+                            add_partners=True,
+                            generation=generation - 1,
+                        ):
+                    yield temp
+                    await asyncio.sleep(0)
 
         # Return children and their relations
         for child in self.children:
-            yield from child.span(
-                people_list,
-                add_parent=False,
-                generation=generation + 1,
-            )
+            async for temp in child.span(
+                        people_list,
+                        add_parent=False,
+                        add_partners=True,
+                        generation=generation + 1,
+                    ):
+                yield temp
+                await asyncio.sleep(0)
 
         # Return partner and their relations
         if add_partners:
             for partner in self.partners:
-                yield from partner.span(
-                    people_list,
-                    add_parent=add_partner_parents,
-                    add_partners=False,
-                    generation=generation,
-                )
+                async for temp in partner.span(
+                            people_list,
+                            add_parent=add_partner_parents,
+                            add_partners=False,
+                            generation=generation,
+                        ):
+                    yield temp
+                    await asyncio.sleep(0)
 
-    def get_related(self, other: Self) -> bool:
+        return
+
+    async def get_related(self, other: Self) -> bool:
         """
         See if the current user is related to another.
         """
 
-        for i in self.span(add_parent=True, add_partners=True, add_partner_parents=True):
+        async for i in self.span(add_parent=True, add_partners=True, add_partner_parents=True):
             if i == other:
                 return True
         return False
 
-    def generation_span(self) -> Generator[set[Self], None, None]:
+    async def generation_span(self, **kwargs: Any) -> AsyncGenerator[set[Self], None]:
         """
         Get the relations for the current user grouped by generation.
         """
@@ -569,21 +609,24 @@ class FamilyMember:
         lowest_generation = 0
         groupings: dict[int, set[Self]] = collections.defaultdict(set)
 
-        for generation, user in self.span():
+        async for generation, user in self.span(**kwargs):
             lowest_generation = min(lowest_generation, generation)
             groupings[generation].add(user)
 
+        counter: int = 0
         while groupings:
-            v = groupings.pop(lowest_generation, None)
+            v = groupings.pop(lowest_generation + counter, None)
+            counter += 1
             if v is None:
                 continue
             yield v
 
+        return
+
     def to_graphviz_label(
             self,
             name: str | dict[int, str] | None = None,
-            custom: CustomTree | None = None,
-            escape: bool = True) -> str:
+            custom: CustomTree | None = None) -> str:
         """
         Convert the user to a Graphviz label.
         """
@@ -607,15 +650,14 @@ class FamilyMember:
 
     async def to_dot_script(
             self,
-            custom: CustomTree) -> str:
+            custom: CustomTree,
+            **kwargs: Any) -> str:
         """
-        Generates the DOT script from a given generational span.
+        Gives you a string of the current family tree that will go through DOT.
 
         Parameters
         ----------
-        bot : types.Bot
-            The bot instance that should be used to get the names of users.
-        customised_tree_user : CustomisedTreeUser
+        custom : CustomisedTreeUser
             The customised tree object that should be used to alter how the
             dot script looks.
 
@@ -625,13 +667,37 @@ class FamilyMember:
             The generated DOT code.
         """
 
+        gen_span = self.generation_span(**kwargs)
+        return await self._to_dot_script_from_generation_span(gen_span, custom)
+
+    async def _to_dot_script_from_generation_span(
+            self,
+            generations_: AsyncIterable[set[Self]],
+            custom: CustomTree) -> str:
+        """
+        Generates the DOT script from a given generational span.
+
+        Parameters
+        ----------
+        generations : Iterable[set[FamilyMember]]
+            A list list of list of users per generation (presumably returned from
+            `.generation_span`).
+        custom : CustomTree
+            The customisations associated with the graphics you want to create.
+
+        Returns
+        -------
+        str
+            The generated DOT code.
+        """
+
         # Get all names that we'll need
-        generations = list(self.generation_span())
-        all_users = itertools.chain(generations)
+        generations = [i async for i in generations_]
+        all_users = itertools.chain.from_iterable(generations)
         async with db.Database.acquire() as conn:
             rows = await conn.fetch(
                 "SELECT * FROM usernames WHERE id = ANY($1::BIGINT[])",
-                all_users,
+                [i.id for i in all_users],
             )
         all_user_names = {}
         for row in rows:
@@ -652,7 +718,7 @@ class FamilyMember:
         )
 
         # Go through the members for each generation
-        for generation in self.generation_span():
+        for generation in generations:
 
             # Make sure you don't add a spouse twice (as they will
             # be added both by the partner loop and they'll be in the
@@ -682,11 +748,10 @@ class FamilyMember:
                 # Add the user's partners
                 all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
                 for partner in filtered_possible_partners:
-                    name = partner.to_graphviz_label(all_user_names, custom)
-                    if partner == self:
-                        all_text += partner.to_graphviz_label(name, custom)
-                    else:
-                        all_text += partner.to_graphviz_label(name)
+                    all_text += partner.to_graphviz_label(
+                        all_user_names,
+                        custom if partner == self else None,
+                    )
                     if previous_partner is None:
                         previous_partner = partner
                         continue

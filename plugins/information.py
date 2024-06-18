@@ -18,6 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import asyncio
+import os
+import pathlib
+import uuid
 
 import novus as n
 from novus import types as t
@@ -31,6 +34,8 @@ import utils as u
 
 class Information(client.Plugin):
 
+    TREE_FOLDER = pathlib.Path("./_temp/")
+
     @client.command(
         # TRANSLATORS: Command name
         name_localizations=LC._("partners"),
@@ -39,9 +44,9 @@ class Information(client.Plugin):
                 name="user",
                 description="The user whose partners you want to see.",
                 type=n.ApplicationOptionType.USER,
-                # TRANSLATORS: Option name (/partners user?)
+                # TRANSLATORS: Command option name (/partners [user])
                 name_localizations=LC._("user"),
-                # TRANSLATORS: Option name description (/partners user?)
+                # TRANSLATORS: Command option name description (/partners [user])
                 description_localizations=LC._("The user whose partners you want to see."),
                 required=False,
             )
@@ -117,9 +122,9 @@ class Information(client.Plugin):
                 name="user",
                 description="The user whose children you want to see.",
                 type=n.ApplicationOptionType.USER,
-                # TRANSLATORS: Option name (/children user?)
+                # TRANSLATORS: Command option name (/children [user])
                 name_localizations=LC._("user"),
-                # TRANSLATORS: Option name description (/children user?)
+                # TRANSLATORS: Command option name description (/children [user])
                 description_localizations=LC._("The user whose children you want to see."),
                 required=False,
             )
@@ -195,9 +200,9 @@ class Information(client.Plugin):
                 name="user",
                 description="The user whose parent you want to see.",
                 type=n.ApplicationOptionType.USER,
-                # TRANSLATORS: Option name (/parent user?)
+                # TRANSLATORS: Command option name (/parent [user])
                 name_localizations=LC._("user"),
-                # TRANSLATORS: Option name description (/parent user?)
+                # TRANSLATORS: Command option name description (/parent [user])
                 description_localizations=LC._("The user whose parent you want to see."),
                 required=False,
             )
@@ -250,6 +255,22 @@ class Information(client.Plugin):
             ),
         )
 
+    # @client.command(name="siblings")
+    # async def siblings(self, ctx: t.CommandI) -> None:
+    #     """
+    #     Elit duis aute velit cupidatat excepteur enim esse culpa ex reprehenderit sint consectetur.
+    #     """
+
+    #     ...
+
+    # @client.command(name="relationship")
+    # async def relationship(self, ctx: t.CommandI) -> None:
+    #     """
+    #     Elit duis aute velit cupidatat excepteur enim esse culpa ex reprehenderit sint consectetur.
+    #     """
+
+    #     ...
+
     @client.command(
         options=[
             n.ApplicationCommandOption(
@@ -279,36 +300,190 @@ class Information(client.Plugin):
         # Get the user's info and family size
         ft = u.FamilyMember.get(user.id, u.get_guild_id(self.bot, ctx))
         span = set()
-        for _, span_user in ft.span(add_parent=True, add_partners=True, add_partner_parents=True):
+        async for _, span_user in ft.span(
+                add_parent=True,
+                add_partners=True,
+                add_partner_parents=True):
             span.add(span_user)
-            await asyncio.sleep(0)
         size = len(span)
 
         # Output
-        if size == 1:
-            output = (
-                ctx._("There is **1** person in {user}'s family tree.")
-                .format(user=user.mention)
-            )
-        else:
-            output = (
-                ctx._("There are **{number}** people in {user}'s family tree.")
-                .format(user=user.mention, number=size)
-            )
+        output = ctx.ngettext(
+            "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives.",
+            "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives.",
+            size,
+        )
         await ctx.send(embeds=u.e(output))
 
-    # @client.command(name="tree")
-    # async def tree(self, ctx: t.CommandI) -> None:
-    #     """
-    #     Elit duis aute velit cupidatat excepteur enim esse culpa ex reprehenderit sint consectetur.
-    #     """
+    @client.command(
+        # TRANSLATORS: Command name (/tree)
+        name_localizations=LC._("tree"),
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The user whose tree you want to see.",
+                type=n.ApplicationOptionType.USER,
+                # TRANSLATORS: Command option name (/tree [user])
+                name_localizations=LC._("user"),
+                description_localizations=LC._("The user whose tree you want to see."),
+                required=False,
+            )
+        ],
+        description_localizations=LC._("Show your family tree, but only blood relatives :3")
+    )
+    async def tree(
+            self,
+            ctx: t.CommandI,
+            user: n.User = n.utils.CommandDefault.AUTHOR) -> None:
+        """
+        Show your family tree, but only blood relatives :3
+        """
 
-    #     ...
+        await self.treemaker(ctx, user.id)
 
-    # @client.command(name="bloodtree")
-    # async def bloodtree(self, ctx: t.CommandI) -> None:
-    #     """
-    #     Cupidatat sed id proident id excepteur veniam ut eu aliquip mollit nisi aute enim culpa ex commodo.
-    #     """
+    @client.command(
+        # TRANSLATORS: Command name (/fulltree)
+        name_localizations=LC._("fulltree"),
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The user whose tree you want to see.",
+                type=n.ApplicationOptionType.USER,
+                # TRANSLATORS: Command option name (/fulltree [user])
+                name_localizations=LC._("user"),
+                description_localizations=LC._("The user whose tree you want to see."),
+                required=False,
+            )
+        ],
+        description_localizations=LC._("Show your entire family tree, including non-blood relatives :3")
+    )
+    async def fulltree(
+            self,
+            ctx: t.CommandI,
+            user: n.User = n.utils.CommandDefault.AUTHOR) -> None:
+        """
+        Show your entire family tree, including non-blood relatives :3
+        """
 
-    #     ...
+        await self.treemaker(ctx, user.id, full_tree=True)
+
+    async def treemaker(
+            self,
+            ctx: t.CommandI,
+            user_id: int,
+            *,
+            full_tree: bool = False) -> None:
+        """
+        Handles the generation and sending of the tree to the user.
+        """
+
+        # Get their family tree
+        guild_id: int = u.get_guild_id(self.bot, ctx)
+        family_member = u.FamilyMember.get(user_id, guild_id)
+
+        # Make sure they have one
+        if family_member.is_empty:
+            if user_id == ctx.user.id:
+                return await ctx.send(
+                    embeds=u.e(ctx._("You have no family to put into a tree .-."))
+                )
+            return await ctx.send(
+                embeds=u.e(ctx._("**{user}** has no family to put into a tree .-.")),
+                allowed_mentions=n.AllowedMentions.none(),
+            )
+        await ctx.defer()
+
+        # Get their customisations
+        async with db.Database.acquire() as conn:
+            custom = await u.CustomTree.fetch(conn, ctx.user.id)
+
+        # Get their dot script
+        kwargs = {}
+        if full_tree:
+            kwargs = {
+                "add_partners": True,
+                "add_partners": True,
+                "add_partner_parents": True,
+            }
+        try:
+            dot_code = await asyncio.wait_for(
+                family_member.to_dot_script(custom, **kwargs),
+                timeout=10.0,
+            )
+        except asyncio.TimeoutError:
+            self.log.error("Failed to create dot script within 10 seconds.")
+            return
+
+        # Write the dot to a file
+        filename_id = str(uuid.uuid4())
+        dot_filename = self.TREE_FOLDER / f"{filename_id}.gz"
+        os.makedirs(self.TREE_FOLDER, exist_ok=True)
+        try:
+            with open(dot_filename, 'w', encoding='utf-8') as a:
+                a.write(dot_code)
+        except Exception as e:
+            self.log.error(f"Could not write to {dot_filename}")
+            raise e
+
+        # Convert to an image
+        # http://www.graphviz.org/doc/info/output.html#d:png
+        image_filename = self.TREE_FOLDER / f"{filename_id}.png"
+
+        format_rendering_option = "-Tpng:cairo"  # normal colour, and antialising
+        # format_rendering_option = '-Tpng:gd'  # normal colour, no antialising
+        # format_rendering_option = "-Tpng:cairo:gdiplus"
+        # format_rendering_option = "-Tpng:gdiplus:gdiplus"
+
+        dot = await asyncio.create_subprocess_exec(
+            "dot",
+            format_rendering_option,
+            dot_filename,
+            "-o",
+            image_filename,
+            "-Gcharset=UTF-8",
+        )
+        await asyncio.wait_for(dot.wait(), 30.0)
+
+        # Kill subprocess
+        try:
+            dot.kill()
+        except ProcessLookupError:
+            pass  # It already died
+        except Exception:
+            raise
+
+        # Send file
+        try:
+            file = n.File(image_filename, filename="tree.png")
+        except FileNotFoundError:
+            return await ctx.send(
+                ctx._(
+                "I was unable to send your family tree image - "
+                "please try again later."
+                )
+            )
+        text = ctx._("[Click here]({url}) to customise your tree.")
+        if not full_tree:
+            text += " " + (
+                ctx._(
+                    "Use {command_mention} for your *entire* family, "
+                    "including non-blood relatives."
+                )
+            )
+        command_mention: str
+        try:
+            command_mention = self.bot.get_command("fulltree").mention  # type: ignore
+        except Exception:
+            command_mention = "`/fulltree`"
+        text = text.format(
+            url="https://marriagebot.xyz/",
+            command_mention=command_mention,
+        )
+        await ctx.send(
+            embeds=u.e(text, image_url="attachment://tree.png"),
+            files=[file],
+        )
+
+        # Delete the files
+        asyncio.create_task(asyncio.create_subprocess_exec("rm", dot_filename))
+        asyncio.create_task(asyncio.create_subprocess_exec("rm", image_filename))
