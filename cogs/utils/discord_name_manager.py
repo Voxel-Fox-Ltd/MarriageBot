@@ -59,6 +59,7 @@ class DiscordNameManager:
         first time then we add it after fetching from the API).
         """
 
+
         # Get the name from redis
         async with vbu.Redis() as re:
             v = await re.get(f"UserName-{self.user_id}")
@@ -67,6 +68,9 @@ class DiscordNameManager:
         if v:
             self.name = v
             return v
+
+        # Added 2024-06-28 to avoid rate limiting
+        return self.name or "Deleted User"
 
         # Fetch the user
         try:

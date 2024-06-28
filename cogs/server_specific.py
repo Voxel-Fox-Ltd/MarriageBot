@@ -117,7 +117,7 @@ class ServerSpecific(vbu.Cog[utils.types.Bot]):
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def perks(self, ctx: vbu.Context):
         """
-        Shows you the perks associated with different support tiers.
+        Shows you the perks associated with different donation tiers.
         """
 
         normal_users = [
