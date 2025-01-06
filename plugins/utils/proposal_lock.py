@@ -20,7 +20,6 @@ from __future__ import annotations
 import asyncio
 import collections
 import functools
-import itertools
 import logging
 import time
 from typing import TYPE_CHECKING, Callable, Literal
@@ -29,6 +28,7 @@ import novus as n
 
 from .autodelete import AutoDelete
 from .family_member import FamilyMember
+from .perks import Perks
 from .utils import e, get_guild_id
 
 if TYPE_CHECKING:
@@ -76,14 +76,13 @@ async def handle_proposal(
         return False
 
     # Check if either user is currently waiting on a proposal
-    match ProposalLock.locked(ctx.user.id, user.id):
-        case 0:
+    if (status := ProposalLock.locked(ctx.user.id, user.id)) >= 0:
+        if status == 0:
             await ctx.send(
                 ctx._("You're already waiting on a proposal."),
                 ephemeral=True,
             )
-            return False
-        case 1:
+        elif status == 1:
             await ctx.send(
                 (
                     ctx._("{user} is already waiting on a proposal.")
@@ -91,7 +90,9 @@ async def handle_proposal(
                 ),
                 ephemeral=True,
             )
-            return False
+        else:
+            raise Exception("Invalid lock state")
+        return False
 
     # Lock the users so they can't be proposed to
     unlock_f = await ProposalLock.lock(ctx.user.id, user.id)
@@ -101,16 +102,83 @@ async def handle_proposal(
     # Show the users a loading screen
     await ctx.defer()
 
-    # See if they're already married [to each other]
-    ...
-
-    # See if they're already married [and past the limit]
-    ...  # Get user perks
-    ...
-
-    # See if they're already related
+    # Get the users so we can run relevant checks
     guild_id: int = get_guild_id(bot, ctx)
     author_ft, user_ft = FamilyMember.get_multiple(ctx.user.id, user.id, guild_id=guild_id)
+
+    # Work out which checks we need to perform
+    if button_action == "MARRY":
+        author_perks = await Perks.get_perks_for_user(bot, ctx.user.id)
+        if (num := len(author_ft._partner_ids)) >= author_perks.max_partners:
+            unlock_f()
+            await ctx.send(
+                ctx._(
+                    (
+                        "You already have {partner_count} partners! "
+                        "You can't have any more right now :<"
+                    )
+                ).format(partner_count=num)  # TODO upsell
+            )
+            return False
+        user_perks = await Perks.get_perks_for_user(bot, user.id)
+        if (num := len(user_ft._partner_ids)) >= user_perks.max_partners:
+            unlock_f()
+            await ctx.send(
+                ctx._(
+                    (
+                        "{user} already has {partner_count} partners! "
+                        "They can't have any more right now :<"
+                    )
+                ).format(user=f"<@{user.id}>", partner_count=num),
+                allowed_mentions=n.AllowedMentions.none(),
+            )
+            return False
+    elif button_action == "ADOPT":
+        if user_ft._parent_id is not None:
+            unlock_f()
+            await ctx.send(
+                (
+                    ctx._("{user} already has a parent! They can only have one!")
+                    .format(user=f"<@{user.id}>")
+                ),
+                allowed_mentions=n.AllowedMentions.none(),
+            )
+            return False
+        author_perks = await Perks.get_perks_for_user(bot, ctx.user.id)
+        if (num := len(author_ft._child_ids)) >= author_perks.max_children:
+            unlock_f()
+            await ctx.send(
+                ctx._(
+                    (
+                        "You already have {child_count} children! "
+                        "You can't have any more right now :<"
+                    )
+                ).format(child_count=num),  # TODO upsell
+                allowed_mentions=n.AllowedMentions.none(),
+            )
+            return False
+    elif button_action == "MAKEPARENT":
+        if author_ft._parent_id is not None:
+            unlock_f()
+            await ctx.send(
+                ctx._("You already have a parent! You can only have one!"),
+            )
+            return False
+        user_perks = await Perks.get_perks_for_user(bot, user.id)
+        if (num := len(user_ft._child_ids)) >= user_perks.max_children:
+            unlock_f()
+            await ctx.send(
+                ctx._(
+                    (
+                        "{user} already has {child_count} children! "
+                        "They can't have any more right now :<"
+                    )
+                ).format(user=f"<@{user.id}>", child_count=num),
+                allowed_mentions=n.AllowedMentions.none(),
+            )
+            return False
+
+    # See if they're already related
     if await author_ft.get_related(user_ft):
         unlock_f()
         await ctx.send(

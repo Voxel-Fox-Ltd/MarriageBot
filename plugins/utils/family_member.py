@@ -596,7 +596,7 @@ class FamilyMember:
         See if the current user is related to another.
         """
 
-        async for i in self.span(add_parent=True, add_partners=True, add_partner_parents=True):
+        async for _, i in self.span(add_parent=True, add_partners=True, add_partner_parents=True):
             if i == other:
                 return True
         return False

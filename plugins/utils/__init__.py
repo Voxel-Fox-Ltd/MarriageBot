@@ -19,18 +19,20 @@ from .autodelete import *
 from .custom_tree import *
 from .family_member import *
 from .proposal_lock import *
+from .perks import *
 from .utils import *
 
 __all__: tuple[str, ...] = (
-    'AutoDelete',
-    'CustomTree',
-    'FamilyMember',
-    'PROPOSAL_TIMEOUT',
-    'ProposalLock',
-    'e',
-    'get_guild_id',
-    'get_name',
-    'get_names',
-    'handle_proposal',
-    'mint',
+    "AutoDelete",
+    "CustomTree",
+    "FamilyMember",
+    "PROPOSAL_TIMEOUT",
+    "Perks",
+    "ProposalLock",
+    "e",
+    "get_guild_id",
+    "get_name",
+    "get_names",
+    "handle_proposal",
+    "mint",
 )

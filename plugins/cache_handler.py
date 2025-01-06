@@ -70,7 +70,4 @@ class CacheHandler(client.Plugin):
             )
             await asyncio.sleep(0)
         await conn.close()
-        self.log.info(dir(u))
-        import os
-        self.log.info(os.getcwd())
         self.log.info("Cached %s users", len(u.FamilyMember.ALL_MEMBERS))

@@ -17,21 +17,39 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Self
+import asyncio
+from typing import TYPE_CHECKING, Self
 
-from cachetools import TTLCache, cached
-from novus.ext.client import Client
+import aiohttp
+from cachetools import TTLCache
+from novus.ext.database import database as db
+
+if TYPE_CHECKING:
+    from novus.ext.client import Client
+
+__all__ = (
+    "Perks",
+)
 
 
-@dataclass
 class Perks:
-    max_children: int = 5
-    max_partners: int = 1
-    can_run_fulltree: bool = False
-    can_run_disownall: bool = False
-    tree_command_cooldown: int = 60
-    can_run_abandon: bool = False
+
+    CACHE: dict[int, Perks] = TTLCache(maxsize=2 ** 8, ttl=60 * 2)  # pyright: ignore
+
+    def __init__(
+            self,
+            max_children: int = 5,
+            max_partners: int = 1,
+            can_run_fulltree: bool = False,
+            can_run_disownall: bool = False,
+            tree_command_cooldown: int = 60,
+            can_run_abandon: bool = False):
+        self.max_children: int = max_children
+        self.max_partners: int = max_partners
+        self.can_run_fulltree: bool = can_run_fulltree
+        self.can_run_disownall: bool = can_run_disownall
+        self.tree_command_cooldown: int = tree_command_cooldown
+        self.can_run_abandon: bool = can_run_abandon
 
     @classmethod
     def zero(cls):
@@ -69,23 +87,22 @@ class Perks:
         )
 
     @classmethod
-    @cached(TTLCache(maxsize=2 ** 8, ttl=60 * 2))
-    async def get_perks_for_user(cls, bot: Client, user_id: int) -> Self:
+    async def get_perks_for_user(cls, bot: Client, user_id: int) -> Perks:
         """
-        Get the perks for a given user from the Voxel Fox API.
+        Get the perks for a given user from the VFL API.
         """
 
-        # Override stuff for owners
-        if user_id in bot.config.owner_ids:
+        # If the bot is Gold then simply let everyone do everything
+        if bot.config.gold:
             return cls.three()
 
-        # If we gold we golden
-        if bot.config.is_server_specific:
-            return cls.three()
+        # If we're in the cache already we don't need to return anything
+        if (cached := cls.CACHE.get(user_id)):
+            return cached
 
         # Check if they have a purchase
-        async with bot.database() as db:
-            rows = await db(
+        async with db.Database.acquire() as conn:
+            row = await conn.fetchrow(
                 """
                 SELECT
                     *
@@ -96,7 +113,7 @@ class Perks:
                 """,
                 user_id,
             )
-        if rows:
+        if row is not None:
             return cls.three()
 
         # Check VFL purchases
@@ -106,8 +123,9 @@ class Perks:
             "discord_user_id": user_id,
         }
         try:
-            async with bot.session.get(url, params=params, timeout=3) as r:
-                data = await r.json()
+            async with aiohttp.ClientSession() as session:
+                site = await asyncio.wait_for(session.get(url, params=params), timeout=3.0)
+                data = await site.json()
         except Exception:
             data = {}
         if data.get("success", False) and data.get("result"):
@@ -123,14 +141,11 @@ class Perks:
                 int(i.split(" ")[-1])
                 for i in purchased_products
             ])
-            return tier_mapping[tier]
+            return {
+                1: cls.one,
+                2: cls.two,
+                3: cls.three,
+            }[tier]()
 
-        # Check Top.gg votes
-        try:
-            aw = bot.get_user_topgg_vote(user_id)
-            data = await asyncio.wait_for(aw, timeout=3)
-            if data:
-                return TIER_VOTER
-        except asyncio.TimeoutError:
-            pass
-        return tier_mapping[0]
+        # No purchase, return default
+        return cls.zero()
