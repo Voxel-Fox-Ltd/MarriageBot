@@ -23,7 +23,7 @@ from novus.ext import client
 from novus.ext import database as db
 from novus.utils import Localization as LC
 
-import utils as u
+from . import utils as u
 
 
 class Marriage(client.Plugin):

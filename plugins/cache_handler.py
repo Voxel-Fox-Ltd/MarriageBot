@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 from novus.ext import client
 from novus.ext import database as db
 
-import utils as u
+from . import utils as u
 
 if TYPE_CHECKING:
     import asyncpg
@@ -70,4 +70,7 @@ class CacheHandler(client.Plugin):
             )
             await asyncio.sleep(0)
         await conn.close()
+        self.log.info(dir(u))
+        import os
+        self.log.info(os.getcwd())
         self.log.info("Cached %s users", len(u.FamilyMember.ALL_MEMBERS))

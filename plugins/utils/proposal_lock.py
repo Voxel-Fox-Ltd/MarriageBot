@@ -23,7 +23,7 @@ import functools
 import itertools
 import logging
 import time
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Literal
 
 import novus as n
 
@@ -45,8 +45,8 @@ __all__ = (
 log = logging.getLogger("proposallock")
 
 
-# PROPOSAL_TIMEOUT: float = 60.0
-PROPOSAL_TIMEOUT: float = 10.0
+PROPOSAL_TIMEOUT: float = 60.0
+# PROPOSAL_TIMEOUT: float = 10.0
 
 
 async def handle_proposal(
@@ -54,7 +54,7 @@ async def handle_proposal(
         ctx: t.CommandGI,
         user: n.GuildMember,
         message: str,
-        button_action: str) -> bool:
+        button_action: Literal["MARRY", "ADOPT", "MAKEPARENT"]) -> bool:
     """
     Handle blacklisted users, bots, and all that malarkey.
     """
@@ -134,10 +134,8 @@ async def handle_proposal(
     async def chained():
         async for i in author_ft.span(**kwargs):
             yield i
-            await asyncio.sleep(0)
         async for i in user_ft.span(**kwargs):
             yield i
-            await asyncio.sleep(0)
 
     counter: int = 0
     async for counter, _ in chained():

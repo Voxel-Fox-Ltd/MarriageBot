@@ -23,7 +23,7 @@ from novus.ext import client
 from novus.ext import database as db
 from novus.utils import Localization as LC
 
-import utils as u
+from . import utils as u
 
 
 class Parents(client.Plugin):
@@ -93,7 +93,7 @@ class Parents(client.Plugin):
 
     @client.command(
         # TRANSLATORS: Command name
-        name_localizations=LC._("Runaway"),
+        name_localizations=LC._("runaway"),
         # TRANSLATORS: Command description
         description_localizations=LC._("Run away from your parent."),
         dm_permission=False,
@@ -121,7 +121,6 @@ class Parents(client.Plugin):
                 ctx._("You have run away from {user} :(")
                 .format(user=f"<@{parent.id}>")
             ),
-            ephemeral=True,
         )
 
     @client.command(

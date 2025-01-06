@@ -1,3 +1,4 @@
 novus>=1.0.0
 asyncpg
 typing_extensions
+cachetools

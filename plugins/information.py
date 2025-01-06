@@ -29,7 +29,7 @@ from novus.ext import database as db
 from novus.utils import CommandDefault
 from novus.utils import Localization as LC
 
-import utils as u
+from . import utils as u
 
 
 class Information(client.Plugin):
@@ -458,8 +458,8 @@ class Information(client.Plugin):
         except FileNotFoundError:
             return await ctx.send(
                 ctx._(
-                "I was unable to send your family tree image - "
-                "please try again later."
+                    "I was unable to send your family tree image - "
+                    "please try again later."
                 )
             )
         text = ctx._("[Click here]({url}) to customise your tree.")

@@ -152,7 +152,7 @@ class FamilyMemberDB:
                 parents
             WHERE
                 child_id = $1
-                AND guild_id = $3
+                AND guild_id = $2
             """,
             self.f.id, self.f.guild_id,
         )
@@ -331,7 +331,7 @@ class FamilyMember:
         )
         if not rows:
             return None
-        return (rows[0]["child_id"], n.utils.parse_timestamp(rows[0]["timestamp"]),)
+        return (rows[0]["parent_id"], n.utils.parse_timestamp(rows[0]["timestamp"]),)
 
     @staticmethod
     def _get_id(user: AnyUser) -> int:

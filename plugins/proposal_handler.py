@@ -23,7 +23,7 @@ from novus import types as t
 from novus.ext import client
 from novus.ext import database as db
 
-import utils as u
+from . import utils as u
 
 
 class ProposalHandler(client.Plugin):
