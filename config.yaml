@@ -32,6 +32,7 @@ plugins:
 - plugins.parents:Parents
 - plugins.proposal_handler:ProposalHandler
 - plugins.simulation:Simulation
+- plugins.force_commands:ForceCommands
 database_dsn: '$MARRIAGEBOT_TEST_DSN'
 database_max_connections: 1
 
