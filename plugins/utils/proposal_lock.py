@@ -108,7 +108,7 @@ async def handle_proposal(
 
     # Work out which checks we need to perform
     if button_action == "MARRY":
-        author_perks = await Perks.get_perks_for_user(bot, ctx.user.id)
+        author_perks = await Perks.get_perks_for_user(bot, ctx, ctx.user.id)
         if (num := len(author_ft._partner_ids)) >= author_perks.max_partners:
             unlock_f()
             await ctx.send(
@@ -119,7 +119,7 @@ async def handle_proposal(
                 ).format(count=num)
             )
             return False
-        user_perks = await Perks.get_perks_for_user(bot, user.id)
+        user_perks = await Perks.get_perks_for_user(bot, ctx, user.id)
         if (num := len(user_ft._partner_ids)) >= user_perks.max_partners:
             unlock_f()
             await ctx.send(
@@ -142,7 +142,7 @@ async def handle_proposal(
                 allowed_mentions=n.AllowedMentions.none(),
             )
             return False
-        author_perks = await Perks.get_perks_for_user(bot, ctx.user.id)
+        author_perks = await Perks.get_perks_for_user(bot, ctx, ctx.user.id)
         if (num := len(author_ft._child_ids)) >= author_perks.max_children:
             unlock_f()
             await ctx.send(
@@ -162,7 +162,7 @@ async def handle_proposal(
                 ctx._("You already have a parent! You can only have one!"),
             )
             return False
-        user_perks = await Perks.get_perks_for_user(bot, user.id)
+        user_perks = await Perks.get_perks_for_user(bot, ctx, user.id)
         if (num := len(user_ft._child_ids)) >= user_perks.max_children:
             unlock_f()
             await ctx.send(

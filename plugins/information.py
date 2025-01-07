@@ -388,7 +388,10 @@ class Information(client.Plugin):
                     embeds=u.e(ctx._("You have no family to put into a tree .-."))
                 )
             return await ctx.send(
-                embeds=u.e(ctx._("**{user}** has no family to put into a tree .-.")),
+                embeds=u.e(
+                    ctx._("**{user}** has no family to put into a tree .-.")
+                    .format(user=f"<@{user_id}>")
+                ),
                 allowed_mentions=n.AllowedMentions.none(),
             )
         await ctx.defer()

@@ -90,7 +90,11 @@ class Perks:
         )
 
     @classmethod
-    async def get_perks_for_user(cls, bot: Client, user_id: int) -> Perks:
+    async def get_perks_for_user(
+            cls,
+            bot: client.Client,
+            ctx: n.Interaction,
+            user_id: int) -> Perks:
         """
         Get the perks for a given user from the VFL API.
         """
