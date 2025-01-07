@@ -163,12 +163,12 @@ class Simulation(client.Plugin):
         options=[
             n.ApplicationCommandOption(
                 name="user",
-                description="The user you want to ACTION.",
+                description="The user you want to kiss.",
                 type=n.ApplicationOptionType.USER,
                 # TRANSLATORS: Command option name (/kiss [user])
                 name_localizations=LC._("user"),
                 # TRANSLATORS: Command option description (/kiss [user])
-                description_localizations=LC._("The user you want to ACTION."),
+                description_localizations=LC._("The user you want to kiss."),
             )
         ],
         # TRANSLATORS: Command name (/kiss)
@@ -241,12 +241,12 @@ class Simulation(client.Plugin):
         options=[
             n.ApplicationCommandOption(
                 name="user",
-                description="The user you want to ACTION.",
+                description="The user you want to punch.",
                 type=n.ApplicationOptionType.USER,
                 # TRANSLATORS: Command option name (/punch [user])
                 name_localizations=LC._("user"),
                 # TRANSLATORS: Command option description (/punch [user])
-                description_localizations=LC._("The user you want to ACTION."),
+                description_localizations=LC._("The user you want to punch."),
             )
         ],
         # TRANSLATORS: Command name (/punch)
@@ -276,12 +276,12 @@ class Simulation(client.Plugin):
         options=[
             n.ApplicationCommandOption(
                 name="user",
-                description="The user you want to ACTION.",
+                description="The user you want to bite.",
                 type=n.ApplicationOptionType.USER,
                 # TRANSLATORS: Command option name (/bite [user])
                 name_localizations=LC._("user"),
                 # TRANSLATORS: Command option description (/bite [user])
-                description_localizations=LC._("The user you want to ACTION."),
+                description_localizations=LC._("The user you want to bite."),
             )
         ],
         # TRANSLATORS: Command name (/bite)
@@ -320,12 +320,12 @@ class Simulation(client.Plugin):
         options=[
             n.ApplicationCommandOption(
                 name="user",
-                description="The user you want to ACTION.",
+                description="The user you want to slap.",
                 type=n.ApplicationOptionType.USER,
                 # TRANSLATORS: Command option name (/slap [user])
                 name_localizations=LC._("user"),
                 # TRANSLATORS: Command option description (/slap [user])
-                description_localizations=LC._("The user you want to ACTION."),
+                description_localizations=LC._("The user you want to slap."),
             )
         ],
         # TRANSLATORS: Command name (/slap)
