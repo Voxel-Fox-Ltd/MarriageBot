@@ -24,8 +24,11 @@ import aiohttp
 from cachetools import TTLCache
 from novus.ext.database import database as db
 
+from .utils import get_guild_id
+
 if TYPE_CHECKING:
-    from novus.ext.client import Client
+    import novus as n
+    from novus.ext import client
 
 __all__ = (
     "Perks",
@@ -93,7 +96,7 @@ class Perks:
         """
 
         # If the bot is Gold then simply let everyone do everything
-        if bot.config.gold:
+        if await get_guild_id(bot, ctx) != 0:
             return cls.three()
 
         # If we're in the cache already we don't need to return anything

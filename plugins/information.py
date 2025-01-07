@@ -68,7 +68,7 @@ class Information(client.Plugin):
             partners = await u.FamilyMember.fetch_partners(
                 conn,
                 user,
-                u.get_guild_id(self.bot, ctx),
+                await u.get_guild_id(self.bot, ctx),
             )
             partner_names = await u.get_names(conn, *[i[0] for i in partners])
 
@@ -146,7 +146,7 @@ class Information(client.Plugin):
             children = await u.FamilyMember.fetch_children(
                 conn,
                 user,
-                u.get_guild_id(self.bot, ctx),
+                await u.get_guild_id(self.bot, ctx),
             )
             children_names = await u.get_names(conn, *[i[0] for i in children])
 
@@ -224,7 +224,7 @@ class Information(client.Plugin):
             parent = await u.FamilyMember.fetch_parent(
                 conn,
                 user,
-                u.get_guild_id(self.bot, ctx),
+                await u.get_guild_id(self.bot, ctx),
             )
             parent_name: str | None = None
             if parent:
@@ -298,7 +298,7 @@ class Information(client.Plugin):
         """
 
         # Get the user's info and family size
-        ft = u.FamilyMember.get(user.id, u.get_guild_id(self.bot, ctx))
+        ft = u.FamilyMember.get(user.id, await u.get_guild_id(self.bot, ctx))
         span = set()
         async for _, span_user in ft.span(
                 add_parent=True,
@@ -378,7 +378,7 @@ class Information(client.Plugin):
         """
 
         # Get their family tree
-        guild_id: int = u.get_guild_id(self.bot, ctx)
+        guild_id: int = await u.get_guild_id(self.bot, ctx)
         family_member = u.FamilyMember.get(user_id, guild_id)
 
         # Make sure they have one

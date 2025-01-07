@@ -75,7 +75,7 @@ class Marriage(client.Plugin):
             partners = await u.FamilyMember.fetch_partners(
                 conn,
                 ctx.user,
-                u.get_guild_id(self.bot, ctx),
+                await u.get_guild_id(self.bot, ctx),
             )
             names = await u.get_names(conn, *[i[0] for i in partners])
 
@@ -121,7 +121,7 @@ class Marriage(client.Plugin):
         # Divorce them from whomever they clicked on
         clicked_user_str = ctx.data.values[0].value
         clicked_user = int(clicked_user_str)
-        ft = u.FamilyMember.get(ctx.user.id, guild_id=u.get_guild_id(self.bot, ctx))
+        ft = u.FamilyMember.get(ctx.user.id, guild_id=await u.get_guild_id(self.bot, ctx))
         probable_success = clicked_user in ft._partner_ids
         async with db.Database.acquire() as conn:
             await ft.db.remove_partner(conn, u.FamilyMember.get(clicked_user))

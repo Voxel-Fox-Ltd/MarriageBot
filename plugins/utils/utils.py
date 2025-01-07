@@ -69,7 +69,7 @@ async def get_names(
     return base
 
 
-def get_guild_id(bot: client.Client, ctx: n.Interaction) -> int:
+async def get_guild_id(bot: client.Client, ctx: n.Interaction) -> int:
     """
     Get the relevant guild ID for the current running instance of the bot.
     """

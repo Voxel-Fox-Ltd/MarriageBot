@@ -103,7 +103,7 @@ async def handle_proposal(
     await ctx.defer()
 
     # Get the users so we can run relevant checks
-    guild_id: int = get_guild_id(bot, ctx)
+    guild_id: int = await get_guild_id(bot, ctx)
     author_ft, user_ft = FamilyMember.get_multiple(ctx.user.id, user.id, guild_id=guild_id)
 
     # Work out which checks we need to perform
