@@ -112,24 +112,22 @@ async def handle_proposal(
         if (num := len(author_ft._partner_ids)) >= author_perks.max_partners:
             unlock_f()
             await ctx.send(
-                ctx._(
-                    (
-                        "You already have {partner_count} partners! "
-                        "You can't have any more right now :<"
-                    )
-                ).format(partner_count=num)  # TODO upsell
+                ctx.ngettext(
+                    "You already have a partner! You can't have any more right now :<",
+                    "You already have {count} partners! You can't have any more right now :<",
+                    num,
+                ).format(count=num)
             )
             return False
         user_perks = await Perks.get_perks_for_user(bot, user.id)
         if (num := len(user_ft._partner_ids)) >= user_perks.max_partners:
             unlock_f()
             await ctx.send(
-                ctx._(
-                    (
-                        "{user} already has {partner_count} partners! "
-                        "They can't have any more right now :<"
-                    )
-                ).format(user=f"<@{user.id}>", partner_count=num),
+                ctx.ngettext(
+                    "{user} already has a partner! They can't have any more right now :<",
+                    "{user} already has {count} partners! They can't have any more right now :<",
+                    num,
+                ).format(user=f"<@{user.id}>", count=num),
                 allowed_mentions=n.AllowedMentions.none(),
             )
             return False
@@ -150,10 +148,10 @@ async def handle_proposal(
             await ctx.send(
                 ctx._(
                     (
-                        "You already have {child_count} children! "
+                        "You already have {count} children! "
                         "You can't have any more right now :<"
                     )
-                ).format(child_count=num),  # TODO upsell
+                ).format(count=num),  # TODO upsell
                 allowed_mentions=n.AllowedMentions.none(),
             )
             return False
@@ -170,10 +168,10 @@ async def handle_proposal(
             await ctx.send(
                 ctx._(
                     (
-                        "{user} already has {child_count} children! "
+                        "{user} already has {count} children! "
                         "They can't have any more right now :<"
                     )
-                ).format(user=f"<@{user.id}>", child_count=num),
+                ).format(user=f"<@{user.id}>", count=num),
                 allowed_mentions=n.AllowedMentions.none(),
             )
             return False
