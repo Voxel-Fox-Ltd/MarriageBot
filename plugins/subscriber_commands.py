@@ -29,7 +29,6 @@ class SubscriberCommands(client.Plugin):
 
     @client.command(
         name="disownall",
-        description="Disown all of your children at once.",
         # TRANSLATORS: Command name
         name_localizations=LC._("disownall"),
         # TRANSLATORS: Command description
@@ -64,7 +63,6 @@ class SubscriberCommands(client.Plugin):
 
     @client.command(
         name="abandon",
-        description="Remove all of your family members at once.",
         # TRANSLATORS: Command name
         name_localizations=LC._("abandon"),
         # TRANSLATORS: Command description

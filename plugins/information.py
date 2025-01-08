@@ -402,7 +402,7 @@ class Information(client.Plugin):
                 )
             return await ctx.send(
                 embeds=u.e(
-                    ctx._("**{user}** has no family to put into a tree .-.")
+                    ctx._("{user} has no family to put into a tree .-.")
                     .format(user=f"<@{user_id}>")
                 ),
                 allowed_mentions=n.AllowedMentions.none(),
@@ -474,26 +474,22 @@ class Information(client.Plugin):
         except FileNotFoundError:
             return await ctx.send(
                 ctx._(
-                    "I was unable to send your family tree image - "
-                    "please try again later."
+                    "I couldn't send your family tree image - "
+                    "please try again in a few minutes."
                 )
             )
         text = ctx._("[Click here]({url}) to customise your tree.")
         if not full_tree:
             text += " " + (
                 ctx._(
-                    "Use {command_mention} for your *entire* family, "
+                    "Use {fulltree} for your *entire* family, "
                     "including non-blood relatives."
                 )
             )
-        command_mention: str
-        try:
-            command_mention = self.bot.get_command("fulltree").mention  # type: ignore
-        except Exception:
-            command_mention = "`/fulltree`"
+        fulltree_c = u.get_command_mention(self.bot, "fulltree")
         text = text.format(
             url="https://marriagebot.xyz/",
-            command_mention=command_mention,
+            fulltree=fulltree_c,
         )
         await ctx.send(
             embeds=u.e(text, image_url="attachment://tree.png"),
