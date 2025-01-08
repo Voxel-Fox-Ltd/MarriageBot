@@ -32,6 +32,7 @@ __all__ = (
     'mint',
     'get_guild_id',
     'e',
+    'get_command_mention',
 )
 
 
@@ -94,3 +95,15 @@ def e(content: str, image_url: str | None = None) -> list[n.Embed]:
     if image_url:
         e.set_image(image_url)
     return [e]
+
+
+def get_command_mention(bot: client.Client, command_name: str) -> str:
+    """
+    Get the mention for a command, or a string representing it.
+    """
+
+    command = bot.get_command(command_name)
+    if command is None:
+        return f"`/{command_name}`"
+    else:
+        return command.mention

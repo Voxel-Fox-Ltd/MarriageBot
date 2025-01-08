@@ -26,18 +26,6 @@ from novus.utils import Localization as LC
 from . import utils as u
 
 
-def get_command_mention(bot: client.Client, command_name: str) -> str:
-    """
-    Get the mention for a command, or a string representing it.
-    """
-
-    command = bot.get_command(command_name)
-    if command is None:
-        return f"`/{command_name}`"
-    else:
-        return command.mention
-
-
 class ForceCommands(client.Plugin):
 
     @client.command(
@@ -88,7 +76,7 @@ class ForceCommands(client.Plugin):
                         "This command can only be run with MarriageBot Gold enabled! You "
                         "can still use {non_gold_command} though :3"
                     )
-                ).format(non_gold_command=get_command_mention(self.bot, "marry")),
+                ).format(non_gold_command=u.get_command_mention(self.bot, "marry")),
                 ephemeral=True,
             )
             return  # TODO: upsell
@@ -166,7 +154,7 @@ class ForceCommands(client.Plugin):
                         "This command can only be run with MarriageBot Gold enabled! You "
                         "can still use {non_gold_command} though :3"
                     )
-                ).format(non_gold_command=get_command_mention(self.bot, "divorce")),
+                ).format(non_gold_command=u.get_command_mention(self.bot, "divorce")),
                 ephemeral=True,
             )
             return  # TODO: upsell
@@ -250,7 +238,7 @@ class ForceCommands(client.Plugin):
                         "This command can only be run with MarriageBot Gold enabled! You "
                         "can still use {non_gold_command} though :3"
                     )
-                ).format(non_gold_command=get_command_mention(self.bot, "adopt")),
+                ).format(non_gold_command=u.get_command_mention(self.bot, "adopt")),
                 ephemeral=True,
             )
             return  # TODO: upsell
@@ -272,7 +260,7 @@ class ForceCommands(client.Plugin):
                         "you can use {force_runaway_command}."
                     ).format(
                         user=user1.mention,
-                        force_runaway_command=get_command_mention(self.bot, "force runaway"),
+                        force_runaway_command=u.get_command_mention(self.bot, "force runaway"),
                     )
                 ),
                 ephemeral=True,
@@ -329,7 +317,7 @@ class ForceCommands(client.Plugin):
                         "This command can only be run with MarriageBot Gold enabled! You "
                         "can still use {non_gold_command} though :3"
                     )
-                ).format(non_gold_command=get_command_mention(self.bot, "runaway")),
+                ).format(non_gold_command=u.get_command_mention(self.bot, "runaway")),
                 ephemeral=True,
             )
             return  # TODO: upsell
