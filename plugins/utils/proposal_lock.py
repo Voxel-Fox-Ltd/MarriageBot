@@ -61,7 +61,7 @@ async def handle_marry_limits(
     """
 
     if author.id in user_ft._partner_ids:
-        await ctx.send(ctx._("You're already married!"))
+        await ctx.send(embeds=e(ctx._("You're already married!")))
         return False
 
     author_perks = await Perks.get_perks_for_user(bot, ctx, author.id)
@@ -70,30 +70,36 @@ async def handle_marry_limits(
     if (num := len(author_ft._partner_ids)) >= author_perks.max_partners:
         if len(user_ft._partner_ids) >= user_perks.max_partners:
             await ctx.send(
-                ctx.ngettext(
-                    "You already have a partner! You can't have any more right now. {user} is at their partner limit as well :<",
-                    "You already have {count} partners! You can't have any more right now. {user} is at their partner limit as well :<",
-                    num,
-                ).format(count=num)
+                embeds=e(
+                    ctx.ngettext(
+                        "You already have a partner! You can't have any more right now. {user} is at their partner limit as well :<",
+                        "You already have {count} partners! You can't have any more right now. {user} is at their partner limit as well :<",
+                        num,
+                    ).format(count=num)
+                )
             )
             return False
         await ctx.send(
-            ctx.ngettext(
-                "You already have a partner! You can't have any more right now :<",
-                "You already have {count} partners! You can't have any more right now :<",
-                num,
-            ).format(count=num)
+            embeds=e(
+                ctx.ngettext(
+                    "You already have a partner! You can't have any more right now :<",
+                    "You already have {count} partners! You can't have any more right now :<",
+                    num,
+                ).format(count=num)
+            )
         )
         return False
 
     user_perks = await Perks.get_perks_for_user(bot, ctx, user.id)
     if (num := len(user_ft._partner_ids)) >= user_perks.max_partners:
         await ctx.send(
-            ctx.ngettext(
-                "{user} already has a partner! They can't have any more right now :<",
-                "{user} already has {count} partners! They can't have any more right now :<",
-                num,
-            ).format(user=f"<@{user.id}>", count=num),
+            embeds=e(
+                ctx.ngettext(
+                    "{user} already has a partner! They can't have any more right now :<",
+                    "{user} already has {count} partners! They can't have any more right now :<",
+                    num,
+                ).format(user=f"<@{user.id}>", count=num)
+            ),
             allowed_mentions=n.AllowedMentions.none(),
         )
         return False
@@ -118,9 +124,11 @@ async def handle_adopt_limits(
 
     if user_ft._parent_id is not None:
         await ctx.send(
-            (
-                ctx._("{user} already has a parent! They can only have one!")
-                .format(user=f"<@{user.id}>")
+            embeds=e(
+                (
+                    ctx._("{user} already has a parent! They can only have one!")
+                    .format(user=f"<@{user.id}>")
+                )
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -129,12 +137,14 @@ async def handle_adopt_limits(
     author_perks = await Perks.get_perks_for_user(bot, ctx, author.id)
     if (num := len(author_ft._child_ids)) >= author_perks.max_children:
         await ctx.send(
-            ctx._(
-                (
-                    "You already have {count} children! "
-                    "You can't have any more right now :<"
-                )
-            ).format(count=num),  # TODO upsell
+            embeds=e(
+                ctx._(
+                    (
+                        "You already have {count} children! "
+                        "You can't have any more right now :<"
+                    )
+                ).format(count=num)  # TODO upsell
+            ),
             allowed_mentions=n.AllowedMentions.none(),
         )
         return False
@@ -154,24 +164,26 @@ async def handle_makeparent_limits(
     """
 
     if author.id in user_ft._child_ids:
-        await ctx.send(ctx._("They're already your parent!"))
+        await ctx.send(embeds=e(ctx._("They're already your parent!")))
         return False
 
     if author_ft._parent_id is not None:
         await ctx.send(
-            ctx._("You already have a parent! You can only have one!"),
+            embeds=e(ctx._("You already have a parent! You can only have one!"))
         )
         return False
 
     user_perks = await Perks.get_perks_for_user(bot, ctx, user.id)
     if (num := len(user_ft._child_ids)) >= user_perks.max_children:
         await ctx.send(
-            ctx._(
-                (
-                    "{user} already has {count} children! "
-                    "They can't have any more right now :<"
-                )
-            ).format(user=f"<@{user.id}>", count=num),
+            embeds=e(
+                ctx._(
+                    (
+                        "{user} already has {count} children! "
+                        "They can't have any more right now :<"
+                    )
+                ).format(user=f"<@{user.id}>", count=num)
+            ),
             allowed_mentions=n.AllowedMentions.none(),
         )
         return False
