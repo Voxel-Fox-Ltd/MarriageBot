@@ -77,6 +77,7 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "marry")),
+                components=u.get_upsell_components(ctx, gold=True),
                 ephemeral=True,
             )
             return  # TODO: upsell
@@ -155,6 +156,7 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "divorce")),
+                components=u.get_upsell_components(ctx, gold=True),
                 ephemeral=True,
             )
             return  # TODO: upsell
@@ -239,6 +241,7 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "adopt")),
+                components=u.get_upsell_components(ctx, gold=True),
                 ephemeral=True,
             )
             return  # TODO: upsell
@@ -318,6 +321,7 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "runaway")),
+                components=u.get_upsell_components(ctx, gold=True),
                 ephemeral=True,
             )
             return  # TODO: upsell

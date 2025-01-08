@@ -27,12 +27,15 @@ if TYPE_CHECKING:
     from novus.ext import client
 
 __all__ = (
-    'get_name',
-    'get_names',
-    'mint',
-    'get_guild_id',
-    'e',
-    'get_command_mention',
+    "get_name",
+    "get_names",
+    "mint",
+    "get_guild_id",
+    "e",
+    "get_command_mention",
+    "get_upsell_button",
+    "get_upsell_row",
+    "get_upsell_components",
 )
 
 
@@ -107,3 +110,41 @@ def get_command_mention(bot: client.Client, command_name: str) -> str:
         return f"`/{command_name}`"
     else:
         return command.mention
+
+
+def get_upsell_button(
+        ctx: n.Interaction | None = None,
+        *,
+        gold: bool = False) -> n.Button:
+    """
+    Get a button that links to the MarriageBot store.
+    """
+
+    if gold:
+        label = "Get MarriageBot Gold"
+        if ctx:
+            label = ctx._("Get MarriageBot Gold")
+    else:
+        label = "Get MarriageBot perks"
+        if ctx:
+            label = ctx._("Get MarriageBot perks")
+    return n.Button(
+        label=label,
+        style=n.ButtonStyle.LINK,
+        url="https://voxelfox.co.uk/portal/marriagebot",
+        custom_id="PERKS_MB_DISCARD_____"
+    )
+
+
+def get_upsell_row(
+        ctx: n.Interaction | None = None,
+        *,
+        gold: bool = False) -> n.ActionRow:
+    return n.ActionRow([get_upsell_button(ctx, gold=gold)])
+
+
+def get_upsell_components(
+        ctx: n.Interaction | None = None,
+        *,
+        gold: bool = False) -> list[n.ActionRow]:
+    return [get_upsell_row(ctx, gold=gold)]

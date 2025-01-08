@@ -48,6 +48,7 @@ class SubscriberCommands(client.Plugin):
                     "You need to be a higher tier subscriber to run this command! "
                     "You can still use {non_perks_command} though :3"
                 ).format(non_perks_command=command),
+                components=u.get_upsell_components(ctx),
                 ephemeral=True,
             )
             return
@@ -84,6 +85,7 @@ class SubscriberCommands(client.Plugin):
                     "You need to be a higher tier subscriber to run this command! "
                     "You can still use {divorce}, {disown}, and {runaway} though :3"
                 ).format(divorce=divorce_c, disown=disown_c, runaway=runaway_c),
+                components=u.get_upsell_components(ctx),
                 ephemeral=True,
             )
             return

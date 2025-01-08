@@ -365,6 +365,19 @@ class Information(client.Plugin):
         Show your entire family tree, including non-blood relatives :3
         """
 
+        user_perks = await u.Perks.get_perks_for_user(self.bot, ctx, ctx.user.id)
+        if not user_perks.can_run_fulltree:
+            command = u.get_command_mention(self.bot, "tree")
+            await ctx.send(
+                ctx._(
+                    "You need to be a higher tier subscriber to run this command! "
+                    "You can still use {non_perks_command} though :3"
+                ).format(non_perks_command=command),
+                components=u.get_upsell_components(ctx),
+                ephemeral=True,
+            )
+            return
+
         await self.treemaker(ctx, user.id, full_tree=True)
 
     async def treemaker(

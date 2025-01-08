@@ -18,8 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from .autodelete import *
 from .custom_tree import *
 from .family_member import *
-from .proposal_lock import *
 from .perks import *
+from .proposal_lock import *
 from .utils import *
 
 __all__: tuple[str, ...] = (
@@ -34,6 +34,9 @@ __all__: tuple[str, ...] = (
     "get_guild_id",
     "get_name",
     "get_names",
+    "get_upsell_button",
+    "get_upsell_components",
+    "get_upsell_row",
     "handle_proposal",
     "mint",
 )
