@@ -538,6 +538,7 @@ class FamilyMember:
             add_parent: bool = True,
             add_partners: bool = True,
             add_partner_parents: bool = False,
+            deep: bool = False,
             generation: int = 0) -> AsyncGenerator[tuple[int, Self], None]:
         """
         Get all users related to the current user, in no particular order.
@@ -561,6 +562,7 @@ class FamilyMember:
                             people_list,
                             add_parent=True,
                             add_partners=True,
+                            add_partner_parents=False or deep,
                             generation=generation - 1,
                         ):
                     yield temp
@@ -570,20 +572,22 @@ class FamilyMember:
         for child in self.children:
             async for temp in child.span(
                         people_list,
-                        add_parent=False,
+                        add_parent=False or deep,
                         add_partners=True,
+                        add_partner_parents=False or deep,
                         generation=generation + 1,
                     ):
                 yield temp
                 await asyncio.sleep(0)
 
         # Return partner and their relations
-        if add_partners:
+        if add_partners or deep:
             for partner in self.partners:
                 async for temp in partner.span(
                             people_list,
-                            add_parent=add_partner_parents,
-                            add_partners=False,
+                            add_parent=add_partner_parents or deep,
+                            add_partners=False or deep,
+                            add_partner_parents=add_partner_parents or deep,
                             generation=generation,
                         ):
                     yield temp
@@ -596,7 +600,7 @@ class FamilyMember:
         See if the current user is related to another.
         """
 
-        async for _, i in self.span(add_parent=True, add_partners=True, add_partner_parents=True):
+        async for _, i in self.span(deep=True):
             if i == other:
                 return True
         return False

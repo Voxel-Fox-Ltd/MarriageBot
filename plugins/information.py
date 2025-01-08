@@ -300,10 +300,7 @@ class Information(client.Plugin):
         # Get the user's info and family size
         ft = u.FamilyMember.get(user.id, await u.get_guild_id(self.bot, ctx))
         span = set()
-        async for _, span_user in ft.span(
-                add_parent=True,
-                add_partners=True,
-                add_partner_parents=True):
+        async for _, span_user in ft.span(deep=True):
             span.add(span_user)
         size = len(span)
 

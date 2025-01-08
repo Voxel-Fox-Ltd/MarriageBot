@@ -296,9 +296,9 @@ async def handle_proposal(
     }
 
     async def chained():
-        async for i in author_ft.span(**kwargs):
+        async for i in author_ft.span(deep=True):
             yield i
-        async for i in user_ft.span(**kwargs):
+        async for i in user_ft.span(deep=True):
             yield i
 
     counter: int = 0
