@@ -35,4 +35,4 @@ plugins:
 - plugins.force_commands:ForceCommands
 database_dsn: '$MARRIAGEBOT_TEST_DSN'
 database_max_connections: 1
-
+weebsh_api_key: '$WEEBSH_API_KEY'
