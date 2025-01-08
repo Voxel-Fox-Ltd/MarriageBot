@@ -123,7 +123,7 @@ class Perks:
         if row is not None:
             return cls.three()
 
-        # Check VFL purchases
+        # Check VFL purchases for subscription
         url = "https://voxelfox.co.uk/api/portal/check"
         params = {
             "product_id": "b6586947-0ce4-4b1c-bf27-6713b33409d3",
@@ -135,7 +135,7 @@ class Perks:
                 data = await site.json()
         except Exception:
             data = {}
-        if data.get("success", False) and data.get("result"):
+        if data.get("success", False) and data.get("result", False):
             purchase_item_ids = [
                 i["product_id"]
                 for i in data["purchases"]
@@ -153,6 +153,21 @@ class Perks:
                 2: cls.two,
                 3: cls.three,
             }[tier]()
+
+        # # Check VFL purchases for Gold TEMPORARY
+        # url = "https://voxelfox.co.uk/api/portal/check"
+        # params = {
+        #     "product_id": "854856f5-5d98-47c6-860d-64bcf2654e36",
+        #     "discord_user_id": user_id,
+        # }
+        # try:
+        #     async with aiohttp.ClientSession() as session:
+        #         site = await asyncio.wait_for(session.get(url, params=params), timeout=3.0)
+        #         data = await site.json()
+        # except Exception:
+        #     data = {}
+        # if data.get("success", False) and data.get("result", False):
+        #     return cls.three()
 
         # No purchase, return default
         return cls.zero()
