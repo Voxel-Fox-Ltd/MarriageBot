@@ -84,7 +84,7 @@ class Simulation(client.Plugin):
         """
 
         # Make sure we have an API key
-        if not (api_key := self.bot.config.get("weebsh_api_key")):
+        if (api_key := self.bot.config.weebsh_api_key) is None:
             self.log.debug("No API key set for Weeb.sh")
             return None
 
