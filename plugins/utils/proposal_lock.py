@@ -307,7 +307,17 @@ async def handle_proposal(
 
     # Send the actual proposal message
     time_ = int(time.time() + PROPOSAL_TIMEOUT)
+    formatted_message = message.format(user=user.mention, author=ctx.user.mention)
+    content = ""
+    if ctx.user.mention in formatted_message:
+        content += " " + ctx.user.mention
+    if user.mention in formatted_message:
+        content += " " + user.mention
+    content = content.strip()
+    if content:
+        content = f"||{content}||"
     m = await ctx.followup(
+        content=content.strip(),
         embeds=e(message.format(user=user.mention, author=ctx.user.mention)),
         components=[
             n.ActionRow([
