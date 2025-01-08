@@ -312,7 +312,7 @@ class Information(client.Plugin):
             "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives.",
             "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives.",
             size,
-        )
+        ).format(number=size, user=user.mention)
         await ctx.send(embeds=u.e(output))
 
     @client.command(
