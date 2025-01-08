@@ -60,6 +60,10 @@ async def handle_marry_limits(
     Handle partner limits for both the author and the user.
     """
 
+    if author.id in user_ft._partner_ids:
+        await ctx.send(ctx._("You're already married!"))
+        return False
+
     author_perks = await Perks.get_perks_for_user(bot, ctx, author.id)
     user_perks = await Perks.get_perks_for_user(bot, ctx, user.id)
 
@@ -108,6 +112,10 @@ async def handle_adopt_limits(
     Handle adoption limits for the user.
     """
 
+    if user.id in author_ft._child_ids:
+        await ctx.send(ctx._("You're already their parent!"))
+        return False
+
     if user_ft._parent_id is not None:
         await ctx.send(
             (
@@ -144,6 +152,10 @@ async def handle_makeparent_limits(
     """
     Handle makeparent limits for the user.
     """
+
+    if author.id in user_ft._child_ids:
+        await ctx.send(ctx._("They're already your parent!"))
+        return False
 
     if author_ft._parent_id is not None:
         await ctx.send(
