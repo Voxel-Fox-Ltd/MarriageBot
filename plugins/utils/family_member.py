@@ -699,14 +699,7 @@ class FamilyMember:
         # Get all names that we'll need
         generations = [i async for i in generations_]
         all_users = itertools.chain.from_iterable(generations)
-        async with db.Database.acquire() as conn:
-            rows = await conn.fetch(
-                "SELECT * FROM usernames WHERE id = ANY($1::BIGINT[])",
-                [i.id for i in all_users],
-            )
-        all_user_names = {}
-        for row in rows:
-            all_user_names[row["id"]] = row["name"]
+        all_added_family_ids = set()
 
         # Set a var
         invisible = "[shape=point,width=0.001,style=invis]"
@@ -721,14 +714,6 @@ class FamilyMember:
             f"bgcolor={custom.hex['background']};"
             f"rankdir={custom.hex['direction']};"
         )
-
-        # Add all usernames to the tree
-        for uid in all_user_names.keys():
-            all_text += self.to_graphviz_label(
-                uid,
-                all_user_names,
-                custom if uid == self.id else None,
-            )
 
         # Go through the members for each generation
         for generation in generations:
@@ -745,6 +730,7 @@ class FamilyMember:
                 if person in added_already:
                     continue
                 added_already.append(person)
+                all_added_family_ids.add(person.id)
 
                 # Work out who the user's partners are
                 previous_partner = None
@@ -757,6 +743,7 @@ class FamilyMember:
                 except ValueError:
                     pass
                 filtered_possible_partners.insert(0, person)
+                all_added_family_ids.update([i.id for i in filtered_possible_partners])
 
                 # Add the user's partners
                 all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
@@ -787,10 +774,27 @@ class FamilyMember:
                     new_text = f"{person.id}:s -> p{person.id}:c;"
                     if new_text not in all_text:
                         all_text += new_text
+                    all_added_family_ids.update(person._child_ids)
                 for child in person.children:
                     new_text = f"p{person.id}:c -> {child.id}:n;"
                     if new_text not in all_text:
                         all_text += new_text
+
+        # Add all usernames to the tree
+        async with db.Database.acquire() as conn:
+            rows = await conn.fetch(
+                "SELECT * FROM usernames WHERE id = ANY($1::BIGINT[])",
+                list(all_added_family_ids),
+            )
+        all_user_names = {}
+        for row in rows:
+            all_user_names[row["id"]] = row["name"]
+        for uid in all_user_names.keys():
+            all_text += self.to_graphviz_label(
+                uid,
+                all_user_names,
+                custom if uid == self.id else None,
+            )
 
         # And we're done!
         all_text += "}"
