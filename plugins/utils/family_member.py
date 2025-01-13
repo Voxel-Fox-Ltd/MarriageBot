@@ -627,8 +627,9 @@ class FamilyMember:
 
         return
 
+    @staticmethod
     def to_graphviz_label(
-            self,
+            id: int,
             name: str | dict[int, str] | None = None,
             custom: CustomTree | None = None) -> str:
         """
@@ -637,20 +638,20 @@ class FamilyMember:
 
         name_str: str
         if name is None:
-            name_str = str(self.id)
+            name_str = str(id)
         elif isinstance(name, str):
             name_str = name
         else:
-            name_str = name.get(self.id, str(self.id))
+            name_str = name.get(id, str(id))
         name_str = name_str.replace('"', '\\"')
 
         if custom:
             return (
-                f'{self.id}[label="{name_str}",'
+                f'{id}[label="{name_str}",'
                 f'fillcolor={custom.hex["highlighted_node"]},'
                 f'fontcolor={custom.hex["highlighted_font"]}];'
             )
-        return f'{self.id}[label="{name_str}"];'
+        return f'{id}[label="{name_str}"];'
 
     async def to_dot_script(
             self,
@@ -721,6 +722,14 @@ class FamilyMember:
             f"rankdir={custom.hex['direction']};"
         )
 
+        # Add all usernames to the tree
+        for uid in all_user_names.keys():
+            all_text += self.to_graphviz_label(
+                uid,
+                all_user_names,
+                custom if uid == self.id else None,
+            )
+
         # Go through the members for each generation
         for generation in generations:
 
@@ -752,10 +761,6 @@ class FamilyMember:
                 # Add the user's partners
                 all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
                 for partner in filtered_possible_partners:
-                    all_text += partner.to_graphviz_label(
-                        all_user_names,
-                        custom if partner == self else None,
-                    )
                     if previous_partner is None:
                         previous_partner = partner
                         continue
