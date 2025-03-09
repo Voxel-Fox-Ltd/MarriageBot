@@ -68,12 +68,12 @@ class Settings(client.Plugin):
         async with db.Database.acquire() as conn:
             await conn.execute(
                 """INSERT INTO
-                    guild_settings (guild_id, server_specific_families)
+                    guild_settings (guild_id, guild_specific_families)
                     VALUES ($1, $2)
                 ON CONFLICT (guild_id)
                 DO UPDATE
                 SET
-                    server_specific_families = excluded.server_specific_families""",
+                    guild_specific_families = excluded.guild_specific_families""",
                 ctx.guild.id,
                 bool(enabled),
             )
@@ -81,7 +81,7 @@ class Settings(client.Plugin):
             await ctx.send(
                 ctx._(
                     "Guild-specific families are now **enabled** in this guild, and you can now "
-                    "use the force commands. Please note that this is a completely seperate tree "
+                    "use the force commands.\nPlease note that this is a completely seperate tree "
                     "than the global MarriageBot tree."
                 )
             )
@@ -134,12 +134,12 @@ class Settings(client.Plugin):
             await conn.execute(
                 """
                 INSERT INTO
-                    guild_settings (guild_id, gifs_enabled)
+                    guild_settings (guild_id, allow_incest)
                     VALUES ($1, $2)
                 ON CONFLICT (guild_id)
                 DO UPDATE
                 SET
-                    gifs_enabled = excluded.gifs_enabled""",
+                    allow_incest = excluded.allow_incest""",
                 ctx.guild.id,
                 bool(enabled),
             )
@@ -147,7 +147,7 @@ class Settings(client.Plugin):
         if enabled:
             await ctx.send(
                 ctx._(
-                    "Incest is now **enabled** in this guild. Please note that this only takes "
+                    "Incest is now **enabled** in this guild.\nPlease note that this only takes "
                     "effect if {guild_specific_command} is enabled."
                 ).format(guild_specific_command=guild_specific_command)
             )
