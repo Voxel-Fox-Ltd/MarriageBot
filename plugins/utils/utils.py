@@ -21,6 +21,7 @@ import random
 from typing import TYPE_CHECKING, Any
 
 import novus as n
+from novus.ext.database import database as db
 
 if TYPE_CHECKING:
     import asyncpg
@@ -78,8 +79,17 @@ async def get_guild_id(bot: client.Client, ctx: n.Interaction) -> int:
     Get the relevant guild ID for the current running instance of the bot.
     """
 
+    if bot.config.gold and ctx.guild:
+        return ctx.guild.id
     if ctx.guild:
-        return ctx.guild.id if bot.config.gold else 0
+        async with db.Database.acquire() as conn:
+            guild_specific: bool | None = await conn.fetchval(
+                "SELECT guild_specific_families FROM guild_settings WHERE guild_id=$1",
+                ctx.guild.id,
+            )
+            if guild_specific is None or guild_specific is False:
+                return 0
+            return ctx.guild.id
     return 0
 
 

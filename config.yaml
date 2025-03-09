@@ -26,13 +26,15 @@ intents:
 plugins:
 - novus.ext.database:Database
 - plugins.cache_handler:CacheHandler
+- plugins.force_commands:ForceCommands
 - plugins.information:Information
 - plugins.marriage:Marriage
 - plugins.name_handler:NameHandler
 - plugins.parents:Parents
 - plugins.proposal_handler:ProposalHandler
+- plugins.settings:Settings
 - plugins.simulation:Simulation
-- plugins.force_commands:ForceCommands
+- plugins.subscriber_commands:SubscriberCommands
 database_dsn: '$MARRIAGEBOT_TEST_DSN'
 database_max_connections: 1
 weebsh_api_key: '$WEEBSH_API_KEY'

@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS guild_settings(
     guild_id BIGINT NOT NULL,
+    guild_specific_families BOOLEAN DEFAULT FALSE,
     allow_incest BOOLEAN DEFAULT FALSE,
     gifs_enabled BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (guild_id)
