@@ -67,7 +67,13 @@ class Settings(client.Plugin):
 
         async with db.Database.acquire() as conn:
             await conn.execute(
-                "INSERT INTO guild_settings (guild_id, server_specific_families) VALUES ($1, $2)",
+                """INSERT INTO
+                    guild_settings (guild_id, server_specific_families)
+                    VALUES ($1, $2)
+                ON CONFLICT (guild_id)
+                DO UPDATE
+                SET
+                    server_specific_families = excluded.server_specific_families""",
                 ctx.guild.id,
                 bool(enabled),
             )
@@ -126,7 +132,14 @@ class Settings(client.Plugin):
 
         async with db.Database.acquire() as conn:
             await conn.execute(
-                "INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2)",
+                """
+                INSERT INTO
+                    guild_settings (guild_id, gifs_enabled)
+                    VALUES ($1, $2)
+                ON CONFLICT (guild_id)
+                DO UPDATE
+                SET
+                    gifs_enabled = excluded.gifs_enabled""",
                 ctx.guild.id,
                 bool(enabled),
             )
@@ -180,7 +193,14 @@ class Settings(client.Plugin):
 
         async with db.Database.acquire() as conn:
             await conn.execute(
-                "INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2)",
+                """
+                INSERT INTO
+                    guild_settings (guild_id, gifs_enabled)
+                    VALUES ($1, $2)
+                ON CONFLICT (guild_id)
+                DO UPDATE
+                SET
+                    gifs_enabled = excluded.gifs_enabled""",
                 ctx.guild.id,
                 bool(enabled),
             )
