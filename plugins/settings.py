@@ -69,7 +69,7 @@ class Settings(client.Plugin):
             await conn.execute(
                 "INSERT INTO guild_settings (guild_id, server_specific_families) VALUES ($1, $2)",
                 ctx.guild.id,
-                enabled,
+                bool(enabled),
             )
         if enabled:
             await ctx.send(
@@ -128,7 +128,7 @@ class Settings(client.Plugin):
             await conn.execute(
                 "INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2)",
                 ctx.guild.id,
-                enabled,
+                bool(enabled),
             )
         guild_specific_command = self.guild_specific_families_guild_settings.mention
         if enabled:
@@ -182,7 +182,7 @@ class Settings(client.Plugin):
             await conn.execute(
                 "INSERT INTO guild_settings (guild_id, gifs_enabled) VALUES ($1, $2)",
                 ctx.guild.id,
-                enabled,
+                bool(enabled),
             )
         if enabled:
             await ctx.send(ctx._("GIFs for the simulation commands are now **enabled**."))
