@@ -535,10 +535,10 @@ class FamilyMember:
     async def span(
             self,
             people_list: set[Self] | None = None,
-            add_parent: bool = True,
-            add_partners: bool = True,
-            add_partner_parents: bool = False,
             deep: bool = False,
+            *,
+            add_parent: bool = True,  # switch to no when looking at children of self
+            add_partners: bool = True,  # switch to no for non-deep searches
             generation: int = 0) -> AsyncGenerator[tuple[int, Self], None]:
         """
         Get all users related to the current user, in no particular order.
@@ -560,10 +560,23 @@ class FamilyMember:
             if self.parent:
                 async for temp in self.parent.span(
                             people_list,
+                            deep=deep,
                             add_parent=True,
                             add_partners=True,
-                            add_partner_parents=False or deep,
                             generation=generation - 1,
+                        ):
+                    yield temp
+                    await asyncio.sleep(0)
+
+        # Return partner and their relations
+        if add_partners:
+            for partner in self.partners:
+                async for temp in partner.span(
+                            people_list,
+                            deep=deep,
+                            add_parent=generation >= 0 or deep,
+                            add_partners=deep,
+                            generation=generation,
                         ):
                     yield temp
                     await asyncio.sleep(0)
@@ -572,26 +585,13 @@ class FamilyMember:
         for child in self.children:
             async for temp in child.span(
                         people_list,
-                        add_parent=False or deep,
+                        deep=deep,
+                        add_parent=False,
                         add_partners=True,
-                        add_partner_parents=False or deep,
                         generation=generation + 1,
                     ):
                 yield temp
                 await asyncio.sleep(0)
-
-        # Return partner and their relations
-        if add_partners or deep:
-            for partner in self.partners:
-                async for temp in partner.span(
-                            people_list,
-                            add_parent=add_partner_parents or deep,
-                            add_partners=False or deep,
-                            add_partner_parents=add_partner_parents or deep,
-                            generation=generation,
-                        ):
-                    yield temp
-                    await asyncio.sleep(0)
 
         return
 

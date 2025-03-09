@@ -411,14 +411,9 @@ class Information(client.Plugin):
             custom = await u.CustomTree.fetch(conn, ctx.user.id)
 
         # Get their dot script
-        kwargs = {
-        }
+        kwargs = {}
         if full_tree:
-            kwargs = {
-                "add_parents": True,
-                "add_partners": True,
-                "add_partner_parents": True,
-            }
+            kwargs = {"deep": True}
         try:
             dot_code = await asyncio.wait_for(
                 family_member.to_dot_script(custom, **kwargs),
