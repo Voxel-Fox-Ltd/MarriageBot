@@ -43,7 +43,7 @@ class Perks:
             self,
             max_children: int = 5,
             max_partners: int = 2,
-            can_run_fulltree: bool = False,
+            can_run_fulltree: bool = True,
             can_run_disownall: bool = False,
             tree_command_cooldown: int = 60,
             can_run_abandon: bool = False):

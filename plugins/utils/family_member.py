@@ -496,6 +496,9 @@ class FamilyMember:
             pass
         return user_object
 
+    def __str__(self) -> str:
+        return repr(self)
+
     def __repr__(self) -> str:
         attrs = (
             ("id", "id",),
@@ -734,10 +737,20 @@ class FamilyMember:
 
                 # Work out who the user's partners are
                 previous_partner = None
-                filtered_possible_partners = [*person.partners]
-                for p in filtered_possible_partners.copy():
-                    filtered_possible_partners.extend(p.partners)
-                filtered_possible_partners = [*list(set(filtered_possible_partners))]
+
+                partner_chain: list[FamilyMember] = []
+                partners_to_explore = [*person.partners]
+                while partners_to_explore:
+                    for p in partners_to_explore:
+                        partner_chain.append(p)
+                        for p2 in p.partners:
+                            if p2 not in all_users:
+                                continue
+                            if p2 not in partner_chain and p2 not in partners_to_explore:
+                                partners_to_explore.append(p2)
+                        partners_to_explore.remove(p)
+                filtered_possible_partners = [*list(set(partner_chain))]
+                log.info(filtered_possible_partners)
                 try:
                     filtered_possible_partners.remove(person)
                 except ValueError:
