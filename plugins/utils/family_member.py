@@ -500,15 +500,14 @@ class FamilyMember:
         return repr(self)
 
     def __repr__(self) -> str:
-        attrs = (
-            ("id", "id",),
-            ("children", "_child_ids",),
-            ("parent_id", "_parent_id",),
-            ("partners", "_partner_ids",),
-            ("guild_id", "guild_id",),
-        )
-        d = ", ".join(["%s=%r" % (i, getattr(self, o)) for i, o in attrs])
-        return f"{self.__class__.__name__}({d})"
+        builder = [f"id={self.id!r}", f"guild_id={self.guild_id!r}"]
+        if self._partner_ids:
+            builder.append(f"partners={self._partner_ids!r}")
+        if self._child_ids:
+            builder.append(f"children={self._child_ids!r}")
+        if self._parent_id:
+            builder.append(f"parent={self._parent_id!r}")
+        return f"{self.__class__.__name__}({', '.join(builder)})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, self.__class__):
@@ -811,4 +810,5 @@ class FamilyMember:
 
         # And we're done!
         all_text += "}"
+        log.info(all_text)
         return all_text
