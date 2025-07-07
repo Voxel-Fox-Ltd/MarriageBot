@@ -387,6 +387,9 @@ class Information(client.Plugin):
         Handles the generation and sending of the tree to the user.
         """
 
+        await ctx.send("This command has been temporarily disabled.")
+        return
+
         # Get their family tree
         guild_id: int = await u.get_guild_id(self.bot, ctx)
         family_member = u.FamilyMember.get(user_id, guild_id)
