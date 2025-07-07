@@ -75,21 +75,16 @@ async def get_names(
     return base
 
 
-async def get_guild_id(bot: client.Client, ctx: n.Interaction, log=None) -> int:
+async def get_guild_id(bot: client.Client, ctx: n.Interaction) -> int:
     """
     Get the relevant guild ID for the current running instance of the bot.
     """
 
-    log.debug(0.1)
     if bot.config.gold and ctx.guild:
         return ctx.guild.id
-    log.debug(0.2)
     if ctx.guild:
-        log.debug(0.3)
         async with db.Database.acquire() as conn:
-            log.debug(0.4)
             try:
-                log.debug(0.5)
                 guild_specific: bool | None = await asyncio.wait_for(
                     conn.fetchval(
                         "SELECT guild_specific_families FROM guild_settings WHERE guild_id=$1",
@@ -97,17 +92,11 @@ async def get_guild_id(bot: client.Client, ctx: n.Interaction, log=None) -> int:
                     ),
                     timeout=2.0,
                 )
-                log.debug(0.6)
             except asyncio.TimeoutError:
-                log.debug(0.7)
                 guild_specific = None
-        log.debug(0.8)
         if guild_specific is None or guild_specific is False:
-            log.debug(0.9)
             return 0
-        log.debug(0.11)
         return ctx.guild.id
-    log.debug(0.12)
     return 0
 
 
