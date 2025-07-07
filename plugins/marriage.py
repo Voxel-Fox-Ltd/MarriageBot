@@ -75,7 +75,7 @@ class Marriage(client.Plugin):
             partners = await u.FamilyMember.fetch_partners(
                 conn,
                 ctx.user,
-                await u.get_guild_id(self.bot, ctx),
+                await u.get_guild_id(self.bot, ctx, conn),
             )
             names = await u.get_names(conn, *[i[0] for i in partners])
 

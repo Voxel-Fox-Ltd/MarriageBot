@@ -139,7 +139,7 @@ class Parents(client.Plugin):
             children = await u.FamilyMember.fetch_children(
                 conn,
                 ctx.user,
-                await u.get_guild_id(self.bot, ctx),
+                await u.get_guild_id(self.bot, ctx, conn),
             )
             names = await u.get_names(conn, *[i[0] for i in children])
 
