@@ -34,24 +34,7 @@ class CacheHandler(client.Plugin):
 
     CACHE_LOG_NUMBER = 100_000
 
-    async def on_load(self) -> None:
-        """
-        Start the bot, get all rows, load into cache.
-        """
-
-        self.log.info("Starting cache process")
-        if (loaded_db := self.bot.get_plugin("Database")) is None:
-            raise SystemExit("Database not loaded before cache handler.")
-        await loaded_db.loaded.wait()
-        for _ in range(5):
-            try:
-                conn: asyncpg.Connection = await db.Database.pool.acquire()
-                break
-            except Exception as e:
-                self.log.error("Couldn't open database connection - %s", e)
-                await asyncio.sleep(1)
-        else:
-            raise SystemExit("Failed to cache any users")
+    async def fetch_partners(self, conn: asyncpg.Connection) -> None:
         partner_rows = await conn.fetch(
             "SELECT * FROM marriages",
         )
@@ -70,6 +53,8 @@ class CacheHandler(client.Plugin):
                     counter / len(partner_rows) * 100, counter, len(partner_rows)
                 )
         self.log.info("Cached %s partners", counter)
+
+    async def fetch_parents(self, conn: asyncpg.Connection) -> None:
         child_rows = await conn.fetch(
             "SELECT * FROM parents",
         )
@@ -88,6 +73,31 @@ class CacheHandler(client.Plugin):
                     counter / len(child_rows) * 100, counter, len(child_rows)
                 )
         self.log.info("Cached %s children", counter)
+
+    async def on_load(self) -> None:
+        """
+        Start the bot, get all rows, load into cache.
+        """
+
+        self.log.info("Starting cache process")
+        if (loaded_db := self.bot.get_plugin("Database")) is None:
+            raise SystemExit("Database not loaded before cache handler.")
+        await loaded_db.loaded.wait()
+        for _ in range(5):
+            try:
+                conn: asyncpg.Connection = await db.Database.pool.acquire()
+                break
+            except Exception as e:
+                self.log.error("Couldn't open database connection - %s", e)
+                await asyncio.sleep(1)
+        else:
+            raise SystemExit("Failed to cache any users")
+
+        await asyncio.wait([
+            asyncio.create_task(self.fetch_partners(conn)),
+            asyncio.create_task(self.fetch_parents(conn)),
+        ])
+
         await conn.close()
         self.log.info("Cached %s total users", len(u.FamilyMember.ALL_MEMBERS))
 
