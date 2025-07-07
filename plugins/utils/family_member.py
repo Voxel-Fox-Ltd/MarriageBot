@@ -727,12 +727,13 @@ class FamilyMember:
         #     )
 
         # Make some initial digraph stuff
+        edge = f"edge [dir=none,color={custom.hex['edge']}];"
         all_text: str = (
             "digraph {"
             f"node [shape=box,fontcolor={custom.hex['font']},"
             f"color={custom.hex['edge']},"
             f"fillcolor={custom.hex['node']},style=filled];"
-            f"edge [dir=none,color={custom.hex['edge']}];"
+            f"{edge}"
             f"bgcolor={custom.hex['background']};"
             f"rankdir={custom.hex['direction']};"
         )
@@ -777,7 +778,7 @@ class FamilyMember:
                 all_added_family_ids.update([i.id for i in filtered_possible_partners])
 
                 # Add the user's partners
-                all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
+                all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;{edge}"
                 partner = None
                 for partner in filtered_possible_partners:
                     if previous_partner is None:
@@ -836,5 +837,6 @@ class FamilyMember:
 
         # Remove some empty subgraphs and rank=sames
         all_text = re.sub(r'{\s*rank=same;\s*}', '', all_text)
+        all_text = re.sub(r'{\s*rank=same;\s*' + edge + r'\s*}', '', all_text)
         all_text = re.sub(r'subgraph cluster[a-zA-Z0-9]+{\s*peripheries=0;\s*}', '', all_text)
         return all_text
