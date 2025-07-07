@@ -1,8 +1,8 @@
-token: '$DISCORD_TEST_TOKEN'
-pubkey: ''
+token: '$TOKEN'
+pubkey: '2b1dd2aa67b206de42831bab4e8f4662b0a3ebe9d95b7d6cb30c43976a6b0a01'
 gold: false
 shard_ids: null
-shard_count: 1
+shard_count: 1040
 intents:
   guilds: false
   guild_members: false
@@ -35,6 +35,6 @@ plugins:
 - plugins.settings:Settings
 - plugins.simulation:Simulation
 - plugins.subscriber_commands:SubscriberCommands
-database_dsn: '$MARRIAGEBOT_TEST_DSN'
-database_max_connections: 1
+database_dsn: '$DSN'
+database_max_connections: 50
 weebsh_api_key: '$WEEBSH_API_KEY'
