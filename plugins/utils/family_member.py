@@ -758,7 +758,6 @@ class FamilyMember:
                                 partners_to_explore.append(p2)
                         partners_to_explore.remove(p)
                 filtered_possible_partners = [*list(set(partner_chain))]
-                log.info(filtered_possible_partners)
                 try:
                     filtered_possible_partners.remove(person)
                 except ValueError:
@@ -813,5 +812,4 @@ class FamilyMember:
 
         # And we're done!
         all_text += "}"
-        log.info(all_text)
         return all_text
