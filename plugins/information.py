@@ -71,12 +71,10 @@ class Information(client.Plugin):
             self.log.debug(2)
 
             try:
-                gid = await u.get_guild_id(self.bot, ctx)
+                gid = await u.get_guild_id(self.bot, ctx, self.log)
             except Exception as e:
                 self.log.error("Failed to get guild ID: %s", e)
-                return await ctx.send(
-                    embeds=u.e(ctx._("An error occurred while fetching the guild ID."))
-                )
+                raise e
             self.log.debug(2.5)
 
             partners = await u.FamilyMember.fetch_partners(
