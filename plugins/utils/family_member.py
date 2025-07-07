@@ -716,6 +716,16 @@ class FamilyMember:
         # Set a var
         invisible = "[shape=point,width=0.001,style=invis]"
 
+        # Add all usernames to the tree
+        async with db.Database.acquire() as conn:
+            all_user_names = await get_names(conn, *all_added_family_ids)
+        for uid in all_user_names.keys():
+            all_user_names[uid] = self.to_graphviz_label(
+                uid,
+                all_user_names,
+                custom if uid == self.id else None,
+            )
+
         # Make some initial digraph stuff
         all_text: str = (
             "digraph {"
@@ -779,8 +789,11 @@ class FamilyMember:
                             and alt_partner_link not in all_text
                             and partner != previous_partner):
                         all_text += partner_link
+                        all_text += all_user_names.pop(previous_partner.id)
                     added_already.append(partner)
                     previous_partner = partner
+                else:
+                    all_text += all_user_names.pop(partner.id)
                 all_text += "}" + "}"
 
             # Go through the people in the generation and see if they have
@@ -801,15 +814,9 @@ class FamilyMember:
                     if new_text not in all_text:
                         all_text += new_text
 
-        # Add all usernames to the tree
-        async with db.Database.acquire() as conn:
-            all_user_names = await get_names(conn, *all_added_family_ids)
-        for uid in all_user_names.keys():
-            all_text += self.to_graphviz_label(
-                uid,
-                all_user_names,
-                custom if uid == self.id else None,
-            )
+        # Add all remaining usernames to the tree
+        for v in all_user_names.values():
+            all_text += v
 
         # And we're done!
         all_text += "}"
