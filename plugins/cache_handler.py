@@ -65,7 +65,7 @@ class CacheHandler(client.Plugin):
             counter += 1
             if counter % self.CACHE_LOG_NUMBER == 0:
                 self.log.info(
-                    "Cached %%%s (%s of %s) partners",
+                    "Cached %.2f%% (%s of %s) partners",
                     counter / len(partner_rows) * 100, counter, len(partner_rows)
                 )
         self.log.info("Cached %s partners", counter)
@@ -83,7 +83,7 @@ class CacheHandler(client.Plugin):
             counter += 1
             if counter % self.CACHE_LOG_NUMBER == 0:
                 self.log.info(
-                    "Cached %%%s (%s of %s) children",
+                    "Cached %.2f%% (%s of %s) children",
                     counter / len(child_rows) * 100, counter, len(child_rows)
                 )
         self.log.info("Cached %s children", counter)
