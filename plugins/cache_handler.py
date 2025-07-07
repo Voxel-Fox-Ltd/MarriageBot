@@ -31,6 +31,8 @@ if TYPE_CHECKING:
 
 class CacheHandler(client.Plugin):
 
+    CACHE_LOG_NUMBER = 100_000
+
     async def on_load(self) -> None:
         """
         Start the bot, get all rows, load into cache.
@@ -52,6 +54,7 @@ class CacheHandler(client.Plugin):
         partner_rows = await conn.fetch(
             "SELECT * FROM marriages",
         )
+        counter = 0
         for r in partner_rows:
             (
                 u.FamilyMember
@@ -59,9 +62,17 @@ class CacheHandler(client.Plugin):
                 .add_partner(r["partner_id"])
             )
             await asyncio.sleep(0)
+            counter += 1
+            if counter % self.CACHE_LOG_NUMBER == 0:
+                self.log.info(
+                    "Cached %%%s (%s of %s) partners",
+                    counter / len(partner_rows) * 100, counter, len(partner_rows)
+                )
+        self.log.info("Cached %s partners", counter)
         child_rows = await conn.fetch(
             "SELECT * FROM parents",
         )
+        counter = 0
         for r in child_rows:
             (
                 u.FamilyMember
@@ -69,5 +80,12 @@ class CacheHandler(client.Plugin):
                 .add_parent(r["parent_id"])
             )
             await asyncio.sleep(0)
+            counter += 1
+            if counter % self.CACHE_LOG_NUMBER == 0:
+                self.log.info(
+                    "Cached %%%s (%s of %s) children",
+                    counter / len(child_rows) * 100, counter, len(child_rows)
+                )
+        self.log.info("Cached %s children", counter)
         await conn.close()
-        self.log.info("Cached %s users", len(u.FamilyMember.ALL_MEMBERS))
+        self.log.info("Cached %s total users", len(u.FamilyMember.ALL_MEMBERS))
