@@ -778,6 +778,7 @@ class FamilyMember:
 
                 # Add the user's partners
                 all_text += f"subgraph cluster{get_cluster_name()}{{peripheries=0;{{rank=same;"
+                partner = None
                 for partner in filtered_possible_partners:
                     if previous_partner is None:
                         previous_partner = partner
@@ -789,11 +790,12 @@ class FamilyMember:
                             and alt_partner_link not in all_text
                             and partner != previous_partner):
                         all_text += partner_link
-                        all_text += all_user_names.pop(previous_partner.id)
+                        all_text += all_user_names.pop(previous_partner.id, "")
                     added_already.append(partner)
                     previous_partner = partner
                 else:
-                    all_text += all_user_names.pop(partner.id)
+                    if partner:
+                        all_text += all_user_names.pop(partner.id, "")
                 all_text += "}" + "}"
 
             # Go through the people in the generation and see if they have
