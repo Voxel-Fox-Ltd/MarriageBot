@@ -586,7 +586,7 @@ class FamilyMember:
                 async for temp in partner.span(
                             people_list,
                             deep=deep,
-                            add_parent=generation >= 0 or deep,
+                            add_parent=deep,
                             add_partners=deep,
                             generation=generation,
                         ):
