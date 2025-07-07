@@ -490,5 +490,6 @@ class Information(client.Plugin):
         )
 
         # Delete the files
+        await asyncio.sleep(10)
         asyncio.create_task(asyncio.create_subprocess_exec("rm", dot_filename))
         asyncio.create_task(asyncio.create_subprocess_exec("rm", image_filename))
