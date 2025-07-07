@@ -38,6 +38,8 @@ import novus as n
 from novus.ext import database as db
 from typing_extensions import Self
 
+from .utils import get_names
+
 if TYPE_CHECKING:
     import asyncpg
 
@@ -801,13 +803,7 @@ class FamilyMember:
 
         # Add all usernames to the tree
         async with db.Database.acquire() as conn:
-            rows = await conn.fetch(
-                "SELECT * FROM usernames WHERE id = ANY($1::BIGINT[])",
-                list(all_added_family_ids),
-            )
-        all_user_names = {}
-        for row in rows:
-            all_user_names[row["id"]] = row["name"]
+            all_user_names = await get_names(conn, *all_added_family_ids)
         for uid in all_user_names.keys():
             all_text += self.to_graphviz_label(
                 uid,
