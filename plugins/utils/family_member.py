@@ -716,16 +716,15 @@ class FamilyMember:
         # Set a var
         invisible = "[shape=point,width=0.001,style=invis]"
 
-        # Add all usernames to the tree
-        async with db.Database.acquire() as conn:
-            # all_user_names = await get_names(conn, *all_added_family_ids)
-            all_user_names = await get_names(conn, *[i.id for i in all_users])
-        for uid in all_user_names.keys():
-            all_user_names[uid] = self.to_graphviz_label(
-                uid,
-                all_user_names,
-                custom if uid == self.id else None,
-            )
+        # # Add all usernames to the tree
+        # async with db.Database.acquire() as conn:
+        #     all_user_names = await get_names(conn, *[i.id for i in all_users])
+        # for uid in all_user_names.keys():
+        #     all_user_names[uid] = self.to_graphviz_label(
+        #         uid,
+        #         all_user_names,
+        #         custom if uid == self.id else None,
+        #     )
 
         # Make some initial digraph stuff
         all_text: str = (
@@ -784,19 +783,21 @@ class FamilyMember:
                     if previous_partner is None:
                         previous_partner = partner
                         continue
-                    partner_link = f"{previous_partner.id} -> {partner.id};"
-                    alt_partner_link = f"{partner.id} -> {previous_partner.id};"
+                    # partner_link = f"{previous_partner.id} -> {partner.id};"
+                    # alt_partner_link = f"{partner.id} -> {previous_partner.id};"
+                    partner_link = f"{previous_partner.id}:e -> {partner.id}:w;"
+                    alt_partner_link = f"{partner.id}:e -> {previous_partner.id}:w;"
                     if (
                             partner_link not in all_text
                             and alt_partner_link not in all_text
                             and partner != previous_partner):
                         all_text += partner_link
-                        all_text += all_user_names.pop(previous_partner.id, "")
+                        # all_text += all_user_names.pop(previous_partner.id, "")
                     added_already.append(partner)
                     previous_partner = partner
-                else:
-                    if partner:
-                        all_text += all_user_names.pop(partner.id, "")
+                # else:
+                #     if partner:
+                #         all_text += all_user_names.pop(partner.id, "")
                 all_text += "}" + "}"
 
             # Go through the people in the generation and see if they have
@@ -818,8 +819,17 @@ class FamilyMember:
                         all_text += new_text
 
         # Add all remaining usernames to the tree
-        for v in all_user_names.values():
-            all_text += v
+        # for v in all_user_names.values():
+        #     all_text += v
+        # Add all usernames to the tree
+        async with db.Database.acquire() as conn:
+            all_user_names = await get_names(conn, *all_added_family_ids)
+        for uid in all_user_names.keys():
+            all_text += self.to_graphviz_label(
+                uid,
+                all_user_names,
+                custom if uid == self.id else None,
+            )
 
         # And we're done!
         all_text += "}"
