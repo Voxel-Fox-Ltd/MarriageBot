@@ -63,20 +63,39 @@ class Information(client.Plugin):
         Shows you a list of partners for a user.
         """
 
+        self.log.debug(1)
+
         # Get user and their partner names
         async with db.Database.acquire() as conn:
+
+            self.log.debug(2)
+
+            try:
+                gid = await u.get_guild_id(self.bot, ctx)
+            except Exception as e:
+                self.log.error("Failed to get guild ID: %s", e)
+                return await ctx.send(
+                    embeds=u.e(ctx._("An error occurred while fetching the guild ID."))
+                )
+            self.log.debug(2.5)
+
             partners = await u.FamilyMember.fetch_partners(
                 conn,
                 user,
-                await u.get_guild_id(self.bot, ctx),
+                gid,
             )
+            self.log.debug(3)
             partner_names = await u.get_names(conn, *[i[0] for i in partners])
+
+        self.log.debug(4)
 
         # Sort into a dict
         partner_info = {
             i[0]: (partner_names[i[0]], i[1])
             for i in partners
         }
+
+        self.log.debug(5)
 
         # No partners
         if not partner_info:
@@ -91,6 +110,8 @@ class Information(client.Plugin):
                 ),
             )
 
+        self.log.debug(6)
+
         # One partner
         if len(partner_info) == 1:
             pi = list(partner_info.values())[0]
@@ -100,6 +121,8 @@ class Information(client.Plugin):
                     .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
                 ),
             )
+
+        self.log.debug(7)
 
         # Multiple partners
         lines = "\n".join([
