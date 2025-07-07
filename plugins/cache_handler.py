@@ -20,6 +20,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
+import novus as n
 from novus.ext import client
 from novus.ext import database as db
 
@@ -89,3 +90,37 @@ class CacheHandler(client.Plugin):
         self.log.info("Cached %s children", counter)
         await conn.close()
         self.log.info("Cached %s total users", len(u.FamilyMember.ALL_MEMBERS))
+
+    @client.loop(10)
+    async def get_name_loop(self) -> None:
+        """
+        Loop the util set of missing names to add them to the database.
+        """
+
+        if not u.missing_user_names:
+            return
+
+        # threadsafe loop through u.missing_user_names, fetch the id from discord, and store in db
+        async with db.Database.acquire() as conn:
+            for id in u.missing_user_names.copy():
+                self.log.info("Fetching username for ID %s", id)
+                try:
+                    user = await n.User.fetch(self.state, id)
+                except n.NotFound:
+                    name = f"Deleted User[{id}]"
+                except n.Forbidden:
+                    name = f"Private User[{id}]"
+                except n.HTTPException as e:
+                    self.log.error("Failed to fetch user %s - %s", id, e)
+                    await asyncio.sleep(60)  # just in case it was a rate limit
+                    continue
+                else:
+                    name = str(user)
+                if not name:
+                    continue
+                await conn.execute(
+                    "INSERT INTO usernames (id, name) VALUES ($1, $2) "
+                    "ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name",
+                    id, name,
+                )
+                u.missing_user_names.discard(id)

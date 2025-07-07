@@ -37,7 +37,11 @@ __all__ = (
     "get_upsell_button",
     "get_upsell_row",
     "get_upsell_components",
+    "missing_user_names",
 )
+
+
+missing_user_names = set()
 
 
 def mint(*x: Any) -> tuple[int, ...]:
@@ -71,6 +75,8 @@ async def get_names(
     base = {i: f"User[{i}]" for i in ids}
     for r in rows:
         base[r["id"]] = r["name"]
+    not_found = set(ids) - {r["id"] for r in rows}
+    missing_user_names.update(not_found)
     return base
 
 

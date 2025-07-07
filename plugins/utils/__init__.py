@@ -39,4 +39,5 @@ __all__: tuple[str, ...] = (
     "get_upsell_row",
     "handle_proposal",
     "mint",
+    "missing_user_names",
 )
