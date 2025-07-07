@@ -710,7 +710,7 @@ class FamilyMember:
 
         # Get all names that we'll need
         generations = [i async for i in generations_]
-        all_users = itertools.chain.from_iterable(generations)
+        all_users = list(itertools.chain.from_iterable(generations))
         all_added_family_ids = set()
 
         # Set a var
@@ -816,5 +816,5 @@ class FamilyMember:
 
         # Remove some empty subgraphs and rank=sames
         all_text = re.sub(r'{\s*rank=same;\s*}', '', all_text)
-        all_text = re.sub(r'subgraph cluster[a-zA-Z]+{\s*}', '', all_text)
+        all_text = re.sub(r'subgraph cluster[a-zA-Z0-9]+{\s*peripheries=0;\s*}', '', all_text)
         return all_text
