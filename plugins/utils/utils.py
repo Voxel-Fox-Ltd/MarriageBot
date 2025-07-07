@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
+import asyncio
 import random
 from typing import TYPE_CHECKING, Any
 
@@ -83,13 +84,19 @@ async def get_guild_id(bot: client.Client, ctx: n.Interaction) -> int:
         return ctx.guild.id
     if ctx.guild:
         async with db.Database.acquire() as conn:
-            guild_specific: bool | None = await conn.fetchval(
-                "SELECT guild_specific_families FROM guild_settings WHERE guild_id=$1",
-                ctx.guild.id,
-            )
-            if guild_specific is None or guild_specific is False:
-                return 0
-            return ctx.guild.id
+            try:
+                guild_specific: bool | None = await asyncio.wait_for(
+                    conn.fetchval(
+                        "SELECT guild_specific_families FROM guild_settings WHERE guild_id=$1",
+                        ctx.guild.id,
+                    ),
+                    timeout=2.0,
+                )
+            except asyncio.TimeoutError:
+                guild_specific = None
+        if guild_specific is None or guild_specific is False:
+            return 0
+        return ctx.guild.id
     return 0
 
 
