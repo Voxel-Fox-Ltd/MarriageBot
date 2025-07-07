@@ -34,6 +34,48 @@ class CacheHandler(client.Plugin):
 
     CACHE_LOG_NUMBER = 100_000
 
+    async def fetch_partners(self) -> None:
+        async with db.Database.acquire() as conn:
+            partner_rows = await conn.fetch(
+                "SELECT * FROM marriages",
+            )
+        counter = 0
+        for r in partner_rows:
+            (
+                u.FamilyMember
+                .get(r["user_id"], guild_id=r["guild_id"])
+                .add_partner(r["partner_id"])
+            )
+            await asyncio.sleep(0)
+            counter += 1
+            if counter % self.CACHE_LOG_NUMBER == 0:
+                self.log.info(
+                    "Cached %.2f%% (%s of %s) partners",
+                    counter / len(partner_rows) * 100, counter, len(partner_rows)
+                )
+        self.log.info("Cached %s partners", counter)
+
+    async def fetch_parents(self) -> None:
+        async with db.Database.acquire() as conn:
+            child_rows = await conn.fetch(
+                "SELECT * FROM parents",
+            )
+        counter = 0
+        for r in child_rows:
+            (
+                u.FamilyMember
+                .get(r["child_id"], guild_id=r["guild_id"])
+                .add_parent(r["parent_id"])
+            )
+            await asyncio.sleep(0)
+            counter += 1
+            if counter % self.CACHE_LOG_NUMBER == 0:
+                self.log.info(
+                    "Cached %.2f%% (%s of %s) children",
+                    counter / len(child_rows) * 100, counter, len(child_rows)
+                )
+        self.log.info("Cached %s children", counter)
+
     async def on_load(self) -> None:
         """
         Start the bot, get all rows, load into cache.
@@ -52,43 +94,12 @@ class CacheHandler(client.Plugin):
                 await asyncio.sleep(1)
         else:
             raise SystemExit("Failed to cache any users")
-        partner_rows = await conn.fetch(
-            "SELECT * FROM marriages",
-        )
-        counter = 0
-        for r in partner_rows:
-            (
-                u.FamilyMember
-                .get(r["user_id"], guild_id=r["guild_id"])
-                .add_partner(r["partner_id"])
-            )
-            await asyncio.sleep(0)
-            counter += 1
-            if counter % self.CACHE_LOG_NUMBER == 0:
-                self.log.info(
-                    "Cached %.2f%% (%s of %s) partners",
-                    counter / len(partner_rows) * 100, counter, len(partner_rows)
-                )
-        self.log.info("Cached %s partners", counter)
-        child_rows = await conn.fetch(
-            "SELECT * FROM parents",
-        )
-        counter = 0
-        for r in child_rows:
-            (
-                u.FamilyMember
-                .get(r["child_id"], guild_id=r["guild_id"])
-                .add_parent(r["parent_id"])
-            )
-            await asyncio.sleep(0)
-            counter += 1
-            if counter % self.CACHE_LOG_NUMBER == 0:
-                self.log.info(
-                    "Cached %.2f%% (%s of %s) children",
-                    counter / len(child_rows) * 100, counter, len(child_rows)
-                )
-        self.log.info("Cached %s children", counter)
         await conn.close()
+
+        await asyncio.wait([
+            asyncio.create_task(self.fetch_partners()),
+            asyncio.create_task(self.fetch_parents()),
+        ])
         self.log.info("Cached %s total users", len(u.FamilyMember.ALL_MEMBERS))
 
     @client.loop(10)
