@@ -22,6 +22,7 @@ import collections
 import itertools
 import logging
 import random
+import re
 import string
 from typing import (
     TYPE_CHECKING,
@@ -812,4 +813,8 @@ class FamilyMember:
 
         # And we're done!
         all_text += "}"
+
+        # Remove some empty subgraphs and rank=sames
+        all_text = re.sub(r'{\s*rank=same;\s*}', '', all_text)
+        all_text = re.sub(r'subgraph cluster[a-zA-Z]+{\s*}', '', all_text)
         return all_text
