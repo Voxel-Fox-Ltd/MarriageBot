@@ -718,7 +718,8 @@ class FamilyMember:
 
         # Add all usernames to the tree
         async with db.Database.acquire() as conn:
-            all_user_names = await get_names(conn, *all_added_family_ids)
+            # all_user_names = await get_names(conn, *all_added_family_ids)
+            all_user_names = await get_names(conn, *[i.id for i in all_users])
         for uid in all_user_names.keys():
             all_user_names[uid] = self.to_graphviz_label(
                 uid,
