@@ -727,6 +727,7 @@ class FamilyMember:
             f"bgcolor={custom.hex['background']};"
             f"rankdir={custom.hex['direction']};"
         )
+        pclink = ("s", "n") if custom.direction == "TB" else ("e", "w")  # parent-child link
 
         # Go through the members for each generation
         for generation in generations:
@@ -794,12 +795,12 @@ class FamilyMember:
             # Add the lines from parent to node to child
             for person in generation:
                 if person._child_ids:
-                    new_text = f"{person.id}:s -> p{person.id}:c;"
+                    new_text = f"{person.id}:{pclink[0]} -> p{person.id}:c;"
                     if new_text not in all_text:
                         all_text += new_text
                     all_added_family_ids.update(person._child_ids)
                 for child in person.children:
-                    new_text = f"p{person.id}:c -> {child.id}:n;"
+                    new_text = f"p{person.id}:c -> {child.id}:{pclink[1]};"
                     if new_text not in all_text:
                         all_text += new_text
 
