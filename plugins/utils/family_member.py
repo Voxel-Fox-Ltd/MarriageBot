@@ -273,7 +273,10 @@ class FamilyMember:
             u = r["user_id"]
             if u == user:
                 u = r["partner_id"]
-            ret.append((u, n.utils.parse_timestamp(r["timestamp"]),))
+            ts = n.utils.parse_timestamp(r["timestamp"])
+            if ts is None:
+                ts = n.utils.DiscordDatetime.fromtimestamp(1531717331)
+            ret.append((u, ts,))
         return ret
 
     @classmethod
@@ -300,8 +303,9 @@ class FamilyMember:
             """,
             user, guild_id,
         )
+        dts = n.utils.DiscordDatetime.fromtimestamp(1531717331)
         return [
-            (r["child_id"], n.utils.parse_timestamp(r["timestamp"]),)
+            (r["child_id"], n.utils.parse_timestamp(r["timestamp"]) or dts,)
             for r in rows
         ]
 
@@ -331,7 +335,10 @@ class FamilyMember:
         )
         if not rows:
             return None
-        return (rows[0]["parent_id"], n.utils.parse_timestamp(rows[0]["timestamp"]),)
+        ts = n.utils.parse_timestamp(rows[0]["timestamp"])
+        if ts is None:
+            ts = n.utils.DiscordDatetime.fromtimestamp(1531717331)
+        return (rows[0]["parent_id"], ts,)
 
     @staticmethod
     def _get_id(user: AnyUser) -> int:
