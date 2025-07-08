@@ -28,6 +28,21 @@ from . import utils as u
 
 class Settings(client.Plugin):
 
+    @client.event.filtered_component(r"^ENABLE_GOLD$")
+    async def on_enable_gold_button_press(self, ctx: t.ComponentGI) -> None:
+        """
+        Pinged when a user clicks the enable gold button.
+        """
+
+        if not ctx.guild:
+            return await ctx.send("This is only available from within servers.")
+        async with db.Database.acquire() as conn:
+            available = await u.get_gold_purchased(ctx, conn)
+        if available:
+            await self.guild_specific_families_guild_settings(ctx, 1)
+        else:
+            return await ctx.send(ctx._("Gold has not been purchased for this guild."))
+
     @client.command(
         name="guild-settings guild-specific-families",
         description="Set whether or not guild-specific families are enabled for this guild.",
@@ -67,13 +82,21 @@ class Settings(client.Plugin):
 
         async with db.Database.acquire() as conn:
             await conn.execute(
-                """INSERT INTO
-                    guild_settings (guild_id, guild_specific_families)
-                    VALUES ($1, $2)
-                ON CONFLICT (guild_id)
+                """
+                INSERT INTO
+                    guild_settings
+                    (
+                        guild_id,
+                        guild_specific_families
+                    )
+                VALUES
+                    ($1, $2)
+                ON CONFLICT
+                    (guild_id)
                 DO UPDATE
                 SET
-                    guild_specific_families = excluded.guild_specific_families""",
+                    guild_specific_families = excluded.guild_specific_families
+                """,
                 ctx.guild.id,
                 bool(enabled),
             )
