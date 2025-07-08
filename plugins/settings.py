@@ -80,6 +80,14 @@ class Settings(client.Plugin):
         Set whether or not guild-specific families are enabled for this guild.
         """
 
+        if self.bot.config.gold:
+            return await ctx.send(ctx._(
+                "This command cannot be run on the Gold version of MarriageBot. "
+                "The regular version of MarriageBot now allows you to toggle between "
+                "guild-specific families and global families.\n\nTo use this command, please "
+                "change over to the regular version of MarriageBot and run this command."
+            ))
+
         async with db.Database.acquire() as conn:
             await conn.execute(
                 """
