@@ -100,20 +100,24 @@ class Settings(client.Plugin):
                 ctx.guild.id,
                 bool(enabled),
             )
+
+        command = self.guild_specific_families_guild_settings
         if enabled:
             await ctx.send(
                 ctx._(
                     "Guild-specific families are now **enabled** in this guild, and you can now "
                     "use the force commands.\nPlease note that this is a completely seperate tree "
-                    "than the global MarriageBot tree."
-                )
+                    "than the global MarriageBot tree.\n\nYou can switch back to the global tree "
+                    "by using the {guild_specific_command} command :3"
+                ).format(command.mention)
             )
         else:
             await ctx.send(
                 ctx._(
                     "Guild-specific families are now **disabled** in this guild. You are now "
-                    "switched back to the global MarriageBot tree."
-                )
+                    "switched back to the global MarriageBot tree.\n\nYou can switch back to your "
+                    "guild-specific tree by using the {guild_specific_command} command :3"
+                ).format(command.mention)
             )
 
     @client.command(
@@ -153,6 +157,15 @@ class Settings(client.Plugin):
         Set whether or not incest is enabled for this guild.
         """
 
+        # See if gold is enabled
+        guild_id, gold_available = await u.get_guild_id_and_gold(self.bot, ctx)
+        if guild_id == 0:
+            components = u.get_upsell_components(ctx, gold=True, enable_gold_button=gold_available)
+            return await ctx.send(
+                ctx._("This command can only be run with MarriageBot Gold enabled!"),
+                components=components,
+            )
+
         async with db.Database.acquire() as conn:
             await conn.execute(
                 """
@@ -170,8 +183,8 @@ class Settings(client.Plugin):
         if enabled:
             await ctx.send(
                 ctx._(
-                    "Incest is now **enabled** in this guild.\nPlease note that this only takes "
-                    "effect if {guild_specific_command} is enabled."
+                    "Incest is now **enabled** in this guild.\n\nPlease note that this only "
+                    "applies to your guild-specific tree - if {guild_specific_command} is enabled."
                 ).format(guild_specific_command=guild_specific_command)
             )
         else:

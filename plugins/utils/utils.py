@@ -39,6 +39,7 @@ __all__ = (
     "get_upsell_components",
     "missing_user_names",
     "get_gold_purchased",
+    "get_guild_id_and_gold",
 )
 
 
@@ -133,6 +134,24 @@ async def get_gold_purchased(
     return val is not None
 
 
+async def get_guild_id_and_gold(
+        bot: client.Client,
+        ctx: n.Interaction,
+        conn: asyncpg.Connection | None = None) -> tuple[int, bool]:
+    """
+    Get the guild ID and whether or not Gold has been purchased for this guild.
+    """
+
+    if conn is None:
+        async with db.Database.acquire() as conn:
+            guild_id = await get_guild_id(bot, ctx, conn)
+            gold_purchased = await get_gold_purchased(ctx, conn)
+    else:
+        guild_id = await get_guild_id(bot, ctx, conn)
+        gold_purchased = await get_gold_purchased(ctx, conn)
+    return guild_id, gold_purchased
+
+
 def e(content: str, image_url: str | None = None, gold: bool = False) -> list[n.Embed]:
     """
     Take a string and shove it into an embed.
@@ -189,14 +208,24 @@ def get_upsell_button(
 
 
 def get_upsell_row(
-        ctx: n.Interaction | None = None,
+        ctx: n.Interaction,
         *,
-        gold: bool = False) -> n.ActionRow:
-    return n.ActionRow([get_upsell_button(ctx, gold=gold)])
+        gold: bool = False,
+        enable_gold_button: bool = False) -> n.ActionRow:
+    row = []
+    if enable_gold_button:
+        row.append(n.Button(
+            label=ctx._("Enable Gold"),
+            style=n.ButtonStyle.PRIMARY,
+            custom_id="ENABLE_GOLD",
+        ))
+    row.append(get_upsell_button(ctx, gold=gold))
+    return n.ActionRow(row)
 
 
 def get_upsell_components(
-        ctx: n.Interaction | None = None,
+        ctx: n.Interaction,
         *,
-        gold: bool = False) -> list[n.ActionRow]:
-    return [get_upsell_row(ctx, gold=gold)]
+        gold: bool = False,
+        enable_gold_button: bool = False) -> list[n.ActionRow]:
+    return [get_upsell_row(ctx, gold=gold, enable_gold_button=enable_gold_button)]

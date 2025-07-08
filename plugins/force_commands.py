@@ -69,16 +69,9 @@ class ForceCommands(client.Plugin):
         Force two users to marry each other.
         """
 
-        if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
-            if await u.get_gold_purchased(ctx):
-                components = u.get_upsell_components(ctx, gold=True)
-                components[0].components.insert(0, n.Button(
-                    label=ctx._("Enable Gold"),
-                    style=n.ButtonStyle.PRIMARY,
-                    custom_id="ENABLE_GOLD",
-                ))
-            else:
-                components = u.get_upsell_components(ctx, gold=True)
+        guild_id, gold_available = await u.get_guild_id_and_gold(self.bot, ctx)
+        if guild_id == 0:
+            components = u.get_upsell_components(ctx, gold=True, enable_gold_button=gold_available)
             await ctx.send(
                 ctx._(
                     (
@@ -158,16 +151,9 @@ class ForceCommands(client.Plugin):
         Force two users to divorce each other.
         """
 
-        if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
-            if await u.get_gold_purchased(ctx):
-                components = u.get_upsell_components(ctx, gold=True)
-                components[0].components.insert(0, n.Button(
-                    label=ctx._("Enable Gold"),
-                    style=n.ButtonStyle.PRIMARY,
-                    custom_id="ENABLE_GOLD",
-                ))
-            else:
-                components = u.get_upsell_components(ctx, gold=True)
+        guild_id, gold_available = await u.get_guild_id_and_gold(self.bot, ctx)
+        if guild_id == 0:
+            components = u.get_upsell_components(ctx, gold=True, enable_gold_button=gold_available)
             await ctx.send(
                 ctx._(
                     (
@@ -253,16 +239,9 @@ class ForceCommands(client.Plugin):
         Force one user to adopt another.
         """
 
-        if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
-            if await u.get_gold_purchased(ctx):
-                components = u.get_upsell_components(ctx, gold=True)
-                components[0].components.insert(0, n.Button(
-                    label=ctx._("Enable Gold"),
-                    style=n.ButtonStyle.PRIMARY,
-                    custom_id="ENABLE_GOLD",
-                ))
-            else:
-                components = u.get_upsell_components(ctx, gold=True)
+        guild_id, gold_available = await u.get_guild_id_and_gold(self.bot, ctx)
+        if guild_id == 0:
+            components = u.get_upsell_components(ctx, gold=True, enable_gold_button=gold_available)
             await ctx.send(
                 ctx._(
                     (
@@ -343,16 +322,9 @@ class ForceCommands(client.Plugin):
         Force a user to runaway from their parent.
         """
 
-        if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
-            if await u.get_gold_purchased(ctx):
-                components = u.get_upsell_components(ctx, gold=True)
-                components[0].components.insert(0, n.Button(
-                    label=ctx._("Enable Gold"),
-                    style=n.ButtonStyle.PRIMARY,
-                    custom_id="ENABLE_GOLD",
-                ))
-            else:
-                components = u.get_upsell_components(ctx, gold=True)
+        guild_id, gold_available = await u.get_guild_id_and_gold(self.bot, ctx)
+        if guild_id == 0:
+            components = u.get_upsell_components(ctx, gold=True, enable_gold_button=gold_available)
             await ctx.send(
                 ctx._(
                     (

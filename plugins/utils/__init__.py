@@ -41,4 +41,5 @@ __all__: tuple[str, ...] = (
     "mint",
     "missing_user_names",
     "get_gold_purchased",
+    "get_guild_id_and_gold",
 )
