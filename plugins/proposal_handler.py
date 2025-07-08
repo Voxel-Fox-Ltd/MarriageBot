@@ -38,7 +38,8 @@ class ProposalHandler(client.Plugin):
         _, action, accepted_str, author_id_str, user_id_str, timeout_str = \
             ctx.data.custom_id.split(" ")
         author_id, user_id, timeout = u.mint(author_id_str, user_id_str, timeout_str)
-        guild_id: int = ctx.guild.id if self.bot.config.gold else 0
+        async with db.Database.acquire() as conn:
+            guild_id = await u.get_guild_id(self.bot, ctx, conn)
         accepted = accepted_str == "1"
 
         # See if the user is allowed to press buttons on this message
@@ -74,8 +75,11 @@ class ProposalHandler(client.Plugin):
             return await ctx.update(
                 content=None,
                 embeds=u.e(
-                    ctx._("Alright, {author}, your proposal to {user} has been cancelled :)")
-                    .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
+                    (
+                        ctx._("Alright, {author}, your proposal to {user} has been cancelled :)")
+                        .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
+                    ),
+                    gold=guild_id != 0,
                 ),
                 components=None,
             )
@@ -87,8 +91,11 @@ class ProposalHandler(client.Plugin):
             return await ctx.update(
                 content=None,
                 embeds=u.e(
-                    ctx._("Sorry, {author}, {user} said no to your proposal :<")
-                    .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
+                    (
+                        ctx._("Sorry, {author}, {user} said no to your proposal :<")
+                        .format(author=f"<@{author_id}>", user=f"<@{user_id}>")
+                    ),
+                    gold=guild_id != 0,
                 ),
                 components=None,
             )
@@ -118,6 +125,9 @@ class ProposalHandler(client.Plugin):
         }[action]
         return await ctx.update(
             content=None,
-            embeds=u.e(message.format(user=f"<@{user_id}>", author=f"<@{author_id}>")),
+            embeds=u.e(
+                message.format(user=f"<@{user_id}>", author=f"<@{author_id}>"),
+                gold=guild_id != 0,
+            ),
             components=None,
         )

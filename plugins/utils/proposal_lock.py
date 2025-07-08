@@ -46,7 +46,6 @@ log = logging.getLogger("proposallock")
 
 
 PROPOSAL_TIMEOUT: float = 60.0
-# PROPOSAL_TIMEOUT: float = 10.0
 
 
 async def handle_marry_limits(
@@ -54,6 +53,7 @@ async def handle_marry_limits(
         ctx: t.CommandGI,
         author: n.GuildMember | n.User,
         user: n.GuildMember | n.User,
+        guild_id: int,
         author_ft: FamilyMember,
         user_ft: FamilyMember) -> bool:
     """
@@ -71,21 +71,27 @@ async def handle_marry_limits(
         if len(user_ft._partner_ids) >= user_perks.max_partners:
             await ctx.send(
                 embeds=e(
-                    ctx.ngettext(
-                        "You already have a partner! You can't have any more right now. {user} is at their partner limit as well :<",
-                        "You already have {count} partners! You can't have any more right now. {user} is at their partner limit as well :<",
-                        num,
-                    ).format(count=num)
+                    (
+                        ctx.ngettext(
+                            "You already have a partner! You can't have any more right now. {user} is at their partner limit as well :<",
+                            "You already have {count} partners! You can't have any more right now. {user} is at their partner limit as well :<",
+                            num,
+                        ).format(count=num)
+                    ),
+                    gold=guild_id != 0,
                 )
             )
             return False
         await ctx.send(
             embeds=e(
-                ctx.ngettext(
-                    "You already have a partner! You can't have any more right now :<",
-                    "You already have {count} partners! You can't have any more right now :<",
-                    num,
-                ).format(count=num)
+                (
+                    ctx.ngettext(
+                        "You already have a partner! You can't have any more right now :<",
+                        "You already have {count} partners! You can't have any more right now :<",
+                        num,
+                    ).format(count=num)
+                ),
+                gold=guild_id != 0,
             )
         )
         return False
@@ -94,11 +100,14 @@ async def handle_marry_limits(
     if (num := len(user_ft._partner_ids)) >= user_perks.max_partners:
         await ctx.send(
             embeds=e(
-                ctx.ngettext(
-                    "{user} already has a partner! They can't have any more right now :<",
-                    "{user} already has {count} partners! They can't have any more right now :<",
-                    num,
-                ).format(user=f"<@{user.id}>", count=num)
+                (
+                    ctx.ngettext(
+                        "{user} already has a partner! They can't have any more right now :<",
+                        "{user} already has {count} partners! They can't have any more right now :<",
+                        num,
+                    ).format(user=f"<@{user.id}>", count=num)
+                ),
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -112,6 +121,7 @@ async def handle_adopt_limits(
         ctx: t.CommandGI,
         author: n.GuildMember | n.User,
         user: n.GuildMember | n.User,
+        guild_id: int,
         author_ft: FamilyMember,
         user_ft: FamilyMember) -> bool:
     """
@@ -119,7 +129,7 @@ async def handle_adopt_limits(
     """
 
     if user.id in author_ft._child_ids:
-        await ctx.send(ctx._("You're already their parent!"))
+        await ctx.send(embeds=e(ctx._("You're already their parent!"), gold=guild_id != 0))
         return False
 
     if user_ft._parent_id is not None:
@@ -128,7 +138,8 @@ async def handle_adopt_limits(
                 (
                     ctx._("{user} already has a parent! They can only have one!")
                     .format(user=f"<@{user.id}>")
-                )
+                ),
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -138,12 +149,15 @@ async def handle_adopt_limits(
     if (num := len(author_ft._child_ids)) >= author_perks.max_children:
         await ctx.send(
             embeds=e(
-                ctx._(
-                    (
-                        "You already have {count} children! "
-                        "You can't have any more right now :<"
-                    )
-                ).format(count=num)  # TODO upsell
+                (
+                    ctx._(
+                        (
+                            "You already have {count} children! "
+                            "You can't have any more right now :<"
+                        )
+                    ).format(count=num)
+                ),
+                gold=guild_id != 0,  # TODO upsell
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -157,6 +171,7 @@ async def handle_makeparent_limits(
         ctx: t.CommandGI,
         author: n.GuildMember | n.User,
         user: n.GuildMember | n.User,
+        guild_id: int,
         author_ft: FamilyMember,
         user_ft: FamilyMember) -> bool:
     """
@@ -164,12 +179,15 @@ async def handle_makeparent_limits(
     """
 
     if author.id in user_ft._child_ids:
-        await ctx.send(embeds=e(ctx._("They're already your parent!")))
+        await ctx.send(embeds=e(ctx._("They're already your parent!"), gold=guild_id != 0))
         return False
 
     if author_ft._parent_id is not None:
         await ctx.send(
-            embeds=e(ctx._("You already have a parent! You can only have one!"))
+            embeds=e(
+                ctx._("You already have a parent! You can only have one!"),
+                gold=guild_id != 0,
+            )
         )
         return False
 
@@ -177,12 +195,15 @@ async def handle_makeparent_limits(
     if (num := len(user_ft._child_ids)) >= user_perks.max_children:
         await ctx.send(
             embeds=e(
-                ctx._(
-                    (
-                        "{user} already has {count} children! "
-                        "They can't have any more right now :<"
-                    )
-                ).format(user=f"<@{user.id}>", count=num)
+                (
+                    ctx._(
+                        (
+                            "{user} already has {count} children! "
+                            "They can't have any more right now :<"
+                        )
+                    ).format(user=f"<@{user.id}>", count=num)
+                ),
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -194,6 +215,7 @@ async def handle_makeparent_limits(
 async def handle_user_limits(
         bot: client.Client,
         ctx: t.CommandGI,
+        guild_id: int,
         action: Literal["MARRY", "ADOPT", "MAKEPARENT"],
         author: n.GuildMember | n.User,
         user: n.GuildMember | n.User,
@@ -208,7 +230,7 @@ async def handle_user_limits(
         "ADOPT": handle_adopt_limits,
         "MAKEPARENT": handle_makeparent_limits,
     }[action]
-    return await f(bot, ctx, author, user, author_ft, user_ft)
+    return await f(bot, ctx, author, user, guild_id, author_ft, user_ft)
 
 
 async def handle_proposal(
@@ -273,6 +295,7 @@ async def handle_proposal(
         checks_passed = await handle_user_limits(
             bot,
             ctx,
+            guild_id,
             button_action,
             ctx.user,
             user,
@@ -280,7 +303,6 @@ async def handle_proposal(
             user_ft,
         )
     except Exception:
-        # unlock_f()
         raise
     if not checks_passed:
         unlock_f()
@@ -291,8 +313,11 @@ async def handle_proposal(
         unlock_f()
         await ctx.send(
             embeds=e(
-                ctx._("You and {user} are already related!")
-                .format(user=user.mention)
+                (
+                    ctx._("You and {user} are already related!")
+                    .format(user=user.mention)
+                ),
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -319,11 +344,14 @@ async def handle_proposal(
             unlock_f()
             await ctx.send(
                 embeds=e(
-                    ctx._(
-                        "You can't do that! If your families combine, you'd "
-                        "have over {family_size} members in your tree!"
-                    )
-                    .format(family_size=family_size_limit)
+                    (
+                        ctx._(
+                            "You can't do that! If your families combine, you'd "
+                            "have over {family_size} members in your tree!"
+                        )
+                        .format(family_size=family_size_limit)
+                    ),
+                    gold=guild_id != 0,
                 )
             )
             return False
@@ -364,8 +392,11 @@ async def handle_proposal(
         m, time_,
         content=None,
         embeds=e(
-            ctx._("Sorry, {author}, your proposal to {user} has timed out!")
-            .format(author=ctx.user.mention, user=user.mention)
+            (
+                ctx._("Sorry, {author}, your proposal to {user} has timed out!")
+                .format(author=ctx.user.mention, user=user.mention)
+            ),
+            gold=guild_id != 0,
         ),
         components=None,
     )

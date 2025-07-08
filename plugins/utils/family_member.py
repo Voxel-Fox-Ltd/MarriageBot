@@ -30,7 +30,6 @@ from typing import (
     AsyncGenerator,
     AsyncIterable,
     Generator,
-    Iterable,
     TypeAlias,
     Union,
 )

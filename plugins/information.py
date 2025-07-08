@@ -65,10 +65,11 @@ class Information(client.Plugin):
 
         # Get user and their partner names
         async with db.Database.acquire() as conn:
+            guild_id = await u.get_guild_id(self.bot, ctx, conn)
             partners = await u.FamilyMember.fetch_partners(
                 conn,
                 user,
-                await u.get_guild_id(self.bot, ctx, conn),
+                guild_id,
             )
             partner_names = await u.get_names(conn, *[i[0] for i in partners])
 
@@ -82,12 +83,18 @@ class Information(client.Plugin):
         if not partner_info:
             if user == ctx.user:
                 return await ctx.send(
-                    embeds=u.e(ctx._("You don't have any partners right now :<")),
+                    embeds=u.e(
+                        ctx._("You don't have any partners right now :<"),
+                        gold=guild_id != 0
+                    ),
                 )
             return await ctx.send(
                 embeds=u.e(
-                    ctx._("{user} doesn't have any partners right now :<")
-                    .format(user=user.mention)
+                    (
+                        ctx._("{user} doesn't have any partners right now :<")
+                        .format(user=user.mention)
+                    ),
+                    gold=guild_id != 0,
                 ),
             )
 
@@ -96,8 +103,11 @@ class Information(client.Plugin):
             pi = list(partner_info.values())[0]
             return await ctx.send(
                 embeds=u.e(
-                    ctx._("{user} is married to **{partner}** ({timestamp}).")
-                    .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
+                    (
+                        ctx._("{user} is married to **{partner}** ({timestamp}).")
+                        .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
+                    ),
+                    gold=guild_id != 0,
                 ),
             )
 
@@ -108,9 +118,12 @@ class Information(client.Plugin):
         ])
         return await ctx.send(
             embeds=u.e(
-                ctx._("{user} is married to:").format(user=user.mention)
-                + "\n"
-                + lines
+                (
+                    ctx._("{user} is married to:").format(user=user.mention)
+                    + "\n"
+                    + lines
+                ),
+                gold=guild_id != 0,
             ),
         )
 
@@ -143,10 +156,11 @@ class Information(client.Plugin):
 
         # Get user and their child names
         async with db.Database.acquire() as conn:
+            guild_id = await u.get_guild_id(self.bot, ctx, conn)
             children = await u.FamilyMember.fetch_children(
                 conn,
                 user,
-                await u.get_guild_id(self.bot, ctx, conn),
+                guild_id,
             )
             children_names = await u.get_names(conn, *[i[0] for i in children])
 
@@ -160,12 +174,18 @@ class Information(client.Plugin):
         if not children_info:
             if user == ctx.user:
                 return await ctx.send(
-                    embeds=u.e(ctx._("You don't have any children right now :<")),
+                    embeds=u.e(
+                        ctx._("You don't have any children right now :<"),
+                        gold=guild_id != 0,
+                    ),
                 )
             return await ctx.send(
                 embeds=u.e(
-                    ctx._("{user} doesn't have any children right now :<")
-                    .format(user=user.mention)
+                    (
+                        ctx._("{user} doesn't have any children right now :<")
+                        .format(user=user.mention)
+                    ),
+                    gold=guild_id != 0,
                 ),
             )
 
@@ -174,8 +194,11 @@ class Information(client.Plugin):
             pi = list(children_info.values())[0]
             return await ctx.send(
                 embeds=u.e(
-                    ctx._("{user} is parent to **{partner}** ({timestamp}).")
-                    .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
+                    (
+                        ctx._("{user} is parent to **{partner}** ({timestamp}).")
+                        .format(user=user.mention, partner=pi[0], timestamp=pi[1].format("R"))
+                    ),
+                    gold=guild_id != 0,
                 ),
             )
 
@@ -186,9 +209,12 @@ class Information(client.Plugin):
         ])
         return await ctx.send(
             embeds=u.e(
-                ctx._("{user} is parent to:").format(user=user.mention)
-                + "\n"
-                + lines
+                (
+                    ctx._("{user} is parent to:").format(user=user.mention)
+                    + "\n"
+                    + lines
+                ),
+                gold=guild_id != 0,
             ),
         )
 
@@ -221,10 +247,11 @@ class Information(client.Plugin):
 
         # Get parent and name
         async with db.Database.acquire() as conn:
+            guild_id = await u.get_guild_id(self.bot, ctx, conn)
             parent = await u.FamilyMember.fetch_parent(
                 conn,
                 user,
-                await u.get_guild_id(self.bot, ctx, conn),
+                guild_id,
             )
             parent_name: str | None = None
             if parent:
@@ -234,12 +261,18 @@ class Information(client.Plugin):
         if not parent:
             if user == ctx.user:
                 return await ctx.send(
-                    embeds=u.e(ctx._("You don't have a parent right now :<")),
+                    embeds=u.e(
+                        ctx._("You don't have a parent right now :<"),
+                        gold=guild_id != 0,
+                    ),
                 )
             return await ctx.send(
                 embeds=u.e(
-                    ctx._("{user} doesn't have a parent right now :<")
-                    .format(user=user.mention)
+                    (
+                        ctx._("{user} doesn't have a parent right now :<")
+                        .format(user=user.mention)
+                    ),
+                    gold=guild_id != 0,
                 ),
             )
         assert parent_name
@@ -298,7 +331,8 @@ class Information(client.Plugin):
         """
 
         # Get the user's info and family size
-        ft = u.FamilyMember.get(user.id, await u.get_guild_id(self.bot, ctx))
+        guild_id = await u.get_guild_id(self.bot, ctx)
+        ft = u.FamilyMember.get(user.id, guild_id)
         span = set()
         async for _, span_user in ft.span(deep=True):
             span.add(span_user)
@@ -310,7 +344,7 @@ class Information(client.Plugin):
             "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives.",
             size,
         ).format(number=size, user=user.mention)
-        await ctx.send(embeds=u.e(output))
+        await ctx.send(embeds=u.e(output, gold=guild_id != 0,))
 
     @client.command(
         # TRANSLATORS: Command name (/tree)
@@ -399,12 +433,18 @@ class Information(client.Plugin):
         if family_member.is_empty:
             if user_id == ctx.user.id:
                 return await ctx.send(
-                    embeds=u.e(ctx._("You have no family to put into a tree .-."))
+                    embeds=u.e(
+                        ctx._("You have no family to put into a tree .-."),
+                        gold=guild_id != 0,
+                    )
                 )
             return await ctx.send(
                 embeds=u.e(
-                    ctx._("{user} has no family to put into a tree .-.")
-                    .format(user=f"<@{user_id}>")
+                    (
+                        ctx._("{user} has no family to put into a tree .-.")
+                        .format(user=f"<@{user_id}>")
+                    ),
+                    gold=guild_id != 0,
                 ),
                 allowed_mentions=n.AllowedMentions.none(),
             )
@@ -475,7 +515,8 @@ class Information(client.Plugin):
                     "please try again in a few minutes."
                 )
             )
-        text = ctx._("[Click here]({url}) to customise your tree.")
+        text = ""
+        # text = ctx._("[Click here]({url}) to customise your tree.")
         if not full_tree:
             text += " " + (
                 ctx._(
@@ -489,7 +530,7 @@ class Information(client.Plugin):
             fulltree=fulltree_c,
         )
         await ctx.send(
-            embeds=u.e(text, image_url="attachment://tree.png"),
+            embeds=u.e(text, image_url="attachment://tree.png", gold=guild_id != 0),
             files=[file],
         )
 

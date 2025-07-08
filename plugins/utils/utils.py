@@ -38,6 +38,7 @@ __all__ = (
     "get_upsell_row",
     "get_upsell_components",
     "missing_user_names",
+    "get_gold_purchased",
 )
 
 
@@ -109,7 +110,30 @@ async def get_guild_id(
     return 0
 
 
-def e(content: str, image_url: str | None = None) -> list[n.Embed]:
+async def get_gold_purchased(
+        ctx: n.Interaction,
+        conn: asyncpg.Connection | None = None) -> bool:
+    """
+    Return whether or not Gold has been purchase for this guild.
+    """
+
+    if ctx.guild is None:
+        return True
+    if conn is None:
+        async with db.Database.acquire() as conn:
+            val = await conn.fetchval(
+                "SELECT guild_id FROM guild_specific_families WHERE guild_id=$1",
+                ctx.guild.id,
+            )
+    else:
+        val = await conn.fetchval(
+            "SELECT guild_id FROM guild_specific_families WHERE guild_id=$1",
+            ctx.guild.id,
+        )
+    return val is not None
+
+
+def e(content: str, image_url: str | None = None, gold: bool = False) -> list[n.Embed]:
     """
     Take a string and shove it into an embed.
     """
@@ -119,8 +143,10 @@ def e(content: str, image_url: str | None = None) -> list[n.Embed]:
             color=random.randint(0x0, 0xFFFFFF),
             description=content,
         )
-        .set_footer("Thanks for using MarriageBot :)")
+        # .set_footer("Thanks for using MarriageBot :)")
     )
+    if gold:
+        e.set_footer("Via MarriageBot Gold")
     if image_url:
         e.set_image(image_url)
     return [e]

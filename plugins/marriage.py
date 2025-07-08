@@ -72,21 +72,28 @@ class Marriage(client.Plugin):
         """
 
         async with db.Database.acquire() as conn:
+            guild_id = await u.get_guild_id(self.bot, ctx, conn)
             partners = await u.FamilyMember.fetch_partners(
                 conn,
                 ctx.user,
-                await u.get_guild_id(self.bot, ctx, conn),
+                guild_id,
             )
             names = await u.get_names(conn, *[i[0] for i in partners])
 
         if not names:
             return await ctx.send(
-                embeds=u.e(ctx._("You don't have any partners right now :<")),
+                embeds=u.e(
+                    ctx._("You don't have any partners right now :<"),
+                    gold=guild_id != 0,
+                ),
                 ephemeral=True,
             )
 
         return await ctx.send(
-            embeds=u.e(ctx._("Which of your partners do you want to divorce?")),
+            embeds=u.e(
+                ctx._("Which of your partners do you want to divorce?"),
+                gold=guild_id != 0,
+            ),
             components=[
                 n.ActionRow([
                     n.StringSelectMenu(
@@ -121,7 +128,8 @@ class Marriage(client.Plugin):
         # Divorce them from whomever they clicked on
         clicked_user_str = ctx.data.values[0].value
         clicked_user = int(clicked_user_str)
-        ft = u.FamilyMember.get(ctx.user.id, guild_id=await u.get_guild_id(self.bot, ctx))
+        guild_id = await u.get_guild_id(self.bot, ctx)
+        ft = u.FamilyMember.get(ctx.user.id, guild_id=guild_id)
         probable_success = clicked_user in ft._partner_ids
         async with db.Database.acquire() as conn:
             await ft.db.remove_partner(conn, u.FamilyMember.get(clicked_user))
@@ -130,16 +138,22 @@ class Marriage(client.Plugin):
         if probable_success:
             await ctx.update(
                 embeds=u.e(
-                    ctx._("You have been divorced from {user} :(")
-                    .format(user=f"<@{clicked_user}>")
+                    (
+                        ctx._("You have been divorced from {user} :(")
+                        .format(user=f"<@{clicked_user}>")
+                    ),
+                    gold=guild_id != 0,
                 ),
                 components=None,
             )
             return
         await ctx.update(
             embeds=u.e(
-                ctx._("You have been divorced from {user} :(")
-                .format(user=f"<@{clicked_user}>")
+                (
+                    ctx._("You have been divorced from {user} :(")
+                    .format(user=f"<@{clicked_user}>")
+                ),
+                gold=guild_id != 0,
             ),
             components=None,
         )

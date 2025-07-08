@@ -70,6 +70,15 @@ class ForceCommands(client.Plugin):
         """
 
         if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
+            if await u.get_gold_purchased(ctx):
+                components = u.get_upsell_components(ctx, gold=True)
+                components[0].components.insert(0, n.Button(
+                    label=ctx._("Enable Gold"),
+                    style=n.ButtonStyle.PRIMARY,
+                    custom_id="ENABLE_GOLD",
+                ))
+            else:
+                components = u.get_upsell_components(ctx, gold=True)
             await ctx.send(
                 ctx._(
                     (
@@ -77,10 +86,10 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "marry")),
-                components=u.get_upsell_components(ctx, gold=True),
+                components=components,
                 ephemeral=True,
             )
-            return  # TODO: upsell
+            return
 
         if user1 == user2:
             await ctx.send(
@@ -99,7 +108,8 @@ class ForceCommands(client.Plugin):
                 ctx._("Done! Married {user1} and {user2} :3").format(
                     user1=user1.mention,
                     user2=user2.mention,
-                )
+                ),
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -149,6 +159,15 @@ class ForceCommands(client.Plugin):
         """
 
         if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
+            if await u.get_gold_purchased(ctx):
+                components = u.get_upsell_components(ctx, gold=True)
+                components[0].components.insert(0, n.Button(
+                    label=ctx._("Enable Gold"),
+                    style=n.ButtonStyle.PRIMARY,
+                    custom_id="ENABLE_GOLD",
+                ))
+            else:
+                components = u.get_upsell_components(ctx, gold=True)
             await ctx.send(
                 ctx._(
                     (
@@ -156,10 +175,10 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "divorce")),
-                components=u.get_upsell_components(ctx, gold=True),
+                components=components,
                 ephemeral=True,
             )
-            return  # TODO: upsell
+            return
 
         user1_ft, user2_ft = u.FamilyMember.get_multiple(user1.id, user2.id, guild_id=guild_id)
 
@@ -176,7 +195,8 @@ class ForceCommands(client.Plugin):
                             "Done, even though {user1} and {user2} weren't actually married "
                             "to start with."
                         )
-                    ).format(user1=user1.mention, user2=user2.mention)
+                    ).format(user1=user1.mention, user2=user2.mention),
+                    gold=guild_id != 0,
                 ),
                 allowed_mentions=n.AllowedMentions.none(),
             )
@@ -234,6 +254,15 @@ class ForceCommands(client.Plugin):
         """
 
         if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
+            if await u.get_gold_purchased(ctx):
+                components = u.get_upsell_components(ctx, gold=True)
+                components[0].components.insert(0, n.Button(
+                    label=ctx._("Enable Gold"),
+                    style=n.ButtonStyle.PRIMARY,
+                    custom_id="ENABLE_GOLD",
+                ))
+            else:
+                components = u.get_upsell_components(ctx, gold=True)
             await ctx.send(
                 ctx._(
                     (
@@ -241,10 +270,10 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "adopt")),
-                components=u.get_upsell_components(ctx, gold=True),
+                components=components,
                 ephemeral=True,
             )
-            return  # TODO: upsell
+            return
 
         if user1 == user2:
             await ctx.send(
@@ -278,7 +307,8 @@ class ForceCommands(client.Plugin):
                 ctx._("Done! {user1} is now a child of {user2} :3").format(
                     user1=user1.mention,
                     user2=user2.mention,
-                )
+                ),
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
@@ -314,6 +344,15 @@ class ForceCommands(client.Plugin):
         """
 
         if (guild_id := await u.get_guild_id(self.bot, ctx)) == 0:
+            if await u.get_gold_purchased(ctx):
+                components = u.get_upsell_components(ctx, gold=True)
+                components[0].components.insert(0, n.Button(
+                    label=ctx._("Enable Gold"),
+                    style=n.ButtonStyle.PRIMARY,
+                    custom_id="ENABLE_GOLD",
+                ))
+            else:
+                components = u.get_upsell_components(ctx, gold=True)
             await ctx.send(
                 ctx._(
                     (
@@ -321,10 +360,10 @@ class ForceCommands(client.Plugin):
                         "can still use {non_gold_command} though :3"
                     )
                 ).format(non_gold_command=u.get_command_mention(self.bot, "runaway")),
-                components=u.get_upsell_components(ctx, gold=True),
+                components=components,
                 ephemeral=True,
             )
-            return  # TODO: upsell
+            return
 
         user_ft = u.FamilyMember.get(user.id, guild_id=guild_id)
 
@@ -335,7 +374,8 @@ class ForceCommands(client.Plugin):
             embeds=u.e(
                 ctx._("Done! {user} no longer has a parent :3").format(
                     user=user.mention,
-                )
+                ),
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
         )
