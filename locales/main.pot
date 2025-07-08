@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2025-01-08 00:32+0000\n"
+"POT-Creation-Date: 2025-07-08 04:41+0100\n"
 "PO-Revision-Date: 2024-02-08 18:38+0000\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:43 force_commands.py:119 force_commands.py:207
+#: force_commands.py:43 force_commands.py:122 force_commands.py:213
 msgid "user1"
 msgstr ""
 
@@ -29,7 +29,7 @@ msgstr ""
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:53 force_commands.py:130 force_commands.py:217
+#: force_commands.py:53 force_commands.py:133 force_commands.py:223
 msgid "user2"
 msgstr ""
 
@@ -48,63 +48,63 @@ msgstr ""
 msgid "Force two users to marry each other."
 msgstr ""
 
-#: force_commands.py:87
+#: force_commands.py:89
 msgid "You can't marry someone to themself :/"
 msgstr ""
 
-#: force_commands.py:99
+#: force_commands.py:101
 #, python-brace-format
 msgid "Done! Married {user1} and {user2} :3"
 msgstr ""
 
-#: force_commands.py:122
+#: force_commands.py:125
 msgid "The first user that you want to set up to divorce."
 msgstr ""
 
-#: force_commands.py:133
+#: force_commands.py:136
 msgid "The second user that you want to set up to divorce."
 msgstr ""
 
 #. TRANSLATORS: Command name
-#: force_commands.py:138
+#: force_commands.py:141
 msgid "force divorce"
 msgstr ""
 
 #. TRANSLATORS: Command description
-#: force_commands.py:140
+#: force_commands.py:143
 msgid "Force two users to divorce each other."
 msgstr ""
 
-#: force_commands.py:187
+#: force_commands.py:193
 #, python-brace-format
 msgid "Done! {user1} and {user2} are now divorced :3"
 msgstr ""
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:209
+#: force_commands.py:215
 msgid "The child for the adoption"
 msgstr ""
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:219
+#: force_commands.py:225
 msgid "The parent for the adoption."
 msgstr ""
 
 #. TRANSLATORS: Command name
-#: force_commands.py:223
+#: force_commands.py:229
 msgid "force adopt"
 msgstr ""
 
 #. TRANSLATORS: Command description
-#: force_commands.py:225
+#: force_commands.py:231
 msgid "Force one user to adopt another."
 msgstr ""
 
-#: force_commands.py:251
+#: force_commands.py:259
 msgid "You can't adopt someone to themself :/"
 msgstr ""
 
-#: force_commands.py:278
+#: force_commands.py:286
 #, python-brace-format
 msgid "Done! {user1} is now a child of {user2} :3"
 msgstr ""
@@ -125,8 +125,8 @@ msgstr ""
 #. TRANSLATORS: Command option name (/punch [user])
 #. TRANSLATORS: Command option name (/bite [user])
 #. TRANSLATORS: Command option name (/slap [user])
-#: force_commands.py:298 information.py:48 information.py:126
-#: information.py:204 information.py:281 information.py:327 information.py:353
+#: force_commands.py:307 information.py:48 information.py:139
+#: information.py:230 information.py:314 information.py:358 information.py:384
 #: marriage.py:40 parents.py:40 parents.py:72 simulation.py:134
 #: simulation.py:169 simulation.py:204 simulation.py:247 simulation.py:282
 #: simulation.py:326
@@ -134,21 +134,21 @@ msgid "user"
 msgstr ""
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:300
+#: force_commands.py:309
 msgid "The user that you want to force to runaway"
 msgstr ""
 
 #. TRANSLATORS: Command name
-#: force_commands.py:304
+#: force_commands.py:313
 msgid "force runaway"
 msgstr ""
 
 #. TRANSLATORS: Command description
-#: force_commands.py:306
+#: force_commands.py:315
 msgid "Force a user to runaway from their parent."
 msgstr ""
 
-#: force_commands.py:336
+#: force_commands.py:347
 #, python-brace-format
 msgid "Done! {user} no longer has a parent :3"
 msgstr ""
@@ -168,104 +168,104 @@ msgstr ""
 msgid "Shows you a list of partners for a user."
 msgstr ""
 
-#: information.py:85 marriage.py:84
+#: information.py:87 marriage.py:86
 msgid "You don't have any partners right now :<"
 msgstr ""
 
-#: information.py:89
+#: information.py:94
 #, python-brace-format
 msgid "{user} doesn't have any partners right now :<"
 msgstr ""
 
-#: information.py:99
+#: information.py:107
 #, python-brace-format
 msgid "{user} is married to **{partner}** ({timestamp})."
 msgstr ""
 
-#: information.py:111
+#: information.py:122
 #, python-brace-format
 msgid "{user} is married to:"
 msgstr ""
 
 #. TRANSLATORS: Command name
-#: information.py:119
+#: information.py:132
 msgid "children"
 msgstr ""
 
 #. TRANSLATORS: Command option name description (/children [user])
-#: information.py:128
+#: information.py:141
 msgid "The user whose children you want to see."
 msgstr ""
 
 #. TRANSLATORS: Command description
-#: information.py:133
+#: information.py:146
 msgid "Shows you a list of children for a user."
 msgstr ""
 
-#: information.py:163 parents.py:110 parents.py:148
+#: information.py:178 parents.py:111 parents.py:153
 msgid "You don't have any children right now :<"
 msgstr ""
 
-#: information.py:167
+#: information.py:185
 #, python-brace-format
 msgid "{user} doesn't have any children right now :<"
 msgstr ""
 
-#: information.py:177
+#: information.py:198
 #, python-brace-format
 msgid "{user} is parent to **{partner}** ({timestamp})."
 msgstr ""
 
-#: information.py:189
+#: information.py:213
 #, python-brace-format
 msgid "{user} is parent to:"
 msgstr ""
 
 #. TRANSLATORS: Command name
-#: information.py:197
+#: information.py:223
 msgid "parent"
 msgstr ""
 
 #. TRANSLATORS: Command option name description (/parent [user])
-#: information.py:206
+#: information.py:232
 msgid "The user whose parent you want to see."
 msgstr ""
 
 #. TRANSLATORS: Command description
-#: information.py:211
+#: information.py:237
 msgid "Show you the parent for a user."
 msgstr ""
 
-#: information.py:237
+#: information.py:265
 msgid "You don't have a parent right now :<"
 msgstr ""
 
-#: information.py:241
+#: information.py:272
 #, python-brace-format
 msgid "{user} doesn't have a parent right now :<"
 msgstr ""
 
-#: information.py:249
+#: information.py:282
 #, python-brace-format
 msgid "{user}'s parent is **{parent}** ({timestamp})."
 msgstr ""
 
 #. TRANSLATORS: Command option description (/familysize [user])
-#: information.py:283
+#: information.py:316
 msgid "The user who you want to see the family size of."
 msgstr ""
 
 #. TRANSLATORS: Command name (/familysize)
-#: information.py:288
+#: information.py:321
 msgid "familysize"
 msgstr ""
 
 #. TRANSLATORS: Command description (/familysize)
-#: information.py:290
+#: information.py:323
 msgid "Get the family size of another user."
 msgstr ""
 
-#: information.py:312
+#: information.py:343
 #, python-brace-format
 msgid "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives."
 msgid_plural "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives."
@@ -273,51 +273,46 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. TRANSLATORS: Command name (/tree)
-#: information.py:320
+#: information.py:351
 msgid "tree"
 msgstr ""
 
-#: information.py:328 information.py:354
+#: information.py:359 information.py:385
 msgid "The user whose tree you want to see."
 msgstr ""
 
-#: information.py:332
+#: information.py:363
 msgid "Show your family tree, but only blood relatives :3"
 msgstr ""
 
 #. TRANSLATORS: Command name (/fulltree)
-#: information.py:346
+#: information.py:377
 msgid "fulltree"
 msgstr ""
 
-#: information.py:358
+#: information.py:389
 msgid "Show your entire family tree, including non-blood relatives :3"
 msgstr ""
 
-#: information.py:373 subscriber_commands.py:47
+#: information.py:404 subscriber_commands.py:47
 #, python-brace-format
 msgid "You need to be a higher tier subscriber to run this command! You can still use {non_perks_command} though :3"
 msgstr ""
 
-#: information.py:401
+#: information.py:437
 msgid "You have no family to put into a tree .-."
 msgstr ""
 
-#: information.py:405
+#: information.py:444
 #, python-brace-format
 msgid "{user} has no family to put into a tree .-."
 msgstr ""
 
-#: information.py:477
+#: information.py:514
 msgid "I couldn't send your family tree image - please try again in a few minutes."
 msgstr ""
 
-#: information.py:481
-#, python-brace-format
-msgid "[Click here]({url}) to customise your tree."
-msgstr ""
-
-#: information.py:485
+#: information.py:523
 #, python-brace-format
 msgid "Use {fulltree} for your *entire* family, including non-blood relatives."
 msgstr ""
@@ -352,15 +347,15 @@ msgstr ""
 msgid "Divorce one of your partners."
 msgstr ""
 
-#: marriage.py:89
+#: marriage.py:94
 msgid "Which of your partners do you want to divorce?"
 msgstr ""
 
-#: marriage.py:116 parents.py:180 proposal_handler.py:47
+#: marriage.py:123 parents.py:185 proposal_handler.py:48
 msgid "You cannot interact with these buttons."
 msgstr ""
 
-#: marriage.py:133 marriage.py:141
+#: marriage.py:142 marriage.py:153
 #, python-brace-format
 msgid "You have been divorced from {user} :("
 msgstr ""
@@ -414,61 +409,153 @@ msgstr ""
 msgid "Run away from your parent."
 msgstr ""
 
-#: parents.py:121
+#: parents.py:123
 #, python-brace-format
 msgid "You have run away from {user} :("
 msgstr ""
 
 #. TRANSLATORS: Command name
-#: parents.py:128
+#: parents.py:132
 msgid "disown"
 msgstr ""
 
 #. TRANSLATORS: Command description
-#: parents.py:130
+#: parents.py:134
 msgid "Disown one of your children."
 msgstr ""
 
-#: parents.py:153
+#: parents.py:158
 msgid "Which of your children do you want to disown?"
 msgstr ""
 
-#: parents.py:197 parents.py:205
+#: parents.py:204 parents.py:215
 #, python-brace-format
 msgid "You have now disowned {user} :("
 msgstr ""
 
-#: proposal_handler.py:54
+#: proposal_handler.py:55
 msgid "You can no longer respond to this message."
 msgstr ""
 
-#: proposal_handler.py:66
+#: proposal_handler.py:67
 msgid "You can't accept your own proposal!"
 msgstr ""
 
-#: proposal_handler.py:77
+#: proposal_handler.py:79
 #, python-brace-format
 msgid "Alright, {author}, your proposal to {user} has been cancelled :)"
 msgstr ""
 
-#: proposal_handler.py:90
+#: proposal_handler.py:95
 #, python-brace-format
 msgid "Sorry, {author}, {user} said no to your proposal :<"
 msgstr ""
 
-#: proposal_handler.py:115
+#: proposal_handler.py:122
 #, python-brace-format
 msgid "Welcome {user}! You're now married to {author} :3c"
 msgstr ""
 
-#: proposal_handler.py:116
+#: proposal_handler.py:123
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the child of {author} :3c"
 msgstr ""
 
-#: proposal_handler.py:117
+#: proposal_handler.py:124
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the parent of {author} :3c"
+msgstr ""
+
+#: settings.py:44
+msgid "Gold has not been purchased for this guild."
+msgstr ""
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:60 settings.py:145 settings.py:215
+msgid "Enabled"
+msgstr ""
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:66 settings.py:151 settings.py:221
+msgid "Disabled"
+msgstr ""
+
+#. TRANSLATORS: Command name
+#: settings.py:74
+msgid "guild-settings guild-specific-families"
+msgstr ""
+
+#. TRANSLATORS: Command description
+#: settings.py:76
+msgid "Set whether or not guild-specific families are enabled for this guild."
+msgstr ""
+
+#: settings.py:85
+msgid ""
+"This command cannot be run on the Gold version of MarriageBot. The regular version of MarriageBot now allows you to toggle between guild-specific families and global families.\n"
+"\n"
+"To use this command, please change over to the regular version of MarriageBot and run this command."
+msgstr ""
+
+#: settings.py:116
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **enabled** in this guild, and you can now use the force commands.\n"
+"Please note that this is a completely seperate tree than the global MarriageBot tree.\n"
+"\n"
+"You can switch back to the global tree by using the {guild_specific_command} command :3"
+msgstr ""
+
+#: settings.py:125
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **disabled** in this guild. You are now switched back to the global MarriageBot tree.\n"
+"\n"
+"You can switch back to your guild-specific tree by using the {guild_specific_command} command :3"
+msgstr ""
+
+#. TRANSLATORS: Command name
+#: settings.py:159
+msgid "guild-settings incest"
+msgstr ""
+
+#. TRANSLATORS: Command description
+#: settings.py:161
+msgid "Set whether or not incest is enabled for this guild."
+msgstr ""
+
+#: settings.py:173
+msgid "This command can only be run with MarriageBot Gold enabled!"
+msgstr ""
+
+#: settings.py:194
+#, python-brace-format
+msgid ""
+"Incest is now **enabled** in this guild.\n"
+"\n"
+"Please note that this only applies to your guild-specific tree - if {guild_specific_command} is enabled."
+msgstr ""
+
+#: settings.py:199
+msgid "Incest is now **disabled** in this guild."
+msgstr ""
+
+#. TRANSLATORS: Command name
+#: settings.py:229
+msgid "guild-settings simulation-gifs"
+msgstr ""
+
+#. TRANSLATORS: Command description
+#: settings.py:231
+msgid "Set whether or not simulation GIFs are enabled in this guild."
+msgstr ""
+
+#: settings.py:252
+msgid "GIFs for the simulation commands are now **enabled**."
+msgstr ""
+
+#: settings.py:254
+msgid "GIFs for the simulation commands are now **disabled**."
 msgstr ""
 
 #. TRANSLATORS: Command option description (/hug [user])
@@ -718,75 +805,98 @@ msgstr ""
 msgid "Done! You no longer have any family members :3"
 msgstr ""
 
-#: utils/proposal_lock.py:65
-msgid "You can't run this on yourself :/"
+#: utils/proposal_lock.py:64
+msgid "You're already married!"
 msgstr ""
 
-#: utils/proposal_lock.py:73
-msgid "You can't run this on bots :/"
-msgstr ""
-
-#: utils/proposal_lock.py:82
-msgid "You're already waiting on a proposal."
-msgstr ""
-
-#: utils/proposal_lock.py:88
+#: utils/proposal_lock.py:76
 #, python-brace-format
-msgid "{user} is already waiting on a proposal."
-msgstr ""
+msgid "You already have a partner! You can't have any more right now. {user} is at their partner limit as well :<"
+msgid_plural "You already have {count} partners! You can't have any more right now. {user} is at their partner limit as well :<"
+msgstr[0] ""
+msgstr[1] ""
 
-#: utils/proposal_lock.py:116
+#: utils/proposal_lock.py:89
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
 msgid_plural "You already have {count} partners! You can't have any more right now :<"
 msgstr[0] ""
 msgstr[1] ""
 
-#: utils/proposal_lock.py:127
+#: utils/proposal_lock.py:105
 #, python-brace-format
 msgid "{user} already has a partner! They can't have any more right now :<"
 msgid_plural "{user} already has {count} partners! They can't have any more right now :<"
 msgstr[0] ""
 msgstr[1] ""
 
+#: utils/proposal_lock.py:132
+msgid "You're already their parent!"
+msgstr ""
+
 #: utils/proposal_lock.py:139
 #, python-brace-format
 msgid "{user} already has a parent! They can only have one!"
 msgstr ""
 
-#: utils/proposal_lock.py:162
+#: utils/proposal_lock.py:182
+msgid "They're already your parent!"
+msgstr ""
+
+#: utils/proposal_lock.py:188
 msgid "You already have a parent! You can only have one!"
 msgstr ""
 
-#: utils/proposal_lock.py:184
+#: utils/proposal_lock.py:249
+msgid "You can't run this on yourself :/"
+msgstr ""
+
+#: utils/proposal_lock.py:257
+msgid "You can't run this on bots :/"
+msgstr ""
+
+#: utils/proposal_lock.py:266
+msgid "You're already waiting on a proposal."
+msgstr ""
+
+#: utils/proposal_lock.py:272
+#, python-brace-format
+msgid "{user} is already waiting on a proposal."
+msgstr ""
+
+#: utils/proposal_lock.py:317
 #, python-brace-format
 msgid "You and {user} are already related!"
 msgstr ""
 
-#: utils/proposal_lock.py:213
+#: utils/proposal_lock.py:349
 #, python-brace-format
 msgid "You can't do that! If your families combine, you'd have over {family_size} members in your tree!"
 msgstr ""
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:230
+#: utils/proposal_lock.py:378
 msgid "Yes"
 msgstr ""
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:236
+#: utils/proposal_lock.py:384
 msgid "No"
 msgstr ""
 
-#: utils/proposal_lock.py:247
+#: utils/proposal_lock.py:396
 #, python-brace-format
 msgid "Sorry, {author}, your proposal to {user} has timed out!"
 msgstr ""
 
-#: utils/utils.py:126
+#: utils/utils.py:197
 msgid "Get MarriageBot Gold"
 msgstr ""
 
-#: utils/utils.py:130
+#: utils/utils.py:201
 msgid "Get MarriageBot perks"
+msgstr ""
+
+#: utils/utils.py:218
+msgid "Enable Gold"
 msgstr ""
