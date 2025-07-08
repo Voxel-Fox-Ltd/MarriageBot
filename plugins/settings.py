@@ -117,7 +117,7 @@ class Settings(client.Plugin):
                     "use the force commands.\nPlease note that this is a completely seperate tree "
                     "than the global MarriageBot tree.\n\nYou can switch back to the global tree "
                     "by using the {guild_specific_command} command :3"
-                ).format(command.mention)
+                ).format(guild_specific_command=command.mention)
             )
         else:
             await ctx.send(
@@ -125,7 +125,7 @@ class Settings(client.Plugin):
                     "Guild-specific families are now **disabled** in this guild. You are now "
                     "switched back to the global MarriageBot tree.\n\nYou can switch back to your "
                     "guild-specific tree by using the {guild_specific_command} command :3"
-                ).format(command.mention)
+                ).format(guild_specific_command=command.mention)
             )
 
     @client.command(
