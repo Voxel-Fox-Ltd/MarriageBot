@@ -21,6 +21,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 import novus as n
+from novus import types as t
 from novus.ext import client
 from novus.ext import database as db
 
@@ -135,3 +136,33 @@ class CacheHandler(client.Plugin):
                     id, name,
                 )
                 u.missing_user_names.discard(id)
+
+    @client.event.command
+    async def on_command(self, ctx: t.CommandI) -> None:
+        """
+        Save all names that the bot interacts with.
+        """
+
+        valid_names = {
+            ctx.user.id: str(ctx.user),
+        }
+        for k, v in ctx.data.resolved.users.items():
+            valid_names[k] = str(v)
+
+        async with db.Database.acquire() as conn:
+            for k, v in valid_names.items():
+                await conn.execute(
+                    """
+                    INSERT INTO
+                        usernames
+                        (id, name)
+                    VALUES
+                        ($1, $2)
+                    ON CONFLICT
+                        (id)
+                    DO UPDATE
+                    SET
+                        name = excluded.name
+                    """,
+                    k, v,
+                )

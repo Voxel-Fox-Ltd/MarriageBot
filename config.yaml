@@ -29,7 +29,6 @@ plugins:
 - plugins.force_commands:ForceCommands
 - plugins.information:Information
 - plugins.marriage:Marriage
-- plugins.name_handler:NameHandler
 - plugins.parents:Parents
 - plugins.proposal_handler:ProposalHandler
 - plugins.settings:Settings
