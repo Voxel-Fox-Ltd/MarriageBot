@@ -38,6 +38,74 @@ class Information(client.Plugin):
 
     @client.command(
         # TRANSLATORS: Command name
+        name_localizations=LC._("relationship"),
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Get the relationship between two users."),
+        options=[
+            n.ApplicationCommandOption(
+                name="user",
+                description="The first user who you want to check the relation of.",
+                # TRANSLATORS: Command option name (/relationship [user] [other])
+                name_localizations=LC._("user"),
+                # TRANSLATORS: Command option description (/relationship [user] [other])
+                description_localizations=LC._("The first user who you want to check the relation of."),
+                type=n.ApplicationOptionType.USER,
+            ),
+            n.ApplicationCommandOption(
+                name="other",
+                description="The second user who you want to compare the first to.",
+                # TRANSLATORS: Command option name (/relationship [user] [other])
+                name_localizations=LC._("other"),
+                # TRANSLATORS: Command option description (/relationship [user] [other])
+                description_localizations=LC._("The second user who you want to compare the first to."),
+                type=n.ApplicationOptionType.USER,
+                required=False,
+            ),
+        ],
+        dm_permission=False,
+    )
+    async def relationship(self, ctx: t.CommandGI, user: n.User, other: n.User | None = None):
+        """
+        Gets the relationship between the two users.
+        """
+
+        # Fix up the arguments
+        if other is None:
+            user_id, other_id = ctx.user.id, user.id
+        else:
+            user_id, other_id = user.id, other.id
+
+        # See if they're the same person
+        if user_id == other_id:
+            return await ctx.send(":/", ephemeral=True)
+
+        # Get their relation
+        async with db.Database.acquire() as conn:
+            guild_id = await u.get_guild_id(self.bot, ctx, conn)
+            first = u.FamilyMember.get(user_id, guild_id)
+            second = u.FamilyMember.get(other_id, guild_id)
+            names = await u.get_names(conn, user_id, other_id)
+        if (relation := second.get_unshortened_relation(first)) is None:
+            return await ctx.send(embeds=u.e(
+                ctx._(
+                    "**{user}** is not related to **{other}**."
+                    .format(user=names[user_id], other=names[other_id])
+                ),
+                gold=guild_id != 0,
+            ))
+
+        # Simplify the relationship
+        relation = u.simplify_relationship(relation)
+        return await ctx.send(embeds=u.e(
+            ctx._(
+                "**{user}** is **{other}**'s **{relation}**."
+                .format(user=names[user_id], relation=relation, other=names[other_id])
+            ),
+            gold=guild_id != 0,
+        ))
+
+    @client.command(
+        # TRANSLATORS: Command name
         name_localizations=LC._("partners"),
         options=[
             n.ApplicationCommandOption(

@@ -616,6 +616,75 @@ class FamilyMember:
                 return True
         return False
 
+    def get_unshortened_relation(
+            self,
+            target_user: FamilyMember,
+            working_relation: list[str] | None = None,
+            added_already: set[int] | None = None) -> str | None:
+        """
+        Gets your relation to the other given user.
+
+        Args:
+            target_user (FamilyTreeMember): The user who you want to list the relation to.
+            working_relation (list, optional): The list of relation steps it's taking to get.
+            added_already (list, optional): So we can keep track of who's been looked at before.
+
+        Returns:
+            Optional[str]: The family tree relationship string.
+        """
+
+        # Set default values
+        if working_relation is None:
+            working_relation = []
+        if added_already is None:
+            added_already = set()
+
+        # You're doing a loop - return None
+        if self.id in added_already:
+            return None
+
+        # We hit the jackpot - return the made up string
+        if target_user.id == self.id:
+            ret_string = "'s ".join(working_relation)
+            return ret_string
+
+        # Add self to list of checked people
+        added_already.add(self.id)
+
+        # Check parent
+        if self._parent_id and self._parent_id not in added_already:
+            parent = self.parent
+            assert parent
+            x = parent.get_unshortened_relation(
+                target_user,
+                working_relation=working_relation + ['parent'],
+                added_already=added_already
+            )
+            if x:
+                return x
+
+        # Check partner
+        for i in [o for o in self.partners if o.id not in added_already]:
+            x = i.get_unshortened_relation(
+                target_user,
+                working_relation=working_relation + ["partner"],
+                added_already=added_already
+            )
+            if x:
+                return x
+
+        # Check children
+        for i in [o for o in self.children if o.id not in added_already]:
+            x = i.get_unshortened_relation(
+                target_user,
+                working_relation=working_relation + ["child"],
+                added_already=added_already
+            )
+            if x:
+                return x
+
+        return None
+
     async def generation_span(self, **kwargs: Any) -> AsyncGenerator[set[Self], None]:
         """
         Get the relations for the current user grouped by generation.

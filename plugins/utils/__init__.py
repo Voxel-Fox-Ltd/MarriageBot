@@ -20,6 +20,7 @@ from .custom_tree import *
 from .family_member import *
 from .perks import *
 from .proposal_lock import *
+from .relationship_string_simplifier import *
 from .utils import *
 
 __all__: tuple[str, ...] = (
@@ -31,7 +32,9 @@ __all__: tuple[str, ...] = (
     "ProposalLock",
     "e",
     "get_command_mention",
+    "get_gold_purchased",
     "get_guild_id",
+    "get_guild_id_and_gold",
     "get_name",
     "get_names",
     "get_upsell_button",
@@ -40,6 +43,5 @@ __all__: tuple[str, ...] = (
     "handle_proposal",
     "mint",
     "missing_user_names",
-    "get_gold_purchased",
-    "get_guild_id_and_gold",
+    "simplify_relationship",
 )
