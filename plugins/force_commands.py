@@ -33,7 +33,7 @@ class ForceCommands(client.Plugin):
         description="Force two users to marry each other.",
         type=n.ApplicationCommandType.CHAT_INPUT,
         dm_permission=False,
-        default_member_permissions=n.Permissions(manage_members=True),
+        default_member_permissions=n.Permissions(manage_guild=True),
         options=[
             n.ApplicationCommandOption(
                 name="user1",
@@ -112,7 +112,7 @@ class ForceCommands(client.Plugin):
         description="Force two users to divorce each other.",
         type=n.ApplicationCommandType.CHAT_INPUT,
         dm_permission=False,
-        default_member_permissions=n.Permissions(manage_members=True),
+        default_member_permissions=n.Permissions(manage_guild=True),
         options=[
             n.ApplicationCommandOption(
                 name="user1",
@@ -203,7 +203,7 @@ class ForceCommands(client.Plugin):
         description="Force one user to adopt another.",
         type=n.ApplicationCommandType.CHAT_INPUT,
         dm_permission=False,
-        default_member_permissions=n.Permissions(manage_members=True),
+        default_member_permissions=n.Permissions(manage_guild=True),
         options=[
             n.ApplicationCommandOption(
                 name="user1",
@@ -297,7 +297,7 @@ class ForceCommands(client.Plugin):
         description="Force a user to runaway from their parent.",
         type=n.ApplicationCommandType.CHAT_INPUT,
         dm_permission=False,
-        default_member_permissions=n.Permissions(manage_members=True),
+        default_member_permissions=n.Permissions(manage_guild=True),
         options=[
             n.ApplicationCommandOption(
                 name="user",
