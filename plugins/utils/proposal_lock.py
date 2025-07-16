@@ -25,6 +25,7 @@ import time
 from typing import TYPE_CHECKING, Callable, Literal
 
 import novus as n
+from novus.ext import database as db
 
 from .autodelete import AutoDelete
 from .family_member import FamilyMember
@@ -308,8 +309,32 @@ async def handle_proposal(
         unlock_f()
         return False
 
+    # See if incest is allowed
+    if guild_id != 0:
+        async with db.Database.acquire() as conn:
+            row = await conn.fetchrow(
+                """
+                SELECT
+                    guild_specific_families,
+                    allow_incest
+                FROM
+                    guild_settings
+                WHERE
+                    guild_id = $1
+                """,
+                ctx.guild.id
+            )
+        if row is None:
+            allow_incest = False
+        elif row["guild_specific_families"]:
+            allow_incest = row["allow_incest"]
+        else:
+            allow_incest = False
+    else:
+        allow_incest = False
+
     # See if they're already related
-    if await author_ft.get_related(user_ft):
+    if allow_incest is False and await author_ft.get_related(user_ft):
         unlock_f()
         await ctx.send(
             embeds=e(
