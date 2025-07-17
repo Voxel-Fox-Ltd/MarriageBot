@@ -567,7 +567,7 @@ class FamilyMember:
         people_list.add(self)
 
         # Return parent and their relations
-        if add_parent:
+        if add_parent or deep:
             if self.parent:
                 async for temp in self.parent.span(
                             people_list,
@@ -580,7 +580,7 @@ class FamilyMember:
                     await asyncio.sleep(0)
 
         # Return partner and their relations
-        if add_partners:
+        if add_partners or deep:
             for partner in self.partners:
                 async for temp in partner.span(
                             people_list,
