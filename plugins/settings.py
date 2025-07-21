@@ -89,6 +89,26 @@ class Settings(client.Plugin):
             ))
 
         async with db.Database.acquire() as conn:
+            gold_enabled = await conn.fetchval(
+                """
+                SELECT TRUE FROM guild_specific_families WHERE guild_id = $1
+                """,
+                ctx.guild.id,
+            )
+            gold_enabled = bool(gold_enabled)
+
+        if not gold_enabled:
+            components = u.get_upsell_components(ctx, gold=True)
+            return await ctx.send(
+                ctx._(
+                    "You can only switch to guild-specific families (and thus use the `/force` "
+                    "and `/incest` commands, enable polygamy for everyone in your server, and "
+                    "increase your child count) after you have purchased MarriageBot Gold."
+                ),
+                components=components
+            )
+
+        async with db.Database.acquire() as conn:
             await conn.execute(
                 """
                 INSERT INTO
