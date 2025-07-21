@@ -350,37 +350,34 @@ async def handle_proposal(
 
     # See if they're above a certain family size limit
     family_size_limit: int = 2_000
-    kwargs = {
-        "people_list": None,
-        "add_parent": True,
-        "add_partners": True,
-        "add_partner_parents": True,
-    }
 
     async def chained():
-        async for i in author_ft.span(deep=True):
-            yield i
-        async for i in user_ft.span(deep=True):
-            yield i
+        size = 0
+        async for _, span_user in author_ft.span(deep=True):
+            size += 1
+            if size >= family_size_limit:
+                return False
+        async for _, span_user in user_ft.span(deep=True):
+            size += 1
+            if size >= family_size_limit:
+                return False
+        return size
 
-    counter: int = 0
-    async for counter, _ in chained():
-        if counter > family_size_limit:
-            unlock_f()
-            await ctx.send(
-                embeds=e(
-                    (
-                        ctx._(
-                            "You can't do that! If your families combine, you'd "
-                            "have over {family_size} members in your tree!"
-                        )
-                        .format(family_size=family_size_limit)
-                    ),
-                    gold=guild_id != 0,
-                )
+    if (await chained()) is False:
+        unlock_f()
+        await ctx.send(
+            embeds=e(
+                (
+                    ctx._(
+                        "You can't do that! If your families combine, you'd "
+                        "have over {family_size} members in your tree!"
+                    )
+                    .format(family_size=family_size_limit)
+                ),
+                gold=guild_id != 0,
             )
-            return False
-        counter += 1
+        )
+        return False
 
     # Send the actual proposal message
     time_ = int(time.time() + PROPOSAL_TIMEOUT)

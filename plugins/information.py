@@ -401,10 +401,9 @@ class Information(client.Plugin):
         # Get the user's info and family size
         guild_id = await u.get_guild_id(self.bot, ctx)
         ft = u.FamilyMember.get(user.id, guild_id)
-        span = set()
+        size = 0
         async for _, span_user in ft.span(deep=True):
-            span.add(span_user)
-        size = len(span)
+            size += 1
 
         # Output
         output = ctx.ngettext(
