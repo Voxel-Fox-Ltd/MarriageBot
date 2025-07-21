@@ -228,4 +228,16 @@ def get_upsell_components(
         *,
         gold: bool = False,
         enable_gold_button: bool = False) -> list[n.ActionRow]:
+    """
+    Get the components for an upsell.
+
+    Parameters
+    ----------
+    gold : bool
+        Whether or not this is a gold upsell.
+    enable_gold_button : bool
+        Whether or not to include the enable gold button; should only be used when the guild
+        has purchased gold already.
+    """
+
     return [get_upsell_row(ctx, gold=gold, enable_gold_button=enable_gold_button)]

@@ -80,6 +80,7 @@ class Information(client.Plugin):
             return await ctx.send(":/", ephemeral=True)
 
         # Get their relation
+        await ctx.defer()
         async with db.Database.acquire() as conn:
             guild_id = await u.get_guild_id(self.bot, ctx, conn)
             first = u.FamilyMember.get(user_id, guild_id)
@@ -95,6 +96,8 @@ class Information(client.Plugin):
             ))
 
         # Simplify the relationship
+        if ctx.user.id == 141231597155385344:
+            await ctx.send(relation)
         relation = u.simplify_relationship(relation)
         return await ctx.send(embeds=u.e(
             ctx._(
