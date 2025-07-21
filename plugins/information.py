@@ -96,8 +96,6 @@ class Information(client.Plugin):
             ))
 
         # Simplify the relationship
-        if ctx.user.id == 141231597155385344:
-            await ctx.send(relation)
         relation = u.simplify_relationship(relation)
         return await ctx.send(embeds=u.e(
             ctx._(
