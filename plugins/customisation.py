@@ -199,6 +199,11 @@ class Customisation(client.Plugin):
             return await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore
 
         # Otherwise, we need to send them a modal to deal with
+        value = original
+        if value == "-1":
+            value = "transparent"
+        elif value.isdigit():
+            value = f"#{int(value):06x}"
         await ctx.send_modal(
             title=ctx._("Customise your tree"),
             custom_id=f"CUSTOMISE_TREE_MODAL {ctx.user.id} {type_}",
@@ -209,13 +214,7 @@ class Customisation(client.Plugin):
                         custom_id="_",
                         style=n.TextInputStyle.SHORT,
                         required=True,
-                        value=(
-                            original
-                            if isinstance(original, str)
-                            else f"#{original:06x}"
-                            if original != -1
-                            else "transparent"
-                        ),
+                        value=value,
                     ),
                 ]),
             ],
