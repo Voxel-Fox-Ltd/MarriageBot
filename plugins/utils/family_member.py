@@ -723,6 +723,7 @@ class FamilyMember:
             name_str = name
         else:
             name_str = name.get(id, str(id))
+        name_str = name_str.replace('\\', '\\\\')
         name_str = name_str.replace('"', '\\"')
 
         if custom:
