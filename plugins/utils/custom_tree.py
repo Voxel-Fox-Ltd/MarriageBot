@@ -63,7 +63,11 @@ class CustomTree:
 
     @property
     def edge(self) -> int:
-        return self._edge or self.DEFAULT_COLOURS["edge"]
+        return (
+            self._edge
+            if self._edge is not None
+            else self.DEFAULT_COLOURS["edge"]
+        )
 
     @edge.setter
     def edge(self, value: int) -> None:
@@ -71,7 +75,11 @@ class CustomTree:
 
     @property
     def node(self) -> int:
-        return self._node or self.DEFAULT_COLOURS["node"]
+        return (
+            self._node
+            if self._node is not None
+            else self.DEFAULT_COLOURS["node"]
+        )
 
     @node.setter
     def node(self, value: int) -> None:
@@ -79,7 +87,11 @@ class CustomTree:
 
     @property
     def font(self) -> int:
-        return self._font or self.DEFAULT_COLOURS["font"]
+        return (
+            self._font
+            if self._font is not None
+            else self.DEFAULT_COLOURS["font"]
+        )
 
     @font.setter
     def font(self, value: int) -> None:
@@ -87,7 +99,11 @@ class CustomTree:
 
     @property
     def highlighted_font(self) -> int:
-        return self._highlighted_font or self.DEFAULT_COLOURS["highlighted_font"]
+        return (
+            self._highlighted_font
+            if self._highlighted_font is not None
+            else self.DEFAULT_COLOURS["highlighted_font"]
+        )
 
     @highlighted_font.setter
     def highlighted_font(self, value: int) -> None:
@@ -95,7 +111,11 @@ class CustomTree:
 
     @property
     def highlighted_node(self) -> int:
-        return self._highlighted_node or self.DEFAULT_COLOURS["highlighted_node"]
+        return (
+            self._highlighted_node
+            if self._highlighted_node is not None
+            else self.DEFAULT_COLOURS["highlighted_node"]
+        )
 
     @highlighted_node.setter
     def highlighted_node(self, value: int) -> None:
@@ -103,7 +123,11 @@ class CustomTree:
 
     @property
     def background(self) -> int:
-        return self._background or self.DEFAULT_COLOURS["background"]
+        return (
+            self._background
+            if self._background is not None
+            else self.DEFAULT_COLOURS["background"]
+        )
 
     @background.setter
     def background(self, value: int) -> None:
