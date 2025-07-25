@@ -245,7 +245,7 @@ class Customisation(client.Plugin):
         # Validate and update the customisation
         async with db.Database.acquire() as conn:
             custom = await u.CustomTree.fetch(conn, ctx.user.id)
-            setattr(custom, type_, value)
+            setattr(custom, type_, colour)
             await custom.update(conn)
 
         # Regenerate and send the tree
