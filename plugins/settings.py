@@ -28,6 +28,135 @@ from . import utils as u
 
 class Settings(client.Plugin):
 
+    @client.command(
+        name="transfer-gold",
+        description="Transfer your MarriageBot Gold purchase to this server.",
+        dm_permission=False
+    )
+    async def transfer_gold(self, ctx: t.CommandGI) -> None:
+        """
+        Transfer your MarriageBot Gold purchase to this server.
+        """
+
+        if not ctx.guild:
+            return  # Silently fail
+
+        async with db.Database.acquire() as conn:
+            rows = await conn.fetch(
+                "SELECT * FROM guild_specific_families WHERE purchased_by = $1",
+                ctx.user.id,
+            )
+        if not rows:
+            return await ctx.send(
+                ctx._("You haven't purchased any instances of MarriageBot Gold!"),
+                ephemeral=True,
+            )
+
+        async def get_guild_name(guild_id: int) -> str:
+            guild = self.bot.get_guild(guild_id)
+            if guild:
+                return guild.name
+            try:
+                guild = await n.Guild.fetch(self.state, guild_id)
+                return guild.name
+            except Exception:
+                return f"Guild[{guild_id}]"
+
+        return await ctx.send(
+            ctx._(
+                "I'm going to transfer your MarriageBot Gold purchase into **this server**. "
+                "Which server would you like to transfer your Gold purchase *from*?"
+            ),
+            components=[
+                n.ActionRow([
+                    n.StringSelectMenu(
+                        custom_id=f"TRANSFER_GOLD_SELECT {ctx.user.id}",
+                        placeholder=ctx._("Select a server"),
+                        options=[
+                            n.SelectOption(
+                                label=(await get_guild_name(row["guild_id"])),
+                                value=str(row["guild_id"]),
+                            )
+                            for row in rows
+                        ],
+                        min_values=1,
+                        max_values=1,
+                    )
+                ])
+            ],
+        )
+
+    @client.event.filtered_component(r"^TRANSFER_GOLD_SELECT (\d+)$")
+    async def on_transfer_gold_select(self, ctx: n.Interaction[n.MessageComponentData]) -> None:
+        """
+        Pinged when a user selects a server to transfer their MarriageBot Gold purchase from.
+        """
+
+        if not ctx.guild:
+            return  # Silently fail - this shouldn't be possible
+
+        await ctx.defer_update()
+
+        selected = ctx.data.values[0]
+        guild_id = int(selected.value)
+        async with db.Database.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT * FROM guild_specific_families WHERE purchased_by = $1 AND guild_id = $2",
+                ctx.user.id, guild_id,
+            )
+            if row is None:
+                return await ctx.send(
+                    (
+                        ctx._(
+                            "You didn't purchase the Gold subscription that's active in "
+                            "**{guild_name}**"
+                        )
+                        .format(guild_name=selected.label)
+                    ),
+                    ephemeral=True,
+                )
+
+            try:
+                await conn.execute(
+                    """
+                    UPDATE
+                        guild_specific_families
+                    SET
+                        guild_id = $1
+                    WHERE
+                        guild_id = $2
+                        AND purchased_by = $3
+                    """,
+                    ctx.guild.id,
+                    guild_id,
+                    ctx.user.id,
+                )
+            except Exception:
+                return await ctx.send(
+                    ctx._("There was an error transferring your MarriageBot Gold purchase."),
+                    ephemeral=True,
+                )
+
+            await conn.execute(
+                """
+                UPDATE
+                    guild_settings
+                SET
+                    guild_specific_families = FALSE
+                WHERE
+                    guild_id = $1
+                """,
+                guild_id,
+            )
+
+        await ctx.send(
+            ctx._(
+                "Your MarriageBot Gold purchase has been transferred to this server! You can now "
+                "run the {command_ping} command to activate it here :3"
+            ).format(command_ping=self.guild_specific_families_guild_settings.get_mention()),
+            ephemeral=True,
+        )
+
     @client.event.filtered_component(r"^ENABLE_GOLD$")
     async def on_enable_gold_button_press(self, ctx: t.ComponentGI) -> None:
         """
