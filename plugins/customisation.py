@@ -133,7 +133,7 @@ class Customisation(client.Plugin):
         tree = await self.generate_tree(custom)
         meth = ctx.send
         if update_original:
-            meth = ctx.edit_original
+            meth = ctx.update
         await meth(
             embeds=u.e(None, image_url="attachment://tree.png"),
             files=[tree],
