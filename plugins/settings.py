@@ -38,9 +38,12 @@ class Settings(client.Plugin):
         Transfer your MarriageBot Gold purchase to this server.
         """
 
+        # Make sure we're in a guild
         if not ctx.guild:
             return  # Silently fail
+        await ctx.defer(ephemeral=True)
 
+        # Get gold purchases
         async with db.Database.acquire() as conn:
             rows = await conn.fetch(
                 "SELECT * FROM guild_specific_families WHERE purchased_by = $1",
@@ -52,7 +55,6 @@ class Settings(client.Plugin):
                 ctx._("You haven't purchased any instances of MarriageBot Gold!"),
                 ephemeral=True,
             )
-
         if this_guild_active:
             return await ctx.send(
                 ctx._("MarriageBot Gold has already been purchased for this server!"),
@@ -73,12 +75,11 @@ class Settings(client.Plugin):
             ((await get_guild_name(row["guild_id"])), row["guild_id"],)
             for row in rows if row["guild_id"] != ctx.guild.id
         ]
-
-        # Sort guilds alphabetically, other than `Guild[xxx]`, which go last.
         available_guilds.sort(
             key=lambda x: (x[0].lower() if not x[0].startswith("Guild[") else "zzzz" + x[0]),
-        )
+        )  # Sort guilds alphabetically, other than `Guild[xxx]`, which go last.
 
+        # Ask the user where they want to transfer from
         return await ctx.send(
             ctx._(
                 "I'm going to transfer your MarriageBot Gold purchase into **this server**. "
@@ -101,6 +102,7 @@ class Settings(client.Plugin):
                     )
                 ])
             ],
+            ephemeral=True,
         )
 
     @client.event.filtered_component(r"^TRANSFER_GOLD_SELECT (\d+)$")
@@ -109,9 +111,9 @@ class Settings(client.Plugin):
         Pinged when a user selects a server to transfer their MarriageBot Gold purchase from.
         """
 
+        # Make sure the right user is using the dropdown
         if not ctx.guild:
-            return  # Silently fail - this shouldn't be possible
-
+            return  # Silently fail
         if (ctx.custom_id or "").split(" ")[1] != str(ctx.user.id):
             return await ctx.send(
                 ctx._("You cannot transfer someone else's MarriageBot Gold purchase!"),
@@ -120,6 +122,7 @@ class Settings(client.Plugin):
 
         await ctx.defer_update()
 
+        # Perform our logistics
         selected = ctx.data.values[0]
         guild_id = int(selected.value)
         async with db.Database.acquire() as conn:
@@ -172,12 +175,12 @@ class Settings(client.Plugin):
                 guild_id,
             )
 
-        await ctx.send(
-            ctx._(
+        await ctx.edit_original(
+            content=ctx._(
                 "Your MarriageBot Gold purchase has been transferred to this server! You can now "
                 "run the {command_ping} command to activate it here :3"
             ).format(command_ping=self.guild_specific_families_guild_settings.get_mention()),
-            ephemeral=True,
+            components=None,
         )
 
     @client.event.filtered_component(r"^ENABLE_GOLD$")

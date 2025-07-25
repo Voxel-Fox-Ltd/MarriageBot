@@ -139,7 +139,7 @@ async def get_guild_id_and_gold(
         ctx: n.Interaction,
         conn: asyncpg.Connection | None = None) -> tuple[int, bool]:
     """
-    Get the guild ID and whether or not Gold has been purchased for this guild.
+    Get the effective guild ID and whether or not Gold has been purchased for this guild.
     """
 
     if conn is None:
