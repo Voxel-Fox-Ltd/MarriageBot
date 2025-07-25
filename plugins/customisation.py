@@ -249,4 +249,5 @@ class Customisation(client.Plugin):
             await custom.update(conn)
 
         # Regenerate and send the tree
-        await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore
+        await self.generate_and_send_tree(ctx, custom, update_original=False)  # type: ignore
+        await ctx.delete_original()
