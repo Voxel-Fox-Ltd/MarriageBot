@@ -174,14 +174,16 @@ class CustomTree:
                     direction
                 )
             VALUES
-                $1,
-                $2,
-                $3,
-                $4,
-                $5,
-                $6,
-                $7,
-                $8
+                (
+                    $1,
+                    $2,
+                    $3,
+                    $4,
+                    $5,
+                    $6,
+                    $7,
+                    $8
+                )
             ON CONFLICT
                 (user_id)
             DO UPDATE
