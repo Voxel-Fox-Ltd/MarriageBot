@@ -31,6 +31,10 @@ class Settings(client.Plugin):
     @client.command(
         name="transfer-gold",
         description="Transfer your MarriageBot Gold purchase to this server.",
+        # TRANSLATORS: Command name
+        name_localizations=LC._("transfer-gold"),
+        # TRANSLATORS: Command description
+        description_localizations=LC._("Transfer your MarriageBot Gold purchase to this server."),
         dm_permission=False
     )
     async def transfer_gold(self, ctx: t.CommandGI) -> None:

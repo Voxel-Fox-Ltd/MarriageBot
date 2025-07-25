@@ -43,7 +43,7 @@ __all__ = (
 )
 
 
-missing_user_names = set()
+missing_user_names: set[int] = set()
 
 
 def mint(*x: Any) -> tuple[int, ...]:
@@ -152,7 +152,7 @@ async def get_guild_id_and_gold(
     return guild_id, gold_purchased
 
 
-def e(content: str, image_url: str | None = None, gold: bool = False) -> list[n.Embed]:
+def e(content: str | None, image_url: str | None = None, gold: bool = False) -> list[n.Embed]:
     """
     Take a string and shove it into an embed.
     """
