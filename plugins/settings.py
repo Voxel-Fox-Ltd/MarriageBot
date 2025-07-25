@@ -46,9 +46,16 @@ class Settings(client.Plugin):
                 "SELECT * FROM guild_specific_families WHERE purchased_by = $1",
                 ctx.user.id,
             )
+            _, this_guild_active = await u.get_guild_id_and_gold(self.bot, ctx)
         if not rows:
             return await ctx.send(
                 ctx._("You haven't purchased any instances of MarriageBot Gold!"),
+                ephemeral=True,
+            )
+
+        if this_guild_active:
+            return await ctx.send(
+                ctx._("MarriageBot Gold has already been purchased for this server!"),
                 ephemeral=True,
             )
 
@@ -62,6 +69,16 @@ class Settings(client.Plugin):
             except Exception:
                 return f"Guild[{guild_id}]"
 
+        available_guilds = [
+            ((await get_guild_name(row["guild_id"])), row["guild_id"],)
+            for row in rows if row["guild_id"] != ctx.guild.id
+        ]
+
+        # Sort guilds alphabetically, other than `Guild[xxx]`, which go last.
+        available_guilds.sort(
+            key=lambda x: (x[0].lower() if not x[0].startswith("Guild[") else "zzzz" + x[0]),
+        )
+
         return await ctx.send(
             ctx._(
                 "I'm going to transfer your MarriageBot Gold purchase into **this server**. "
@@ -74,10 +91,10 @@ class Settings(client.Plugin):
                         placeholder=ctx._("Select a server"),
                         options=[
                             n.SelectOption(
-                                label=(await get_guild_name(row["guild_id"])),
-                                value=str(row["guild_id"]),
+                                label=g[0],
+                                value=str(g[1]),
                             )
-                            for row in rows
+                            for g in available_guilds
                         ],
                         min_values=1,
                         max_values=1,
@@ -94,6 +111,12 @@ class Settings(client.Plugin):
 
         if not ctx.guild:
             return  # Silently fail - this shouldn't be possible
+
+        if (ctx.custom_id or "").split(" ")[1] != str(ctx.user.id):
+            return await ctx.send(
+                ctx._("You cannot transfer someone else's MarriageBot Gold purchase!"),
+                ephemeral=True,
+            )
 
         await ctx.defer_update()
 
