@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 from .autodelete import *
+from .colour_names import *
 from .custom_tree import *
 from .family_member import *
 from .perks import *
@@ -25,11 +26,13 @@ from .utils import *
 
 __all__: tuple[str, ...] = (
     "AutoDelete",
+    "COLOUR_NAMES",
     "CustomTree",
     "FamilyMember",
     "PROPOSAL_TIMEOUT",
     "Perks",
     "ProposalLock",
+    "colour_to_int",
     "e",
     "get_command_mention",
     "get_gold_purchased",

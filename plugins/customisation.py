@@ -118,42 +118,136 @@ class Customisation(client.Plugin):
         # Create a tree for them
         async with db.Database.acquire() as conn:
             custom = await u.CustomTree.fetch(conn, ctx.user.id)
+        await self.generate_and_send_tree(ctx, custom)
+
+    async def generate_and_send_tree(
+            self,
+            ctx: t.CommandI,
+            custom: u.CustomTree,
+            *,
+            update_original: bool = False) -> None:
+        """
+        Generate a tree based on the provided customizations and send it back out into the world.
+        """
+
         tree = await self.generate_tree(custom)
-        await ctx.send(
+        meth = ctx.send
+        if update_original:
+            meth = ctx.edit_original
+        await meth(
             embeds=u.e(None, image_url="attachment://tree.png"),
             files=[tree],
             components=[
                 n.ActionRow([
                     n.Button(
-                        "edge",
-                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} edge",
+                        "Your text",
+                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} highlighted_font {custom.highlighted_font}",
                     ),
                     n.Button(
-                        "node",
-                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} node",
+                        "Your user",
+                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} highlighted_node {custom.highlighted_node}",
                     ),
                     n.Button(
-                        "font",
-                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} font",
+                        "Lines",
+                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} edge {custom.edge}",
                     ),
                     n.Button(
-                        "highlighted_font",
-                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} highlighted_font",
+                        "Users",
+                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} node {custom.node}",
                     ),
                     n.Button(
-                        "highlighted_node",
-                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} highlighted_node",
+                        "Text",
+                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} font {custom.font}",
                     ),
                 ]),
                 n.ActionRow([
                     n.Button(
-                        "background",
-                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} background",
+                        "Background",
+                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} background {custom.background}",
                     ),
                     n.Button(
-                        "direction",
-                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} direction",
+                        "Direction",
+                        custom_id=f"CUSTOMISE_TREE {ctx.user.id} direction {custom.direction}",
                     ),
                 ]),
             ]
         )
+
+    @client.event.filtered_component(r"CUSTOMISE_TREE \d+ (.+)")
+    async def customize_tree_component(self, ctx: t.ComponentI) -> None:
+        """
+        Handle the customization of the tree based on the component interaction.
+        """
+
+        # Get the customisation type
+        _, user_id_str, type_, original = (ctx.custom_id or "").split(" ")
+        if user_id_str != str(ctx.user.id):
+            return await ctx.send(
+                ctx._(
+                    "You can't customise someone else's tree! You can customise your own by "
+                    "running the {cusomise_command} command :3"
+                ).format(cusomise_command=self.customize_tree.get_mention()),
+                ephemeral=True,
+            )
+
+        # If they're switching directions, just switch em
+        if type_ == "direction":
+            async with db.Database.acquire() as conn:
+                custom = await u.CustomTree.fetch(conn, ctx.user.id)
+                custom.direction = "TB" if custom.direction == "LR" else "LR"
+                await custom.update(conn)
+            return await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore
+
+        # Otherwise, we need to send them a modal to deal with
+        await ctx.send_modal(
+            title=ctx._("Customise your tree"),
+            custom_id=f"CUSTOMISE_TREE_MODAL {ctx.user.id} {type_}",
+            components=[
+                n.ActionRow([
+                    n.TextInput(
+                        label=ctx._("New value"),
+                        custom_id="_",
+                        style=n.TextInputStyle.SHORT,
+                        required=True,
+                        value=(
+                            original
+                            if isinstance(original, str)
+                            else f"#{original:06x}"
+                            if original != -1
+                            else "transparent"
+                        ),
+                    ),
+                ]),
+            ],
+        )
+
+    @client.event.modal
+    async def customize_tree_modal(self, ctx: n.Interaction[n.ModalSubmitData]) -> None:
+        """
+        Handle the modal submission for customizing the tree.
+        """
+
+        # Make sure we're dealing with a modal for us
+        if not (custom_id := (ctx.custom_id or "")).startswith("CUSTOMISE_TREE_MODAL "):
+            return
+
+        # Get the value they entered
+        value = ctx.data.components[0].components[0].value.strip()  # type: ignore
+        _, _, type_ = custom_id.split(" ")
+
+        # Validate the thing they said
+        colour = u.colour_to_int(value)
+        if colour is None:
+            return await ctx.send(
+                ctx._("I don't know what colour that is..."),
+                ephemeral=True,
+            )
+
+        # Validate and update the customisation
+        async with db.Database.acquire() as conn:
+            custom = await u.CustomTree.fetch(conn, ctx.user.id)
+            setattr(custom, type_, value)
+            await custom.update(conn)
+
+        # Regenerate and send the tree
+        await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore

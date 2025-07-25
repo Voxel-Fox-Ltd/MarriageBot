@@ -31,7 +31,7 @@ __all__ = (
 
 class CustomTree:
 
-    DEFAULT_COLOURS = {
+    DEFAULT_COLOURS: dict[str, int] = {
         "edge": 0,
         "node": 0,
         "font": 0xFFFFFF,
@@ -53,13 +53,69 @@ class CustomTree:
             background: int | None = None,
             direction: Literal["TB", "LR"] = "TB"):
         self.id = user_id
-        self.edge = edge
-        self.node = node
-        self.font = font
-        self.highlighted_font = highlighted_font
-        self.highlighted_node = highlighted_node
-        self.background = background
-        self.direction = direction
+        self._edge = edge
+        self._node = node
+        self._font = font
+        self._highlighted_font = highlighted_font
+        self._highlighted_node = highlighted_node
+        self._background = background
+        self._direction = direction
+
+    @property
+    def edge(self) -> int:
+        return self._edge or self.DEFAULT_COLOURS["edge"]
+
+    @edge.setter
+    def edge(self, value: int) -> None:
+        self._edge = value
+
+    @property
+    def node(self) -> int:
+        return self._node or self.DEFAULT_COLOURS["node"]
+
+    @node.setter
+    def node(self, value: int) -> None:
+        self._node = value
+
+    @property
+    def font(self) -> int:
+        return self._font or self.DEFAULT_COLOURS["font"]
+
+    @font.setter
+    def font(self, value: int) -> None:
+        self._font = value
+
+    @property
+    def highlighted_font(self) -> int:
+        return self._highlighted_font or self.DEFAULT_COLOURS["highlighted_font"]
+
+    @highlighted_font.setter
+    def highlighted_font(self, value: int) -> None:
+        self._highlighted_font = value
+
+    @property
+    def highlighted_node(self) -> int:
+        return self._highlighted_node or self.DEFAULT_COLOURS["highlighted_node"]
+
+    @highlighted_node.setter
+    def highlighted_node(self, value: int) -> None:
+        self._highlighted_node = value
+
+    @property
+    def background(self) -> int:
+        return self._background or self.DEFAULT_COLOURS["background"]
+
+    @background.setter
+    def background(self, value: int) -> None:
+        self._background = value
+
+    @property
+    def direction(self) -> str:
+        return self._direction or self.DEFAULT_COLOURS["direction"]  # pyright: ignore
+
+    @direction.setter
+    def direction(self, value: str) -> None:
+        self._direction = value
 
     @classmethod
     async def fetch(cls, conn: asyncpg.Connection, user_id: int) -> Self:
@@ -96,6 +152,56 @@ class CustomTree:
             highlighted_node=row.get("highlighted_node"),
             background=row.get("background"),
             direction=row.get("direction"),
+        )
+
+    async def update(self, conn: asyncpg.Connection) -> None:
+        """
+        Save a modified instance of the customisations into the database.
+        """
+
+        await conn.execute(
+            """
+            INSERT INTO
+                customisation
+                (
+                    user_id,
+                    edge,
+                    node,
+                    font,
+                    highlighted_font,
+                    highlighted_node,
+                    background,
+                    direction
+                )
+            VALUES
+                $1,
+                $2,
+                $3,
+                $4,
+                $5,
+                $6,
+                $7,
+                $8
+            ON CONFLICT
+                (user_id)
+            DO UPDATE
+            SET
+                edge = EXCLUDED.edge,
+                node = EXCLUDED.node,
+                font = EXCLUDED.font,
+                highlighted_font = EXCLUDED.highlighted_font,
+                highlighted_node = EXCLUDED.highlighted_node,
+                background = EXCLUDED.background,
+                direction = EXCLUDED.direction
+            """,
+            self.id,
+            self.edge,
+            self.node,
+            self.font,
+            self.highlighted_font,
+            self.highlighted_node,
+            self.background,
+            self.direction,
         )
 
     @property
