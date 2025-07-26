@@ -133,7 +133,7 @@ class Customisation(client.Plugin):
         tree = await self.generate_tree(custom)
         meth = ctx.send
         if update_original:
-            meth = ctx.update
+            meth = ctx.edit_original
         await meth(
             embeds=u.e(None, image_url="attachment://tree.png"),
             files=[tree],
@@ -196,6 +196,7 @@ class Customisation(client.Plugin):
                 custom = await u.CustomTree.fetch(conn, ctx.user.id)
                 custom.direction = "TB" if custom.direction == "LR" else "LR"
                 await custom.update(conn)
+            await ctx.defer_update()
             return await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore
 
         # Otherwise, we need to send them a modal to deal with
@@ -247,7 +248,7 @@ class Customisation(client.Plugin):
             custom = await u.CustomTree.fetch(conn, ctx.user.id)
             setattr(custom, type_, colour)
             await custom.update(conn)
+        await ctx.defer_update()
 
         # Regenerate and send the tree
-        await self.generate_and_send_tree(ctx, custom, update_original=False)  # type: ignore
-        await ctx.delete_original()
+        await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore
