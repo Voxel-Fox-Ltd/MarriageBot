@@ -584,14 +584,15 @@ class Information(client.Plugin):
         if not full_tree:
             text += " " + (
                 ctx._(
-                    "Use {fulltree} for your *entire* family, "
-                    "including non-blood relatives."
+                    "Use {fulltree} for your *entire* family, including non-blood relatives.\n"
+                    "Use {customize} to change how your tree looks."
                 )
             )
         fulltree_c = u.get_command_mention(self.bot, "fulltree")
+        customize_c = u.get_command_mention(self.bot, "customize-tree")
         text = text.format(
-            url="https://marriagebot.xyz/",
             fulltree=fulltree_c,
+            customize=customize_c,
         )
         await ctx.send(
             embeds=u.e(text, image_url="attachment://tree.png", gold=guild_id != 0),
