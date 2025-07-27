@@ -74,10 +74,12 @@ async def handle_marry_limits(
                 embeds=e(
                     (
                         ctx.ngettext(
-                            "You already have a partner! You can't have any more right now. {user} is at their partner limit as well :<",
-                            "You already have {count} partners! You can't have any more right now. {user} is at their partner limit as well :<",
+                            "You already have a partner! You can't have any more right now. "
+                            "{user} is at their partner limit as well :<",
+                            "You already have {count} partners! You can't have any more right "
+                            "now. {user} is at their partner limit as well :<",
                             num,
-                        ).format(count=num)
+                        ).format(user=f"<@{user.id}>", count=num)
                     ),
                     gold=guild_id != 0,
                 )
@@ -104,7 +106,8 @@ async def handle_marry_limits(
                 (
                     ctx.ngettext(
                         "{user} already has a partner! They can't have any more right now :<",
-                        "{user} already has {count} partners! They can't have any more right now :<",
+                        "{user} already has {count} partners! They can't have any more right now "
+                        ":<",
                         num,
                     ).format(user=f"<@{user.id}>", count=num)
                 ),
@@ -351,7 +354,7 @@ async def handle_proposal(
     # See if they're above a certain family size limit
     family_size_limit: int = 2_000
 
-    async def chained():
+    async def chained() -> int | bool:
         size = 0
         async for _, span_user in author_ft.span(deep=True):
             size += 1
