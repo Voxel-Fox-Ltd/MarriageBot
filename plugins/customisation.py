@@ -122,7 +122,7 @@ class Customisation(client.Plugin):
 
     async def generate_and_send_tree(
             self,
-            ctx: t.CommandI,
+            ctx: n.Interaction,
             custom: u.CustomTree,
             *,
             update_original: bool = False) -> None:
@@ -133,7 +133,7 @@ class Customisation(client.Plugin):
         tree = await self.generate_tree(custom)
         meth = ctx.send
         if update_original:
-            meth = ctx.edit_original
+            meth = ctx.update
         await meth(
             embeds=u.e(None, image_url="attachment://tree.png"),
             files=[tree],
@@ -196,8 +196,7 @@ class Customisation(client.Plugin):
                 custom = await u.CustomTree.fetch(conn, ctx.user.id)
                 custom.direction = "TB" if custom.direction == "LR" else "LR"
                 await custom.update(conn)
-            await ctx.defer_update()
-            return await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore
+            return await self.generate_and_send_tree(ctx, custom, update_original=True)
 
         # Otherwise, we need to send them a modal to deal with
         value = original
@@ -232,7 +231,7 @@ class Customisation(client.Plugin):
             return
 
         # Get the value they entered
-        value = ctx.data.components[0].components[0].value.strip()  # type: ignore
+        value = ctx.data.components[0].components[0].value.strip()  # pyright: ignore
         _, _, type_ = custom_id.split(" ")
 
         # Validate the thing they said
@@ -248,7 +247,6 @@ class Customisation(client.Plugin):
             custom = await u.CustomTree.fetch(conn, ctx.user.id)
             setattr(custom, type_, colour)
             await custom.update(conn)
-        await ctx.defer_update()
 
         # Regenerate and send the tree
-        await self.generate_and_send_tree(ctx, custom, update_original=True)  # type: ignore
+        await self.generate_and_send_tree(ctx, custom, update_original=True)
