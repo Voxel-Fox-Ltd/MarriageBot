@@ -313,7 +313,9 @@ async def handle_proposal(
         return False
 
     # See if incest is allowed
-    if guild_id != 0:
+    if guild_id == 0:
+        allow_incest = False
+    else:
         async with db.Database.acquire() as conn:
             row = await conn.fetchrow(
                 """
@@ -329,12 +331,10 @@ async def handle_proposal(
             )
         if row is None:
             allow_incest = False
-        elif row["guild_specific_families"]:
+        elif bot.config.gold or row["guild_specific_families"]:
             allow_incest = row["allow_incest"]
         else:
             allow_incest = False
-    else:
-        allow_incest = False
 
     # See if they're already related
     if allow_incest is False and await author_ft.get_related(user_ft):

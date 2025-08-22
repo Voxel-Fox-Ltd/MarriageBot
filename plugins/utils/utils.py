@@ -92,6 +92,8 @@ async def get_guild_id(
 
     if bot.config.gold and ctx.guild:
         return ctx.guild.id
+    elif bot.config.gold:
+        raise Exception()
     if ctx.guild:
         guild_specific: bool | None
         if conn is None:
