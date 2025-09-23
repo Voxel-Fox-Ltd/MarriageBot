@@ -143,7 +143,7 @@ class Misc(client.Plugin):
                 "* Default\n"
                 "  * Global tree\n"
                 "* Gold\n"
-                "  * Server-specific tree"
+                "  * Server-specific tree\n"
                 "  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, "
                 "{forceadopt_c}, {forcerunaway_c})\n"
                 "  * Access to {incest_c}\n"
