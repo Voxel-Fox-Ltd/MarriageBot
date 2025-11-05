@@ -42,7 +42,7 @@ class Perks:
     def __init__(
             self,
             max_children: int = 5,
-            max_partners: int = 2,
+            max_partners: int = 1,
             can_run_fulltree: bool = False,
             can_run_disownall: bool = False,
             tree_command_cooldown: int = 60,
