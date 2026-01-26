@@ -313,6 +313,12 @@ class Simulation(client.Plugin):
                 ctx._("Why would you bite someone?"),
                 ctx._("Biting people isn’t nice."),
                 ctx._("Stop biting people!"),
+
+                # double the positives
+                ctx._("*You bite {user}.*"),
+                ctx._("*Bites {user}.*"),
+                ctx._("*{user} was bitten.*"),
+                ctx._("*{user} has been bitten.*"),
             ],
         )
 
