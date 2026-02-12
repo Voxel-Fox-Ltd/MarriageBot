@@ -21,13 +21,13 @@ import asyncio
 from typing import TYPE_CHECKING
 
 import aiohttp
+import novus as n
 from cachetools import TTLCache
 from novus.ext.database import database as db
 
 from .utils import get_guild_id
 
 if TYPE_CHECKING:
-    import novus as n
     from novus.ext import client
 
 __all__ = (
@@ -55,11 +55,11 @@ class Perks:
         self.can_run_abandon: bool = can_run_abandon
 
     @classmethod
-    def zero(cls):
+    def zero(cls) -> Perks:
         return cls()
 
     @classmethod
-    def one(cls):
+    def one(cls) -> Perks:
         return cls(
             max_children=10,
             can_run_disownall=True,
@@ -68,7 +68,7 @@ class Perks:
         )
 
     @classmethod
-    def two(cls):
+    def two(cls) -> Perks:
         return cls(
             max_children=15,
             can_run_fulltree=True,
@@ -79,7 +79,7 @@ class Perks:
         )
 
     @classmethod
-    def three(cls):
+    def three(cls) -> Perks:
         return cls(
             max_children=20,
             can_run_fulltree=True,
@@ -88,6 +88,15 @@ class Perks:
             tree_command_cooldown=5,
             max_partners=8,
         )
+
+    @classmethod
+    def get_tier(cls, tier_number: int) -> Perks:
+        return {
+            0: cls.zero,
+            1: cls.one,
+            2: cls.two,
+            3: cls.three,
+        }[tier_number]()
 
     @classmethod
     async def get_perks_for_user(
@@ -112,7 +121,7 @@ class Perks:
             row = await conn.fetchrow(
                 """
                 SELECT
-                    *
+                    1
                 FROM
                     guild_specific_families
                 WHERE
@@ -148,26 +157,23 @@ class Perks:
                 int(i.split(" ")[-1])
                 for i in purchased_products
             ])
-            return {
-                1: cls.one,
-                2: cls.two,
-                3: cls.three,
-            }[tier]()
+            return cls.get_tier(tier)
 
-        # # Check VFL purchases for Gold TEMPORARY
-        # url = "https://voxelfox.co.uk/api/portal/check"
-        # params = {
-        #     "product_id": "854856f5-5d98-47c6-860d-64bcf2654e36",
-        #     "discord_user_id": user_id,
-        # }
-        # try:
-        #     async with aiohttp.ClientSession() as session:
-        #         site = await asyncio.wait_for(session.get(url, params=params), timeout=3.0)
-        #         data = await site.json()
-        # except Exception:
-        #     data = {}
-        # if data.get("success", False) and data.get("result", False):
-        #     return cls.three()
+        # Check if they're currently a Nitro booster
+        boost_settings: dict[str, int] | None = bot.config.nitro_boost
+        if boost_settings is not None and 0 not in boost_settings.values():
+            guild_role = [
+                int(boost_settings["guild_id"]),
+                int(boost_settings["role_id"]),
+            ]
+            nitro_tier = min(int(boost_settings["tier"]), 3)
+            try:
+                member = await n.GuildMember.fetch(bot.state, guild_role[0], user_id)
+            except Exception:
+                pass
+            else:
+                if guild_role[1] in member.role_ids:
+                    return cls.get_tier(nitro_tier)
 
         # No purchase, return default
         return cls.zero()
