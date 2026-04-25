@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 20:02+0100\n"
-"PO-Revision-Date: 2026-04-25 22:03+0100\n"
+"PO-Revision-Date: 2026-04-25 22:37+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -793,7 +793,7 @@ msgstr "Deaktiviert"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "Gildeneinstellungen Gildenspezifische Familien"
+msgstr "gilden-einstellungen gilden-familien"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -866,7 +866,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "Gildeneinstellungen Inzest"
+msgstr "gilden-einstellungen inzest"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
@@ -899,7 +899,7 @@ msgstr "Inzest ist in dieser Gilde nun **deaktiviert**."
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "Gilden-Einstellungen – Simulations-GIFs"
+msgstr "gilden-einstellungen simulations-gifs"
 
 #. TRANSLATORS: Command description
 #: settings.py:410

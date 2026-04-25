@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 20:02+0100\n"
-"PO-Revision-Date: 2026-04-25 21:31+0100\n"
+"PO-Revision-Date: 2026-04-25 22:39+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: hi\n"
@@ -28,11 +28,9 @@ msgstr "अपने पारिवारिक वृक्षों की �
 #: customisation.py:187
 #, python-brace-format
 msgid ""
-"You can't customise someone else's tree! You can customise your own by "
-"running the {cusomise_command} command :3"
-msgstr ""
-"आप किसी और का ट्री कस्टमाइज़ नहीं कर सकते! आप {cusomise_command} कमांड चलाकर अपना "
-"ट्री कस्टमाइज़ कर सकते हैं :3"
+"You can't customise someone else's tree! You can customise your own by running the {cusomise_command} "
+"command :3"
+msgstr "आप किसी और का ट्री कस्टमाइज़ नहीं कर सकते! आप {cusomise_command} कमांड चलाकर अपना ट्री कस्टमाइज़ कर सकते हैं :3"
 
 #: customisation.py:208
 msgid "Customise your tree"
@@ -73,7 +71,7 @@ msgstr "दूसरा उपयोगकर्ता जिसे आप श�
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "जबरन शादी कराना"
+msgstr "मजबूर शादी"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -100,7 +98,7 @@ msgstr "दूसरा उपयोगकर्ता जिसे आप त�
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "जबरन तलाक"
+msgstr "मजबूर तलाक"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -125,7 +123,7 @@ msgstr "दत्तक ग्रहण के लिए अभिभावक�
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "जबर्दस्ती अपनाना"
+msgstr "मजबूर गोद"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -158,11 +156,9 @@ msgstr "हो गया! {user1} अब {user2} का बच्चा है :
 #. TRANSLATORS: Command option name (/punch [user])
 #. TRANSLATORS: Command option name (/bite [user])
 #. TRANSLATORS: Command option name (/slap [user])
-#: force_commands.py:307 information.py:49 information.py:117
-#: information.py:208 information.py:299 information.py:383 information.py:426
-#: information.py:452 marriage.py:40 parents.py:40 parents.py:72
-#: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247
-#: simulation.py:282 simulation.py:332
+#: force_commands.py:307 information.py:49 information.py:117 information.py:208 information.py:299
+#: information.py:383 information.py:426 information.py:452 marriage.py:40 parents.py:40 parents.py:72
+#: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247 simulation.py:282 simulation.py:332
 msgid "user"
 msgstr "उपयोगकर्ता"
 
@@ -174,7 +170,7 @@ msgstr "उपयोगकर्ता जिसे आप भागने क�
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "बलपूर्वक भागना"
+msgstr "मजबूर फरार"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315
@@ -335,18 +331,11 @@ msgstr "किसी अन्य उपयोगकर्ता का पा�
 
 #: information.py:411
 #, python-brace-format
-msgid ""
-"There is **{number}** person in {user}'s family tree, including all blood "
-"and non-blood relatives."
+msgid "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives."
 msgid_plural ""
-"There are **{number}** people in {user}'s family tree, including all blood "
-"and non-blood relatives."
-msgstr[0] ""
-"{user} के पारिवारिक वृक्ष में, सभी रक्त और गैर-रक्त संबंधियों सहित, **{number}** व्यक्ति "
-"हैं।"
-msgstr[1] ""
-"{user} के पारिवारिक वृक्ष में **{number}** लोग हैं, जिनमें सभी रक्त संबंधी और गैर-रक्त "
-"संबंधी रिश्तेदार शामिल हैं।"
+"There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives."
+msgstr[0] "{user} के पारिवारिक वृक्ष में, सभी रक्त और गैर-रक्त संबंधियों सहित, **{number}** व्यक्ति हैं।"
+msgstr[1] "{user} के पारिवारिक वृक्ष में **{number}** लोग हैं, जिनमें सभी रक्त संबंधी और गैर-रक्त संबंधी रिश्तेदार शामिल हैं।"
 
 #. TRANSLATORS: Command name (/tree)
 #: information.py:419
@@ -373,11 +362,10 @@ msgstr "अपना पूरा वंशावली दिखाएँ, ज�
 #: information.py:472 subscriber_commands.py:47
 #, python-brace-format
 msgid ""
-"You need to be a higher tier subscriber to run this command! You can still "
-"use {non_perks_command} though :3"
+"You need to be a higher tier subscriber to run this command! You can still use {non_perks_command} though :3"
 msgstr ""
-"यह कमांड चलाने के लिए आपको उच्च श्रेणी का सब्सक्राइबर होना आवश्यक है! फिर भी आप "
-"{non_perks_command} का उपयोग कर सकते हैं :3"
+"यह कमांड चलाने के लिए आपको उच्च श्रेणी का सब्सक्राइबर होना आवश्यक है! फिर भी आप {non_perks_command} का उपयोग कर सकते "
+"हैं :3"
 
 #: information.py:501
 msgid "You have no family to put into a tree .-."
@@ -389,10 +377,8 @@ msgid "{user} has no family to put into a tree .-."
 msgstr "{user} का कोई परिवार नहीं है जिसे पेड़ में डाला जा सके .-."
 
 #: information.py:578
-msgid ""
-"I couldn't send your family tree image - please try again in a few minutes."
-msgstr ""
-"मैं आपकी पारिवारिक वृक्ष की छवि नहीं भेज सका - कृपया कुछ मिनटों में फिर से प्रयास करें।"
+msgid "I couldn't send your family tree image - please try again in a few minutes."
+msgstr "मैं आपकी पारिवारिक वृक्ष की छवि नहीं भेज सका - कृपया कुछ मिनटों में फिर से प्रयास करें।"
 
 #: information.py:587
 #, python-brace-format
@@ -458,14 +444,12 @@ msgstr "बॉट के बारे में आपको जानकार�
 
 #: misc.py:44
 msgid ""
-"MarriageBot is a bot that allows users to marry, divorce, and have children "
-"with other users. It also features a unique family tree system that allows "
-"users to view their family history and relationships.\n"
+"MarriageBot is a bot that allows users to marry, divorce, and have children with other users. It also "
+"features a unique family tree system that allows users to view their family history and relationships.\n"
 "-# MarriageBot is being maintained by [Voxel Fox](https://voxelfox.co.uk)."
 msgstr ""
-"मैरिजबॉट एक बॉट है जो उपयोगकर्ताओं को दूसरे उपयोगकर्ताओं से शादी करने, तलाक लेने और बच्चे "
-"करने की सुविधा देता है। इसमें एक अनोखा पारिवारिक वृक्ष सिस्टम भी है जो उपयोगकर्ताओं को "
-"अपने पारिवारिक इतिहास और रिश्तों को देखने की सुविधा देता है।\n"
+"मैरिजबॉट एक बॉट है जो उपयोगकर्ताओं को दूसरे उपयोगकर्ताओं से शादी करने, तलाक लेने और बच्चे करने की सुविधा देता है। इसमें एक "
+"अनोखा पारिवारिक वृक्ष सिस्टम भी है जो उपयोगकर्ताओं को अपने पारिवारिक इतिहास और रिश्तों को देखने की सुविधा देता है।\n"
 "-# मैरिजबॉट का रखरखाव [Voxel Fox](https://voxelfox.co.uk) द्वारा किया जा रहा है।"
 
 #: misc.py:52
@@ -506,15 +490,14 @@ msgstr "मैरिजबॉट का समर्थन करें"
 
 #: misc.py:114
 msgid ""
-"If you enjoy MarriageBot, please consider donating to support its ongoing "
-"maintainance, development, and hosting costs.\n"
-"MarriageBot isn't a small bot by any means, and keeping it going requires a "
-"lot of time and resources behind the scenes."
+"If you enjoy MarriageBot, please consider donating to support its ongoing maintainance, development, and "
+"hosting costs.\n"
+"MarriageBot isn't a small bot by any means, and keeping it going requires a lot of time and resources "
+"behind the scenes."
 msgstr ""
-"यदि आपको मैरिजबॉट पसंद है, तो कृपया इसके चल रहे रखरखाव, विकास और होस्टिंग लागतों का "
-"समर्थन करने के लिए दान करने पर विचार करें।\n"
-"मैरिजबॉट किसी भी तरह से कोई छोटा बॉट नहीं है, और इसे चालू रखने के लिए पर्दे के पीछे बहुत "
-"समय और संसाधनों की आवश्यकता होती है।"
+"यदि आपको मैरिजबॉट पसंद है, तो कृपया इसके चल रहे रखरखाव, विकास और होस्टिंग लागतों का समर्थन करने के लिए दान करने पर विचार "
+"करें।\n"
+"मैरिजबॉट किसी भी तरह से कोई छोटा बॉट नहीं है, और इसे चालू रखने के लिए पर्दे के पीछे बहुत समय और संसाधनों की आवश्यकता होती है।"
 
 #: misc.py:120
 msgid "Donation Perks"
@@ -523,8 +506,7 @@ msgstr "दान के लाभ"
 #: misc.py:122
 #, python-brace-format
 msgid ""
-"By supporting MarriageBot, you gain access to exclusive perks depending on "
-"your subscription level:\n"
+"By supporting MarriageBot, you gain access to exclusive perks depending on your subscription level:\n"
 "* Default\n"
 "  * 5 children\n"
 "  * 1 partner\n"
@@ -542,15 +524,13 @@ msgid ""
 "  * 8 partners\n"
 "  * Access to {disownall_c}\n"
 "  * Access to {fulltree_c}\n"
-"In addition, you can buy MarriageBot Gold for your server, which lets your "
-"server have its own family tree, and gives you access to the force "
-"commands!\n"
+"In addition, you can buy MarriageBot Gold for your server, which lets your server have its own family tree, "
+"and gives you access to the force commands!\n"
 "* Default\n"
 "  * Global tree\n"
 "* Gold\n"
 "  * Server-specific tree\n"
-"  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, "
-"{forceadopt_c}, {forcerunaway_c})\n"
+"  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, {forceadopt_c}, {forcerunaway_c})\n"
 "  * Access to {incest_c}\n"
 "  * T3 perks for all of your server members\n"
 msgstr ""
@@ -572,15 +552,13 @@ msgstr ""
 "  * 8 साथी\n"
 "  * {disownall_c} तक पहुँच\n"
 "  * {fulltree_c} तक पहुँच\n"
-"इसके अलावा, आप अपने सर्वर के लिए मैरिजबॉट गोल्ड खरीद सकते हैं, जो आपके सर्वर को अपना खुद "
-"का पारिवारिक वृक्ष बनाने की सुविधा देता है, और आपको फ़ोर्स कमांड्स तक पहुँच प्रदान करता "
-"है!\n"
+"इसके अलावा, आप अपने सर्वर के लिए मैरिजबॉट गोल्ड खरीद सकते हैं, जो आपके सर्वर को अपना खुद का पारिवारिक वृक्ष बनाने की सुविधा "
+"देता है, और आपको फ़ोर्स कमांड्स तक पहुँच प्रदान करता है!\n"
 "* डिफ़ॉल्ट\n"
 "  * ग्लोबल ट्री\n"
 "* गोल्ड\n"
 "  * सर्वर-विशिष्ट ट्री\n"
-"  * फ़ोर्स कमांड्स तक पहुँच ({forcedivorce_c}, {forcemarry_c}, {forceadopt_c}, "
-"{forcerunaway_c})\n"
+"  * फ़ोर्स कमांड्स तक पहुँच ({forcedivorce_c}, {forcemarry_c}, {forceadopt_c}, {forcerunaway_c})\n"
 "  * {incest_c} तक पहुँच\n"
 "  * आपके सभी सर्वर सदस्यों के लिए T3 पर्क्स\n"
 
@@ -590,11 +568,8 @@ msgstr "कैसे समर्थन करें"
 
 #: misc.py:164
 msgid ""
-"Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox."
-"co.uk/portal/marriagebot) :3"
-msgstr ""
-"[Voxel Fox वेबसाइट](https://voxelfox.co.uk/portal/marriagebot) पर सदस्यता ली "
-"जा सकती है :3"
+"Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox.co.uk/portal/marriagebot) :3"
+msgstr "[Voxel Fox वेबसाइट](https://voxelfox.co.uk/portal/marriagebot) पर सदस्यता ली जा सकती है :3"
 
 #: misc.py:169
 msgid "Thank you for considering supporting MarriageBot!"
@@ -726,11 +701,11 @@ msgstr "इस सर्वर के लिए मैरिजबॉट गो�
 
 #: settings.py:89
 msgid ""
-"I'm going to transfer your MarriageBot Gold purchase into **this server**. "
-"Which server would you like to transfer your Gold purchase *from*?"
+"I'm going to transfer your MarriageBot Gold purchase into **this server**. Which server would you like to "
+"transfer your Gold purchase *from*?"
 msgstr ""
-"मैं आपकी MarriageBot Gold खरीदारी को **इस सर्वर** में स्थानांतरित करने जा रहा हूँ। आप "
-"अपनी Gold खरीदारी को *किस सर्वर* से स्थानांतरित करना चाहेंगे?"
+"मैं आपकी MarriageBot Gold खरीदारी को **इस सर्वर** में स्थानांतरित करने जा रहा हूँ। आप अपनी Gold खरीदारी को *किस सर्वर* "
+"से स्थानांतरित करना चाहेंगे?"
 
 #: settings.py:96
 msgid "Select a server"
@@ -742,8 +717,7 @@ msgstr "आप किसी और की MarriageBot Gold खरीद को �
 
 #: settings.py:141
 #, python-brace-format
-msgid ""
-"You didn't purchase the Gold subscription that's active in **{guild_name}**"
+msgid "You didn't purchase the Gold subscription that's active in **{guild_name}**"
 msgstr "आपने वह गोल्ड सदस्यता नहीं खरीदी है जो **{guild_name}** में सक्रिय है।"
 
 #: settings.py:166
@@ -753,11 +727,11 @@ msgstr "आपकी MarriageBot Gold खरीद को स्थानां�
 #: settings.py:184
 #, python-brace-format
 msgid ""
-"Your MarriageBot Gold purchase has been transferred to this server! You can "
-"now run the {command_ping} command to activate it here :3"
+"Your MarriageBot Gold purchase has been transferred to this server! You can now run the {command_ping} "
+"command to activate it here :3"
 msgstr ""
-"आपकी MarriageBot Gold खरीदारी इस सर्वर पर स्थानांतरित कर दी गई है! आप अब इसे यहाँ "
-"सक्रिय करने के लिए {command_ping} कमांड चला सकते हैं :3"
+"आपकी MarriageBot Gold खरीदारी इस सर्वर पर स्थानांतरित कर दी गई है! आप अब इसे यहाँ सक्रिय करने के लिए {command_ping} "
+"कमांड चला सकते हैं :3"
 
 #: settings.py:203
 msgid "Gold has not been purchased for this guild."
@@ -776,7 +750,7 @@ msgstr "अक्षम"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "गिल्ड-सेटिंग्स गिल्ड-विशिष्ट-परिवार"
+msgstr "गिल्ड-सेटिंग्स गिल्ड-परिवार"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -785,42 +759,34 @@ msgstr "निर्धारित करें कि इस गिल्ड �
 
 #: settings.py:244
 msgid ""
-"This command cannot be run on the Gold version of MarriageBot. The regular "
-"version of MarriageBot now allows you to toggle between guild-specific "
-"families and global families.\n"
+"This command cannot be run on the Gold version of MarriageBot. The regular version of MarriageBot now "
+"allows you to toggle between guild-specific families and global families.\n"
 "\n"
-"To use this command, please change over to the regular version of "
-"MarriageBot and run this command."
+"To use this command, please change over to the regular version of MarriageBot and run this command."
 msgstr ""
-"यह कमांड मैरिजबॉट के गोल्ड वर्शन पर नहीं चलाया जा सकता। मैरिजबॉट का रेगुलर वर्शन अब "
-"आपको गिल्ड-विशिष्ट परिवारों और ग्लोबल परिवारों के बीच स्विच करने की सुविधा देता है।\n"
+"यह कमांड मैरिजबॉट के गोल्ड वर्शन पर नहीं चलाया जा सकता। मैरिजबॉट का रेगुलर वर्शन अब आपको गिल्ड-विशिष्ट परिवारों और ग्लोबल "
+"परिवारों के बीच स्विच करने की सुविधा देता है।\n"
 "\n"
-"इस कमांड का उपयोग करने के लिए, कृपया मैरिजबॉट के रेगुलर वर्शन पर स्विच करें और यह कमांड "
-"चलाएँ।"
+"इस कमांड का उपयोग करने के लिए, कृपया मैरिजबॉट के रेगुलर वर्शन पर स्विच करें और यह कमांड चलाएँ।"
 
 #: settings.py:263
 msgid ""
-"You can only switch to guild-specific families (and thus use the `/force` "
-"and `/incest` commands, enable polygamy for everyone in your server, and "
-"increase your child count) after you have purchased MarriageBot Gold."
+"You can only switch to guild-specific families (and thus use the `/force` and `/incest` commands, enable "
+"polygamy for everyone in your server, and increase your child count) after you have purchased MarriageBot "
+"Gold."
 msgstr ""
-"आप केवल MarriageBot Gold खरीदने के बाद ही गिल्ड-विशिष्ट परिवारों में स्विच कर सकते हैं "
-"(और इस प्रकार `/force` और `/incest` कमांड का उपयोग कर सकते हैं, अपने सर्वर में सभी के "
-"लिए बहुविवाह सक्षम कर सकते हैं, और अपने बच्चों की संख्या बढ़ा सकते हैं)।"
+"आप केवल MarriageBot Gold खरीदने के बाद ही गिल्ड-विशिष्ट परिवारों में स्विच कर सकते हैं (और इस प्रकार `/force` और `/"
+"incest` कमांड का उपयोग कर सकते हैं, अपने सर्वर में सभी के लिए बहुविवाह सक्षम कर सकते हैं, और अपने बच्चों की संख्या बढ़ा सकते हैं)।"
 
 #: settings.py:295
 #, python-brace-format
 msgid ""
-"Guild-specific families are now **enabled** in this guild, and you can now "
-"use the force commands.\n"
-"Please note that this is a completely seperate tree than the global "
-"MarriageBot tree.\n"
+"Guild-specific families are now **enabled** in this guild, and you can now use the force commands.\n"
+"Please note that this is a completely seperate tree than the global MarriageBot tree.\n"
 "\n"
-"You can switch back to the global tree by using the {guild_specific_command} "
-"command :3"
+"You can switch back to the global tree by using the {guild_specific_command} command :3"
 msgstr ""
-"इस गिल्ड में अब गिल्ड-विशिष्ट परिवार **सक्षम** हैं, और आप अब फोर्स कमांड का उपयोग कर "
-"सकते हैं।\n"
+"इस गिल्ड में अब गिल्ड-विशिष्ट परिवार **सक्षम** हैं, और आप अब फोर्स कमांड का उपयोग कर सकते हैं।\n"
 "कृपया ध्यान दें कि यह ग्लोबल मैरिजबॉट ट्री से एक पूरी तरह से अलग ट्री है।\n"
 "\n"
 "आप {guild_specific_command} कमांड का उपयोग करके ग्लोबल ट्री पर वापस जा सकते हैं :3"
@@ -828,22 +794,19 @@ msgstr ""
 #: settings.py:304
 #, python-brace-format
 msgid ""
-"Guild-specific families are now **disabled** in this guild. You are now "
-"switched back to the global MarriageBot tree.\n"
+"Guild-specific families are now **disabled** in this guild. You are now switched back to the global "
+"MarriageBot tree.\n"
 "\n"
-"You can switch back to your guild-specific tree by using the "
-"{guild_specific_command} command :3"
+"You can switch back to your guild-specific tree by using the {guild_specific_command} command :3"
 msgstr ""
-"इस गिल्ड में अब गिल्ड-विशिष्ट फ़ैमिलीज़ **अक्षम** कर दी गई हैं। आप अब वापस ग्लोबल "
-"मैरिजबॉट ट्री पर स्विच हो गए हैं।\n"
+"इस गिल्ड में अब गिल्ड-विशिष्ट फ़ैमिलीज़ **अक्षम** कर दी गई हैं। आप अब वापस ग्लोबल मैरिजबॉट ट्री पर स्विच हो गए हैं।\n"
 "\n"
-"आप {guild_specific_command} कमांड का उपयोग करके अपने गिल्ड-विशिष्ट ट्री पर वापस "
-"स्विच कर सकते हैं :3"
+"आप {guild_specific_command} कमांड का उपयोग करके अपने गिल्ड-विशिष्ट ट्री पर वापस स्विच कर सकते हैं :3"
 
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "गिल्ड-सेटिंग्स इंसैस्ट"
+msgstr "गिल्ड-सेटिंग्स इन्सेस्ट"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
@@ -859,13 +822,11 @@ msgstr "यह कमांड केवल MarriageBot Gold सक्षम ह
 msgid ""
 "Incest is now **enabled** in this guild.\n"
 "\n"
-"Please note that this only applies to your guild-specific tree - if "
-"{guild_specific_command} is enabled."
+"Please note that this only applies to your guild-specific tree - if {guild_specific_command} is enabled."
 msgstr ""
 "इस गिल्ड में अब **इंसेस्ट** सक्षम है।\n"
 "\n"
-"कृपया ध्यान दें कि यह केवल आपके गिल्ड-विशिष्ट ट्री पर लागू होता है - यदि "
-"{guild_specific_command} सक्षम है।"
+"कृपया ध्यान दें कि यह केवल आपके गिल्ड-विशिष्ट ट्री पर लागू होता है - यदि {guild_specific_command} सक्षम है।"
 
 #: settings.py:378
 msgid "Incest is now **disabled** in this guild."
@@ -874,7 +835,7 @@ msgstr "इस गिल्ड में अब **अनुत्तेजित
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "गिल्ड-सेटिंग्स सिमुलेशन-जीआईएफएस"
+msgstr "गिल्ड-सेटिंग्स सिमुलेशन-गिफ्स"
 
 #. TRANSLATORS: Command description
 #: settings.py:410
@@ -1130,11 +1091,11 @@ msgstr "अपने परिवार के सभी सदस्यों �
 #: subscriber_commands.py:83
 #, python-brace-format
 msgid ""
-"You need to be a higher tier subscriber to run this command! You can still "
-"use {divorce}, {disown}, and {runaway} though :3"
+"You need to be a higher tier subscriber to run this command! You can still use {divorce}, {disown}, and "
+"{runaway} though :3"
 msgstr ""
-"यह कमांड चलाने के लिए आपको उच्च स्तरीय सदस्यता लेनी होगी! फिर भी आप {divorce}, "
-"{disown}, और {runaway} का उपयोग कर सकते हैं :3"
+"यह कमांड चलाने के लिए आपको उच्च स्तरीय सदस्यता लेनी होगी! फिर भी आप {divorce}, {disown}, और {runaway} का उपयोग कर "
+"सकते हैं :3"
 
 #: subscriber_commands.py:100
 msgid "Done! You no longer have any family members :3"
@@ -1147,31 +1108,25 @@ msgstr "तुम तो पहले से ही शादीशुदा ह
 #: utils/proposal_lock.py:77
 #, python-brace-format
 msgid ""
-"You already have a partner! You can't have any more right now. {user} is at "
-"their partner limit as well :<"
+"You already have a partner! You can't have any more right now. {user} is at their partner limit as well :<"
 msgid_plural ""
-"You already have {count} partners! You can't have any more right now. {user} "
-"is at their partner limit as well :<"
-msgstr[0] ""
-"तुम्हारे पास पहले से ही एक साथी है! तुम अभी और साथी नहीं रख सकते। {user} भी अपने "
-"साथियों की सीमा पर है :<"
+"You already have {count} partners! You can't have any more right now. {user} is at their partner limit as "
+"well :<"
+msgstr[0] "तुम्हारे पास पहले से ही एक साथी है! तुम अभी और साथी नहीं रख सकते। {user} भी अपने साथियों की सीमा पर है :<"
 msgstr[1] ""
-"आपके पास पहले से ही {count} पार्टनर हैं! आप अभी और नहीं जोड़ सकते। {user} भी अपनी "
-"पार्टनर सीमा पर पहुँच चुका है :<"
+"आपके पास पहले से ही {count} पार्टनर हैं! आप अभी और नहीं जोड़ सकते। {user} भी अपनी पार्टनर सीमा पर पहुँच चुका है :<"
 
 #: utils/proposal_lock.py:92
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
-msgid_plural ""
-"You already have {count} partners! You can't have any more right now :<"
+msgid_plural "You already have {count} partners! You can't have any more right now :<"
 msgstr[0] "आपके पास पहले से ही एक साथी है! आप अभी और नहीं पा सकते :<"
 msgstr[1] "आपके पास पहले से ही {count} साथी हैं! आप अभी और नहीं जोड़ सकते :<"
 
 #: utils/proposal_lock.py:108
 #, python-brace-format
 msgid "{user} already has a partner! They can't have any more right now :<"
-msgid_plural ""
-"{user} already has {count} partners! They can't have any more right now :<"
+msgid_plural "{user} already has {count} partners! They can't have any more right now :<"
 msgstr[0] "{user} का पहले से ही एक साथी है! वे अभी और नहीं रख सकते :<"
 msgstr[1] "{user} के पास पहले से ही {count} पार्टनर हैं! वे अभी और नहीं रख सकते :<"
 
@@ -1216,12 +1171,8 @@ msgstr "आप और {user} पहले से ही संबंधित �
 
 #: utils/proposal_lock.py:375
 #, python-brace-format
-msgid ""
-"You can't do that! If your families combine, you'd have over {family_size} "
-"members in your tree!"
-msgstr ""
-"तुम ऐसा नहीं कर सकते! अगर तुम्हारे परिवार मिल जाएँ, तो तुम्हारे वंशवृक्ष में {family_size} "
-"से अधिक सदस्य हो जाएँगे!"
+msgid "You can't do that! If your families combine, you'd have over {family_size} members in your tree!"
+msgstr "तुम ऐसा नहीं कर सकते! अगर तुम्हारे परिवार मिल जाएँ, तो तुम्हारे वंशवृक्ष में {family_size} से अधिक सदस्य हो जाएँगे!"
 
 #. TRANSLATORS: Label on a button
 #: utils/proposal_lock.py:403

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:26+0100\n"
+"PO-Revision-Date: 2026-04-25 22:11+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: th\n"
@@ -28,11 +28,9 @@ msgstr "ปรับแต่งรูปลักษณ์ของแผนผ
 #: customisation.py:187
 #, python-brace-format
 msgid ""
-"You can't customise someone else's tree! You can customise your own by "
-"running the {cusomise_command} command :3"
-msgstr ""
-"คุณไม่สามารถปรับแต่งต้นไม้ของคนอื่นได้! คุณสามารถปรับแต่งต้นไม้ของคุณเองได้โดยใช้คำสั่ง "
-"{cusomise_command} :3"
+"You can't customise someone else's tree! You can customise your own by running the "
+"{cusomise_command} command :3"
+msgstr "คุณไม่สามารถปรับแต่งต้นไม้ของคนอื่นได้! คุณสามารถปรับแต่งต้นไม้ของคุณเองได้โดยใช้คำสั่ง {cusomise_command} :3"
 
 #: customisation.py:208
 msgid "Customise your tree"
@@ -73,7 +71,7 @@ msgstr "ผู้ใช้คนที่สองที่คุณต้อง
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "บังคับให้แต่งงาน"
+msgstr "บังคับ แต่งงาน"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -100,7 +98,7 @@ msgstr "ผู้ใช้คนที่สองที่คุณต้อง
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "บังคับให้หย่า"
+msgstr "บังคับ หย่า"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -125,7 +123,7 @@ msgstr "ผู้ปกครองสำหรับการรับบุต
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "บังคับให้ยอมรับ"
+msgstr "บังคับ รับเลี้ยง"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -158,11 +156,10 @@ msgstr "เสร็จแล้ว! {user1} ตอนนี้เป็นล�
 #. TRANSLATORS: Command option name (/punch [user])
 #. TRANSLATORS: Command option name (/bite [user])
 #. TRANSLATORS: Command option name (/slap [user])
-#: force_commands.py:307 information.py:49 information.py:117
-#: information.py:208 information.py:299 information.py:383 information.py:426
-#: information.py:452 marriage.py:40 parents.py:40 parents.py:72
-#: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247
-#: simulation.py:282 simulation.py:332
+#: force_commands.py:307 information.py:49 information.py:117 information.py:208 information.py:299
+#: information.py:383 information.py:426 information.py:452 marriage.py:40 parents.py:40 parents.py:72
+#: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247 simulation.py:282
+#: simulation.py:332
 msgid "user"
 msgstr "ผู้ใช้งาน"
 
@@ -174,7 +171,7 @@ msgstr "ผู้ใช้ที่คุณต้องการบังคั
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "การบังคับให้หลุดการควบคุม"
+msgstr "บังคับ หนี"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315
@@ -336,14 +333,10 @@ msgstr "รับขนาดครอบครัวของผู้ใช้
 #: information.py:411
 #, python-brace-format
 msgid ""
-"There is **{number}** person in {user}'s family tree, including all blood "
-"and non-blood relatives."
+"There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives."
 msgid_plural ""
-"There are **{number}** people in {user}'s family tree, including all blood "
-"and non-blood relatives."
-msgstr[0] ""
-"มี **{number}** คนในแผนผังครอบครัวของ {user} "
-"รวมถึงญาติทางสายเลือดและไม่ใช่ทางสายเลือดทั้งหมด"
+"There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives."
+msgstr[0] "มี **{number}** คนในแผนผังครอบครัวของ {user} รวมถึงญาติทางสายเลือดและไม่ใช่ทางสายเลือดทั้งหมด"
 
 #. TRANSLATORS: Command name (/tree)
 #: information.py:419
@@ -370,10 +363,9 @@ msgstr "แสดงแผนผังเครือญาติของคุ
 #: information.py:472 subscriber_commands.py:47
 #, python-brace-format
 msgid ""
-"You need to be a higher tier subscriber to run this command! You can still "
-"use {non_perks_command} though :3"
-msgstr ""
-"คุณต้องเป็นสมาชิกระดับสูงกว่านี้เพื่อใช้คำสั่งนี้! แต่คุณยังสามารถใช้ {non_perks_command} ได้อยู่ :3"
+"You need to be a higher tier subscriber to run this command! You can still use {non_perks_command} "
+"though :3"
+msgstr "คุณต้องเป็นสมาชิกระดับสูงกว่านี้เพื่อใช้คำสั่งนี้! แต่คุณยังสามารถใช้ {non_perks_command} ได้อยู่ :3"
 
 #: information.py:501
 msgid "You have no family to put into a tree .-."
@@ -385,8 +377,7 @@ msgid "{user} has no family to put into a tree .-."
 msgstr "{user} ไม่มีครอบครัวที่จะใส่ในแผนผังครอบครัว .-."
 
 #: information.py:578
-msgid ""
-"I couldn't send your family tree image - please try again in a few minutes."
+msgid "I couldn't send your family tree image - please try again in a few minutes."
 msgstr "ฉันไม่สามารถส่งภาพแผนผังครอบครัวของคุณได้ กรุณาลองใหม่อีกครั้งในอีกไม่กี่นาที"
 
 #: information.py:587
@@ -453,14 +444,13 @@ msgstr "ให้ข้อมูลเกี่ยวกับบอทแก่
 
 #: misc.py:44
 msgid ""
-"MarriageBot is a bot that allows users to marry, divorce, and have children "
-"with other users. It also features a unique family tree system that allows "
-"users to view their family history and relationships.\n"
+"MarriageBot is a bot that allows users to marry, divorce, and have children with other users. It "
+"also features a unique family tree system that allows users to view their family history and "
+"relationships.\n"
 "-# MarriageBot is being maintained by [Voxel Fox](https://voxelfox.co.uk)."
 msgstr ""
 "MarriageBot เป็นบอทที่ช่วยให้ผู้ใช้สามารถแต่งงาน หย่าร้าง และมีลูกกับผู้ใช้คนอื่นได้ "
-"นอกจากนี้ยังมีระบบแผนภูมิต้นไม้ครอบครัวที่ไม่เหมือนใคร "
-"ซึ่งช่วยให้ผู้ใช้สามารถดูประวัติครอบครัวและความสัมพันธ์ของพวกเขาได้\n"
+"นอกจากนี้ยังมีระบบแผนภูมิต้นไม้ครอบครัวที่ไม่เหมือนใคร ซึ่งช่วยให้ผู้ใช้สามารถดูประวัติครอบครัวและความสัมพันธ์ของพวกเขาได้\n"
 "-# MarriageBot ได้รับการดูแลโดย [Voxel Fox](https://voxelfox.co.uk)."
 
 #: misc.py:52
@@ -501,15 +491,13 @@ msgstr "สนับสนุน MarriageBot"
 
 #: misc.py:114
 msgid ""
-"If you enjoy MarriageBot, please consider donating to support its ongoing "
-"maintainance, development, and hosting costs.\n"
-"MarriageBot isn't a small bot by any means, and keeping it going requires a "
-"lot of time and resources behind the scenes."
+"If you enjoy MarriageBot, please consider donating to support its ongoing maintainance, "
+"development, and hosting costs.\n"
+"MarriageBot isn't a small bot by any means, and keeping it going requires a lot of time and "
+"resources behind the scenes."
 msgstr ""
-"หากคุณชื่นชอบ MarriageBot โปรดพิจารณาบริจาคเพื่อสนับสนุนการบำรุงรักษา การพัฒนา "
-"และค่าใช้จ่ายในการโฮสต์อย่างต่อเนื่อง\n"
-"MarriageBot ไม่ใช่บอทขนาดเล็กแต่อย่างใด "
-"การดำเนินงานอย่างต่อเนื่องต้องใช้เวลาและทรัพยากรมากมายเบื้องหลัง"
+"หากคุณชื่นชอบ MarriageBot โปรดพิจารณาบริจาคเพื่อสนับสนุนการบำรุงรักษา การพัฒนา และค่าใช้จ่ายในการโฮสต์อย่างต่อเนื่อง\n"
+"MarriageBot ไม่ใช่บอทขนาดเล็กแต่อย่างใด การดำเนินงานอย่างต่อเนื่องต้องใช้เวลาและทรัพยากรมากมายเบื้องหลัง"
 
 #: misc.py:120
 msgid "Donation Perks"
@@ -518,8 +506,8 @@ msgstr "สิทธิประโยชน์จากการบริจา
 #: misc.py:122
 #, python-brace-format
 msgid ""
-"By supporting MarriageBot, you gain access to exclusive perks depending on "
-"your subscription level:\n"
+"By supporting MarriageBot, you gain access to exclusive perks depending on your subscription "
+"level:\n"
 "* Default\n"
 "  * 5 children\n"
 "  * 1 partner\n"
@@ -537,15 +525,14 @@ msgid ""
 "  * 8 partners\n"
 "  * Access to {disownall_c}\n"
 "  * Access to {fulltree_c}\n"
-"In addition, you can buy MarriageBot Gold for your server, which lets your "
-"server have its own family tree, and gives you access to the force "
-"commands!\n"
+"In addition, you can buy MarriageBot Gold for your server, which lets your server have its own "
+"family tree, and gives you access to the force commands!\n"
 "* Default\n"
 "  * Global tree\n"
 "* Gold\n"
 "  * Server-specific tree\n"
-"  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, "
-"{forceadopt_c}, {forcerunaway_c})\n"
+"  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, {forceadopt_c}, "
+"{forcerunaway_c})\n"
 "  * Access to {incest_c}\n"
 "  * T3 perks for all of your server members\n"
 msgstr ""
@@ -572,14 +559,13 @@ msgstr ""
 "  * พาร์ทเนอร์ 8 คน\n"
 "  * เข้าถึง {disownall_c}\n"
 "  * เข้าถึง {fulltree_c}\n"
-"นอกจากนี้ คุณสามารถซื้อ MarriageBot Gold สำหรับเซิร์ฟเวอร์ของคุณได้ "
-"ซึ่งจะทำให้เซิร์ฟเวอร์ของคุณมีแผนผังครอบครัวของตัวเอง และให้คุณเข้าถึงคำสั่งบังคับได้!\n"
+"นอกจากนี้ คุณสามารถซื้อ MarriageBot Gold สำหรับเซิร์ฟเวอร์ของคุณได้ ซึ่งจะทำให้เซิร์ฟเวอร์ของคุณมีแผนผังครอบครัวของตัวเอง "
+"และให้คุณเข้าถึงคำสั่งบังคับได้!\n"
 "* ค่าเริ่มต้น\n"
 "  * ต้นไม้ทั่วโลก\n"
 "* ทอง\n"
 "  * ต้นไม้เฉพาะเซิร์ฟเวอร์\n"
-"  * การเข้าถึงคำสั่งบังคับ ({forcedivorce_c}, {forcemarry_c}, {forceadopt_c}, "
-"{forcerunaway_c})\n"
+"  * การเข้าถึงคำสั่งบังคับ ({forcedivorce_c}, {forcemarry_c}, {forceadopt_c}, {forcerunaway_c})\n"
 "  * การเข้าถึง {incest_c}\n"
 "  * สิทธิพิเศษ T3 สำหรับสมาชิกทุกคนในเซิร์ฟเวอร์ของคุณ\n"
 
@@ -589,11 +575,9 @@ msgstr "วิธีการสนับสนุน"
 
 #: misc.py:164
 msgid ""
-"Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox."
-"co.uk/portal/marriagebot) :3"
-msgstr ""
-"สามารถสมัครสมาชิกได้ที่ [เว็บไซต์ Voxel Fox](https://voxelfox.co.uk/portal/"
+"Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox.co.uk/portal/"
 "marriagebot) :3"
+msgstr "สามารถสมัครสมาชิกได้ที่ [เว็บไซต์ Voxel Fox](https://voxelfox.co.uk/portal/marriagebot) :3"
 
 #: misc.py:169
 msgid "Thank you for considering supporting MarriageBot!"
@@ -725,11 +709,10 @@ msgstr "MarriageBot Gold ได้ถูกซื้อไว้แล้วส�
 
 #: settings.py:89
 msgid ""
-"I'm going to transfer your MarriageBot Gold purchase into **this server**. "
-"Which server would you like to transfer your Gold purchase *from*?"
+"I'm going to transfer your MarriageBot Gold purchase into **this server**. Which server would you "
+"like to transfer your Gold purchase *from*?"
 msgstr ""
-"ฉันจะโอนการซื้อ MarriageBot Gold ของคุณไปยัง **เซิร์ฟเวอร์นี้** คุณต้องการโอนการซื้อ Gold "
-"ของคุณจากเซิร์ฟเวอร์ใด?"
+"ฉันจะโอนการซื้อ MarriageBot Gold ของคุณไปยัง **เซิร์ฟเวอร์นี้** คุณต้องการโอนการซื้อ Gold ของคุณจากเซิร์ฟเวอร์ใด?"
 
 #: settings.py:96
 msgid "Select a server"
@@ -741,8 +724,7 @@ msgstr "คุณไม่สามารถโอนการซื้อ Marri
 
 #: settings.py:141
 #, python-brace-format
-msgid ""
-"You didn't purchase the Gold subscription that's active in **{guild_name}**"
+msgid "You didn't purchase the Gold subscription that's active in **{guild_name}**"
 msgstr "คุณไม่ได้ซื้อการสมัครสมาชิก Gold ที่ใช้งานอยู่ใน **{guild_name}**"
 
 #: settings.py:166
@@ -752,11 +734,11 @@ msgstr "เกิดข้อผิดพลาดในการโอนกา
 #: settings.py:184
 #, python-brace-format
 msgid ""
-"Your MarriageBot Gold purchase has been transferred to this server! You can "
-"now run the {command_ping} command to activate it here :3"
+"Your MarriageBot Gold purchase has been transferred to this server! You can now run the "
+"{command_ping} command to activate it here :3"
 msgstr ""
-"การซื้อ MarriageBot Gold ของคุณได้ถูกโอนไปยังเซิร์ฟเวอร์นี้แล้ว! คุณสามารถรันคำสั่ง "
-"{command_ping} เพื่อเปิดใช้งานได้ที่นี่ :3"
+"การซื้อ MarriageBot Gold ของคุณได้ถูกโอนไปยังเซิร์ฟเวอร์นี้แล้ว! คุณสามารถรันคำสั่ง {command_ping} "
+"เพื่อเปิดใช้งานได้ที่นี่ :3"
 
 #: settings.py:203
 msgid "Gold has not been purchased for this guild."
@@ -784,12 +766,10 @@ msgstr "ตั้งค่าว่าเปิดใช้งานครอบ
 
 #: settings.py:244
 msgid ""
-"This command cannot be run on the Gold version of MarriageBot. The regular "
-"version of MarriageBot now allows you to toggle between guild-specific "
-"families and global families.\n"
+"This command cannot be run on the Gold version of MarriageBot. The regular version of MarriageBot "
+"now allows you to toggle between guild-specific families and global families.\n"
 "\n"
-"To use this command, please change over to the regular version of "
-"MarriageBot and run this command."
+"To use this command, please change over to the regular version of MarriageBot and run this command."
 msgstr ""
 "คำสั่งนี้ไม่สามารถใช้ได้กับเวอร์ชัน Gold ของ MarriageBot เวอร์ชันปกติของ MarriageBot "
 "ตอนนี้อนุญาตให้คุณสลับระหว่างครอบครัวเฉพาะกิลด์และครอบครัวทั่วโลกได้แล้ว\n"
@@ -798,24 +778,21 @@ msgstr ""
 
 #: settings.py:263
 msgid ""
-"You can only switch to guild-specific families (and thus use the `/force` "
-"and `/incest` commands, enable polygamy for everyone in your server, and "
-"increase your child count) after you have purchased MarriageBot Gold."
+"You can only switch to guild-specific families (and thus use the `/force` and `/incest` commands, "
+"enable polygamy for everyone in your server, and increase your child count) after you have "
+"purchased MarriageBot Gold."
 msgstr ""
 "คุณสามารถเปลี่ยนไปใช้ตระกูลเฉพาะกิลด์ได้ (และสามารถใช้คำสั่ง `/force` และ `/incest` "
-"เปิดใช้งานการมีคู่สมรสหลายคนสำหรับทุกคนในเซิร์ฟเวอร์ของคุณ และเพิ่มจำนวนลูกของคุณ) "
-"หลังจากที่คุณได้ซื้อ MarriageBot Gold แล้วเท่านั้น"
+"เปิดใช้งานการมีคู่สมรสหลายคนสำหรับทุกคนในเซิร์ฟเวอร์ของคุณ และเพิ่มจำนวนลูกของคุณ) หลังจากที่คุณได้ซื้อ MarriageBot Gold "
+"แล้วเท่านั้น"
 
 #: settings.py:295
 #, python-brace-format
 msgid ""
-"Guild-specific families are now **enabled** in this guild, and you can now "
-"use the force commands.\n"
-"Please note that this is a completely seperate tree than the global "
-"MarriageBot tree.\n"
+"Guild-specific families are now **enabled** in this guild, and you can now use the force commands.\n"
+"Please note that this is a completely seperate tree than the global MarriageBot tree.\n"
 "\n"
-"You can switch back to the global tree by using the {guild_specific_command} "
-"command :3"
+"You can switch back to the global tree by using the {guild_specific_command} command :3"
 msgstr ""
 "ครอบครัวเฉพาะกิลด์ได้ถูก **เปิดใช้งาน** ในกิลด์นี้แล้ว และคุณสามารถใช้คำสั่ง Force ได้แล้ว\n"
 "โปรดทราบว่านี่เป็นต้นไม้ที่แยกออกจาก MarriageBot ทั่วโลกโดยสิ้นเชิง\n"
@@ -825,14 +802,12 @@ msgstr ""
 #: settings.py:304
 #, python-brace-format
 msgid ""
-"Guild-specific families are now **disabled** in this guild. You are now "
-"switched back to the global MarriageBot tree.\n"
+"Guild-specific families are now **disabled** in this guild. You are now switched back to the global "
+"MarriageBot tree.\n"
 "\n"
-"You can switch back to your guild-specific tree by using the "
-"{guild_specific_command} command :3"
+"You can switch back to your guild-specific tree by using the {guild_specific_command} command :3"
 msgstr ""
-"ตระกูลเฉพาะกิลด์ถูก **ปิดใช้งาน** ในกิลด์นี้แล้ว ขณะนี้คุณได้ถูกสลับกลับไปยังต้นไม้ MarriageBot "
-"ระดับโลกแล้ว\n"
+"ตระกูลเฉพาะกิลด์ถูก **ปิดใช้งาน** ในกิลด์นี้แล้ว ขณะนี้คุณได้ถูกสลับกลับไปยังต้นไม้ MarriageBot ระดับโลกแล้ว\n"
 "\n"
 "คุณสามารถสลับกลับไปยังต้นไม้เฉพาะกิลด์ของคุณได้โดยใช้คำสั่ง {guild_specific_command} :3"
 
@@ -855,13 +830,12 @@ msgstr "คำสั่งนี้สามารถใช้งานได้
 msgid ""
 "Incest is now **enabled** in this guild.\n"
 "\n"
-"Please note that this only applies to your guild-specific tree - if "
-"{guild_specific_command} is enabled."
+"Please note that this only applies to your guild-specific tree - if {guild_specific_command} is "
+"enabled."
 msgstr ""
 "การร่วมประเวณีระหว่างเครือญาติได้ถูก **เปิดใช้งาน** ในกิลด์นี้แล้ว\n"
 "\n"
-"โปรดทราบว่าสิ่งนี้ใช้ได้เฉพาะกับต้นไม้เฉพาะกิลด์ของคุณเท่านั้น - หาก "
-"{guild_specific_command} ถูกเปิดใช้งาน"
+"โปรดทราบว่าสิ่งนี้ใช้ได้เฉพาะกับต้นไม้เฉพาะกิลด์ของคุณเท่านั้น - หาก {guild_specific_command} ถูกเปิดใช้งาน"
 
 #: settings.py:378
 msgid "Incest is now **disabled** in this guild."
@@ -1126,11 +1100,11 @@ msgstr "นำสมาชิกในครอบครัวทั้งหม
 #: subscriber_commands.py:83
 #, python-brace-format
 msgid ""
-"You need to be a higher tier subscriber to run this command! You can still "
-"use {divorce}, {disown}, and {runaway} though :3"
+"You need to be a higher tier subscriber to run this command! You can still use {divorce}, {disown}, "
+"and {runaway} though :3"
 msgstr ""
-"คุณต้องเป็นสมาชิกระดับสูงกว่านี้เพื่อใช้คำสั่งนี้! อย่างไรก็ตาม คุณยังสามารถใช้ {divorce}, "
-"{disown}, และ {runaway} ได้อยู่ :3"
+"คุณต้องเป็นสมาชิกระดับสูงกว่านี้เพื่อใช้คำสั่งนี้! อย่างไรก็ตาม คุณยังสามารถใช้ {divorce}, {disown}, และ {runaway} "
+"ได้อยู่ :3"
 
 #: subscriber_commands.py:100
 msgid "Done! You no longer have any family members :3"
@@ -1143,25 +1117,23 @@ msgstr "คุณแต่งงานแล้ว!"
 #: utils/proposal_lock.py:77
 #, python-brace-format
 msgid ""
-"You already have a partner! You can't have any more right now. {user} is at "
-"their partner limit as well :<"
+"You already have a partner! You can't have any more right now. {user} is at their partner limit as "
+"well :<"
 msgid_plural ""
-"You already have {count} partners! You can't have any more right now. {user} "
-"is at their partner limit as well :<"
+"You already have {count} partners! You can't have any more right now. {user} is at their partner "
+"limit as well :<"
 msgstr[0] "คุณมีคู่แล้ว! คุณไม่สามารถมีเพิ่มได้ในตอนนี้ {user} ก็ถึงขีดจำกัดคู่เช่นกัน :<"
 
 #: utils/proposal_lock.py:92
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
-msgid_plural ""
-"You already have {count} partners! You can't have any more right now :<"
+msgid_plural "You already have {count} partners! You can't have any more right now :<"
 msgstr[0] "คุณมีคู่แล้ว! คุณไม่สามารถมีเพิ่มได้ตอนนี้ :<"
 
 #: utils/proposal_lock.py:108
 #, python-brace-format
 msgid "{user} already has a partner! They can't have any more right now :<"
-msgid_plural ""
-"{user} already has {count} partners! They can't have any more right now :<"
+msgid_plural "{user} already has {count} partners! They can't have any more right now :<"
 msgstr[0] "{user} มีคู่แล้ว! ตอนนี้ไม่สามารถมีเพิ่มได้อีก :<"
 
 #: utils/proposal_lock.py:136
@@ -1206,11 +1178,8 @@ msgstr "คุณและ {user} เป็นญาติกันอยู่�
 #: utils/proposal_lock.py:375
 #, python-brace-format
 msgid ""
-"You can't do that! If your families combine, you'd have over {family_size} "
-"members in your tree!"
-msgstr ""
-"คุณทำแบบนั้นไม่ได้! ถ้าครอบครัวของคุณรวมกัน คุณจะมีสมาชิกในแผนผังครอบครัวเกิน {family_size} "
-"คน!"
+"You can't do that! If your families combine, you'd have over {family_size} members in your tree!"
+msgstr "คุณทำแบบนั้นไม่ได้! ถ้าครอบครัวของคุณรวมกัน คุณจะมีสมาชิกในแผนผังครอบครัวเกิน {family_size} คน!"
 
 #. TRANSLATORS: Label on a button
 #: utils/proposal_lock.py:403

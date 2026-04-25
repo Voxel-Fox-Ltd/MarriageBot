@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:23+0100\n"
+"PO-Revision-Date: 2026-04-25 22:37+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -73,7 +73,7 @@ msgstr "El segundo usuario al que quieres casar."
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "fuerza casarse"
+msgstr "forzar matrimonio"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -100,7 +100,7 @@ msgstr "El segundo usuario que quieres configurar para el divorcio."
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "fuerza divorcio"
+msgstr "forzar divorcio"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -125,7 +125,7 @@ msgstr "El padre o la madre que da a su hijo en adopción."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "obligar a adoptar"
+msgstr "forzar adopción"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -174,7 +174,7 @@ msgstr "El usuario al que quieres forzar a salir"
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "fuerza huida"
+msgstr "forzar huida"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315
@@ -786,7 +786,7 @@ msgstr "Desactivado"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "configuración-del-gremio familias-específicas-del-gremio"
+msgstr "configuracion-gremio familias-gremio"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -858,7 +858,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "configuración del gremio incesto"
+msgstr "configuracion-gremio incesto"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
@@ -890,7 +890,7 @@ msgstr "El incesto ya está **desactivado** en este clan."
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "configuración-del-clan gifs-de-simulación"
+msgstr "configuracion-gremio gifs-simulacion"
 
 #. TRANSLATORS: Command description
 #: settings.py:410

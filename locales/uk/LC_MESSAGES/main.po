@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:27+0100\n"
+"PO-Revision-Date: 2026-04-25 22:14+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: uk\n"
@@ -74,7 +74,7 @@ msgstr "Другий користувач, якого ви хочете дода
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "примусити до шлюбу"
+msgstr "примусити шлюб"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -101,7 +101,7 @@ msgstr "Другий користувач, для якого ви хочете �
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "примусовий розлучення"
+msgstr "примусити розлучення"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -126,7 +126,7 @@ msgstr "Батьки, які бажають усиновити дитину."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "примусово запровадити"
+msgstr "примусити усиновлення"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -175,7 +175,7 @@ msgstr "Користувач, якого ви хочете змусити вте
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "неконтрольований збіг"
+msgstr "примусити втеча"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315

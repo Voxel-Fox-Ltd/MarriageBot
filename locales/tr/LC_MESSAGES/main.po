@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:26+0100\n"
+"PO-Revision-Date: 2026-04-25 22:14+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -73,7 +73,7 @@ msgstr "Evlendirmek istediğiniz ikinci kullanıcı."
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "zorla evlendirmek"
+msgstr "zorla evlilik"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -125,7 +125,7 @@ msgstr "Evlat edinme işleminde ebeveyn."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "zorla kabul ettirmek"
+msgstr "zorla evlatedinme"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231

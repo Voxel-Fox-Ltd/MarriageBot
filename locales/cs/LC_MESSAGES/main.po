@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:10+0100\n"
+"PO-Revision-Date: 2026-04-25 22:37+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -125,7 +125,7 @@ msgstr "Rodič, který dítě adoptuje."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "vynutit přijetí"
+msgstr "vynutit adopci"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -174,7 +174,7 @@ msgstr "Uživatel, kterého chcete donutit k útěku"
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "neovladatelný únik"
+msgstr "vynutit útěk"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315
@@ -779,7 +779,7 @@ msgstr "Vypnuto"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "nastavení-gildy rodiny-specifické-pro-gildu"
+msgstr "cech-nastaveni cech-rodiny"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -851,7 +851,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "nastavení cechu incest"
+msgstr "cech-nastaveni incest"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
@@ -884,7 +884,7 @@ msgstr "Funkce „Incest“ je nyní v tomto cechu **deaktivována**."
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "nastavení cechu – simulační GIFy"
+msgstr "cech-nastaveni simulace-gify"
 
 #. TRANSLATORS: Command description
 #: settings.py:410
@@ -971,10 +971,9 @@ msgid "Looks like you don't have a knife, oops!"
 msgstr "Vypadá to, že nemáš nůž, ups!"
 
 #: simulation.py:227
-#, fuzzy
 #| msgid "*We'll act like you didn't just bite yourself.*"
 msgid "I'd rather you didn't stab yourself, really."
-msgstr "*Budeme se tvářit, jako by ses právě nekousl.*"
+msgstr "Raději bych, abys se nepořezal, vážně."
 
 #: simulation.py:230
 #, python-brace-format

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marriagebot\n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:33+0100\n"
+"PO-Revision-Date: 2026-04-25 22:09+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: Korean\n"
 "Language: ko\n"
@@ -129,7 +129,7 @@ msgstr "입양을 위한 양부모."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "강제로 채택하다"
+msgstr "강제 입양"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231

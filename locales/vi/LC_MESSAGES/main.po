@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:28+0100\n"
+"PO-Revision-Date: 2026-04-25 22:15+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: vi\n"
@@ -73,7 +73,7 @@ msgstr "Người dùng thứ hai mà bạn muốn thiết lập để kết hôn
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "ép kết hôn"
+msgstr "ép kếthôn"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -100,7 +100,7 @@ msgstr "Người dùng thứ hai mà bạn muốn thiết lập để ly hôn."
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "buộc ly hôn"
+msgstr "ép lyhôn"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -125,7 +125,7 @@ msgstr "Người cha/mẹ trong vụ nhận con nuôi."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "buộc phải áp dụng"
+msgstr "ép nhậnnuôi"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -174,7 +174,7 @@ msgstr "Người dùng mà bạn muốn buộc phải rời khỏi"
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "chạy trốn"
+msgstr "ép bỏtrốn"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315

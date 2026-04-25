@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:29+0100\n"
+"PO-Revision-Date: 2026-04-25 22:19+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: zh_TW\n"
@@ -72,7 +72,7 @@ msgstr "您要設定為結婚對象的第二位使用者。"
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "強迫結婚"
+msgstr "強制 結婚"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -99,7 +99,7 @@ msgstr "您要設定為離婚的第二位使用者。"
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "強迫離婚"
+msgstr "強制 離婚"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -124,7 +124,7 @@ msgstr "收養的親生父母。"
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "強制採納"
+msgstr "強制 收養"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -173,7 +173,7 @@ msgstr "您要強制使其逃逸的使用者"
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "強制逃逸"
+msgstr "強制 逃跑"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315

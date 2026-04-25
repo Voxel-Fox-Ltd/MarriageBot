@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marriagebot\n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:37+0100\n"
+"PO-Revision-Date: 2026-04-25 22:11+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -79,7 +79,7 @@ msgstr "Второй пользователь, которого ты хочеш�
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "заставить жениться"
+msgstr "принудить брак"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -106,7 +106,7 @@ msgstr "Второй пользователь, для которого ты хо
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "принудительный развод"
+msgstr "принудить развод"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -131,7 +131,7 @@ msgstr "Родитель, отдающий ребёнка на усыновле�
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "принудительно принять"
+msgstr "принудить усыновление"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -180,7 +180,7 @@ msgstr "Пользователь, которого ты хочешь заста�
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "бегство"
+msgstr "принудить побег"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315

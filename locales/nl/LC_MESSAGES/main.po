@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:25+0100\n"
+"PO-Revision-Date: 2026-04-25 22:09+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -73,7 +73,7 @@ msgstr "De tweede gebruiker die je wilt instellen om te trouwen."
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "tot een huwelijk dwingen"
+msgstr "forceer huwelijk"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -100,7 +100,7 @@ msgstr "De tweede gebruiker die je wilt instellen voor scheiding."
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "een scheiding afdwingen"
+msgstr "forceer scheiding"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -125,7 +125,7 @@ msgstr "De ouder die het kind adopteert."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "verplichten"
+msgstr "forceer adoptie"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -174,7 +174,7 @@ msgstr "De gebruiker die je wilt dwingen om weg te lopen"
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "met geweld wegvluchten"
+msgstr "forceer vlucht"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315

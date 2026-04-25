@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 22:03+0100\n"
+"PO-Revision-Date: 2026-04-25 22:39+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: id\n"
@@ -790,7 +790,7 @@ msgstr "Dinonaktifkan"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "pengaturan-gilda kelompok-keluarga-khusus-gilda"
+msgstr "pengaturan-guild keluarga-guild"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -862,7 +862,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "pengaturan-gilda inses"
+msgstr "pengaturan-guild inses"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
@@ -894,7 +894,7 @@ msgstr "Inses kini **dilarang** di guild ini."
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "pengaturan-gilda-gif-simulasi"
+msgstr "pengaturan-guild gif-simulasi"
 
 #. TRANSLATORS: Command description
 #: settings.py:410
