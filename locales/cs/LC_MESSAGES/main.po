@@ -18,7 +18,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: customisation.py:107
 msgid "customize-tree"
-msgstr "přizpůsobit strom"
+msgstr "přizpůsobit-strom"
 
 #. TRANSLATORS: Command description
 #: customisation.py:109
@@ -326,7 +326,7 @@ msgstr "Uživatel, u kterého chcete zjistit počet členů rodiny."
 #. TRANSLATORS: Command name (/familysize)
 #: information.py:390
 msgid "familysize"
-msgstr "rodinné balení"
+msgstr "rodinné-balení"
 
 #. TRANSLATORS: Command description (/familysize)
 #: information.py:392
@@ -350,7 +350,7 @@ msgstr[2] ""
 #. TRANSLATORS: Command name (/tree)
 #: information.py:419
 msgid "tree"
-msgstr "stromový seznam"
+msgstr "stromový-seznam"
 
 #: information.py:427 information.py:453
 msgid "The user whose tree you want to see."
@@ -363,7 +363,7 @@ msgstr "Ukaž svůj rodokmen, ale jen pokrevní příbuzné :3"
 #. TRANSLATORS: Command name (/fulltree)
 #: information.py:445
 msgid "fulltree"
-msgstr "celý strom"
+msgstr "celý-strom"
 
 #: information.py:457
 msgid "Show your entire family tree, including non-blood relatives :3"
@@ -409,7 +409,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: marriage.py:33
 msgid "marry"
-msgstr "vdát se"
+msgstr "vdát-se"
 
 #. TRANSLATORS: Command option name description (/marry user)
 #: marriage.py:42
@@ -625,7 +625,7 @@ msgstr "Ahoj {user}, {author} by tě chtěl adoptovat! Co ty na to?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr "vytvořit nadřazený prvek"
+msgstr "vytvořit-nadřazený-prvek"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
@@ -645,7 +645,7 @@ msgstr "Ahoj {user}, {author} by chtěl, abys mu byl rodičem! Co ty na to?"
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr "na útěku"
+msgstr "na-útěku"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
@@ -660,7 +660,7 @@ msgstr "Utekl jsi od {user} :("
 #. TRANSLATORS: Command name
 #: parents.py:132
 msgid "disown"
-msgstr "zříci se"
+msgstr "zříci-se"
 
 #. TRANSLATORS: Command description
 #: parents.py:134
@@ -712,7 +712,7 @@ msgstr "Vítej v rodině, {user}! Nyní jsi rodičem {author} :3c"
 #. TRANSLATORS: Command name
 #: settings.py:35
 msgid "transfer-gold"
-msgstr "převod zlata"
+msgstr "převod-zlata"
 
 #. TRANSLATORS: Command description
 #: settings.py:37
@@ -1117,7 +1117,7 @@ msgstr "*Plácne {user}.*"
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr "vymazat všechny"
+msgstr "vymazat-všechny"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35

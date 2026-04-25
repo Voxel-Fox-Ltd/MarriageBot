@@ -326,7 +326,7 @@ msgstr "Pengguna yang ingin Anda ketahui jumlah anggota keluarganya."
 #. TRANSLATORS: Command name (/familysize)
 #: information.py:390
 msgid "familysize"
-msgstr "ukuran keluarga"
+msgstr "ukuran-keluarga"
 
 #. TRANSLATORS: Command description (/familysize)
 #: information.py:392
@@ -361,13 +361,11 @@ msgstr "Tampilkan silsilah keluargamu, tapi hanya kerabat sedarah :3"
 #. TRANSLATORS: Command name (/fulltree)
 #: information.py:445
 msgid "fulltree"
-msgstr "pohon lengkap"
+msgstr "pohon-lengkap"
 
 #: information.py:457
 msgid "Show your entire family tree, including non-blood relatives :3"
-msgstr ""
-"Tampilkan silsilah keluarga Anda secara lengkap, termasuk kerabat yang tidak "
-"memiliki hubungan darah :3"
+msgstr "Tampilkan seluruh silsilah keluarga Anda, termasuk kerabat non-darah :3"
 
 #: information.py:472 subscriber_commands.py:47
 #, python-brace-format
@@ -627,7 +625,7 @@ msgstr "Hai {user}, {author} ingin mengadopsimu! Bagaimana menurutmu?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr "buat orang tua"
+msgstr "buat-orang-tua"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
@@ -648,7 +646,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr "yang kabur"
+msgstr "yang-kabur"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
@@ -719,7 +717,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:35
 msgid "transfer-gold"
-msgstr "transfer emas"
+msgstr "transfer-emas"
 
 #. TRANSLATORS: Command description
 #: settings.py:37
@@ -1128,7 +1126,7 @@ msgstr "*Menepuk {user}.*"
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr "menolak semuanya"
+msgstr "menolak-semuanya"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35

@@ -18,7 +18,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: customisation.py:107
 msgid "customize-tree"
-msgstr "Baum anpassen"
+msgstr "baum-anpassen"
 
 #. TRANSLATORS: Command description
 #: customisation.py:109
@@ -190,7 +190,7 @@ msgstr "Fertig! {user} hat keinen übergeordneten Eintrag mehr :3"
 #. TRANSLATORS: Command name
 #: information.py:41
 msgid "relationship"
-msgstr "Beziehung"
+msgstr "beziehung"
 
 #. TRANSLATORS: Command description
 #: information.py:43
@@ -225,7 +225,7 @@ msgstr "**{user}** ist **{other}**s **{relation}**."
 #. TRANSLATORS: Command name
 #: information.py:110
 msgid "partners"
-msgstr "Partner"
+msgstr "partner"
 
 #. TRANSLATORS: Command option name description (/partners [user])
 #: information.py:119
@@ -259,7 +259,7 @@ msgstr "{user} ist verheiratet mit:"
 #. TRANSLATORS: Command name
 #: information.py:201
 msgid "children"
-msgstr "Kinder"
+msgstr "kinder"
 
 #. TRANSLATORS: Command option name description (/children [user])
 #: information.py:210
@@ -293,7 +293,7 @@ msgstr "{user} ist der übergeordnete Eintrag von:"
 #. TRANSLATORS: Command name
 #: information.py:292
 msgid "parent"
-msgstr "Übergeordnet"
+msgstr "übergeordnet"
 
 #. TRANSLATORS: Command option name description (/parent [user])
 #: information.py:301
@@ -327,7 +327,7 @@ msgstr "Der Nutzer, dessen Familiengröße du sehen möchtest."
 #. TRANSLATORS: Command name (/familysize)
 #: information.py:390
 msgid "familysize"
-msgstr "Familiengröße"
+msgstr "familiengröße"
 
 #. TRANSLATORS: Command description (/familysize)
 #: information.py:392
@@ -352,7 +352,7 @@ msgstr[1] ""
 #. TRANSLATORS: Command name (/tree)
 #: information.py:419
 msgid "tree"
-msgstr "Baum"
+msgstr "baum"
 
 #: information.py:427 information.py:453
 msgid "The user whose tree you want to see."
@@ -432,7 +432,7 @@ msgstr "Hey {user}, {author} will dich heiraten! Was sagst du dazu?"
 #. TRANSLATORS: Command name
 #: marriage.py:64
 msgid "divorce"
-msgstr "Scheidung"
+msgstr "scheidung"
 
 #. TRANSLATORS: Command description
 #: marriage.py:66
@@ -455,7 +455,7 @@ msgstr "Du bist seit {user} geschieden :("
 #. TRANSLATORS: Command name
 #: misc.py:32
 msgid "info"
-msgstr "Info"
+msgstr "info"
 
 #. TRANSLATORS: Command description
 #: misc.py:34
@@ -490,7 +490,7 @@ msgstr "Support-Server"
 #. TRANSLATORS: Command name
 #: misc.py:81
 msgid "perks"
-msgstr "Vorteile"
+msgstr "vorteile"
 
 #. TRANSLATORS: Command description
 #: misc.py:83
@@ -653,7 +653,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr "Durchbrenner"
+msgstr "durchbrenner"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
@@ -668,7 +668,7 @@ msgstr "Du bist vor {user} davongelaufen :("
 #. TRANSLATORS: Command name
 #: parents.py:132
 msgid "disown"
-msgstr "sich distanzieren"
+msgstr "sich-distanzieren"
 
 #. TRANSLATORS: Command description
 #: parents.py:134
@@ -722,7 +722,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:35
 msgid "transfer-gold"
-msgstr "Goldüberweisung"
+msgstr "goldüberweisung"
 
 #. TRANSLATORS: Command description
 #: settings.py:37
@@ -923,7 +923,7 @@ msgstr "Der Nutzer, den du umarmen möchtest."
 #. TRANSLATORS: Command name (/hug)
 #: simulation.py:140
 msgid "hug"
-msgstr "Umarmung"
+msgstr "umarmung"
 
 #. TRANSLATORS: Command description (/hug)
 #: simulation.py:142
@@ -971,7 +971,7 @@ msgstr "Der Nutzer, den du angreifen willst."
 #. TRANSLATORS: Command name (/stab)
 #: simulation.py:210
 msgid "stab"
-msgstr "Stich"
+msgstr "stich"
 
 #. TRANSLATORS: Command description (/stab)
 #: simulation.py:212
@@ -1025,7 +1025,7 @@ msgstr "Der Nutzer, den du schlagen willst."
 #. TRANSLATORS: Command name (/punch)
 #: simulation.py:253
 msgid "punch"
-msgstr "Schlag"
+msgstr "schlag"
 
 #. TRANSLATORS: Command description (/punch)
 #: simulation.py:255
@@ -1049,7 +1049,7 @@ msgstr "Der Nutzer, den du beißen willst."
 #. TRANSLATORS: Command name (/bite)
 #: simulation.py:288
 msgid "bite"
-msgstr "Biss"
+msgstr "biss"
 
 #. TRANSLATORS: Command description (/bite)
 #: simulation.py:290
@@ -1114,7 +1114,7 @@ msgstr "Der Nutzer, dem du eine Ohrfeige verpassen willst."
 #. TRANSLATORS: Command name (/slap)
 #: simulation.py:338
 msgid "slap"
-msgstr "Ohrfeige"
+msgstr "ohrfeige"
 
 #. TRANSLATORS: Command description (/slap)
 #: simulation.py:340
@@ -1133,7 +1133,7 @@ msgstr "*Schlägt {user}.*"
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr "alle ablehnen"
+msgstr "alle-ablehnen"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35

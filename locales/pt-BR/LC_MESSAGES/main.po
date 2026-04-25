@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marriagebot\n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 22:10+0100\n"
+"PO-Revision-Date: 2026-04-25 22:46+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt\n"
@@ -330,7 +330,7 @@ msgstr "O usuário cujo tamanho da família você quer ver."
 #. TRANSLATORS: Command name (/familysize)
 #: information.py:390
 msgid "familysize"
-msgstr "formato família"
+msgstr "formato-família"
 
 #. TRANSLATORS: Command description (/familysize)
 #: information.py:392
@@ -721,7 +721,7 @@ msgstr "Bem-vindo à família, {user}! Agora você é pai/mãe do {author} :3c"
 #. TRANSLATORS: Command name
 #: settings.py:35
 msgid "transfer-gold"
-msgstr "transferência de ouro"
+msgstr "transferência-de-ouro"
 
 #. TRANSLATORS: Command description
 #: settings.py:37
@@ -790,7 +790,7 @@ msgstr "Desativado"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "configurações-da-guilda famílias-específicas-da-guilda"
+msgstr "configuracoes-guilda familias-guilda"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -863,7 +863,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "configurações da guilda incesto"
+msgstr "configuracoes-guilda incesto"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
@@ -894,7 +894,7 @@ msgstr "O incesto está agora **desativado** nesta guilda."
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr ""
+msgstr "configuracoes-guilda simulacao-gifs"
 
 #. TRANSLATORS: Command description
 #: settings.py:410
@@ -1126,7 +1126,7 @@ msgstr "*Dá um tapa {user}.*"
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr "desfazer tudo"
+msgstr "desfazer-tudo"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35

@@ -22,7 +22,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: customisation.py:107
 msgid "customize-tree"
-msgstr "personnaliser l'arborescence"
+msgstr "personnaliser-l-arborescence"
 
 #. TRANSLATORS: Command description
 #: customisation.py:109
@@ -193,7 +193,7 @@ msgstr "C'est fait ! {user} n'a plus de parent :3"
 #. TRANSLATORS: Command name
 #: information.py:41
 msgid "relationship"
-msgstr "vie amoureuse"
+msgstr "vie-amoureuse"
 
 #. TRANSLATORS: Command description
 #: information.py:43
@@ -330,7 +330,7 @@ msgstr "L'utilisateur dont tu veux connaître la taille de la famille."
 #. TRANSLATORS: Command name (/familysize)
 #: information.py:390
 msgid "familysize"
-msgstr "format familial"
+msgstr "format-familial"
 
 #. TRANSLATORS: Command description (/familysize)
 #: information.py:392
@@ -417,7 +417,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: marriage.py:33
 msgid "marry"
-msgstr "se marier"
+msgstr "se-marier"
 
 #. TRANSLATORS: Command option name description (/marry user)
 #: marriage.py:42
@@ -505,7 +505,7 @@ msgstr "Te donner des infos sur les avantages premium du bot."
 #. TRANSLATORS: Command name
 #: misc.py:94
 msgid "donate"
-msgstr "faire un don"
+msgstr "faire-un-don"
 
 #. TRANSLATORS: Command description
 #: misc.py:96
@@ -657,7 +657,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr "en fuite"
+msgstr "en-fuite"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
@@ -796,7 +796,7 @@ msgstr "Désactivé"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "parametres-guilde inceste"
+msgstr "parametres-guilde familles-guilde"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -869,7 +869,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "parametres-guilde gifs-simulation"
+msgstr "parametres-guilde inceste"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
@@ -900,7 +900,7 @@ msgstr "L'inceste est désormais **désactivé** dans cette guilde."
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "paramètres-de-guilde gifs-de-simulation"
+msgstr "parametres-guilde gifs-simulation"
 
 #. TRANSLATORS: Command description
 #: settings.py:410
@@ -974,7 +974,7 @@ msgstr "L'utilisateur que tu veux poignarder."
 #. TRANSLATORS: Command name (/stab)
 #: simulation.py:210
 msgid "stab"
-msgstr "coup de couteau"
+msgstr "coup-de-couteau"
 
 #. TRANSLATORS: Command description (/stab)
 #: simulation.py:212
@@ -1028,7 +1028,7 @@ msgstr "L'utilisateur que tu veux frapper."
 #. TRANSLATORS: Command name (/punch)
 #: simulation.py:253
 msgid "punch"
-msgstr "coup de poing"
+msgstr "coup-de-poing"
 
 #. TRANSLATORS: Command description (/punch)
 #: simulation.py:255
@@ -1135,7 +1135,7 @@ msgstr "*Gifle {user}.*"
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr "tout désavouer"
+msgstr "tout-désavouer"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35

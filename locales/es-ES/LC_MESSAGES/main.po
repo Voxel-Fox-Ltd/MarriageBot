@@ -628,7 +628,7 @@ msgstr "¡Hola, {user}, {author} quiere adoptarte! ¿Qué te parece?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr "crear padre"
+msgstr "crear-padre"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
@@ -718,7 +718,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: settings.py:35
 msgid "transfer-gold"
-msgstr "transferencia de oro"
+msgstr "transferencia-de-oro"
 
 #. TRANSLATORS: Command description
 #: settings.py:37

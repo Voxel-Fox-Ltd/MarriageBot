@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 22:09+0100\n"
+"PO-Revision-Date: 2026-04-25 22:45+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: customisation.py:107
 msgid "customize-tree"
-msgstr "boom aanpassen"
+msgstr "boom-aanpassen"
 
 #. TRANSLATORS: Command description
 #: customisation.py:109
@@ -648,7 +648,7 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr "op de vlucht"
+msgstr "op-de-vlucht"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
@@ -715,7 +715,7 @@ msgstr "Welkom in de familie, {user}! Je bent nu de ouder van {author} :3c"
 #. TRANSLATORS: Command name
 #: settings.py:35
 msgid "transfer-gold"
-msgstr "geld overmaken"
+msgstr "geld-overmaken"
 
 #. TRANSLATORS: Command description
 #: settings.py:37
@@ -785,7 +785,7 @@ msgstr "Uitgeschakeld"
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "gilde-instellingen gildespecifieke-families"
+msgstr "gilde-instellingen gilde-families"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
@@ -887,7 +887,7 @@ msgstr "Incest is nu **uitgeschakeld** in deze gilde."
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "gild-instellingen simulatie-gifjes"
+msgstr "gilde-instellingen simulatie-gifs"
 
 #. TRANSLATORS: Command description
 #: settings.py:410
@@ -1121,7 +1121,7 @@ msgstr "*Geeft {user} een klap.*"
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr "alles afwijzen"
+msgstr "alles-afwijzen"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35
@@ -1135,7 +1135,7 @@ msgstr "Klaar! Je hebt geen kinderen meer :3"
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:67
 msgid "abandon"
-msgstr "in de steek laten"
+msgstr "in-de-steek-laten"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:69
