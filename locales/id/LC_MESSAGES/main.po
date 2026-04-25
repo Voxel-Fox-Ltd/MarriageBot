@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:23+0100\n"
+"PO-Revision-Date: 2026-04-25 22:03+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: id\n"
@@ -73,7 +73,7 @@ msgstr "Pengguna kedua yang ingin Anda atur untuk menikah."
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "dipaksa menikah"
+msgstr "paksa nikah"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -100,7 +100,7 @@ msgstr "Pengguna kedua yang ingin Anda atur untuk dicabut aksesnya."
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "memaksa perceraian"
+msgstr "paksa cerai"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -125,7 +125,7 @@ msgstr "Orang tua yang mengadopsi."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "memaksa untuk mengadopsi"
+msgstr "paksa adopsi"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -174,7 +174,7 @@ msgstr "Pengguna yang ingin Anda paksa untuk keluar"
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "lari kencang"
+msgstr "paksa kabur"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315
@@ -292,7 +292,7 @@ msgstr "{user} adalah induk dari:"
 #. TRANSLATORS: Command name
 #: information.py:292
 msgid "parent"
-msgstr "Induk"
+msgstr "induk"
 
 #. TRANSLATORS: Command option name description (/parent [user])
 #: information.py:301
