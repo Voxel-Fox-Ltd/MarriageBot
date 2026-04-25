@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 20:02+0100\n"
-"PO-Revision-Date: 2026-04-25 20:04+0100\n"
+"PO-Revision-Date: 2026-04-25 22:03+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -73,7 +73,7 @@ msgstr "Der zweite Nutzer, den du für die Heirat einrichten möchtest."
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "zwangsheirat"
+msgstr "erzwinge heirat"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
@@ -100,7 +100,7 @@ msgstr "Der zweite Benutzer, den du für die Trennung einrichten möchtest."
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "eine Scheidung erzwingen"
+msgstr "erzwinge scheidung"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
@@ -125,7 +125,7 @@ msgstr "Der Elternteil, der das Kind adoptiert."
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "zwingen, anzunehmen"
+msgstr "erzwinge adoption"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
@@ -175,7 +175,7 @@ msgstr "Der Benutzer, den du zum Abbruch zwingen möchtest"
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "Kraftlauf"
+msgstr "erzwinge flucht"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315
