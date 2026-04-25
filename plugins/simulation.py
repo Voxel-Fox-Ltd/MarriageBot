@@ -224,7 +224,7 @@ class Simulation(client.Plugin):
             [
                 ctx._("*You stab yourself.*"),
                 ctx._("Looks like you don't have a knife, oops!"),
-                ctx._("No."),
+                ctx._("I'd rather you didn't stab yourself, really."),
             ],
             [
                 ctx._("*You stab {user}.*"),

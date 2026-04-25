@@ -1,120 +1,148 @@
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: marriagebot\n"
-"POT-Creation-Date: 2025-01-08 00:32+0000\n"
-"PO-Revision-Date: 2025-01-08 02:05\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2026-04-25 21:08+0100\n"
+"PO-Revision-Date: 2026-04-25 21:10+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
-"Language-Team: Czech\n"
+"Language-Team: \n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
 "X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: ../plugins\n"
 "X-Poedit-SearchPath-0: .\n"
-"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
-"X-Crowdin-Project: marriagebot\n"
-"X-Crowdin-Project-ID: 752359\n"
-"X-Crowdin-Language: cs\n"
-"X-Crowdin-File: /novus-rewrite/locales/main.pot\n"
-"X-Crowdin-File-ID: 70\n"
+
+#. TRANSLATORS: Command name
+#: customisation.py:107
+msgid "customize-tree"
+msgstr "přizpůsobit strom"
+
+#. TRANSLATORS: Command description
+#: customisation.py:109
+msgid "Customize the look of your family trees."
+msgstr "Přizpůsobte si vzhled svých rodokmenů."
+
+#: customisation.py:187
+#, python-brace-format
+msgid ""
+"You can't customise someone else's tree! You can customise your own by "
+"running the {cusomise_command} command :3"
+msgstr ""
+"Strom někoho jiného si přizpůsobit nemůžeš! Svůj vlastní si můžeš "
+"přizpůsobit pomocí příkazu {cusomise_command} :3"
+
+#: customisation.py:208
+msgid "Customise your tree"
+msgstr "Přizpůsobte si svůj strom"
+
+#: customisation.py:213
+msgid "New value"
+msgstr "Nová hodnota"
+
+#: customisation.py:241
+msgid "I don't know what colour that is..."
+msgstr "Nevím, jaká to je barva..."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:43 force_commands.py:119 force_commands.py:207
+#: force_commands.py:43 force_commands.py:122 force_commands.py:213
 msgid "user1"
-msgstr ""
+msgstr "uživatel1"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:45
 msgid "The first user that you want to set up to marry."
-msgstr ""
+msgstr "První uživatel, kterého chcete nastavit jako manžela/manželku."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:53 force_commands.py:130 force_commands.py:217
+#: force_commands.py:53 force_commands.py:133 force_commands.py:223
 msgid "user2"
-msgstr ""
+msgstr "uživatel2"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:55
 msgid "The second user that you want to set up to marry."
-msgstr ""
+msgstr "Druhý uživatel, kterého chcete nastavit jako manžela/manželku."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr ""
+msgstr "vynutit sňatek"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
 msgid "Force two users to marry each other."
-msgstr ""
+msgstr "Donuť dva uživatele, aby se vzali."
 
-#: force_commands.py:87
+#: force_commands.py:89
 msgid "You can't marry someone to themself :/"
-msgstr ""
+msgstr "Nemůžeš někoho provdat sám se sebou :/"
 
-#: force_commands.py:99
+#: force_commands.py:101
 #, python-brace-format
 msgid "Done! Married {user1} and {user2} :3"
-msgstr ""
+msgstr "Hotovo! Vdaná {user1} a {user2} :3"
 
-#: force_commands.py:122
+#: force_commands.py:125
 msgid "The first user that you want to set up to divorce."
-msgstr ""
+msgstr "První uživatel, kterého chcete nastavit k rozvodu."
 
-#: force_commands.py:133
+#: force_commands.py:136
 msgid "The second user that you want to set up to divorce."
-msgstr ""
+msgstr "Druhý uživatel, kterého chcete nastavit k odpojení."
 
 #. TRANSLATORS: Command name
-#: force_commands.py:138
+#: force_commands.py:141
 msgid "force divorce"
-msgstr ""
+msgstr "vynutit rozvod"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:140
+#: force_commands.py:143
 msgid "Force two users to divorce each other."
-msgstr ""
+msgstr "Donuť dva uživatele, aby se rozešli."
 
-#: force_commands.py:187
+#: force_commands.py:193
 #, python-brace-format
 msgid "Done! {user1} and {user2} are now divorced :3"
-msgstr ""
+msgstr "Hotovo! {user1} a {user2} jsou teď rozvedení :3"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:209
+#: force_commands.py:215
 msgid "The child for the adoption"
-msgstr ""
+msgstr "Dítě určené k adopci"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:219
+#: force_commands.py:225
 msgid "The parent for the adoption."
-msgstr ""
+msgstr "Rodič, který dítě adoptuje."
 
 #. TRANSLATORS: Command name
-#: force_commands.py:223
+#: force_commands.py:229
 msgid "force adopt"
-msgstr ""
+msgstr "vynutit přijetí"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:225
+#: force_commands.py:231
 msgid "Force one user to adopt another."
-msgstr ""
+msgstr "Donutit jednoho uživatele, aby převzal jiného."
 
-#: force_commands.py:251
+#: force_commands.py:259
 msgid "You can't adopt someone to themself :/"
-msgstr ""
+msgstr "Nemůžeš někoho adoptovat jen pro něj samotného :/"
 
-#: force_commands.py:278
+#: force_commands.py:286
 #, python-brace-format
 msgid "Done! {user1} is now a child of {user2} :3"
-msgstr ""
+msgstr "Hotovo! {user1} je nyní podřízeným prvkem {user2} :3"
 
 #. TRANSLATORS: Command option name (/force runaway [user])
+#. TRANSLATORS: Command option name (/relationship [user] [other])
 #. TRANSLATORS: Command option name (/partners [user])
 #. TRANSLATORS: Command option name (/children [user])
 #. TRANSLATORS: Command option name (/parent [user])
@@ -130,675 +158,1110 @@ msgstr ""
 #. TRANSLATORS: Command option name (/punch [user])
 #. TRANSLATORS: Command option name (/bite [user])
 #. TRANSLATORS: Command option name (/slap [user])
-#: force_commands.py:298 information.py:48 information.py:126
-#: information.py:204 information.py:281 information.py:327 information.py:353
-#: marriage.py:40 parents.py:40 parents.py:72 simulation.py:134
-#: simulation.py:169 simulation.py:204 simulation.py:247 simulation.py:282
-#: simulation.py:326
+#: force_commands.py:307 information.py:49 information.py:117
+#: information.py:208 information.py:299 information.py:383 information.py:426
+#: information.py:452 marriage.py:40 parents.py:40 parents.py:72
+#: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247
+#: simulation.py:282 simulation.py:332
 msgid "user"
-msgstr ""
+msgstr "uživatel"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:300
+#: force_commands.py:309
 msgid "The user that you want to force to runaway"
-msgstr ""
+msgstr "Uživatel, kterého chcete donutit k útěku"
 
 #. TRANSLATORS: Command name
-#: force_commands.py:304
+#: force_commands.py:313
 msgid "force runaway"
-msgstr ""
+msgstr "neovladatelný únik"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:306
+#: force_commands.py:315
 msgid "Force a user to runaway from their parent."
-msgstr ""
+msgstr "Donutit uživatele, aby utekl od svých rodičů."
 
-#: force_commands.py:336
+#: force_commands.py:347
 #, python-brace-format
 msgid "Done! {user} no longer has a parent :3"
-msgstr ""
+msgstr "Hotovo! {user} už nemá nadřazený prvek :3"
 
 #. TRANSLATORS: Command name
 #: information.py:41
+msgid "relationship"
+msgstr "vztah"
+
+#. TRANSLATORS: Command description
+#: information.py:43
+msgid "Get the relationship between two users."
+msgstr "Zjisti vztah mezi dvěma uživateli."
+
+#. TRANSLATORS: Command option description (/relationship [user] [other])
+#: information.py:51
+msgid "The first user who you want to check the relation of."
+msgstr "První uživatel, u kterého chcete zkontrolovat vztah."
+
+#. TRANSLATORS: Command option name (/relationship [user] [other])
+#: information.py:58
+msgid "other"
+msgstr "další"
+
+#. TRANSLATORS: Command option description (/relationship [user] [other])
+#: information.py:60
+msgid "The second user who you want to compare the first to."
+msgstr "Druhý uživatel, s nímž chcete prvního porovnat."
+
+#: information.py:92
+#, python-brace-format
+msgid "**{user}** is not related to **{other}**."
+msgstr "**{user}** nesouvisí s **{other}**."
+
+#: information.py:102
+#, python-brace-format
+msgid "**{user}** is **{other}**'s **{relation}**."
+msgstr "**{user}** je **{other}**ův **{relation}**."
+
+#. TRANSLATORS: Command name
+#: information.py:110
 msgid "partners"
-msgstr ""
+msgstr "partneři"
 
 #. TRANSLATORS: Command option name description (/partners [user])
-#: information.py:50
+#: information.py:119
 msgid "The user whose partners you want to see."
-msgstr ""
+msgstr "Uživatel, jehož partnery si chcete prohlédnout."
 
 #. TRANSLATORS: Command description
-#: information.py:55
+#: information.py:124
 msgid "Shows you a list of partners for a user."
-msgstr ""
+msgstr "Zobrazí seznam partnerů daného uživatele."
 
-#: information.py:85 marriage.py:84
+#: information.py:156 marriage.py:86
 msgid "You don't have any partners right now :<"
-msgstr ""
+msgstr "Momentálně nemáš žádné partnery :<"
 
-#: information.py:89
+#: information.py:163
 #, python-brace-format
 msgid "{user} doesn't have any partners right now :<"
-msgstr ""
+msgstr "{user} momentálně nemá žádné partnery :<"
 
-#: information.py:99
+#: information.py:176
 #, python-brace-format
 msgid "{user} is married to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user} je ženatý s **{partner}** ({timestamp})."
 
-#: information.py:111
+#: information.py:191
 #, python-brace-format
 msgid "{user} is married to:"
-msgstr ""
+msgstr "{user} je ženatý/vdaná s:"
 
 #. TRANSLATORS: Command name
-#: information.py:119
+#: information.py:201
 msgid "children"
-msgstr ""
+msgstr "dětí"
 
 #. TRANSLATORS: Command option name description (/children [user])
-#: information.py:128
+#: information.py:210
 msgid "The user whose children you want to see."
-msgstr ""
+msgstr "Uživatel, jehož děti si chcete prohlédnout."
 
 #. TRANSLATORS: Command description
-#: information.py:133
+#: information.py:215
 msgid "Shows you a list of children for a user."
-msgstr ""
+msgstr "Zobrazí seznam podřízených uživatelů daného uživatele."
 
-#: information.py:163 parents.py:110 parents.py:148
+#: information.py:247 parents.py:111 parents.py:153
 msgid "You don't have any children right now :<"
-msgstr ""
+msgstr "Momentálně nemáš žádné děti :<"
 
-#: information.py:167
+#: information.py:254
 #, python-brace-format
 msgid "{user} doesn't have any children right now :<"
-msgstr ""
+msgstr "{user} momentálně nemá žádné děti :<"
 
-#: information.py:177
+#: information.py:267
 #, python-brace-format
 msgid "{user} is parent to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user} je nadřazeným prvkem prvku **{partner}** ({timestamp})."
 
-#: information.py:189
+#: information.py:282
 #, python-brace-format
 msgid "{user} is parent to:"
-msgstr ""
+msgstr "{user} je nadřazeným prvkem pro:"
 
 #. TRANSLATORS: Command name
-#: information.py:197
+#: information.py:292
 msgid "parent"
-msgstr ""
+msgstr "rodič"
 
 #. TRANSLATORS: Command option name description (/parent [user])
-#: information.py:206
+#: information.py:301
 msgid "The user whose parent you want to see."
-msgstr ""
+msgstr "Uživatel, jehož rodiče si chcete prohlédnout."
 
 #. TRANSLATORS: Command description
-#: information.py:211
+#: information.py:306
 msgid "Show you the parent for a user."
-msgstr ""
+msgstr "Zobrazit nadřazeného uživatele."
 
-#: information.py:237
+#: information.py:334
 msgid "You don't have a parent right now :<"
-msgstr ""
+msgstr "Momentálně nemáš rodiče :<"
 
-#: information.py:241
+#: information.py:341
 #, python-brace-format
 msgid "{user} doesn't have a parent right now :<"
-msgstr ""
+msgstr "{user} momentálně nemá nadřazený prvek :<"
 
-#: information.py:249
+#: information.py:351
 #, python-brace-format
 msgid "{user}'s parent is **{parent}** ({timestamp})."
-msgstr ""
+msgstr "Rodičem položky {user} je **{parent}** ({timestamp})."
 
 #. TRANSLATORS: Command option description (/familysize [user])
-#: information.py:283
+#: information.py:385
 msgid "The user who you want to see the family size of."
-msgstr ""
+msgstr "Uživatel, u kterého chcete zjistit počet členů rodiny."
 
 #. TRANSLATORS: Command name (/familysize)
-#: information.py:288
+#: information.py:390
 msgid "familysize"
-msgstr ""
+msgstr "rodinné balení"
 
 #. TRANSLATORS: Command description (/familysize)
-#: information.py:290
+#: information.py:392
 msgid "Get the family size of another user."
-msgstr ""
+msgstr "Zjistit počet členů rodiny jiného uživatele."
 
-#: information.py:312
+#: information.py:411
 #, python-brace-format
-msgid "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives."
-msgid_plural "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives."
+msgid ""
+"There is **{number}** person in {user}'s family tree, including all blood "
+"and non-blood relatives."
+msgid_plural ""
+"There are **{number}** people in {user}'s family tree, including all blood "
+"and non-blood relatives."
 msgstr[0] ""
+"V rodokmenu {user} je **{number}** osob, včetně všech pokrevních i "
+"nepokrevních příbuzných."
 msgstr[1] ""
 msgstr[2] ""
-msgstr[3] ""
 
 #. TRANSLATORS: Command name (/tree)
-#: information.py:320
+#: information.py:419
 msgid "tree"
-msgstr ""
+msgstr "stromový seznam"
 
-#: information.py:328 information.py:354
+#: information.py:427 information.py:453
 msgid "The user whose tree you want to see."
-msgstr ""
+msgstr "Uživatel, jehož strom si chcete prohlédnout."
 
-#: information.py:332
+#: information.py:431
 msgid "Show your family tree, but only blood relatives :3"
-msgstr ""
+msgstr "Ukaž svůj rodokmen, ale jen pokrevní příbuzné :3"
 
 #. TRANSLATORS: Command name (/fulltree)
-#: information.py:346
+#: information.py:445
 msgid "fulltree"
-msgstr ""
+msgstr "celý strom"
 
-#: information.py:358
+#: information.py:457
 msgid "Show your entire family tree, including non-blood relatives :3"
 msgstr ""
+"Ukažte celý svůj rodokmen, včetně příbuzných, kteří nejsou pokrevní "
+"příbuzní :3"
 
-#: information.py:373 subscriber_commands.py:47
+#: information.py:472 subscriber_commands.py:47
 #, python-brace-format
-msgid "You need to be a higher tier subscriber to run this command! You can still use {non_perks_command} though :3"
+msgid ""
+"You need to be a higher tier subscriber to run this command! You can still "
+"use {non_perks_command} though :3"
 msgstr ""
+"K provedení tohoto příkazu musíš mít předplatné vyšší úrovně! Stále ale "
+"můžeš používat {non_perks_command} :3"
 
-#: information.py:401
+#: information.py:501
 msgid "You have no family to put into a tree .-."
-msgstr ""
+msgstr "Nemáš žádnou rodinu, kterou bys mohl zapsat do rodokmenu .-."
 
-#: information.py:405
+#: information.py:508
 #, python-brace-format
 msgid "{user} has no family to put into a tree .-."
-msgstr ""
+msgstr "{user} nemá žádnou rodinu, kterou by bylo možné zařadit do stromu .-."
 
-#: information.py:477
-msgid "I couldn't send your family tree image - please try again in a few minutes."
+#: information.py:578
+msgid ""
+"I couldn't send your family tree image - please try again in a few minutes."
 msgstr ""
+"Nepodařilo se mi odeslat obrázek vašeho rodokmenu – zkuste to prosím znovu "
+"za pár minut."
 
-#: information.py:481
+#: information.py:587
 #, python-brace-format
-msgid "[Click here]({url}) to customise your tree."
+msgid ""
+"Use {fulltree} for your *entire* family, including non-blood relatives.\n"
+"Use {customize} to change how your tree looks."
 msgstr ""
-
-#: information.py:485
-#, python-brace-format
-msgid "Use {fulltree} for your *entire* family, including non-blood relatives."
-msgstr ""
+"Zadejte {fulltree} pro *celou* rodinu, včetně příbuzných, kteří nejsou "
+"pokrevní příbuzní.\n"
+"Zadejte {customize}, chcete-li změnit vzhled svého stromu."
 
 #. TRANSLATORS: Command name
 #: marriage.py:33
 msgid "marry"
-msgstr ""
+msgstr "vdát se"
 
 #. TRANSLATORS: Command option name description (/marry user)
 #: marriage.py:42
 msgid "The user that you want to marry."
-msgstr ""
+msgstr "Uživatel, kterého si chcete vzít."
 
 #. TRANSLATORS: Command description
 #: marriage.py:46
 msgid "Propose to another user."
-msgstr ""
+msgstr "Požádej jiného uživatele o ruku."
 
 #: marriage.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to marry you! What do you say?"
-msgstr ""
+msgstr "Ahoj {user}, {author} si tě chce vzít! Co ty na to?"
 
 #. TRANSLATORS: Command name
 #: marriage.py:64
 msgid "divorce"
-msgstr ""
+msgstr "rozvod"
 
 #. TRANSLATORS: Command description
 #: marriage.py:66
 msgid "Divorce one of your partners."
-msgstr ""
+msgstr "Rozejdi se s jedním ze svých partnerů."
 
-#: marriage.py:89
+#: marriage.py:94
 msgid "Which of your partners do you want to divorce?"
-msgstr ""
+msgstr "S kterým z vašich partnerů se chcete rozvést?"
 
-#: marriage.py:116 parents.py:180 proposal_handler.py:47
+#: marriage.py:123 parents.py:185 proposal_handler.py:48
 msgid "You cannot interact with these buttons."
-msgstr ""
+msgstr "S těmito tlačítky nelze pracovat."
 
-#: marriage.py:133 marriage.py:141
+#: marriage.py:142 marriage.py:153
 #, python-brace-format
 msgid "You have been divorced from {user} :("
+msgstr "Rozvedli jste se {user} :("
+
+#. TRANSLATORS: Command name
+#: misc.py:32
+msgid "info"
+msgstr "info"
+
+#. TRANSLATORS: Command description
+#: misc.py:34
+msgid "Give you information about the bot."
+msgstr "Poskytneme vám informace o botovi."
+
+#: misc.py:44
+msgid ""
+"MarriageBot is a bot that allows users to marry, divorce, and have children "
+"with other users. It also features a unique family tree system that allows "
+"users to view their family history and relationships.\n"
+"-# MarriageBot is being maintained by [Voxel Fox](https://voxelfox.co.uk)."
 msgstr ""
+"MarriageBot je bot, který uživatelům umožňuje uzavírat sňatky, rozvádět se a "
+"mít děti s ostatními uživateli. Nabízí také jedinečný systém rodokmenu, díky "
+"kterému si uživatelé mohou prohlížet svou rodinnou historii a vztahy.\n"
+"-# MarriageBot spravuje [Voxel Fox](https://voxelfox.co.uk)."
+
+#: misc.py:52
+msgid "Family Tree Members"
+msgstr "Členové rodokmenu"
+
+#: misc.py:62 misc.py:176
+msgid "Donate"
+msgstr "Přispět"
+
+#: misc.py:67
+msgid "Support Server"
+msgstr "Podpora serveru"
+
+#. TRANSLATORS: Command name
+#: misc.py:81
+msgid "perks"
+msgstr "výhody"
+
+#. TRANSLATORS: Command description
+#: misc.py:83
+msgid "Give you information about the bot's premium perks."
+msgstr "Poskytneme vám informace o prémiových výhodách bota."
+
+#. TRANSLATORS: Command name
+#: misc.py:94
+msgid "donate"
+msgstr "přispět"
+
+#. TRANSLATORS: Command description
+#: misc.py:96
+msgid "Give you information about the bot's donation options."
+msgstr "Poskytneme vám informace o možnostech darování prostřednictvím bota."
+
+#: misc.py:112
+msgid "Support MarriageBot"
+msgstr "Podpořte MarriageBot"
+
+#: misc.py:114
+msgid ""
+"If you enjoy MarriageBot, please consider donating to support its ongoing "
+"maintainance, development, and hosting costs.\n"
+"MarriageBot isn't a small bot by any means, and keeping it going requires a "
+"lot of time and resources behind the scenes."
+msgstr ""
+"Pokud se vám MarriageBot líbí, zvažte prosím finanční příspěvek na podporu "
+"jeho údržby, vývoje a nákladů na hosting.\n"
+"MarriageBot rozhodně není žádný malý bot a jeho provoz vyžaduje v zákulisí "
+"spoustu času a prostředků."
+
+#: misc.py:120
+msgid "Donation Perks"
+msgstr "Výhody pro dárce"
+
+#: misc.py:122
+#, python-brace-format
+msgid ""
+"By supporting MarriageBot, you gain access to exclusive perks depending on "
+"your subscription level:\n"
+"* Default\n"
+"  * 5 children\n"
+"  * 1 partner\n"
+"* T1\n"
+"  * 10 children\n"
+"  * 2 partners\n"
+"  * Access to {disownall_c}\n"
+"* T2\n"
+"  * 15 children\n"
+"  * 4 partners\n"
+"  * Access to {disownall_c}\n"
+"  * Access to {fulltree_c}\n"
+"* T3\n"
+"  * 20 children\n"
+"  * 8 partners\n"
+"  * Access to {disownall_c}\n"
+"  * Access to {fulltree_c}\n"
+"In addition, you can buy MarriageBot Gold for your server, which lets your "
+"server have its own family tree, and gives you access to the force "
+"commands!\n"
+"* Default\n"
+"  * Global tree\n"
+"* Gold\n"
+"  * Server-specific tree\n"
+"  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, "
+"{forceadopt_c}, {forcerunaway_c})\n"
+"  * Access to {incest_c}\n"
+"  * T3 perks for all of your server members\n"
+msgstr ""
+"Podporou MarriageBot získáte přístup k exkluzivním výhodám v závislosti na "
+"úrovni vašeho předplatného:\n"
+"* Základní\n"
+"  * 5 dětí\n"
+"  * 1 partner\n"
+"* T1\n"
+"  * 10 dětí\n"
+"  * 2 partneři\n"
+"  * Přístup k {disownall_c}\n"
+"* T2\n"
+"  * 15 dětí\n"
+"  * 4 partneři\n"
+"  * Přístup k {disownall_c}\n"
+"  * Přístup k {fulltree_c}\n"
+"* T3\n"
+"  * 20 dětí\n"
+"  * 8 partnerů\n"
+"  * Přístup k {disownall_c}\n"
+"  * Přístup k {fulltree_c}\n"
+"Kromě toho si můžete pro svůj server zakoupit MarriageBot Gold, díky čemuž "
+"bude mít váš server vlastní rodokmen a získáte přístup k příkazům force!\n"
+"* Výchozí\n"
+"  * Globální strom\n"
+"* Gold\n"
+"  * Strom specifický pro server\n"
+"  * Přístup k příkazům force ({forcedivorce_c}, {forcemarry_c}, "
+"{forceadopt_c}, {forcerunaway_c})\n"
+"  * Přístup k {incest_c}\n"
+"  * Výhody T3 pro všechny členy vašeho serveru\n"
+
+#: misc.py:162
+msgid "How to Support"
+msgstr "Jak podpořit"
+
+#: misc.py:164
+msgid ""
+"Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox."
+"co.uk/portal/marriagebot) :3"
+msgstr ""
+"Předplatné si můžete sjednat na [webových stránkách Voxel Fox](https://"
+"voxelfox.co.uk/portal/marriagebot) :3"
+
+#: misc.py:169
+msgid "Thank you for considering supporting MarriageBot!"
+msgstr "Děkujeme, že uvažujete o podpoře projektu MarriageBot!"
 
 #. TRANSLATORS: Command name
 #: parents.py:33
 msgid "adopt"
-msgstr ""
+msgstr "přijmout"
 
 #. TRANSLATORS: Command option name description (/adopt user)
 #: parents.py:42
 msgid "The user that you want to adopt."
-msgstr ""
+msgstr "Uživatel, kterého chcete adoptovat."
 
 #. TRANSLATORS: Command description
 #: parents.py:46
 msgid "Ask to adopt another user."
-msgstr ""
+msgstr "Požádej o přijetí jiného uživatele."
 
 #: parents.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to adopt you! What do you say?"
-msgstr ""
+msgstr "Ahoj {user}, {author} by tě chtěl adoptovat! Co ty na to?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr ""
+msgstr "vytvořit nadřazený prvek"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
 msgid "The user that you want to make into your parent."
-msgstr ""
+msgstr "Uživatel, kterého chcete nastavit jako svého nadřízeného."
 
 #. TRANSLATORS: Command description
 #: parents.py:78
 msgid "Ask to make another user into your parent."
-msgstr ""
+msgstr "Požádejte o to, aby se jiný uživatel stal vaším rodičem."
 
 #: parents.py:90
 #, python-brace-format
 msgid "Hey {user}, {author} wants you to be their parent! What do you say?"
-msgstr ""
+msgstr "Ahoj {user}, {author} by chtěl, abys mu byl rodičem! Co ty na to?"
 
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr ""
+msgstr "na útěku"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
 msgid "Run away from your parent."
-msgstr ""
+msgstr "Uteč od svých rodičů."
 
-#: parents.py:121
+#: parents.py:123
 #, python-brace-format
 msgid "You have run away from {user} :("
-msgstr ""
+msgstr "Utekl jsi od {user} :("
 
 #. TRANSLATORS: Command name
-#: parents.py:128
+#: parents.py:132
 msgid "disown"
-msgstr ""
+msgstr "zříci se"
 
 #. TRANSLATORS: Command description
-#: parents.py:130
+#: parents.py:134
 msgid "Disown one of your children."
-msgstr ""
+msgstr "Zřekni se jednoho ze svých dětí."
 
-#: parents.py:153
+#: parents.py:158
 msgid "Which of your children do you want to disown?"
-msgstr ""
+msgstr "Které ze svých dětí se chceš zříci?"
 
-#: parents.py:197 parents.py:205
+#: parents.py:204 parents.py:215
 #, python-brace-format
 msgid "You have now disowned {user} :("
-msgstr ""
+msgstr "Nyní jste se od něj distancovali {user} :("
 
-#: proposal_handler.py:54
+#: proposal_handler.py:55
 msgid "You can no longer respond to this message."
-msgstr ""
+msgstr "Na tuto zprávu již nelze odpovědět."
 
-#: proposal_handler.py:66
+#: proposal_handler.py:67
 msgid "You can't accept your own proposal!"
-msgstr ""
+msgstr "Nemůžeš přijmout svůj vlastní návrh!"
 
-#: proposal_handler.py:77
+#: proposal_handler.py:79
 #, python-brace-format
 msgid "Alright, {author}, your proposal to {user} has been cancelled :)"
-msgstr ""
+msgstr "Dobře, {author}, tvůj návrh pro {user} byl zrušen :)"
 
-#: proposal_handler.py:90
+#: proposal_handler.py:95
 #, python-brace-format
 msgid "Sorry, {author}, {user} said no to your proposal :<"
-msgstr ""
+msgstr "Je mi líto, {author}, {user} tvůj návrh odmítl :<"
 
-#: proposal_handler.py:115
+#: proposal_handler.py:122
 #, python-brace-format
 msgid "Welcome {user}! You're now married to {author} :3c"
-msgstr ""
+msgstr "Vítej {user}! Nyní jsi ženatý/vdaná s {author} :3c"
 
-#: proposal_handler.py:116
+#: proposal_handler.py:123
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the child of {author} :3c"
-msgstr ""
+msgstr "Vítej v rodině, {user}! Teď jsi dítětem {author} :3c"
 
-#: proposal_handler.py:117
+#: proposal_handler.py:124
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the parent of {author} :3c"
+msgstr "Vítej v rodině, {user}! Nyní jsi rodičem {author} :3c"
+
+#. TRANSLATORS: Command name
+#: settings.py:35
+msgid "transfer-gold"
+msgstr "převod zlata"
+
+#. TRANSLATORS: Command description
+#: settings.py:37
+msgid "Transfer your MarriageBot Gold purchase to this server."
+msgstr "Přeneste svůj nákup MarriageBot Gold na tento server."
+
+#: settings.py:59
+msgid "You haven't purchased any instances of MarriageBot Gold!"
+msgstr "Ještě jste si nezakoupili žádnou licenci MarriageBot Gold!"
+
+#: settings.py:64
+msgid "MarriageBot Gold has already been purchased for this server!"
+msgstr "Pro tento server již byl zakoupen MarriageBot Gold!"
+
+#: settings.py:89
+msgid ""
+"I'm going to transfer your MarriageBot Gold purchase into **this server**. "
+"Which server would you like to transfer your Gold purchase *from*?"
 msgstr ""
+"Váš nákup MarriageBot Gold převedu na **tento server**. Z jakého serveru si "
+"přejete svůj nákup Gold převést?"
+
+#: settings.py:96
+msgid "Select a server"
+msgstr "Vyberte server"
+
+#: settings.py:123
+msgid "You cannot transfer someone else's MarriageBot Gold purchase!"
+msgstr "Nákup služby MarriageBot Gold nelze převést na jinou osobu!"
+
+#: settings.py:141
+#, python-brace-format
+msgid ""
+"You didn't purchase the Gold subscription that's active in **{guild_name}**"
+msgstr "Nezakoupili jste předplatné Gold, které je aktivní v **{guild_name}**"
+
+#: settings.py:166
+msgid "There was an error transferring your MarriageBot Gold purchase."
+msgstr "Při převodu vaší platby za MarriageBot Gold došlo k chybě."
+
+#: settings.py:184
+#, python-brace-format
+msgid ""
+"Your MarriageBot Gold purchase has been transferred to this server! You can "
+"now run the {command_ping} command to activate it here :3"
+msgstr ""
+"Váš nákup MarriageBot Gold byl převeden na tento server! Nyní jej zde můžete "
+"aktivovat příkazem {command_ping} :3"
+
+#: settings.py:203
+msgid "Gold has not been purchased for this guild."
+msgstr "Pro tento cech nebylo zakoupeno žádné zlato."
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:219 settings.py:324 settings.py:394
+msgid "Enabled"
+msgstr "Povoleno"
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:225 settings.py:330 settings.py:400
+msgid "Disabled"
+msgstr "Vypnuto"
+
+#. TRANSLATORS: Command name
+#: settings.py:233
+msgid "guild-settings guild-specific-families"
+msgstr "nastavení-gildy rodiny-specifické-pro-gildu"
+
+#. TRANSLATORS: Command description
+#: settings.py:235
+msgid "Set whether or not guild-specific families are enabled for this guild."
+msgstr ""
+"Nastavte, zda jsou pro tento cech povoleny rodiny specifické pro tento cech."
+
+#: settings.py:244
+msgid ""
+"This command cannot be run on the Gold version of MarriageBot. The regular "
+"version of MarriageBot now allows you to toggle between guild-specific "
+"families and global families.\n"
+"\n"
+"To use this command, please change over to the regular version of "
+"MarriageBot and run this command."
+msgstr ""
+"Tento příkaz nelze spustit ve verzi MarriageBot Gold. Běžná verze "
+"MarriageBot nyní umožňuje přepínat mezi rodinami specifickými pro daný cech "
+"a globálními rodinami.\n"
+"\n"
+"Chcete-li tento příkaz použít, přepněte prosím na běžnou verzi MarriageBot a "
+"spusťte jej."
+
+#: settings.py:263
+msgid ""
+"You can only switch to guild-specific families (and thus use the `/force` "
+"and `/incest` commands, enable polygamy for everyone in your server, and "
+"increase your child count) after you have purchased MarriageBot Gold."
+msgstr ""
+"K rodinám specifickým pro daný cech (a tedy k používání příkazů `/force` a `/"
+"incest`, k povolení polygamie pro všechny uživatele na vašem serveru a ke "
+"zvýšení počtu vašich dětí) se můžete přepnout až po zakoupení balíčku "
+"MarriageBot Gold."
+
+#: settings.py:295
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **enabled** in this guild, and you can now "
+"use the force commands.\n"
+"Please note that this is a completely seperate tree than the global "
+"MarriageBot tree.\n"
+"\n"
+"You can switch back to the global tree by using the {guild_specific_command} "
+"command :3"
+msgstr ""
+"V této gildě jsou nyní **povolena** gildová rodina a můžete nyní používat "
+"příkazy Force.\n"
+"Upozorňujeme, že se jedná o zcela samostatný strom, který se liší od "
+"globálního stromu MarriageBot.\n"
+"\n"
+"Pomocí příkazu {guild_specific_command} se můžete přepnout zpět na globální "
+"strom :3"
+
+#: settings.py:304
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **disabled** in this guild. You are now "
+"switched back to the global MarriageBot tree.\n"
+"\n"
+"You can switch back to your guild-specific tree by using the "
+"{guild_specific_command} command :3"
+msgstr ""
+"Rodiny specifické pro tuto gildu jsou nyní **deaktivovány**. Nyní jste "
+"přepnuti zpět na globální strom MarriageBot.\n"
+"\n"
+"Pomocí příkazu {guild_specific_command} :3 se můžete přepnout zpět na strom "
+"specifický pro vaši gildu."
+
+#. TRANSLATORS: Command name
+#: settings.py:338
+msgid "guild-settings incest"
+msgstr "nastavení cechu incest"
+
+#. TRANSLATORS: Command description
+#: settings.py:340
+msgid "Set whether or not incest is enabled for this guild."
+msgstr "Nastavte, zda je pro tento cech povolen incest."
+
+#: settings.py:352
+msgid "This command can only be run with MarriageBot Gold enabled!"
+msgstr ""
+"Tento příkaz lze spustit pouze v případě, že je aktivována služba "
+"MarriageBot Gold!"
+
+#: settings.py:373
+#, python-brace-format
+msgid ""
+"Incest is now **enabled** in this guild.\n"
+"\n"
+"Please note that this only applies to your guild-specific tree - if "
+"{guild_specific_command} is enabled."
+msgstr ""
+"Incest je nyní v tomto cechu **povoleno**.\n"
+"\n"
+"Upozorňujeme, že se to týká pouze stromu specifického pro váš cech – pokud "
+"je povoleno {guild_specific_command}."
+
+#: settings.py:378
+msgid "Incest is now **disabled** in this guild."
+msgstr "Funkce „Incest“ je nyní v tomto cechu **deaktivována**."
+
+#. TRANSLATORS: Command name
+#: settings.py:408
+msgid "guild-settings simulation-gifs"
+msgstr "nastavení cechu – simulační GIFy"
+
+#. TRANSLATORS: Command description
+#: settings.py:410
+msgid "Set whether or not simulation GIFs are enabled in this guild."
+msgstr "Nastavte, zda mají být v tomto cechu povoleny simulační GIFy."
+
+#: settings.py:431
+msgid "GIFs for the simulation commands are now **enabled**."
+msgstr "GIFy pro simulační příkazy jsou nyní **zapnuté**."
+
+#: settings.py:433
+msgid "GIFs for the simulation commands are now **disabled**."
+msgstr "GIFy pro simulační příkazy jsou nyní **vypnuté**."
 
 #. TRANSLATORS: Command option description (/hug [user])
 #: simulation.py:136
 msgid "The user you want to hug."
-msgstr ""
+msgstr "Uživatel, kterého bys chtěl obejmout."
 
 #. TRANSLATORS: Command name (/hug)
 #: simulation.py:140
 msgid "hug"
-msgstr ""
+msgstr "objetí"
 
 #. TRANSLATORS: Command description (/hug)
 #: simulation.py:142
 msgid "Hug another user."
-msgstr ""
+msgstr "Obejmi jiného uživatele."
 
 #: simulation.py:155
 msgid "*You hug yourself... and start crying.*"
-msgstr ""
+msgstr "*Objímáš se... a začneš plakat.*"
 
 #: simulation.py:158
 #, python-brace-format
 msgid "*Hugs {user}.*"
-msgstr ""
+msgstr "*Objímám tě {user}.*"
 
 #. TRANSLATORS: Command option description (/kiss [user])
 #: simulation.py:171
 msgid "The user you want to kiss."
-msgstr ""
+msgstr "Uživatel, kterého chceš políbit."
 
 #. TRANSLATORS: Command name (/kiss)
 #: simulation.py:175
 msgid "kiss"
-msgstr ""
+msgstr "polibek"
 
 #. TRANSLATORS: Command description (/kiss)
 #: simulation.py:177
 msgid "Kiss another user."
-msgstr ""
+msgstr "Polib jiného uživatele."
 
 #: simulation.py:190
 msgid "How would you even manage to do that?"
-msgstr ""
+msgstr "Jak by se ti to vůbec podařilo?"
 
 #: simulation.py:193
 #, python-brace-format
 msgid "*Kisses {user}.*"
-msgstr ""
+msgstr "*Pusinky {user}.*"
 
 #. TRANSLATORS: Command option description (/stab [user])
 #: simulation.py:206
 msgid "The user you want to stab."
-msgstr ""
+msgstr "Uživatel, kterého chceš bodnout."
 
 #. TRANSLATORS: Command name (/stab)
 #: simulation.py:210
 msgid "stab"
-msgstr ""
+msgstr "bodnutí"
 
 #. TRANSLATORS: Command description (/stab)
 #: simulation.py:212
 msgid "Stab another user."
-msgstr ""
+msgstr "Bodni jiného uživatele."
 
 #: simulation.py:225
 msgid "*You stab yourself.*"
-msgstr ""
+msgstr "*Bodneš se.*"
 
 #: simulation.py:226 simulation.py:233
 msgid "Looks like you don't have a knife, oops!"
-msgstr ""
+msgstr "Vypadá to, že nemáš nůž, ups!"
 
 #: simulation.py:227
-msgid "No."
-msgstr ""
+#, fuzzy
+#| msgid "*We'll act like you didn't just bite yourself.*"
+msgid "I'd rather you didn't stab yourself, really."
+msgstr "*Budeme se tvářit, jako by ses právě nekousl.*"
 
 #: simulation.py:230
 #, python-brace-format
 msgid "*You stab {user}.*"
-msgstr ""
+msgstr "*Bodneš {user}.*"
 
 #: simulation.py:231
 #, python-brace-format
 msgid "*{user} has been stabbed.*"
-msgstr ""
+msgstr "*{user} byl bodnut.*"
 
 #: simulation.py:232
 #, python-brace-format
 msgid "*stabs {user}.*"
-msgstr ""
+msgstr "*bodne {user}.*"
 
 #: simulation.py:234
 msgid "You can't legally stab someone without their consent."
-msgstr ""
+msgstr "Bez souhlasu druhé osoby ji nelze legálně bodnout."
 
 #: simulation.py:235
 msgid "Stab? Isn't that, like, illegal?"
-msgstr ""
+msgstr "Bodnutí? Není to náhodou nelegální?"
 
 #: simulation.py:236
 msgid "I wouldn't recommend doing that tbh."
-msgstr ""
+msgstr "Upřímně řečeno, to bych nedoporučoval."
 
 #. TRANSLATORS: Command option description (/punch [user])
 #: simulation.py:249
 msgid "The user you want to punch."
-msgstr ""
+msgstr "Uživatel, kterého chceš praštit."
 
 #. TRANSLATORS: Command name (/punch)
 #: simulation.py:253
 msgid "punch"
-msgstr ""
+msgstr "úder"
 
 #. TRANSLATORS: Command description (/punch)
 #: simulation.py:255
 msgid "Punch another user."
-msgstr ""
+msgstr "Udeř jiného uživatele."
 
 #: simulation.py:268
 msgid "*You punched yourself... for some reason.*"
-msgstr ""
+msgstr "*Udeřil ses sám... z nějakého důvodu.*"
 
 #: simulation.py:271
 #, python-brace-format
 msgid "*Punches {user} right in the nose.*"
-msgstr ""
+msgstr "*Dává mu {user} ránu přímo do nosu.*"
 
 #. TRANSLATORS: Command option description (/bite [user])
 #: simulation.py:284
 msgid "The user you want to bite."
-msgstr ""
+msgstr "Uživatel, kterého chceš napadnout."
 
 #. TRANSLATORS: Command name (/bite)
 #: simulation.py:288
 msgid "bite"
-msgstr ""
+msgstr "kousnutí"
 
 #. TRANSLATORS: Command description (/bite)
 #: simulation.py:290
 msgid "Bite another user."
-msgstr ""
+msgstr "Kousni jiného uživatele."
 
 #: simulation.py:303
 msgid "*You missed and bit yourself! Loser.*"
-msgstr ""
+msgstr "*Netrefil jsi a kousl ses! Smolaře.*"
 
 #: simulation.py:304
 #, python-brace-format
 msgid "*You failed to bite {user}!*"
-msgstr ""
+msgstr "*Nepodařilo se ti kousnout {user}!*"
 
 #: simulation.py:305
 msgid "*You thought! You bit yourself.*"
-msgstr ""
+msgstr "*To sis myslel! To sis ale uvěřil.*"
 
 #: simulation.py:306
 msgid "*We'll act like you didn't just bite yourself.*"
-msgstr ""
+msgstr "*Budeme se tvářit, jako by ses právě nekousl.*"
 
-#: simulation.py:309
+#: simulation.py:309 simulation.py:318
 #, python-brace-format
 msgid "*You bite {user}.*"
-msgstr ""
+msgstr "*Kousneš {user}.*"
 
-#: simulation.py:310
+#: simulation.py:310 simulation.py:319
 #, python-brace-format
 msgid "*Bites {user}.*"
-msgstr ""
+msgstr "*Kousnutí {user}.*"
 
-#: simulation.py:311
+#: simulation.py:311 simulation.py:320
 #, python-brace-format
 msgid "*{user} was bitten.*"
-msgstr ""
+msgstr "*{user} byl pokousán.*"
 
-#: simulation.py:312
+#: simulation.py:312 simulation.py:321
 #, python-brace-format
 msgid "*{user} has been bitten.*"
-msgstr ""
+msgstr "*{user} byl pokousán.*"
 
 #: simulation.py:313
 msgid "Why would you bite someone?"
-msgstr ""
+msgstr "Proč bys někoho kousl?"
 
 #: simulation.py:314
 msgid "Biting people isn’t nice."
-msgstr ""
+msgstr "Kousat lidi není hezké."
 
 #: simulation.py:315
 msgid "Stop biting people!"
-msgstr ""
+msgstr "Přestaň kousat lidi!"
 
 #. TRANSLATORS: Command option description (/slap [user])
-#: simulation.py:328
+#: simulation.py:334
 msgid "The user you want to slap."
-msgstr ""
+msgstr "Uživatel, kterého chceš plácnout."
 
 #. TRANSLATORS: Command name (/slap)
-#: simulation.py:332
+#: simulation.py:338
 msgid "slap"
-msgstr ""
+msgstr "facka"
 
 #. TRANSLATORS: Command description (/slap)
-#: simulation.py:334
+#: simulation.py:340
 msgid "Slap another user."
-msgstr ""
+msgstr "Dej facku jinému uživateli."
 
-#: simulation.py:347
+#: simulation.py:353
 msgid "*You slapped yourself... for some reason.*"
-msgstr ""
+msgstr "*Dal sis facku... z nějakého důvodu.*"
 
-#: simulation.py:350
+#: simulation.py:356
 #, python-brace-format
 msgid "*Slaps {user}.*"
-msgstr ""
+msgstr "*Plácne {user}.*"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr ""
+msgstr "vymazat všechny"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35
 msgid "Disown all of your children at once."
-msgstr ""
+msgstr "Zřekni se všech svých dětí najednou."
 
 #: subscriber_commands.py:61
 msgid "Done! You no longer have any children :3"
-msgstr ""
+msgstr "Hotovo! Už nemáš žádné děti :3"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:67
 msgid "abandon"
-msgstr ""
+msgstr "opustit"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:69
 msgid "Remove all of your family members at once."
-msgstr ""
+msgstr "Odstraňte všechny členy své rodiny najednou."
 
 #: subscriber_commands.py:83
 #, python-brace-format
-msgid "You need to be a higher tier subscriber to run this command! You can still use {divorce}, {disown}, and {runaway} though :3"
+msgid ""
+"You need to be a higher tier subscriber to run this command! You can still "
+"use {divorce}, {disown}, and {runaway} though :3"
 msgstr ""
+"K provedení tohoto příkazu musíš mít předplatné vyšší úrovně! Stále ale "
+"můžeš používat {divorce}, {disown} a {runaway} :3"
 
 #: subscriber_commands.py:100
 msgid "Done! You no longer have any family members :3"
-msgstr ""
+msgstr "Hotovo! Už nemáš žádné příbuzné :3"
 
 #: utils/proposal_lock.py:65
-msgid "You can't run this on yourself :/"
-msgstr ""
+msgid "You're already married!"
+msgstr "Ty už jsi ženatý!"
 
-#: utils/proposal_lock.py:73
-msgid "You can't run this on bots :/"
-msgstr ""
-
-#: utils/proposal_lock.py:82
-msgid "You're already waiting on a proposal."
-msgstr ""
-
-#: utils/proposal_lock.py:88
+#: utils/proposal_lock.py:77
 #, python-brace-format
-msgid "{user} is already waiting on a proposal."
-msgstr ""
+msgid ""
+"You already have a partner! You can't have any more right now. {user} is at "
+"their partner limit as well :<"
+msgid_plural ""
+"You already have {count} partners! You can't have any more right now. {user} "
+"is at their partner limit as well :<"
+msgstr[0] ""
+"Už máš partnera! Momentálně si nemůžeš přidat dalšího. {user} má také "
+"naplněný limit partnerů :<"
+msgstr[1] ""
+msgstr[2] ""
 
-#: utils/proposal_lock.py:116
+#: utils/proposal_lock.py:92
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
-msgid_plural "You already have {count} partners! You can't have any more right now :<"
-msgstr[0] ""
+msgid_plural ""
+"You already have {count} partners! You can't have any more right now :<"
+msgstr[0] "Už máš partnera! Momentálně si žádného dalšího nemůžeš pořídit :<"
 msgstr[1] ""
 msgstr[2] ""
-msgstr[3] ""
 
-#: utils/proposal_lock.py:127
+#: utils/proposal_lock.py:108
 #, python-brace-format
 msgid "{user} already has a partner! They can't have any more right now :<"
-msgid_plural "{user} already has {count} partners! They can't have any more right now :<"
-msgstr[0] ""
+msgid_plural ""
+"{user} already has {count} partners! They can't have any more right now :<"
+msgstr[0] "{user} už má partnera! Momentálně si dalšího nemůže dovolit :<"
 msgstr[1] ""
 msgstr[2] ""
-msgstr[3] ""
 
-#: utils/proposal_lock.py:139
+#: utils/proposal_lock.py:136
+msgid "You're already their parent!"
+msgstr "Už jsi jejich rodič!"
+
+#: utils/proposal_lock.py:143
 #, python-brace-format
 msgid "{user} already has a parent! They can only have one!"
-msgstr ""
+msgstr "{user} už má rodiče! Může mít jen jedny!"
 
-#: utils/proposal_lock.py:162
+#: utils/proposal_lock.py:186
+msgid "They're already your parent!"
+msgstr "Vždyť už jsou to tvoji rodiče!"
+
+#: utils/proposal_lock.py:192
 msgid "You already have a parent! You can only have one!"
-msgstr ""
+msgstr "Už jednoho rodiče máš! Můžeš mít jen jednoho!"
 
-#: utils/proposal_lock.py:184
+#: utils/proposal_lock.py:253
+msgid "You can't run this on yourself :/"
+msgstr "Tohle na sobě vyzkoušet nemůžeš :/"
+
+#: utils/proposal_lock.py:261
+msgid "You can't run this on bots :/"
+msgstr "Tohle na botech nefunguje :/"
+
+#: utils/proposal_lock.py:270
+msgid "You're already waiting on a proposal."
+msgstr "Už čekáte na nabídku."
+
+#: utils/proposal_lock.py:276
+#, python-brace-format
+msgid "{user} is already waiting on a proposal."
+msgstr "{user} již čeká na návrh."
+
+#: utils/proposal_lock.py:345
 #, python-brace-format
 msgid "You and {user} are already related!"
-msgstr ""
+msgstr "Ty a {user} už jste příbuzní!"
 
-#: utils/proposal_lock.py:213
+#: utils/proposal_lock.py:375
 #, python-brace-format
-msgid "You can't do that! If your families combine, you'd have over {family_size} members in your tree!"
+msgid ""
+"You can't do that! If your families combine, you'd have over {family_size} "
+"members in your tree!"
 msgstr ""
+"To přece nejde! Kdyby se vaše rodiny spojily, měl by váš rodokmen přes "
+"{family_size} členů!"
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:230
+#: utils/proposal_lock.py:403
 msgid "Yes"
-msgstr ""
+msgstr "Ano"
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:236
+#: utils/proposal_lock.py:409
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
-#: utils/proposal_lock.py:247
+#: utils/proposal_lock.py:421
 #, python-brace-format
 msgid "Sorry, {author}, your proposal to {user} has timed out!"
-msgstr ""
+msgstr "Je nám líto, {author}, časový limit pro tvůj návrh {user} vypršel!"
 
-#: utils/utils.py:126
+#: utils/utils.py:199
 msgid "Get MarriageBot Gold"
-msgstr ""
+msgstr "Pořiďte si MarriageBot Gold"
 
-#: utils/utils.py:130
+#: utils/utils.py:203
 msgid "Get MarriageBot perks"
-msgstr ""
+msgstr "Získejte výhody MarriageBot"
 
+#: utils/utils.py:220
+msgid "Enable Gold"
+msgstr "Aktivovat Gold"
+
+#~ msgid "No."
+#~ msgstr "Číslo"

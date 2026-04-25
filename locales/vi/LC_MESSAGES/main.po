@@ -1,120 +1,148 @@
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: marriagebot\n"
-"POT-Creation-Date: 2025-01-08 00:32+0000\n"
-"PO-Revision-Date: 2025-01-08 02:05\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2026-04-25 21:08+0100\n"
+"PO-Revision-Date: 2026-04-25 21:28+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
-"Language-Team: Vietnamese\n"
+"Language-Team: \n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: ../plugins\n"
 "X-Poedit-SearchPath-0: .\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Crowdin-Project: marriagebot\n"
-"X-Crowdin-Project-ID: 752359\n"
-"X-Crowdin-Language: vi\n"
-"X-Crowdin-File: /novus-rewrite/locales/main.pot\n"
-"X-Crowdin-File-ID: 70\n"
+
+#. TRANSLATORS: Command name
+#: customisation.py:107
+msgid "customize-tree"
+msgstr "tùy chỉnh cây"
+
+#. TRANSLATORS: Command description
+#: customisation.py:109
+msgid "Customize the look of your family trees."
+msgstr "Tùy chỉnh giao diện cây gia phả của bạn."
+
+#: customisation.py:187
+#, python-brace-format
+msgid ""
+"You can't customise someone else's tree! You can customise your own by "
+"running the {cusomise_command} command :3"
+msgstr ""
+"Bạn không thể tùy chỉnh cây của người khác! Bạn có thể tùy chỉnh cây của "
+"mình bằng cách chạy lệnh {cusomise_command} :3"
+
+#: customisation.py:208
+msgid "Customise your tree"
+msgstr "Tùy chỉnh cây của bạn"
+
+#: customisation.py:213
+msgid "New value"
+msgstr "Giá trị mới"
+
+#: customisation.py:241
+msgid "I don't know what colour that is..."
+msgstr "Tôi không biết đó là màu gì..."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:43 force_commands.py:119 force_commands.py:207
+#: force_commands.py:43 force_commands.py:122 force_commands.py:213
 msgid "user1"
-msgstr ""
+msgstr "người dùng 1"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:45
 msgid "The first user that you want to set up to marry."
-msgstr ""
+msgstr "Người dùng đầu tiên mà bạn muốn thiết lập để kết hôn."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:53 force_commands.py:130 force_commands.py:217
+#: force_commands.py:53 force_commands.py:133 force_commands.py:223
 msgid "user2"
-msgstr ""
+msgstr "người dùng 2"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:55
 msgid "The second user that you want to set up to marry."
-msgstr ""
+msgstr "Người dùng thứ hai mà bạn muốn thiết lập để kết hôn."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr ""
+msgstr "ép kết hôn"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
 msgid "Force two users to marry each other."
-msgstr ""
+msgstr "Buộc hai người dùng phải kết hôn với nhau."
 
-#: force_commands.py:87
+#: force_commands.py:89
 msgid "You can't marry someone to themself :/"
-msgstr ""
+msgstr "Bạn không thể gả ai đó cho chính bản thân họ :/"
 
-#: force_commands.py:99
+#: force_commands.py:101
 #, python-brace-format
 msgid "Done! Married {user1} and {user2} :3"
-msgstr ""
+msgstr "Xong rồi! Đã kết hôn {user1} và {user2} :3"
 
-#: force_commands.py:122
+#: force_commands.py:125
 msgid "The first user that you want to set up to divorce."
-msgstr ""
+msgstr "Người dùng đầu tiên mà bạn muốn thiết lập để ly hôn."
 
-#: force_commands.py:133
+#: force_commands.py:136
 msgid "The second user that you want to set up to divorce."
-msgstr ""
+msgstr "Người dùng thứ hai mà bạn muốn thiết lập để ly hôn."
 
 #. TRANSLATORS: Command name
-#: force_commands.py:138
+#: force_commands.py:141
 msgid "force divorce"
-msgstr ""
+msgstr "buộc ly hôn"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:140
+#: force_commands.py:143
 msgid "Force two users to divorce each other."
-msgstr ""
+msgstr "Buộc hai người dùng phải hủy kết nối với nhau."
 
-#: force_commands.py:187
+#: force_commands.py:193
 #, python-brace-format
 msgid "Done! {user1} and {user2} are now divorced :3"
-msgstr ""
+msgstr "Xong rồi! {user1} và {user2} giờ đã ly hôn rồi :3"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:209
+#: force_commands.py:215
 msgid "The child for the adoption"
-msgstr ""
+msgstr "Đứa trẻ cần được nhận nuôi"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:219
+#: force_commands.py:225
 msgid "The parent for the adoption."
-msgstr ""
+msgstr "Người cha/mẹ trong vụ nhận con nuôi."
 
 #. TRANSLATORS: Command name
-#: force_commands.py:223
+#: force_commands.py:229
 msgid "force adopt"
-msgstr ""
+msgstr "buộc phải áp dụng"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:225
+#: force_commands.py:231
 msgid "Force one user to adopt another."
-msgstr ""
+msgstr "Buộc một người dùng phải sử dụng người dùng khác."
 
-#: force_commands.py:251
+#: force_commands.py:259
 msgid "You can't adopt someone to themself :/"
-msgstr ""
+msgstr "Bạn không thể nhận nuôi ai đó chỉ để họ tự lo cho bản thân :/"
 
-#: force_commands.py:278
+#: force_commands.py:286
 #, python-brace-format
 msgid "Done! {user1} is now a child of {user2} :3"
-msgstr ""
+msgstr "Xong rồi! {user1} giờ là con của {user2} :3"
 
 #. TRANSLATORS: Command option name (/force runaway [user])
+#. TRANSLATORS: Command option name (/relationship [user] [other])
 #. TRANSLATORS: Command option name (/partners [user])
 #. TRANSLATORS: Command option name (/children [user])
 #. TRANSLATORS: Command option name (/parent [user])
@@ -130,666 +158,1111 @@ msgstr ""
 #. TRANSLATORS: Command option name (/punch [user])
 #. TRANSLATORS: Command option name (/bite [user])
 #. TRANSLATORS: Command option name (/slap [user])
-#: force_commands.py:298 information.py:48 information.py:126
-#: information.py:204 information.py:281 information.py:327 information.py:353
-#: marriage.py:40 parents.py:40 parents.py:72 simulation.py:134
-#: simulation.py:169 simulation.py:204 simulation.py:247 simulation.py:282
-#: simulation.py:326
+#: force_commands.py:307 information.py:49 information.py:117
+#: information.py:208 information.py:299 information.py:383 information.py:426
+#: information.py:452 marriage.py:40 parents.py:40 parents.py:72
+#: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247
+#: simulation.py:282 simulation.py:332
 msgid "user"
-msgstr ""
+msgstr "người dùng"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:300
+#: force_commands.py:309
 msgid "The user that you want to force to runaway"
-msgstr ""
+msgstr "Người dùng mà bạn muốn buộc phải rời khỏi"
 
 #. TRANSLATORS: Command name
-#: force_commands.py:304
+#: force_commands.py:313
 msgid "force runaway"
-msgstr ""
+msgstr "chạy trốn"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:306
+#: force_commands.py:315
 msgid "Force a user to runaway from their parent."
-msgstr ""
+msgstr "Buộc một người dùng phải bỏ nhà ra đi."
 
-#: force_commands.py:336
+#: force_commands.py:347
 #, python-brace-format
 msgid "Done! {user} no longer has a parent :3"
-msgstr ""
+msgstr "Xong rồi! {user} không còn thuộc về mục nào nữa :3"
 
 #. TRANSLATORS: Command name
 #: information.py:41
+msgid "relationship"
+msgstr "mối quan hệ"
+
+#. TRANSLATORS: Command description
+#: information.py:43
+msgid "Get the relationship between two users."
+msgstr "Lấy thông tin về mối quan hệ giữa hai người dùng."
+
+#. TRANSLATORS: Command option description (/relationship [user] [other])
+#: information.py:51
+msgid "The first user who you want to check the relation of."
+msgstr "Người dùng đầu tiên mà bạn muốn kiểm tra mối quan hệ."
+
+#. TRANSLATORS: Command option name (/relationship [user] [other])
+#: information.py:58
+msgid "other"
+msgstr "khác"
+
+#. TRANSLATORS: Command option description (/relationship [user] [other])
+#: information.py:60
+msgid "The second user who you want to compare the first to."
+msgstr "Người dùng thứ hai mà bạn muốn so sánh với người dùng thứ nhất."
+
+#: information.py:92
+#, python-brace-format
+msgid "**{user}** is not related to **{other}**."
+msgstr "**{user}** không liên quan đến **{other}**."
+
+#: information.py:102
+#, python-brace-format
+msgid "**{user}** is **{other}**'s **{relation}**."
+msgstr "**{user}** là **{relation}** của **{other}**."
+
+#. TRANSLATORS: Command name
+#: information.py:110
 msgid "partners"
-msgstr ""
+msgstr "những đối tác"
 
 #. TRANSLATORS: Command option name description (/partners [user])
-#: information.py:50
+#: information.py:119
 msgid "The user whose partners you want to see."
-msgstr ""
+msgstr "Người dùng mà bạn muốn xem danh sách bạn đời của họ."
 
 #. TRANSLATORS: Command description
-#: information.py:55
+#: information.py:124
 msgid "Shows you a list of partners for a user."
-msgstr ""
+msgstr "Hiển thị danh sách các đối tác của một người dùng."
 
-#: information.py:85 marriage.py:84
+#: information.py:156 marriage.py:86
 msgid "You don't have any partners right now :<"
-msgstr ""
+msgstr "Hiện tại bạn chưa có bạn đời :<"
 
-#: information.py:89
+#: information.py:163
 #, python-brace-format
 msgid "{user} doesn't have any partners right now :<"
-msgstr ""
+msgstr "{user} hiện tại chưa có bạn đời :<"
 
-#: information.py:99
+#: information.py:176
 #, python-brace-format
 msgid "{user} is married to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user} đã kết hôn với **{partner}** ({timestamp})."
 
-#: information.py:111
+#: information.py:191
 #, python-brace-format
 msgid "{user} is married to:"
-msgstr ""
+msgstr "{user} đã kết hôn với:"
 
 #. TRANSLATORS: Command name
-#: information.py:119
+#: information.py:201
 msgid "children"
-msgstr ""
+msgstr "trẻ em"
 
 #. TRANSLATORS: Command option name description (/children [user])
-#: information.py:128
+#: information.py:210
 msgid "The user whose children you want to see."
-msgstr ""
+msgstr "Người dùng mà bạn muốn xem thông tin về con cái của họ."
 
 #. TRANSLATORS: Command description
-#: information.py:133
+#: information.py:215
 msgid "Shows you a list of children for a user."
-msgstr ""
+msgstr "Hiển thị danh sách các tài khoản con của một người dùng."
 
-#: information.py:163 parents.py:110 parents.py:148
+#: information.py:247 parents.py:111 parents.py:153
 msgid "You don't have any children right now :<"
-msgstr ""
+msgstr "Hiện tại bạn chưa có con :<"
 
-#: information.py:167
+#: information.py:254
 #, python-brace-format
 msgid "{user} doesn't have any children right now :<"
-msgstr ""
+msgstr "{user} hiện tại chưa có con :<"
 
-#: information.py:177
+#: information.py:267
 #, python-brace-format
 msgid "{user} is parent to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user} là phần tử cha của **{partner}** ({timestamp})."
 
-#: information.py:189
+#: information.py:282
 #, python-brace-format
 msgid "{user} is parent to:"
-msgstr ""
+msgstr "{user} là phần tử cha của:"
 
 #. TRANSLATORS: Command name
-#: information.py:197
+#: information.py:292
 msgid "parent"
-msgstr ""
+msgstr "phụ huynh"
 
 #. TRANSLATORS: Command option name description (/parent [user])
-#: information.py:206
+#: information.py:301
 msgid "The user whose parent you want to see."
-msgstr ""
+msgstr "Người dùng mà bạn muốn xem thông tin cha mẹ của họ."
 
 #. TRANSLATORS: Command description
-#: information.py:211
+#: information.py:306
 msgid "Show you the parent for a user."
-msgstr ""
+msgstr "Hiển thị thông tin cha mẹ của một người dùng."
 
-#: information.py:237
+#: information.py:334
 msgid "You don't have a parent right now :<"
-msgstr ""
+msgstr "Hiện tại bạn không có bố mẹ :<"
 
-#: information.py:241
+#: information.py:341
 #, python-brace-format
 msgid "{user} doesn't have a parent right now :<"
-msgstr ""
+msgstr "{user} hiện tại không có cha mẹ :<"
 
-#: information.py:249
+#: information.py:351
 #, python-brace-format
 msgid "{user}'s parent is **{parent}** ({timestamp})."
-msgstr ""
+msgstr "Bố mẹ của {user} là **{parent}** ({timestamp})."
 
 #. TRANSLATORS: Command option description (/familysize [user])
-#: information.py:283
+#: information.py:385
 msgid "The user who you want to see the family size of."
-msgstr ""
+msgstr "Người dùng mà bạn muốn xem quy mô gia đình của họ."
 
 #. TRANSLATORS: Command name (/familysize)
-#: information.py:288
+#: information.py:390
 msgid "familysize"
-msgstr ""
+msgstr "kích cỡ gia đình"
 
 #. TRANSLATORS: Command description (/familysize)
-#: information.py:290
+#: information.py:392
 msgid "Get the family size of another user."
-msgstr ""
+msgstr "Lấy thông tin về quy mô gia đình của một người dùng khác."
 
-#: information.py:312
+#: information.py:411
 #, python-brace-format
-msgid "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives."
-msgid_plural "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives."
+msgid ""
+"There is **{number}** person in {user}'s family tree, including all blood "
+"and non-blood relatives."
+msgid_plural ""
+"There are **{number}** people in {user}'s family tree, including all blood "
+"and non-blood relatives."
 msgstr[0] ""
+"Trong cây gia phả của {user} có **{number}** người, bao gồm cả họ hàng ruột "
+"thịt và họ hàng không ruột thịt."
 
 #. TRANSLATORS: Command name (/tree)
-#: information.py:320
+#: information.py:419
 msgid "tree"
-msgstr ""
+msgstr "cây"
 
-#: information.py:328 information.py:354
+#: information.py:427 information.py:453
 msgid "The user whose tree you want to see."
-msgstr ""
+msgstr "Người dùng mà bạn muốn xem cây của họ."
 
-#: information.py:332
+#: information.py:431
 msgid "Show your family tree, but only blood relatives :3"
 msgstr ""
+"Hãy chia sẻ cây gia phả của bạn, nhưng chỉ bao gồm những người thân ruột "
+"thịt thôi nhé :3"
 
 #. TRANSLATORS: Command name (/fulltree)
-#: information.py:346
+#: information.py:445
 msgid "fulltree"
-msgstr ""
+msgstr "cây toàn phần"
 
-#: information.py:358
+#: information.py:457
 msgid "Show your entire family tree, including non-blood relatives :3"
 msgstr ""
+"Hãy hiển thị toàn bộ cây gia phả của bạn, bao gồm cả những người không có "
+"quan hệ huyết thống :3"
 
-#: information.py:373 subscriber_commands.py:47
+#: information.py:472 subscriber_commands.py:47
 #, python-brace-format
-msgid "You need to be a higher tier subscriber to run this command! You can still use {non_perks_command} though :3"
+msgid ""
+"You need to be a higher tier subscriber to run this command! You can still "
+"use {non_perks_command} though :3"
 msgstr ""
+"Bạn cần phải là thành viên cấp cao hơn mới có thể thực hiện lệnh này! Tuy "
+"nhiên, bạn vẫn có thể sử dụng {non_perks_command} :3"
 
-#: information.py:401
+#: information.py:501
 msgid "You have no family to put into a tree .-."
-msgstr ""
+msgstr "Bạn không có người thân nào để thêm vào cây gia phả cả .-."
 
-#: information.py:405
+#: information.py:508
 #, python-brace-format
 msgid "{user} has no family to put into a tree .-."
-msgstr ""
+msgstr "{user} không có gia đình nào để đưa vào cây gia phả .-."
 
-#: information.py:477
-msgid "I couldn't send your family tree image - please try again in a few minutes."
+#: information.py:578
+msgid ""
+"I couldn't send your family tree image - please try again in a few minutes."
 msgstr ""
+"Tôi không thể gửi hình ảnh cây gia phả của bạn - vui lòng thử lại sau vài "
+"phút."
 
-#: information.py:481
+#: information.py:587
 #, python-brace-format
-msgid "[Click here]({url}) to customise your tree."
+msgid ""
+"Use {fulltree} for your *entire* family, including non-blood relatives.\n"
+"Use {customize} to change how your tree looks."
 msgstr ""
-
-#: information.py:485
-#, python-brace-format
-msgid "Use {fulltree} for your *entire* family, including non-blood relatives."
-msgstr ""
+"Sử dụng {fulltree} cho *toàn bộ* gia đình của bạn, bao gồm cả những người "
+"không có quan hệ huyết thống.\n"
+"Sử dụng {customize} để thay đổi giao diện của cây gia phả."
 
 #. TRANSLATORS: Command name
 #: marriage.py:33
 msgid "marry"
-msgstr ""
+msgstr "kết hôn"
 
 #. TRANSLATORS: Command option name description (/marry user)
 #: marriage.py:42
 msgid "The user that you want to marry."
-msgstr ""
+msgstr "Người dùng mà bạn muốn kết hôn."
 
 #. TRANSLATORS: Command description
 #: marriage.py:46
 msgid "Propose to another user."
-msgstr ""
+msgstr "Gửi lời mời kết bạn đến một người dùng khác."
 
 #: marriage.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to marry you! What do you say?"
-msgstr ""
+msgstr "Này {user}, {author} muốn cưới bạn đấy! Bạn nghĩ sao?"
 
 #. TRANSLATORS: Command name
 #: marriage.py:64
 msgid "divorce"
-msgstr ""
+msgstr "ly hôn"
 
 #. TRANSLATORS: Command description
 #: marriage.py:66
 msgid "Divorce one of your partners."
-msgstr ""
+msgstr "Ly hôn với một trong hai người bạn đời của bạn."
 
-#: marriage.py:89
+#: marriage.py:94
 msgid "Which of your partners do you want to divorce?"
-msgstr ""
+msgstr "Bạn muốn ly hôn với người bạn đời nào?"
 
-#: marriage.py:116 parents.py:180 proposal_handler.py:47
+#: marriage.py:123 parents.py:185 proposal_handler.py:48
 msgid "You cannot interact with these buttons."
-msgstr ""
+msgstr "Bạn không thể tương tác với các nút này."
 
-#: marriage.py:133 marriage.py:141
+#: marriage.py:142 marriage.py:153
 #, python-brace-format
 msgid "You have been divorced from {user} :("
+msgstr "Bạn đã ly hôn với {user} :("
+
+#. TRANSLATORS: Command name
+#: misc.py:32
+msgid "info"
+msgstr "thông tin"
+
+#. TRANSLATORS: Command description
+#: misc.py:34
+msgid "Give you information about the bot."
+msgstr "Cung cấp cho bạn thông tin về bot."
+
+#: misc.py:44
+msgid ""
+"MarriageBot is a bot that allows users to marry, divorce, and have children "
+"with other users. It also features a unique family tree system that allows "
+"users to view their family history and relationships.\n"
+"-# MarriageBot is being maintained by [Voxel Fox](https://voxelfox.co.uk)."
 msgstr ""
+"MarriageBot là một bot cho phép người dùng kết hôn, ly hôn và sinh con với "
+"những người dùng khác. Ứng dụng này còn sở hữu một hệ thống gia phả độc đáo, "
+"giúp người dùng xem lịch sử gia đình và các mối quan hệ của mình.\n"
+"-# MarriageBot hiện đang được duy trì bởi [Voxel Fox](https://voxelfox.co."
+"uk)."
+
+#: misc.py:52
+msgid "Family Tree Members"
+msgstr "Các thành viên trong gia phả"
+
+#: misc.py:62 misc.py:176
+msgid "Donate"
+msgstr "Ủng hộ"
+
+#: misc.py:67
+msgid "Support Server"
+msgstr "Máy chủ hỗ trợ"
+
+#. TRANSLATORS: Command name
+#: misc.py:81
+msgid "perks"
+msgstr "lợi ích"
+
+#. TRANSLATORS: Command description
+#: misc.py:83
+msgid "Give you information about the bot's premium perks."
+msgstr "Cung cấp cho bạn thông tin về các đặc quyền cao cấp của bot."
+
+#. TRANSLATORS: Command name
+#: misc.py:94
+msgid "donate"
+msgstr "đóng góp"
+
+#. TRANSLATORS: Command description
+#: misc.py:96
+msgid "Give you information about the bot's donation options."
+msgstr "Cung cấp cho bạn thông tin về các tùy chọn quyên góp của bot."
+
+#: misc.py:112
+msgid "Support MarriageBot"
+msgstr "Hỗ trợ MarriageBot"
+
+#: misc.py:114
+msgid ""
+"If you enjoy MarriageBot, please consider donating to support its ongoing "
+"maintainance, development, and hosting costs.\n"
+"MarriageBot isn't a small bot by any means, and keeping it going requires a "
+"lot of time and resources behind the scenes."
+msgstr ""
+"Nếu bạn thích MarriageBot, xin hãy cân nhắc đóng góp để hỗ trợ chi phí duy "
+"trì, phát triển và lưu trữ của nó.\n"
+"MarriageBot không phải là một bot nhỏ, và việc duy trì hoạt động của nó đòi "
+"hỏi rất nhiều thời gian và nguồn lực phía sau hậu trường."
+
+#: misc.py:120
+msgid "Donation Perks"
+msgstr "Quyền lợi khi đóng góp"
+
+#: misc.py:122
+#, python-brace-format
+msgid ""
+"By supporting MarriageBot, you gain access to exclusive perks depending on "
+"your subscription level:\n"
+"* Default\n"
+"  * 5 children\n"
+"  * 1 partner\n"
+"* T1\n"
+"  * 10 children\n"
+"  * 2 partners\n"
+"  * Access to {disownall_c}\n"
+"* T2\n"
+"  * 15 children\n"
+"  * 4 partners\n"
+"  * Access to {disownall_c}\n"
+"  * Access to {fulltree_c}\n"
+"* T3\n"
+"  * 20 children\n"
+"  * 8 partners\n"
+"  * Access to {disownall_c}\n"
+"  * Access to {fulltree_c}\n"
+"In addition, you can buy MarriageBot Gold for your server, which lets your "
+"server have its own family tree, and gives you access to the force "
+"commands!\n"
+"* Default\n"
+"  * Global tree\n"
+"* Gold\n"
+"  * Server-specific tree\n"
+"  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, "
+"{forceadopt_c}, {forcerunaway_c})\n"
+"  * Access to {incest_c}\n"
+"  * T3 perks for all of your server members\n"
+msgstr ""
+"Khi ủng hộ MarriageBot, bạn sẽ được hưởng các đặc quyền độc quyền tùy theo "
+"gói đăng ký của mình:\n"
+"* Gói Cơ bản\n"
+"  * 5 con\n"
+"  * 1 người bạn đời\n"
+"* Gói T1\n"
+"  * 10 con\n"
+"  * 2 người bạn đời\n"
+"  * Quyền truy cập vào {disownall_c}\n"
+"* Gói T2\n"
+"  * 15 con\n"
+"  * 4 người bạn đời\n"
+"  * Quyền truy cập vào {disownall_c}\n"
+"  * Quyền truy cập vào {fulltree_c}\n"
+"* T3\n"
+"  * 20 con\n"
+"  * 8 đối tác\n"
+"  * Quyền truy cập vào {disownall_c}\n"
+"  * Quyền truy cập vào {fulltree_c}\n"
+"Ngoài ra, bạn có thể mua MarriageBot Gold cho máy chủ của mình, điều này cho "
+"phép máy chủ của bạn có cây gia phả riêng và cung cấp quyền truy cập vào các "
+"lệnh điều khiển!\n"
+"* Mặc định\n"
+"  * Cây gia phả toàn cầu\n"
+"* Gold\n"
+"  * Cây gia phả riêng cho máy chủ\n"
+"  * Quyền truy cập vào các lệnh force ({forcedivorce_c}, {forcemarry_c}, "
+"{forceadopt_c}, {forcerunaway_c})\n"
+"  * Quyền truy cập vào {incest_c}\n"
+"  * Các đặc quyền T3 cho tất cả thành viên máy chủ của bạn\n"
+
+#: misc.py:162
+msgid "How to Support"
+msgstr "Cách ủng hộ"
+
+#: misc.py:164
+msgid ""
+"Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox."
+"co.uk/portal/marriagebot) :3"
+msgstr ""
+"Bạn có thể đăng ký tại [trang web Voxel Fox](https://voxelfox.co.uk/portal/"
+"marriagebot) :3"
+
+#: misc.py:169
+msgid "Thank you for considering supporting MarriageBot!"
+msgstr "Cảm ơn bạn đã cân nhắc ủng hộ MarriageBot!"
 
 #. TRANSLATORS: Command name
 #: parents.py:33
 msgid "adopt"
-msgstr ""
+msgstr "áp dụng"
 
 #. TRANSLATORS: Command option name description (/adopt user)
 #: parents.py:42
 msgid "The user that you want to adopt."
-msgstr ""
+msgstr "Người dùng mà bạn muốn nhận làm con nuôi."
 
 #. TRANSLATORS: Command description
 #: parents.py:46
 msgid "Ask to adopt another user."
-msgstr ""
+msgstr "Yêu cầu nhận người dùng khác làm bạn."
 
 #: parents.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to adopt you! What do you say?"
-msgstr ""
+msgstr "Này {user}, {author} muốn nhận nuôi bạn đấy! Bạn thấy sao?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr ""
+msgstr "tạo đối tượng cha"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
 msgid "The user that you want to make into your parent."
-msgstr ""
+msgstr "Người dùng mà bạn muốn chỉ định làm người quản lý của mình."
 
 #. TRANSLATORS: Command description
 #: parents.py:78
 msgid "Ask to make another user into your parent."
-msgstr ""
+msgstr "Yêu cầu chỉ định một người dùng khác làm người giám hộ của bạn."
 
 #: parents.py:90
 #, python-brace-format
 msgid "Hey {user}, {author} wants you to be their parent! What do you say?"
-msgstr ""
+msgstr "Này {user}, {author} muốn bạn làm cha mẹ của họ đấy! Bạn thấy sao?"
 
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr ""
+msgstr "bỏ trốn"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
 msgid "Run away from your parent."
-msgstr ""
+msgstr "Hãy bỏ nhà đi."
 
-#: parents.py:121
+#: parents.py:123
 #, python-brace-format
 msgid "You have run away from {user} :("
-msgstr ""
+msgstr "Bạn đã bỏ chạy khỏi {user} :("
 
 #. TRANSLATORS: Command name
-#: parents.py:128
+#: parents.py:132
 msgid "disown"
-msgstr ""
+msgstr "phủ nhận"
 
 #. TRANSLATORS: Command description
-#: parents.py:130
+#: parents.py:134
 msgid "Disown one of your children."
-msgstr ""
+msgstr "Từ bỏ một trong những đứa con của bạn."
 
-#: parents.py:153
+#: parents.py:158
 msgid "Which of your children do you want to disown?"
-msgstr ""
+msgstr "Bạn muốn từ bỏ đứa con nào?"
 
-#: parents.py:197 parents.py:205
+#: parents.py:204 parents.py:215
 #, python-brace-format
 msgid "You have now disowned {user} :("
-msgstr ""
+msgstr "Bạn vừa hủy theo dõi {user} :("
 
-#: proposal_handler.py:54
+#: proposal_handler.py:55
 msgid "You can no longer respond to this message."
-msgstr ""
+msgstr "Bạn không thể trả lời tin nhắn này nữa."
 
-#: proposal_handler.py:66
+#: proposal_handler.py:67
 msgid "You can't accept your own proposal!"
-msgstr ""
+msgstr "Bạn không thể chấp nhận đề xuất của chính mình!"
 
-#: proposal_handler.py:77
+#: proposal_handler.py:79
 #, python-brace-format
 msgid "Alright, {author}, your proposal to {user} has been cancelled :)"
-msgstr ""
+msgstr "Được rồi, {author}, lời đề nghị của bạn gửi đến {user} đã bị hủy :)"
 
-#: proposal_handler.py:90
+#: proposal_handler.py:95
 #, python-brace-format
 msgid "Sorry, {author}, {user} said no to your proposal :<"
-msgstr ""
+msgstr "Xin lỗi, {author}, {user} đã từ chối đề xuất của bạn :<"
 
-#: proposal_handler.py:115
+#: proposal_handler.py:122
 #, python-brace-format
 msgid "Welcome {user}! You're now married to {author} :3c"
-msgstr ""
+msgstr "Chào mừng {user}! Giờ bạn đã kết hôn với {author} :3c"
 
-#: proposal_handler.py:116
+#: proposal_handler.py:123
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the child of {author} :3c"
 msgstr ""
+"Chào mừng gia nhập gia đình, {user}! Giờ đây, bạn đã trở thành con của "
+"{author} :3c"
 
-#: proposal_handler.py:117
+#: proposal_handler.py:124
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the parent of {author} :3c"
 msgstr ""
+"Chào mừng gia nhập đại gia đình, {user}! Giờ đây, bạn đã trở thành cha mẹ "
+"của {author} :3c"
+
+#. TRANSLATORS: Command name
+#: settings.py:35
+msgid "transfer-gold"
+msgstr "chuyển vàng"
+
+#. TRANSLATORS: Command description
+#: settings.py:37
+msgid "Transfer your MarriageBot Gold purchase to this server."
+msgstr "Chuyển giao giao dịch mua MarriageBot Gold của bạn sang máy chủ này."
+
+#: settings.py:59
+msgid "You haven't purchased any instances of MarriageBot Gold!"
+msgstr "Bạn chưa mua bất kỳ gói MarriageBot Gold nào!"
+
+#: settings.py:64
+msgid "MarriageBot Gold has already been purchased for this server!"
+msgstr "MarriageBot Gold đã được mua cho máy chủ này!"
+
+#: settings.py:89
+msgid ""
+"I'm going to transfer your MarriageBot Gold purchase into **this server**. "
+"Which server would you like to transfer your Gold purchase *from*?"
+msgstr ""
+"Tôi sẽ chuyển số Vàng MarriageBot mà bạn đã mua sang **máy chủ này**. Bạn "
+"muốn chuyển số Vàng đó *từ* máy chủ nào?"
+
+#: settings.py:96
+msgid "Select a server"
+msgstr "Chọn máy chủ"
+
+#: settings.py:123
+msgid "You cannot transfer someone else's MarriageBot Gold purchase!"
+msgstr "Bạn không thể chuyển nhượng gói MarriageBot Gold mà người khác đã mua!"
+
+#: settings.py:141
+#, python-brace-format
+msgid ""
+"You didn't purchase the Gold subscription that's active in **{guild_name}**"
+msgstr "Bạn chưa mua gói đăng ký Gold đang hoạt động tại **{guild_name}**"
+
+#: settings.py:166
+msgid "There was an error transferring your MarriageBot Gold purchase."
+msgstr ""
+"Đã xảy ra lỗi trong quá trình chuyển khoản thanh toán gói MarriageBot Gold "
+"của bạn."
+
+#: settings.py:184
+#, python-brace-format
+msgid ""
+"Your MarriageBot Gold purchase has been transferred to this server! You can "
+"now run the {command_ping} command to activate it here :3"
+msgstr ""
+"Giao dịch mua MarriageBot Gold của bạn đã được chuyển sang máy chủ này! Giờ "
+"đây, bạn có thể nhập lệnh {command_ping} để kích hoạt nó tại đây :3"
+
+#: settings.py:203
+msgid "Gold has not been purchased for this guild."
+msgstr "Hội này chưa mua vàng."
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:219 settings.py:324 settings.py:394
+msgid "Enabled"
+msgstr "Bật"
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:225 settings.py:330 settings.py:400
+msgid "Disabled"
+msgstr "Vô hiệu hóa"
+
+#. TRANSLATORS: Command name
+#: settings.py:233
+msgid "guild-settings guild-specific-families"
+msgstr "cài đặt bang hội các gia tộc riêng của bang hội"
+
+#. TRANSLATORS: Command description
+#: settings.py:235
+msgid "Set whether or not guild-specific families are enabled for this guild."
+msgstr ""
+"Đặt tùy chọn bật hoặc tắt các gia đình riêng của bang hội cho bang hội này."
+
+#: settings.py:244
+msgid ""
+"This command cannot be run on the Gold version of MarriageBot. The regular "
+"version of MarriageBot now allows you to toggle between guild-specific "
+"families and global families.\n"
+"\n"
+"To use this command, please change over to the regular version of "
+"MarriageBot and run this command."
+msgstr ""
+"Lệnh này không thể thực thi trên phiên bản Gold của MarriageBot. Phiên bản "
+"tiêu chuẩn của MarriageBot hiện cho phép bạn chuyển đổi giữa các gia đình "
+"riêng của bang hội và các gia đình toàn cầu.\n"
+"\n"
+"Để sử dụng lệnh này, vui lòng chuyển sang phiên bản tiêu chuẩn của "
+"MarriageBot và thực thi lệnh này."
+
+#: settings.py:263
+msgid ""
+"You can only switch to guild-specific families (and thus use the `/force` "
+"and `/incest` commands, enable polygamy for everyone in your server, and "
+"increase your child count) after you have purchased MarriageBot Gold."
+msgstr ""
+"Bạn chỉ có thể chuyển sang các gia đình dành riêng cho bang hội (và do đó sử "
+"dụng các lệnh `/force` và `/incest`, kích hoạt chế độ đa thê cho tất cả mọi "
+"người trên máy chủ của bạn, cũng như tăng số lượng con cái) sau khi đã mua "
+"MarriageBot Gold."
+
+#: settings.py:295
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **enabled** in this guild, and you can now "
+"use the force commands.\n"
+"Please note that this is a completely seperate tree than the global "
+"MarriageBot tree.\n"
+"\n"
+"You can switch back to the global tree by using the {guild_specific_command} "
+"command :3"
+msgstr ""
+"Các gia đình riêng của bang hội hiện đã được **kích hoạt** trong bang hội "
+"này, và bạn có thể sử dụng các lệnh liên quan đến gia đình.\n"
+"Xin lưu ý rằng đây là một hệ thống hoàn toàn riêng biệt so với hệ thống "
+"MarriageBot toàn server.\n"
+"\n"
+"Bạn có thể chuyển trở lại hệ thống toàn server bằng cách sử dụng lệnh "
+"{guild_specific_command} :3"
+
+#: settings.py:304
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **disabled** in this guild. You are now "
+"switched back to the global MarriageBot tree.\n"
+"\n"
+"You can switch back to your guild-specific tree by using the "
+"{guild_specific_command} command :3"
+msgstr ""
+"Các gia đình dành riêng cho bang hội hiện đã bị **vô hiệu hóa** trong bang "
+"hội này. Bạn hiện đã được chuyển trở lại cây gia đình chung của "
+"MarriageBot.\n"
+"\n"
+"Bạn có thể chuyển trở lại cây gia đình dành riêng cho bang hội của mình bằng "
+"cách sử dụng lệnh {guild_specific_command} :3"
+
+#. TRANSLATORS: Command name
+#: settings.py:338
+msgid "guild-settings incest"
+msgstr "cài đặt bang hội loạn luân"
+
+#. TRANSLATORS: Command description
+#: settings.py:340
+msgid "Set whether or not incest is enabled for this guild."
+msgstr ""
+"Đặt tùy chọn cho phép hay không cho phép quan hệ loạn luân trong bang hội "
+"này."
+
+#: settings.py:352
+msgid "This command can only be run with MarriageBot Gold enabled!"
+msgstr ""
+"Lệnh này chỉ có thể được thực thi khi MarriageBot Gold đã được kích hoạt!"
+
+#: settings.py:373
+#, python-brace-format
+msgid ""
+"Incest is now **enabled** in this guild.\n"
+"\n"
+"Please note that this only applies to your guild-specific tree - if "
+"{guild_specific_command} is enabled."
+msgstr ""
+"Hiện tại, tính năng loạn luân đã được **bật** trong bang hội này.\n"
+"\n"
+"Xin lưu ý rằng điều này chỉ áp dụng cho cây kỹ năng riêng của bang hội bạn — "
+"nếu {guild_specific_command} đã được bật."
+
+#: settings.py:378
+msgid "Incest is now **disabled** in this guild."
+msgstr "Hiện tại, tính năng **Incest** đã bị vô hiệu hóa trong bang hội này."
+
+#. TRANSLATORS: Command name
+#: settings.py:408
+msgid "guild-settings simulation-gifs"
+msgstr "cài đặt bang hội - ảnh động mô phỏng"
+
+#. TRANSLATORS: Command description
+#: settings.py:410
+msgid "Set whether or not simulation GIFs are enabled in this guild."
+msgstr "Đặt tùy chọn bật hoặc tắt các ảnh GIF mô phỏng trong bang hội này."
+
+#: settings.py:431
+msgid "GIFs for the simulation commands are now **enabled**."
+msgstr "Tính năng GIF cho các lệnh mô phỏng hiện đã được **bật**."
+
+#: settings.py:433
+msgid "GIFs for the simulation commands are now **disabled**."
+msgstr "Các tệp GIF cho các lệnh mô phỏng hiện đã bị **vô hiệu hóa**."
 
 #. TRANSLATORS: Command option description (/hug [user])
 #: simulation.py:136
 msgid "The user you want to hug."
-msgstr ""
+msgstr "Người dùng mà bạn muốn ôm."
 
 #. TRANSLATORS: Command name (/hug)
 #: simulation.py:140
 msgid "hug"
-msgstr ""
+msgstr "ôm"
 
 #. TRANSLATORS: Command description (/hug)
 #: simulation.py:142
 msgid "Hug another user."
-msgstr ""
+msgstr "Hãy ôm một người dùng khác."
 
 #: simulation.py:155
 msgid "*You hug yourself... and start crying.*"
-msgstr ""
+msgstr "*Bạn ôm lấy chính mình... rồi bắt đầu khóc.*"
 
 #: simulation.py:158
 #, python-brace-format
 msgid "*Hugs {user}.*"
-msgstr ""
+msgstr "*Ôm {user}.*"
 
 #. TRANSLATORS: Command option description (/kiss [user])
 #: simulation.py:171
 msgid "The user you want to kiss."
-msgstr ""
+msgstr "Người dùng mà bạn muốn hôn."
 
 #. TRANSLATORS: Command name (/kiss)
 #: simulation.py:175
 msgid "kiss"
-msgstr ""
+msgstr "nụ hôn"
 
 #. TRANSLATORS: Command description (/kiss)
 #: simulation.py:177
 msgid "Kiss another user."
-msgstr ""
+msgstr "Hôn một người dùng khác."
 
 #: simulation.py:190
 msgid "How would you even manage to do that?"
-msgstr ""
+msgstr "Làm sao bạn có thể làm được điều đó chứ?"
 
 #: simulation.py:193
 #, python-brace-format
 msgid "*Kisses {user}.*"
-msgstr ""
+msgstr "*Những nụ hôn {user}.*"
 
 #. TRANSLATORS: Command option description (/stab [user])
 #: simulation.py:206
 msgid "The user you want to stab."
-msgstr ""
+msgstr "Người dùng mà bạn muốn đâm."
 
 #. TRANSLATORS: Command name (/stab)
 #: simulation.py:210
 msgid "stab"
-msgstr ""
+msgstr "đâm"
 
 #. TRANSLATORS: Command description (/stab)
 #: simulation.py:212
 msgid "Stab another user."
-msgstr ""
+msgstr "Đâm một người dùng khác."
 
 #: simulation.py:225
 msgid "*You stab yourself.*"
-msgstr ""
+msgstr "*Bạn tự đâm mình.*"
 
 #: simulation.py:226 simulation.py:233
 msgid "Looks like you don't have a knife, oops!"
-msgstr ""
+msgstr "Có vẻ như bạn không có dao, ôi trời!"
 
 #: simulation.py:227
-msgid "No."
-msgstr ""
+msgid "I'd rather you didn't stab yourself, really."
+msgstr "Thật lòng mà nói, tớ không muốn cậu tự đâm mình đâu."
 
 #: simulation.py:230
 #, python-brace-format
 msgid "*You stab {user}.*"
-msgstr ""
+msgstr "*Bạn đâm {user}.*"
 
 #: simulation.py:231
 #, python-brace-format
 msgid "*{user} has been stabbed.*"
-msgstr ""
+msgstr "*{user} đã bị đâm.*"
 
 #: simulation.py:232
 #, python-brace-format
 msgid "*stabs {user}.*"
-msgstr ""
+msgstr "*đâm {user}.*"
 
 #: simulation.py:234
 msgid "You can't legally stab someone without their consent."
 msgstr ""
+"Theo pháp luật, bạn không được phép đâm ai đó nếu không có sự đồng ý của họ."
 
 #: simulation.py:235
 msgid "Stab? Isn't that, like, illegal?"
-msgstr ""
+msgstr "Đâm người? Chuyện đó không phải là phạm pháp sao?"
 
 #: simulation.py:236
 msgid "I wouldn't recommend doing that tbh."
-msgstr ""
+msgstr "Thành thật mà nói, tôi không khuyên bạn nên làm thế đâu."
 
 #. TRANSLATORS: Command option description (/punch [user])
 #: simulation.py:249
 msgid "The user you want to punch."
-msgstr ""
+msgstr "Người dùng mà bạn muốn đấm."
 
 #. TRANSLATORS: Command name (/punch)
 #: simulation.py:253
 msgid "punch"
-msgstr ""
+msgstr "cú đấm"
 
 #. TRANSLATORS: Command description (/punch)
 #: simulation.py:255
 msgid "Punch another user."
-msgstr ""
+msgstr "Đánh một người dùng khác."
 
 #: simulation.py:268
 msgid "*You punched yourself... for some reason.*"
-msgstr ""
+msgstr "*Bạn đã tự đấm mình... không hiểu vì lý do gì.*"
 
 #: simulation.py:271
 #, python-brace-format
 msgid "*Punches {user} right in the nose.*"
-msgstr ""
+msgstr "*Đấm {user} thẳng vào mũi.*"
 
 #. TRANSLATORS: Command option description (/bite [user])
 #: simulation.py:284
 msgid "The user you want to bite."
-msgstr ""
+msgstr "Người dùng mà bạn muốn \"cắn\"."
 
 #. TRANSLATORS: Command name (/bite)
 #: simulation.py:288
 msgid "bite"
-msgstr ""
+msgstr "cắn"
 
 #. TRANSLATORS: Command description (/bite)
 #: simulation.py:290
 msgid "Bite another user."
-msgstr ""
+msgstr "Cắn một người dùng khác."
 
 #: simulation.py:303
 msgid "*You missed and bit yourself! Loser.*"
-msgstr ""
+msgstr "*Mày bắn trượt rồi tự cắn vào tay mình! Thằng thua cuộc.*"
 
 #: simulation.py:304
 #, python-brace-format
 msgid "*You failed to bite {user}!*"
-msgstr ""
+msgstr "*Bạn đã không cắn {user}!*"
 
 #: simulation.py:305
 msgid "*You thought! You bit yourself.*"
-msgstr ""
+msgstr "*Cậu nghĩ thế à! Cậu tự cắn mình rồi.*"
 
 #: simulation.py:306
 msgid "*We'll act like you didn't just bite yourself.*"
-msgstr ""
+msgstr "*Chúng tôi sẽ giả vờ như thể bạn vừa không cắn vào tay mình vậy.*"
 
-#: simulation.py:309
+#: simulation.py:309 simulation.py:318
 #, python-brace-format
 msgid "*You bite {user}.*"
-msgstr ""
+msgstr "*Bạn cắn {user}.*"
 
-#: simulation.py:310
+#: simulation.py:310 simulation.py:319
 #, python-brace-format
 msgid "*Bites {user}.*"
-msgstr ""
+msgstr "*Cắn {user}.*"
 
-#: simulation.py:311
+#: simulation.py:311 simulation.py:320
 #, python-brace-format
 msgid "*{user} was bitten.*"
-msgstr ""
+msgstr "*{user} đã bị cắn.*"
 
-#: simulation.py:312
+#: simulation.py:312 simulation.py:321
 #, python-brace-format
 msgid "*{user} has been bitten.*"
-msgstr ""
+msgstr "*{user} đã bị cắn.*"
 
 #: simulation.py:313
 msgid "Why would you bite someone?"
-msgstr ""
+msgstr "Tại sao bạn lại cắn người khác?"
 
 #: simulation.py:314
 msgid "Biting people isn’t nice."
-msgstr ""
+msgstr "Cắn người là không tốt."
 
 #: simulation.py:315
 msgid "Stop biting people!"
-msgstr ""
+msgstr "Đừng cắn người nữa!"
 
 #. TRANSLATORS: Command option description (/slap [user])
-#: simulation.py:328
+#: simulation.py:334
 msgid "The user you want to slap."
-msgstr ""
+msgstr "Người dùng mà bạn muốn tát."
 
 #. TRANSLATORS: Command name (/slap)
-#: simulation.py:332
+#: simulation.py:338
 msgid "slap"
-msgstr ""
+msgstr "tát"
 
 #. TRANSLATORS: Command description (/slap)
-#: simulation.py:334
+#: simulation.py:340
 msgid "Slap another user."
-msgstr ""
+msgstr "Tát một người dùng khác."
 
-#: simulation.py:347
+#: simulation.py:353
 msgid "*You slapped yourself... for some reason.*"
-msgstr ""
+msgstr "*Bạn đã tát vào mặt mình... không hiểu vì lý do gì.*"
 
-#: simulation.py:350
+#: simulation.py:356
 #, python-brace-format
 msgid "*Slaps {user}.*"
-msgstr ""
+msgstr "*Tát {user}.*"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr ""
+msgstr "từ chối tất cả"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35
 msgid "Disown all of your children at once."
-msgstr ""
+msgstr "Hãy từ bỏ tất cả các con của bạn cùng một lúc."
 
 #: subscriber_commands.py:61
 msgid "Done! You no longer have any children :3"
-msgstr ""
+msgstr "Xong rồi! Bạn không còn con cái nào nữa :3"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:67
 msgid "abandon"
-msgstr ""
+msgstr "bỏ rơi"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:69
 msgid "Remove all of your family members at once."
-msgstr ""
+msgstr "Xóa tất cả các thành viên trong gia đình của bạn cùng một lúc."
 
 #: subscriber_commands.py:83
 #, python-brace-format
-msgid "You need to be a higher tier subscriber to run this command! You can still use {divorce}, {disown}, and {runaway} though :3"
+msgid ""
+"You need to be a higher tier subscriber to run this command! You can still "
+"use {divorce}, {disown}, and {runaway} though :3"
 msgstr ""
+"Bạn cần phải là thành viên cấp cao hơn để thực hiện lệnh này! Tuy nhiên, bạn "
+"vẫn có thể sử dụng {divorce}, {disown} và {runaway} :3"
 
 #: subscriber_commands.py:100
 msgid "Done! You no longer have any family members :3"
-msgstr ""
+msgstr "Xong rồi! Bạn không còn người thân nào nữa :3"
 
 #: utils/proposal_lock.py:65
-msgid "You can't run this on yourself :/"
-msgstr ""
+msgid "You're already married!"
+msgstr "Bạn đã kết hôn rồi!"
 
-#: utils/proposal_lock.py:73
-msgid "You can't run this on bots :/"
-msgstr ""
-
-#: utils/proposal_lock.py:82
-msgid "You're already waiting on a proposal."
-msgstr ""
-
-#: utils/proposal_lock.py:88
+#: utils/proposal_lock.py:77
 #, python-brace-format
-msgid "{user} is already waiting on a proposal."
-msgstr ""
+msgid ""
+"You already have a partner! You can't have any more right now. {user} is at "
+"their partner limit as well :<"
+msgid_plural ""
+"You already have {count} partners! You can't have any more right now. {user} "
+"is at their partner limit as well :<"
+msgstr[0] ""
+"Bạn đã có bạn đồng hành rồi! Hiện tại bạn không thể có thêm ai nữa. {user} "
+"cũng đã đạt đến giới hạn số lượng bạn đồng hành rồi :<"
 
-#: utils/proposal_lock.py:116
+#: utils/proposal_lock.py:92
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
-msgid_plural "You already have {count} partners! You can't have any more right now :<"
-msgstr[0] ""
+msgid_plural ""
+"You already have {count} partners! You can't have any more right now :<"
+msgstr[0] "Bạn đã có bạn đời rồi! Hiện tại bạn không thể có thêm ai nữa đâu :<"
 
-#: utils/proposal_lock.py:127
+#: utils/proposal_lock.py:108
 #, python-brace-format
 msgid "{user} already has a partner! They can't have any more right now :<"
-msgid_plural "{user} already has {count} partners! They can't have any more right now :<"
-msgstr[0] ""
+msgid_plural ""
+"{user} already has {count} partners! They can't have any more right now :<"
+msgstr[0] "{user} đã có bạn đời rồi! Hiện tại họ không thể có thêm ai nữa :<"
 
-#: utils/proposal_lock.py:139
+#: utils/proposal_lock.py:136
+msgid "You're already their parent!"
+msgstr "Bạn đã là cha mẹ của các con rồi!"
+
+#: utils/proposal_lock.py:143
 #, python-brace-format
 msgid "{user} already has a parent! They can only have one!"
-msgstr ""
+msgstr "{user} đã có cha mẹ rồi! Chúng chỉ có thể có một người thôi!"
 
-#: utils/proposal_lock.py:162
+#: utils/proposal_lock.py:186
+msgid "They're already your parent!"
+msgstr "Họ đã là cha mẹ của bạn rồi!"
+
+#: utils/proposal_lock.py:192
 msgid "You already have a parent! You can only have one!"
-msgstr ""
+msgstr "Con đã có bố mẹ rồi! Con chỉ có thể có một người thôi!"
 
-#: utils/proposal_lock.py:184
+#: utils/proposal_lock.py:253
+msgid "You can't run this on yourself :/"
+msgstr "Bạn không thể tự mình làm điều này được :/"
+
+#: utils/proposal_lock.py:261
+msgid "You can't run this on bots :/"
+msgstr "Bạn không thể chạy chương trình này trên bot :/"
+
+#: utils/proposal_lock.py:270
+msgid "You're already waiting on a proposal."
+msgstr "Bạn đang chờ đợi một đề xuất."
+
+#: utils/proposal_lock.py:276
+#, python-brace-format
+msgid "{user} is already waiting on a proposal."
+msgstr "{user} đang chờ đề xuất."
+
+#: utils/proposal_lock.py:345
 #, python-brace-format
 msgid "You and {user} are already related!"
-msgstr ""
+msgstr "Bạn và {user} đã có quan hệ họ hàng rồi!"
 
-#: utils/proposal_lock.py:213
+#: utils/proposal_lock.py:375
 #, python-brace-format
-msgid "You can't do that! If your families combine, you'd have over {family_size} members in your tree!"
+msgid ""
+"You can't do that! If your families combine, you'd have over {family_size} "
+"members in your tree!"
 msgstr ""
+"Bạn không thể làm thế! Nếu hai gia đình hợp lại, cây gia phả của bạn sẽ có "
+"hơn {family_size} thành viên!"
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:230
+#: utils/proposal_lock.py:403
 msgid "Yes"
-msgstr ""
+msgstr "Có"
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:236
+#: utils/proposal_lock.py:409
 msgid "No"
-msgstr ""
+msgstr "Không"
 
-#: utils/proposal_lock.py:247
+#: utils/proposal_lock.py:421
 #, python-brace-format
 msgid "Sorry, {author}, your proposal to {user} has timed out!"
 msgstr ""
+"Xin lỗi, {author}, đề xuất của bạn gửi đến {user} đã hết thời gian chờ!"
 
-#: utils/utils.py:126
+#: utils/utils.py:199
 msgid "Get MarriageBot Gold"
-msgstr ""
+msgstr "Nhận MarriageBot Gold"
 
-#: utils/utils.py:130
+#: utils/utils.py:203
 msgid "Get MarriageBot perks"
-msgstr ""
+msgstr "Nhận các ưu đãi từ MarriageBot"
 
+#: utils/utils.py:220
+msgid "Enable Gold"
+msgstr "Kích hoạt Gold"

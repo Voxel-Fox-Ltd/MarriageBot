@@ -3,14 +3,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2026-04-25 21:08+0100\n"
-"PO-Revision-Date: 2026-04-25 21:26+0100\n"
+"PO-Revision-Date: 2026-04-25 21:23+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: \n"
-"Language: tr\n"
+"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: ../plugins\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -18,12 +18,12 @@ msgstr ""
 #. TRANSLATORS: Command name
 #: customisation.py:107
 msgid "customize-tree"
-msgstr "ağacı özelleştir"
+msgstr "sesuaikan-pohon"
 
 #. TRANSLATORS: Command description
 #: customisation.py:109
 msgid "Customize the look of your family trees."
-msgstr "Aile ağaçlarınızın görünümünü özelleştirin."
+msgstr "Sesuaikan tampilan silsilah keluarga Anda."
 
 #: customisation.py:187
 #, python-brace-format
@@ -31,115 +31,115 @@ msgid ""
 "You can't customise someone else's tree! You can customise your own by "
 "running the {cusomise_command} command :3"
 msgstr ""
-"Başka birinin ağacını özelleştiremezsin! {cusomise_command} komutunu "
-"kullanarak kendi ağacını özelleştirebilirsin :3"
+"Kamu tidak bisa menyesuaikan pohon milik orang lain! Kamu bisa menyesuaikan "
+"pohonmu sendiri dengan menjalankan perintah {cusomise_command} :3"
 
 #: customisation.py:208
 msgid "Customise your tree"
-msgstr "Ağacını kişiselleştir"
+msgstr "Sesuaikan pohon Anda"
 
 #: customisation.py:213
 msgid "New value"
-msgstr "Yeni Değer"
+msgstr "Nilai baru"
 
 #: customisation.py:241
 msgid "I don't know what colour that is..."
-msgstr "O rengin ne olduğunu bilmiyorum..."
+msgstr "Aku nggak tahu warna apa itu..."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
 #: force_commands.py:43 force_commands.py:122 force_commands.py:213
 msgid "user1"
-msgstr "kullanıcı1"
+msgstr "pengguna1"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:45
 msgid "The first user that you want to set up to marry."
-msgstr "Evlendirmek istediğiniz ilk kullanıcı."
+msgstr "Pengguna pertama yang ingin Anda atur untuk menikah."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
 #: force_commands.py:53 force_commands.py:133 force_commands.py:223
 msgid "user2"
-msgstr "kullanıcı2"
+msgstr "pengguna2"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:55
 msgid "The second user that you want to set up to marry."
-msgstr "Evlendirmek istediğiniz ikinci kullanıcı."
+msgstr "Pengguna kedua yang ingin Anda atur untuk menikah."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr "zorla evlendirmek"
+msgstr "dipaksa menikah"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
 msgid "Force two users to marry each other."
-msgstr "İki kullanıcıyı birbirleriyle evlenmeye zorla."
+msgstr "Memaksa dua pengguna untuk menikah satu sama lain."
 
 #: force_commands.py:89
 msgid "You can't marry someone to themself :/"
-msgstr "Birini kendisiyle evlendiremezsin :/"
+msgstr "Kamu nggak bisa menikahkan seseorang dengan dirinya sendiri :/"
 
 #: force_commands.py:101
 #, python-brace-format
 msgid "Done! Married {user1} and {user2} :3"
-msgstr "Tamam! Evli {user1} ve {user2} :3"
+msgstr "Selesai! Menikah {user1} dan {user2} :3"
 
 #: force_commands.py:125
 msgid "The first user that you want to set up to divorce."
-msgstr "Boşanmak üzere ayarlamak istediğiniz ilk kullanıcı."
+msgstr "Pengguna pertama yang ingin Anda atur untuk dicabut aksesnya."
 
 #: force_commands.py:136
 msgid "The second user that you want to set up to divorce."
-msgstr "Boşanmak üzere ayarlamak istediğiniz ikinci kullanıcı."
+msgstr "Pengguna kedua yang ingin Anda atur untuk dicabut aksesnya."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:141
 msgid "force divorce"
-msgstr "zorla boşanma"
+msgstr "memaksa perceraian"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:143
 msgid "Force two users to divorce each other."
-msgstr "İki kullanıcının birbirinden ayrılmasını sağla."
+msgstr "Memaksa dua pengguna untuk berpisah."
 
 #: force_commands.py:193
 #, python-brace-format
 msgid "Done! {user1} and {user2} are now divorced :3"
-msgstr "Bitti! {user1} ve {user2} artık boşandı :3"
+msgstr "Selesai! {user1} dan {user2} kini sudah bercerai :3"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:215
 msgid "The child for the adoption"
-msgstr "Evlat edinilecek çocuk"
+msgstr "Anak yang akan diadopsi"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:225
 msgid "The parent for the adoption."
-msgstr "Evlat edinme işleminde ebeveyn."
+msgstr "Orang tua yang mengadopsi."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:229
 msgid "force adopt"
-msgstr "zorla kabul ettirmek"
+msgstr "memaksa untuk mengadopsi"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:231
 msgid "Force one user to adopt another."
-msgstr "Bir kullanıcıyı başka bir kullanıcıyı benimsemeye zorla."
+msgstr "Memaksa satu pengguna untuk menggunakan yang lain."
 
 #: force_commands.py:259
 msgid "You can't adopt someone to themself :/"
-msgstr "Birini kendisine evlat edinemem :/"
+msgstr "Kamu nggak bisa mengadopsi seseorang untuk dirinya sendiri :/"
 
 #: force_commands.py:286
 #, python-brace-format
 msgid "Done! {user1} is now a child of {user2} :3"
-msgstr "Tamam! {user1} artık {user2}'in alt öğesi :3"
+msgstr "Selesai! {user1} sekarang menjadi anak dari {user2} :3"
 
 #. TRANSLATORS: Command option name (/force runaway [user])
 #. TRANSLATORS: Command option name (/relationship [user] [other])
@@ -164,174 +164,174 @@ msgstr "Tamam! {user1} artık {user2}'in alt öğesi :3"
 #: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247
 #: simulation.py:282 simulation.py:332
 msgid "user"
-msgstr "kullanıcı"
+msgstr "pengguna"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:309
 msgid "The user that you want to force to runaway"
-msgstr "Kaçmasını sağlamak istediğiniz kullanıcı"
+msgstr "Pengguna yang ingin Anda paksa untuk keluar"
 
 #. TRANSLATORS: Command name
 #: force_commands.py:313
 msgid "force runaway"
-msgstr "zorla kaçış"
+msgstr "lari kencang"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:315
 msgid "Force a user to runaway from their parent."
-msgstr "Bir kullanıcıyı ailesinden kaçmaya zorlamak."
+msgstr "Memaksa seorang pengguna untuk kabur dari orang tuanya."
 
 #: force_commands.py:347
 #, python-brace-format
 msgid "Done! {user} no longer has a parent :3"
-msgstr "Bitti! {user} artık üst öğesi yok :3"
+msgstr "Selesai! {user} tidak lagi memiliki induk :3"
 
 #. TRANSLATORS: Command name
 #: information.py:41
 msgid "relationship"
-msgstr "ilişki"
+msgstr "hubungan"
 
 #. TRANSLATORS: Command description
 #: information.py:43
 msgid "Get the relationship between two users."
-msgstr "İki kullanıcı arasındaki ilişkiyi al."
+msgstr "Peroleh hubungan antara dua pengguna."
 
 #. TRANSLATORS: Command option description (/relationship [user] [other])
 #: information.py:51
 msgid "The first user who you want to check the relation of."
-msgstr "İlişkisini kontrol etmek istediğiniz ilk kullanıcı."
+msgstr "Pengguna pertama yang ingin Anda periksa hubungannya."
 
 #. TRANSLATORS: Command option name (/relationship [user] [other])
 #: information.py:58
 msgid "other"
-msgstr "diğer"
+msgstr "lainnya"
 
 #. TRANSLATORS: Command option description (/relationship [user] [other])
 #: information.py:60
 msgid "The second user who you want to compare the first to."
-msgstr "İlk kullanıcıyla karşılaştırmak istediğiniz ikinci kullanıcı."
+msgstr "Pengguna kedua yang ingin Anda bandingkan dengan pengguna pertama."
 
 #: information.py:92
 #, python-brace-format
 msgid "**{user}** is not related to **{other}**."
-msgstr "**{user}**, **{other}** ile ilgisi yoktur."
+msgstr "**{user}** tidak ada hubungannya dengan **{other}**."
 
 #: information.py:102
 #, python-brace-format
 msgid "**{user}** is **{other}**'s **{relation}**."
-msgstr "**{user}**, **{other}**'in **{relation}**'sidir."
+msgstr "**{user}** adalah **{relation}** milik **{other}**."
 
 #. TRANSLATORS: Command name
 #: information.py:110
 msgid "partners"
-msgstr "partners"
+msgstr "mitra"
 
 #. TRANSLATORS: Command option name description (/partners [user])
 #: information.py:119
 msgid "The user whose partners you want to see."
-msgstr "Ortaklarını görmek istediğiniz kullanıcı."
+msgstr "Pengguna yang pasangan-pasangannya ingin Anda lihat."
 
 #. TRANSLATORS: Command description
 #: information.py:124
 msgid "Shows you a list of partners for a user."
-msgstr "Bir kullanıcıya ait ortakların listesini gösterir."
+msgstr "Menampilkan daftar mitra untuk seorang pengguna."
 
 #: information.py:156 marriage.py:86
 msgid "You don't have any partners right now :<"
-msgstr "Şu anda hiç partnerin yok :<"
+msgstr "Saat ini kamu belum punya pasangan :<"
 
 #: information.py:163
 #, python-brace-format
 msgid "{user} doesn't have any partners right now :<"
-msgstr "{user}'ın şu anda hiç partneri yok :<"
+msgstr "{user} saat ini belum punya pasangan :<"
 
 #: information.py:176
 #, python-brace-format
 msgid "{user} is married to **{partner}** ({timestamp})."
-msgstr "{user}, **{partner}** ({timestamp}) ile evlidir."
+msgstr "{user} menikah dengan **{partner}** ({timestamp})."
 
 #: information.py:191
 #, python-brace-format
 msgid "{user} is married to:"
-msgstr "{user} şu kişiyle evlidir:"
+msgstr "{user} menikah dengan:"
 
 #. TRANSLATORS: Command name
 #: information.py:201
 msgid "children"
-msgstr "çocuk"
+msgstr "anak"
 
 #. TRANSLATORS: Command option name description (/children [user])
 #: information.py:210
 msgid "The user whose children you want to see."
-msgstr "Çocuklarını görmek istediğiniz kullanıcı."
+msgstr "Pengguna yang anak-anaknya ingin Anda lihat."
 
 #. TRANSLATORS: Command description
 #: information.py:215
 msgid "Shows you a list of children for a user."
-msgstr "Bir kullanıcının alt öğelerinin listesini gösterir."
+msgstr "Menampilkan daftar anak-anak dari seorang pengguna."
 
 #: information.py:247 parents.py:111 parents.py:153
 msgid "You don't have any children right now :<"
-msgstr "Şu anda çocuğun yok :<"
+msgstr "Kamu belum punya anak saat ini :<"
 
 #: information.py:254
 #, python-brace-format
 msgid "{user} doesn't have any children right now :<"
-msgstr "{user}'ın şu anda çocuğu yok :<"
+msgstr "{user} saat ini belum punya anak :<"
 
 #: information.py:267
 #, python-brace-format
 msgid "{user} is parent to **{partner}** ({timestamp})."
-msgstr "{user}, **{partner}** ({timestamp})'nin üst öğesidir."
+msgstr "{user} adalah induk dari **{partner}** ({timestamp})."
 
 #: information.py:282
 #, python-brace-format
 msgid "{user} is parent to:"
-msgstr "{user} şunların üst öğesidir:"
+msgstr "{user} adalah induk dari:"
 
 #. TRANSLATORS: Command name
 #: information.py:292
 msgid "parent"
-msgstr "bayii"
+msgstr "Induk"
 
 #. TRANSLATORS: Command option name description (/parent [user])
 #: information.py:301
 msgid "The user whose parent you want to see."
-msgstr "Görmek istediğiniz kişinin ebeveyni olan kullanıcı."
+msgstr "Pengguna yang orang tuanya ingin Anda lihat."
 
 #. TRANSLATORS: Command description
 #: information.py:306
 msgid "Show you the parent for a user."
-msgstr "Bir kullanıcının üst öğesini göster."
+msgstr "Menampilkan orang tua dari seorang pengguna."
 
 #: information.py:334
 msgid "You don't have a parent right now :<"
-msgstr "Şu anda annen ya da baban yok :<"
+msgstr "Kamu sedang tidak punya orang tua saat ini :<"
 
 #: information.py:341
 #, python-brace-format
 msgid "{user} doesn't have a parent right now :<"
-msgstr "{user}'ın şu anda üst öğesi yok :<"
+msgstr "{user} saat ini tidak memiliki orang tua :<"
 
 #: information.py:351
 #, python-brace-format
 msgid "{user}'s parent is **{parent}** ({timestamp})."
-msgstr "{user}'ın üst öğesi **{parent}**'dir ({timestamp})."
+msgstr "Orang tua dari {user} adalah **{parent}** ({timestamp})."
 
 #. TRANSLATORS: Command option description (/familysize [user])
 #: information.py:385
 msgid "The user who you want to see the family size of."
-msgstr "Aile büyüklüğünü öğrenmek istediğiniz kullanıcı."
+msgstr "Pengguna yang ingin Anda ketahui jumlah anggota keluarganya."
 
 #. TRANSLATORS: Command name (/familysize)
 #: information.py:390
 msgid "familysize"
-msgstr "aile boyu"
+msgstr "ukuran keluarga"
 
 #. TRANSLATORS: Command description (/familysize)
 #: information.py:392
 msgid "Get the family size of another user."
-msgstr "Başka bir kullanıcının aile büyüklüğünü öğren."
+msgstr "Lihat jumlah anggota keluarga pengguna lain."
 
 #: information.py:411
 #, python-brace-format
@@ -342,35 +342,32 @@ msgid_plural ""
 "There are **{number}** people in {user}'s family tree, including all blood "
 "and non-blood relatives."
 msgstr[0] ""
-"{user}'in aile ağacında, hem kan bağı olan hem de olmayan tüm akrabalar "
-"dahil olmak üzere **{number}** kişi bulunmaktadır."
-msgstr[1] ""
-"{user}'in aile ağacında, hem kan bağı olan hem de olmayan tüm akrabalar "
-"dahil olmak üzere **{number}** kişi bulunmaktadır."
+"Ada **{number}** orang dalam silsilah keluarga {user}, termasuk semua "
+"kerabat kandung dan non-kandung."
 
 #. TRANSLATORS: Command name (/tree)
 #: information.py:419
 msgid "tree"
-msgstr "ağaç"
+msgstr "pohon"
 
 #: information.py:427 information.py:453
 msgid "The user whose tree you want to see."
-msgstr "Ağacını görmek istediğiniz kullanıcı."
+msgstr "Pengguna yang pohonnya ingin Anda lihat."
 
 #: information.py:431
 msgid "Show your family tree, but only blood relatives :3"
-msgstr "Aile ağacını göster, ama sadece kan bağı olan akrabaları :3"
+msgstr "Tampilkan silsilah keluargamu, tapi hanya kerabat sedarah :3"
 
 #. TRANSLATORS: Command name (/fulltree)
 #: information.py:445
 msgid "fulltree"
-msgstr "tam ağaç"
+msgstr "pohon lengkap"
 
 #: information.py:457
 msgid "Show your entire family tree, including non-blood relatives :3"
 msgstr ""
-"Kan bağı olmayan akrabalar da dahil olmak üzere tüm aile ağacınızı "
-"gösterin :3"
+"Tampilkan silsilah keluarga Anda secara lengkap, termasuk kerabat yang tidak "
+"memiliki hubungan darah :3"
 
 #: information.py:472 subscriber_commands.py:47
 #, python-brace-format
@@ -378,23 +375,26 @@ msgid ""
 "You need to be a higher tier subscriber to run this command! You can still "
 "use {non_perks_command} though :3"
 msgstr ""
-"Bu komutu çalıştırmak için daha üst düzey bir abone olmanız gerekiyor! Yine "
-"de {non_perks_command}'ı kullanabilirsiniz :3"
+"Kamu harus menjadi pelanggan tingkat yang lebih tinggi untuk menjalankan "
+"perintah ini! Tapi kamu tetap bisa menggunakan {non_perks_command} kok :3"
 
 #: information.py:501
 msgid "You have no family to put into a tree .-."
-msgstr "Aile ağacına ekleyecek bir ailen yok .-."
+msgstr "Kamu tidak punya keluarga untuk dimasukkan ke dalam pohon silsilah .-."
 
 #: information.py:508
 #, python-brace-format
 msgid "{user} has no family to put into a tree .-."
-msgstr "{user}'ın aile ağacına ekleyecek bir ailesi yok .-."
+msgstr ""
+"{user} tidak memiliki keluarga yang bisa dimasukkan ke dalam pohon "
+"silsilah .-."
 
 #: information.py:578
 msgid ""
 "I couldn't send your family tree image - please try again in a few minutes."
 msgstr ""
-"Soy ağacı resminizi gönderemedim; lütfen birkaç dakika sonra tekrar deneyin."
+"Saya tidak bisa mengirim gambar silsilah keluarga Anda — silakan coba lagi "
+"beberapa menit lagi."
 
 #: information.py:587
 #, python-brace-format
@@ -402,62 +402,62 @@ msgid ""
 "Use {fulltree} for your *entire* family, including non-blood relatives.\n"
 "Use {customize} to change how your tree looks."
 msgstr ""
-"Kan bağı olmayan akrabalar da dahil olmak üzere *tüm* aileniz için "
-"{fulltree}'ı seçin.\n"
-"Aile ağacınızın görünümünü değiştirmek için {customize}'i seçin."
+"Gunakan {fulltree} untuk *seluruh* keluarga Anda, termasuk kerabat yang "
+"tidak memiliki hubungan darah.\n"
+"Gunakan {customize} untuk mengubah tampilan pohon silsilah Anda."
 
 #. TRANSLATORS: Command name
 #: marriage.py:33
 msgid "marry"
-msgstr "evlenmek"
+msgstr "menikah"
 
 #. TRANSLATORS: Command option name description (/marry user)
 #: marriage.py:42
 msgid "The user that you want to marry."
-msgstr "Evlenmek istediğiniz kullanıcı."
+msgstr "Pengguna yang ingin Anda nikahi."
 
 #. TRANSLATORS: Command description
 #: marriage.py:46
 msgid "Propose to another user."
-msgstr "Başka bir kullanıcıya evlenme teklifi et."
+msgstr "Ajukan permintaan pertemanan kepada pengguna lain."
 
 #: marriage.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to marry you! What do you say?"
-msgstr "Selam {user}, {author} seninle evlenmek istiyor! Ne dersin?"
+msgstr "Hai {user}, {author} ingin menikahimu! Bagaimana menurutmu?"
 
 #. TRANSLATORS: Command name
 #: marriage.py:64
 msgid "divorce"
-msgstr "boşanma"
+msgstr "perceraian"
 
 #. TRANSLATORS: Command description
 #: marriage.py:66
 msgid "Divorce one of your partners."
-msgstr "Ortaklarınızdan biriyle boşanın."
+msgstr "Berpisahlah dengan salah satu pasanganmu."
 
 #: marriage.py:94
 msgid "Which of your partners do you want to divorce?"
-msgstr "Eşlerinizden hangisiyle boşanmak istiyorsunuz?"
+msgstr "Pasangan mana yang ingin Anda cerai?"
 
 #: marriage.py:123 parents.py:185 proposal_handler.py:48
 msgid "You cannot interact with these buttons."
-msgstr "Bu düğmelerle etkileşim kuramazsınız."
+msgstr "Anda tidak dapat mengoperasikan tombol-tombol ini."
 
 #: marriage.py:142 marriage.py:153
 #, python-brace-format
 msgid "You have been divorced from {user} :("
-msgstr "{user}'dan boşandınız :("
+msgstr "Anda telah bercerai dari {user} :("
 
 #. TRANSLATORS: Command name
 #: misc.py:32
 msgid "info"
-msgstr "bilgi"
+msgstr "info"
 
 #. TRANSLATORS: Command description
 #: misc.py:34
 msgid "Give you information about the bot."
-msgstr "Size bot hakkında bilgi vermek."
+msgstr "Memberikan informasi tentang bot tersebut."
 
 #: misc.py:44
 msgid ""
@@ -466,48 +466,47 @@ msgid ""
 "users to view their family history and relationships.\n"
 "-# MarriageBot is being maintained by [Voxel Fox](https://voxelfox.co.uk)."
 msgstr ""
-"MarriageBot, kullanıcıların diğer kullanıcılarla evlenmelerine, "
-"boşanmalarına ve çocuk sahibi olmalarına olanak tanıyan bir bottur. Ayrıca, "
-"kullanıcıların aile geçmişlerini ve akrabalık ilişkilerini görüntülemelerini "
-"sağlayan benzersiz bir soy ağacı sistemine sahiptir.\n"
-"-# MarriageBot, [Voxel Fox](https://voxelfox.co.uk) tarafından "
-"yönetilmektedir."
+"MarriageBot adalah bot yang memungkinkan pengguna untuk menikah, bercerai, "
+"dan memiliki anak dengan pengguna lain. Bot ini juga dilengkapi dengan "
+"sistem silsilah keluarga yang unik, yang memungkinkan pengguna untuk melihat "
+"riwayat keluarga dan hubungan mereka.\n"
+"-# MarriageBot dikelola oleh [Voxel Fox](https://voxelfox.co.uk)."
 
 #: misc.py:52
 msgid "Family Tree Members"
-msgstr "Aile Ağacı Üyeleri"
+msgstr "Anggota Silsilah Keluarga"
 
 #: misc.py:62 misc.py:176
 msgid "Donate"
-msgstr "Bağış"
+msgstr "Donasi"
 
 #: misc.py:67
 msgid "Support Server"
-msgstr "Destek Sunucusu"
+msgstr "Server Dukungan"
 
 #. TRANSLATORS: Command name
 #: misc.py:81
 msgid "perks"
-msgstr "ayrıcalıklar"
+msgstr "keuntungan"
 
 #. TRANSLATORS: Command description
 #: misc.py:83
 msgid "Give you information about the bot's premium perks."
-msgstr "Size botun premium avantajları hakkında bilgi vermek."
+msgstr "Memberikan informasi mengenai fitur-fitur premium bot ini."
 
 #. TRANSLATORS: Command name
 #: misc.py:94
 msgid "donate"
-msgstr "bağış"
+msgstr "berdonasi"
 
 #. TRANSLATORS: Command description
 #: misc.py:96
 msgid "Give you information about the bot's donation options."
-msgstr "Size botun bağış seçenekleri hakkında bilgi vermek."
+msgstr "Memberikan informasi mengenai opsi donasi bot ini."
 
 #: misc.py:112
 msgid "Support MarriageBot"
-msgstr "MarriageBot'u Destekleyin"
+msgstr "Dukung MarriageBot"
 
 #: misc.py:114
 msgid ""
@@ -516,14 +515,14 @@ msgid ""
 "MarriageBot isn't a small bot by any means, and keeping it going requires a "
 "lot of time and resources behind the scenes."
 msgstr ""
-"MarriageBot'u beğendiyseniz, botun bakım, geliştirme ve barındırma "
-"masraflarını karşılamak için bağış yapmayı lütfen düşünün.\n"
-"MarriageBot hiçbir şekilde küçük bir bot değildir ve onu çalışır durumda "
-"tutmak, perde arkasında çok fazla zaman ve kaynak gerektirir."
+"Jika Anda menyukai MarriageBot, mohon pertimbangkan untuk memberikan donasi "
+"guna mendukung biaya pemeliharaan, pengembangan, dan hostingnya.\n"
+"MarriageBot bukanlah bot yang kecil, dan untuk menjaganya tetap berjalan "
+"dibutuhkan banyak waktu dan sumber daya di balik layar."
 
 #: misc.py:120
 msgid "Donation Perks"
-msgstr "Bağış Avantajları"
+msgstr "Keuntungan dari Donasi"
 
 #: misc.py:122
 #, python-brace-format
@@ -559,204 +558,210 @@ msgid ""
 "  * Access to {incest_c}\n"
 "  * T3 perks for all of your server members\n"
 msgstr ""
-"MarriageBot'u destekleyerek, abonelik seviyenize bağlı olarak özel "
-"avantajlardan yararlanabilirsiniz:\n"
-"* Standart\n"
-"  * 5 çocuk\n"
-"  * 1 eş\n"
+"Dengan mendukung MarriageBot, Anda akan mendapatkan akses ke keuntungan "
+"eksklusif sesuai dengan tingkat langganan Anda:\n"
+"* Default\n"
+"  * 5 anak\n"
+"  * 1 pasangan\n"
 "* T1\n"
-"  * 10 çocuk\n"
-"  * 2 eş\n"
-"  * {disownall_c}'a erişim\n"
+"  * 10 anak\n"
+"  * 2 pasangan\n"
+"  * Akses ke {disownall_c}\n"
 "* T2\n"
-"  * 15 çocuk\n"
-"  * 4 eş\n"
-"  * {disownall_c}'e erişim\n"
-"  * {fulltree_c}'ye erişim\n"
+"  * 15 anak\n"
+"  * 4 pasangan\n"
+"  * Akses ke {disownall_c}\n"
+"  * Akses ke {fulltree_c}\n"
 "* T3\n"
-"  * 20 çocuk\n"
-"  * 8 eş\n"
-"  * {disownall_c}'e erişim\n"
-"  * {fulltree_c}'e erişim\n"
-"Ayrıca, sunucunuz için MarriageBot Gold satın alabilirsiniz. Bu, sunucunuzun "
-"kendi aile ağacına sahip olmasını sağlar ve size zorlama komutlarına erişim "
-"hakkı verir!\n"
-"* Varsayılan\n"
-"  * Genel ağaç\n"
+"  * 20 anak\n"
+"  * 8 pasangan\n"
+"  * Akses ke {disownall_c}\n"
+"  * Akses ke {fulltree_c}\n"
+"Selain itu, Anda dapat membeli MarriageBot Gold untuk server Anda, yang "
+"memungkinkan server Anda memiliki pohon keluarga sendiri, dan memberi Anda "
+"akses ke perintah force!\n"
+"* Default\n"
+"  * Pohon global\n"
 "* Gold\n"
-"  * Sunucuya özel ağaç\n"
-"  * Zorlama komutlarına erişim ({forcedivorce_c}, {forcemarry_c}, "
+"  * Pohon khusus server\n"
+"  * Akses ke perintah force ({forcedivorce_c}, {forcemarry_c}, "
 "{forceadopt_c}, {forcerunaway_c})\n"
-"  * {incest_c}'a erişim\n"
-"  * Tüm sunucu üyeleriniz için T3 avantajları\n"
+"  * Akses ke {incest_c}\n"
+"  * Keuntungan T3 untuk semua anggota server Anda\n"
 
 #: misc.py:162
 msgid "How to Support"
-msgstr "Nasıl Destek Olunur?"
+msgstr "Cara Memberikan Dukungan"
 
 #: misc.py:164
 msgid ""
 "Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox."
 "co.uk/portal/marriagebot) :3"
 msgstr ""
-"Abonelikler [Voxel Fox web sitesinden](https://voxelfox.co.uk/portal/"
-"marriagebot) alınabilir :3"
+"Anda dapat berlangganan di [situs web Voxel Fox](https://voxelfox.co.uk/"
+"portal/marriagebot) :3"
 
 #: misc.py:169
 msgid "Thank you for considering supporting MarriageBot!"
-msgstr "MarriageBot'a destek olmayı düşündüğünüz için teşekkür ederiz!"
+msgstr "Terima kasih telah mempertimbangkan untuk mendukung MarriageBot!"
 
 #. TRANSLATORS: Command name
 #: parents.py:33
 msgid "adopt"
-msgstr "benimsemek"
+msgstr "mengadopsi"
 
 #. TRANSLATORS: Command option name description (/adopt user)
 #: parents.py:42
 msgid "The user that you want to adopt."
-msgstr "Evlat edinmek istediğiniz kullanıcı."
+msgstr "Pengguna yang ingin Anda adopsi."
 
 #. TRANSLATORS: Command description
 #: parents.py:46
 msgid "Ask to adopt another user."
-msgstr "Başka bir kullanıcıyı evlat edinmek istediğini belirt."
+msgstr "Minta izin untuk mengadopsi pengguna lain."
 
 #: parents.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to adopt you! What do you say?"
-msgstr "Selam {user}, {author} seni evlat edinmek istiyor! Ne dersin?"
+msgstr "Hai {user}, {author} ingin mengadopsimu! Bagaimana menurutmu?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr "üst öğeyi oluştur"
+msgstr "buat orang tua"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
 msgid "The user that you want to make into your parent."
-msgstr "Ebeveyn olarak belirlemek istediğiniz kullanıcı."
+msgstr "Pengguna yang ingin Anda jadikan sebagai orang tua."
 
 #. TRANSLATORS: Command description
 #: parents.py:78
 msgid "Ask to make another user into your parent."
-msgstr "Başka bir kullanıcıyı ebeveynin olarak belirlemesini isteyin."
+msgstr "Mintalah agar pengguna lain dijadikan orang tua Anda."
 
 #: parents.py:90
 #, python-brace-format
 msgid "Hey {user}, {author} wants you to be their parent! What do you say?"
-msgstr "Selam {user}, {author} senin ebeveyni olmanı istiyor! Ne dersin?"
+msgstr ""
+"Hai {user}, {author} ingin kamu menjadi orang tuanya! Bagaimana menurutmu?"
 
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr "kaçak"
+msgstr "yang kabur"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
 msgid "Run away from your parent."
-msgstr "Ailenizden kaçın."
+msgstr "Lari dari orang tuamu."
 
 #: parents.py:123
 #, python-brace-format
 msgid "You have run away from {user} :("
-msgstr "{user}'dan kaçtın :("
+msgstr "Kamu telah melarikan diri dari {user} :("
 
 #. TRANSLATORS: Command name
 #: parents.py:132
 msgid "disown"
-msgstr "reddetmek"
+msgstr "menyangkal"
 
 #. TRANSLATORS: Command description
 #: parents.py:134
 msgid "Disown one of your children."
-msgstr "Çocuklarınızdan birini reddet."
+msgstr "Menyangkal salah satu anakmu."
 
 #: parents.py:158
 msgid "Which of your children do you want to disown?"
-msgstr "Çocuklarından hangisini reddetmek istiyorsun?"
+msgstr "Anakmu yang mana yang ingin kamu tolak?"
 
 #: parents.py:204 parents.py:215
 #, python-brace-format
 msgid "You have now disowned {user} :("
-msgstr "Artık {user}'ı reddettin :("
+msgstr "Kamu sekarang sudah membatalkan pengikut {user} :("
 
 #: proposal_handler.py:55
 msgid "You can no longer respond to this message."
-msgstr "Artık bu mesaja yanıt veremezsiniz."
+msgstr "Anda tidak dapat lagi membalas pesan ini."
 
 #: proposal_handler.py:67
 msgid "You can't accept your own proposal!"
-msgstr "Kendi teklifini kabul edemezsin!"
+msgstr "Kamu tidak boleh menerima proposalmu sendiri!"
 
 #: proposal_handler.py:79
 #, python-brace-format
 msgid "Alright, {author}, your proposal to {user} has been cancelled :)"
-msgstr "Tamam, {author}, {user}'e yaptığın teklif iptal edildi :)"
+msgstr "Baiklah, {author}, lamaranmu kepada {user} telah dibatalkan :)"
 
 #: proposal_handler.py:95
 #, python-brace-format
 msgid "Sorry, {author}, {user} said no to your proposal :<"
-msgstr "Üzgünüm, {author}, {user} teklifini reddetti :<"
+msgstr "Maaf, {author}, {user} menolak proposalmu :<"
 
 #: proposal_handler.py:122
 #, python-brace-format
 msgid "Welcome {user}! You're now married to {author} :3c"
-msgstr "Hoş geldin {user}! Artık {author} ile evlisin :3c"
+msgstr "Selamat datang {user}! Kamu sekarang sudah menikah dengan {author} :3c"
 
 #: proposal_handler.py:123
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the child of {author} :3c"
-msgstr "Ailemize hoş geldin, {user}! Artık {author}'in çocuğusun :3c"
+msgstr ""
+"Selamat bergabung di keluarga, {user}! Sekarang kamu sudah menjadi anak dari "
+"{author} :3c"
 
 #: proposal_handler.py:124
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the parent of {author} :3c"
-msgstr "Ailemize hoş geldin, {user}! Artık {author}'in ebeveyni oldun :3c"
+msgstr ""
+"Selamat bergabung di keluarga, {user}! Sekarang kamu sudah menjadi orang tua "
+"dari {author} :3c"
 
 #. TRANSLATORS: Command name
 #: settings.py:35
 msgid "transfer-gold"
-msgstr "altın transferi"
+msgstr "transfer emas"
 
 #. TRANSLATORS: Command description
 #: settings.py:37
 msgid "Transfer your MarriageBot Gold purchase to this server."
-msgstr "MarriageBot Gold satın alımınızı bu sunucuya aktarın."
+msgstr "Pindahkan pembelian MarriageBot Gold Anda ke server ini."
 
 #: settings.py:59
 msgid "You haven't purchased any instances of MarriageBot Gold!"
-msgstr "MarriageBot Gold'un hiçbir sürümünü satın almamışsınız!"
+msgstr "Anda belum membeli satu pun lisensi MarriageBot Gold!"
 
 #: settings.py:64
 msgid "MarriageBot Gold has already been purchased for this server!"
-msgstr "Bu sunucu için MarriageBot Gold zaten satın alınmış!"
+msgstr "MarriageBot Gold sudah dibeli untuk server ini!"
 
 #: settings.py:89
 msgid ""
 "I'm going to transfer your MarriageBot Gold purchase into **this server**. "
 "Which server would you like to transfer your Gold purchase *from*?"
 msgstr ""
-"MarriageBot Gold satın alımınızı **bu sunucuya** aktaracağım. Gold satın "
-"alımınızı *hangi* sunucudan aktarmamı istersiniz?"
+"Saya akan memindahkan pembelian MarriageBot Gold Anda ke **server ini**. "
+"Dari server mana Anda ingin memindahkan pembelian Gold Anda?"
 
 #: settings.py:96
 msgid "Select a server"
-msgstr "Bir sunucu seçin"
+msgstr "Pilih server"
 
 #: settings.py:123
 msgid "You cannot transfer someone else's MarriageBot Gold purchase!"
-msgstr "Başka birinin MarriageBot Gold satın alımını devredemezsiniz!"
+msgstr ""
+"Anda tidak dapat mentransfer pembelian MarriageBot Gold milik orang lain!"
 
 #: settings.py:141
 #, python-brace-format
 msgid ""
 "You didn't purchase the Gold subscription that's active in **{guild_name}**"
-msgstr "**{guild_name}**'da aktif olan Gold aboneliğini satın almadınız"
+msgstr ""
+"Anda belum membeli langganan Gold yang sedang aktif di **{guild_name}**"
 
 #: settings.py:166
 msgid "There was an error transferring your MarriageBot Gold purchase."
 msgstr ""
-"MarriageBot Gold satın alma işleminizin aktarılması sırasında bir hata "
-"oluştu."
+"Telah terjadi kesalahan saat mentransfer pembelian MarriageBot Gold Anda."
 
 #: settings.py:184
 #, python-brace-format
@@ -764,34 +769,34 @@ msgid ""
 "Your MarriageBot Gold purchase has been transferred to this server! You can "
 "now run the {command_ping} command to activate it here :3"
 msgstr ""
-"MarriageBot Gold satın alımınız bu sunucuya aktarıldı! Artık {command_ping} "
-"komutunu kullanarak burada etkinleştirebilirsiniz :3"
+"Pembelian MarriageBot Gold Anda telah dipindahkan ke server ini! Sekarang "
+"Anda bisa menjalankan perintah {command_ping} untuk mengaktifkannya di "
+"sini :3"
 
 #: settings.py:203
 msgid "Gold has not been purchased for this guild."
-msgstr "Bu loncaya altın satın alınmadı."
+msgstr "Emas belum dibeli untuk guild ini."
 
 #. TRANSLATORS: Enable/disable setting for a command
 #: settings.py:219 settings.py:324 settings.py:394
 msgid "Enabled"
-msgstr "Etkin"
+msgstr "Diaktifkan"
 
 #. TRANSLATORS: Enable/disable setting for a command
 #: settings.py:225 settings.py:330 settings.py:400
 msgid "Disabled"
-msgstr "Devre dışı"
+msgstr "Dinonaktifkan"
 
 #. TRANSLATORS: Command name
 #: settings.py:233
 msgid "guild-settings guild-specific-families"
-msgstr "lonca-ayarları lonca-özel-aileler"
+msgstr "pengaturan-gilda kelompok-keluarga-khusus-gilda"
 
 #. TRANSLATORS: Command description
 #: settings.py:235
 msgid "Set whether or not guild-specific families are enabled for this guild."
 msgstr ""
-"Bu lonca için lonca özel ailelerin etkinleştirilip etkinleştirilmeyeceğini "
-"belirleyin."
+"Tentukan apakah keluarga khusus guild diaktifkan atau tidak untuk guild ini."
 
 #: settings.py:244
 msgid ""
@@ -802,12 +807,12 @@ msgid ""
 "To use this command, please change over to the regular version of "
 "MarriageBot and run this command."
 msgstr ""
-"Bu komut, MarriageBot'un Gold sürümünde çalıştırılamaz. MarriageBot'un "
-"normal sürümünde artık loncaya özgü aileler ile genel aileler arasında geçiş "
-"yapabilirsiniz.\n"
+"Perintah ini tidak dapat dijalankan pada versi Gold MarriageBot. Versi "
+"standar MarriageBot kini memungkinkan Anda untuk beralih antara keluarga "
+"khusus guild dan keluarga global.\n"
 "\n"
-"Bu komutu kullanmak için lütfen MarriageBot'un normal sürümüne geçin ve bu "
-"komutu çalıştırın."
+"Untuk menggunakan perintah ini, silakan beralih ke versi standar MarriageBot "
+"dan jalankan perintah ini."
 
 #: settings.py:263
 msgid ""
@@ -815,10 +820,10 @@ msgid ""
 "and `/incest` commands, enable polygamy for everyone in your server, and "
 "increase your child count) after you have purchased MarriageBot Gold."
 msgstr ""
-"MarriageBot Gold'u satın aldıktan sonra, yalnızca loncaya özgü ailelere "
-"geçiş yapabilir (ve böylece `/force` ve `/incest` komutlarını kullanabilir, "
-"sunucunuzdaki herkes için çok eşliliği etkinleştirebilir ve çocuk sayınızı "
-"artırabilirsiniz)."
+"Anda hanya dapat beralih ke keluarga khusus guild (dan dengan demikian "
+"menggunakan perintah `/force` dan `/incest`, mengaktifkan poligami untuk "
+"semua orang di server Anda, serta menambah jumlah anak Anda) setelah Anda "
+"membeli MarriageBot Gold."
 
 #: settings.py:295
 #, python-brace-format
@@ -831,13 +836,13 @@ msgid ""
 "You can switch back to the global tree by using the {guild_specific_command} "
 "command :3"
 msgstr ""
-"Bu klan içinde klan özel aileler artık **etkinleştirildi** ve artık zorlama "
-"komutlarını kullanabilirsiniz.\n"
-"Bunun, genel MarriageBot ağacından tamamen ayrı bir ağaç olduğunu lütfen "
-"unutmayın.\n"
+"Fitur keluarga khusus guild kini **telah diaktifkan** di guild ini, dan kamu "
+"sekarang dapat menggunakan perintah force.\n"
+"Harap diperhatikan bahwa ini adalah pohon fitur yang sepenuhnya terpisah "
+"dari pohon MarriageBot global.\n"
 "\n"
-"{guild_specific_command} komutunu kullanarak genel ağaca geri "
-"dönebilirsiniz :3"
+"Kamu dapat kembali ke pohon global dengan menggunakan perintah "
+"{guild_specific_command} :3"
 
 #: settings.py:304
 #, python-brace-format
@@ -848,26 +853,26 @@ msgid ""
 "You can switch back to your guild-specific tree by using the "
 "{guild_specific_command} command :3"
 msgstr ""
-"Bu loncada lonca özel aileler artık **devre dışı** bırakılmıştır. Artık "
-"genel MarriageBot ağacına geri döndünüz.\n"
+"Pohon keluarga khusus guild kini **dinonaktifkan** di guild ini. Anda kini "
+"telah dialihkan kembali ke pohon MarriageBot global.\n"
 "\n"
-"{guild_specific_command} komutunu kullanarak lonca özel ağacınıza geri "
-"dönebilirsiniz :3"
+"Anda dapat kembali ke pohon khusus guild Anda dengan menggunakan perintah "
+"{guild_specific_command} :3"
 
 #. TRANSLATORS: Command name
 #: settings.py:338
 msgid "guild-settings incest"
-msgstr "lonca ayarları ensest"
+msgstr "pengaturan-gilda inses"
 
 #. TRANSLATORS: Command description
 #: settings.py:340
 msgid "Set whether or not incest is enabled for this guild."
-msgstr "Bu loncada ensestin etkin olup olmayacağını belirleyin."
+msgstr "Tentukan apakah incest diaktifkan atau tidak untuk guild ini."
 
 #: settings.py:352
 msgid "This command can only be run with MarriageBot Gold enabled!"
 msgstr ""
-"Bu komut yalnızca MarriageBot Gold etkinleştirildiğinde çalıştırılabilir!"
+"Perintah ini hanya dapat dijalankan jika MarriageBot Gold telah diaktifkan!"
 
 #: settings.py:373
 #, python-brace-format
@@ -877,272 +882,272 @@ msgid ""
 "Please note that this only applies to your guild-specific tree - if "
 "{guild_specific_command} is enabled."
 msgstr ""
-"Bu loncada ensest özelliği artık **etkinleştirilmiştir**.\n"
+"Insest kini **diaktifkan** di guild ini.\n"
 "\n"
-"Bunun yalnızca lonca özel ağacınız için geçerli olduğunu lütfen unutmayın – "
-"eğer {guild_specific_command} etkinleştirilmişse."
+"Harap diperhatikan bahwa hal ini hanya berlaku untuk pohon karakter khusus "
+"guild Anda — jika {guild_specific_command} diaktifkan."
 
 #: settings.py:378
 msgid "Incest is now **disabled** in this guild."
-msgstr "Bu loncada ensest artık **devre dışı** bırakılmıştır."
+msgstr "Inses kini **dilarang** di guild ini."
 
 #. TRANSLATORS: Command name
 #: settings.py:408
 msgid "guild-settings simulation-gifs"
-msgstr "lonca-ayarları simülasyon-gif'leri"
+msgstr "pengaturan-gilda-gif-simulasi"
 
 #. TRANSLATORS: Command description
 #: settings.py:410
 msgid "Set whether or not simulation GIFs are enabled in this guild."
-msgstr ""
-"Bu loncada simülasyon GIF'lerinin etkinleştirilip etkinleştirilmeyeceğini "
-"belirleyin."
+msgstr "Tentukan apakah GIF simulasi diaktifkan atau tidak di guild ini."
 
 #: settings.py:431
 msgid "GIFs for the simulation commands are now **enabled**."
-msgstr "Simülasyon komutları için GIF'ler artık **etkinleştirildi**."
+msgstr "GIF untuk perintah simulasi kini **telah diaktifkan**."
 
 #: settings.py:433
 msgid "GIFs for the simulation commands are now **disabled**."
-msgstr "Simülasyon komutlarına ait GIF'ler artık **devre dışı** bırakılmıştır."
+msgstr "GIF untuk perintah simulasi kini **dinonaktifkan**."
 
 #. TRANSLATORS: Command option description (/hug [user])
 #: simulation.py:136
 msgid "The user you want to hug."
-msgstr "Sarılmak istediğin kullanıcı."
+msgstr "Pengguna yang ingin kamu peluk."
 
 #. TRANSLATORS: Command name (/hug)
 #: simulation.py:140
 msgid "hug"
-msgstr "sarılmak"
+msgstr "pelukan"
 
 #. TRANSLATORS: Command description (/hug)
 #: simulation.py:142
 msgid "Hug another user."
-msgstr "Başka bir kullanıcıya sarıl."
+msgstr "Peluk pengguna lain."
 
 #: simulation.py:155
 msgid "*You hug yourself... and start crying.*"
-msgstr "*Kendine sarılırsın... ve ağlamaya başlarsın.*"
+msgstr "*Kamu memeluk dirimu sendiri... lalu mulai menangis.*"
 
 #: simulation.py:158
 #, python-brace-format
 msgid "*Hugs {user}.*"
-msgstr "*Sarılmalar {user}.*"
+msgstr "*Pelukan {user}.*"
 
 #. TRANSLATORS: Command option description (/kiss [user])
 #: simulation.py:171
 msgid "The user you want to kiss."
-msgstr "Öpmek istediğin kullanıcı."
+msgstr "Pengguna yang ingin kamu cium."
 
 #. TRANSLATORS: Command name (/kiss)
 #: simulation.py:175
 msgid "kiss"
-msgstr "öpücük"
+msgstr "ciuman"
 
 #. TRANSLATORS: Command description (/kiss)
 #: simulation.py:177
 msgid "Kiss another user."
-msgstr "Başka bir kullanıcıyı öp."
+msgstr "Cium pengguna lain."
 
 #: simulation.py:190
 msgid "How would you even manage to do that?"
-msgstr "Bunu nasıl başarabilirsin ki?"
+msgstr "Bagaimana caranya kamu bisa melakukan itu?"
 
 #: simulation.py:193
 #, python-brace-format
 msgid "*Kisses {user}.*"
-msgstr "*Öpücükler {user}.*"
+msgstr "*Ciuman {user}.*"
 
 #. TRANSLATORS: Command option description (/stab [user])
 #: simulation.py:206
 msgid "The user you want to stab."
-msgstr "Bıçaklamak istediğin kullanıcı."
+msgstr "Pengguna yang ingin kamu tikam."
 
 #. TRANSLATORS: Command name (/stab)
 #: simulation.py:210
 msgid "stab"
-msgstr "bıçaklama"
+msgstr "tikaman"
 
 #. TRANSLATORS: Command description (/stab)
 #: simulation.py:212
 msgid "Stab another user."
-msgstr "Başka bir kullanıcıyı bıçakla."
+msgstr "Serang pengguna lain."
 
 #: simulation.py:225
 msgid "*You stab yourself.*"
-msgstr "*Kendini bıçaklıyorsun.*"
+msgstr "*Kamu menusuk dirimu sendiri.*"
 
 #: simulation.py:226 simulation.py:233
 msgid "Looks like you don't have a knife, oops!"
-msgstr "Görünüşe göre bıçağın yok, oops!"
+msgstr "Sepertinya kamu nggak punya pisau, ups!"
 
 #: simulation.py:227
 msgid "I'd rather you didn't stab yourself, really."
-msgstr "Gerçekten, kendini bıçaklamamanı tercih ederim."
+msgstr "Sejujurnya, aku lebih suka kalau kamu nggak menusuk dirimu sendiri."
 
 #: simulation.py:230
 #, python-brace-format
 msgid "*You stab {user}.*"
-msgstr "*{user}'ı bıçaklıyorsun.*"
+msgstr "*Kamu menikam {user}.*"
 
 #: simulation.py:231
 #, python-brace-format
 msgid "*{user} has been stabbed.*"
-msgstr "*{user} bıçaklandı.*"
+msgstr "*{user} telah ditusuk.*"
 
 #: simulation.py:232
 #, python-brace-format
 msgid "*stabs {user}.*"
-msgstr "*{user}'a basar.*"
+msgstr "*menusuk {user}.*"
 
 #: simulation.py:234
 msgid "You can't legally stab someone without their consent."
-msgstr "Birinin rızası olmadan onu bıçaklamak yasalara aykırıdır."
+msgstr "Secara hukum, Anda tidak boleh menikam seseorang tanpa persetujuannya."
 
 #: simulation.py:235
 msgid "Stab? Isn't that, like, illegal?"
-msgstr "Bıçaklamak mı? Bu, yasadışı bir şey değil mi?"
+msgstr "Menusuk? Bukankah itu, gitu deh, ilegal?"
 
 #: simulation.py:236
 msgid "I wouldn't recommend doing that tbh."
-msgstr "Açıkçası bunu yapmanı tavsiye etmem."
+msgstr "Sejujurnya, aku nggak akan merekomendasikan hal itu."
 
 #. TRANSLATORS: Command option description (/punch [user])
 #: simulation.py:249
 msgid "The user you want to punch."
-msgstr "Vurmak istediğiniz kullanıcı."
+msgstr "Pengguna yang ingin kamu pukul."
 
 #. TRANSLATORS: Command name (/punch)
 #: simulation.py:253
 msgid "punch"
-msgstr "yumruk"
+msgstr "pukulan"
 
 #. TRANSLATORS: Command description (/punch)
 #: simulation.py:255
 msgid "Punch another user."
-msgstr "Başka bir kullanıcıya yumruk at."
+msgstr "Pukul pengguna lain."
 
 #: simulation.py:268
 msgid "*You punched yourself... for some reason.*"
-msgstr "*Kendine yumruk attın... nedense.*"
+msgstr "*Kamu memukul dirimu sendiri... entah kenapa.*"
 
 #: simulation.py:271
 #, python-brace-format
 msgid "*Punches {user} right in the nose.*"
-msgstr "*{user}'ı burnunun dibine yumruklar.*"
+msgstr "*Meninju {user} tepat di hidung.*"
 
 #. TRANSLATORS: Command option description (/bite [user])
 #: simulation.py:284
 msgid "The user you want to bite."
-msgstr "Isırmak istediğin kullanıcı."
+msgstr "Pengguna yang ingin kamu gigit."
 
 #. TRANSLATORS: Command name (/bite)
 #: simulation.py:288
 msgid "bite"
-msgstr "ısırmak"
+msgstr "gigitan"
 
 #. TRANSLATORS: Command description (/bite)
 #: simulation.py:290
 msgid "Bite another user."
-msgstr "Başka bir kullanıcıyı ısır."
+msgstr "Gigit pengguna lain."
 
 #: simulation.py:303
 msgid "*You missed and bit yourself! Loser.*"
-msgstr "*Iskaladın ve kendi kendini ısırdın! Zavallı.*"
+msgstr "*Kamu meleset dan malah menggigit dirimu sendiri! Pecundang.*"
 
 #: simulation.py:304
 #, python-brace-format
 msgid "*You failed to bite {user}!*"
-msgstr "*Isırmayı başaramadın {user}!*"
+msgstr "*Kamu gagal menggigit {user}!*"
 
 #: simulation.py:305
 msgid "*You thought! You bit yourself.*"
-msgstr "*Öyle sanmıştın! Kendini ısırdın.*"
+msgstr "*Kamu kira begitu! Kamu malah kena batunya.*"
 
 #: simulation.py:306
 msgid "*We'll act like you didn't just bite yourself.*"
-msgstr "*Sanki az önce kendini ısırmamışsın gibi davranacağız.*"
+msgstr ""
+"*Kami akan bersikap seolah-olah kamu tidak baru saja menggigit dirimu "
+"sendiri.*"
 
 #: simulation.py:309 simulation.py:318
 #, python-brace-format
 msgid "*You bite {user}.*"
-msgstr "*Isırıyorsun {user}.*"
+msgstr "*Kamu menggigit {user}.*"
 
 #: simulation.py:310 simulation.py:319
 #, python-brace-format
 msgid "*Bites {user}.*"
-msgstr "*Isırır {user}.*"
+msgstr "*Gigit {user}.*"
 
 #: simulation.py:311 simulation.py:320
 #, python-brace-format
 msgid "*{user} was bitten.*"
-msgstr "*{user} ısırıldı.*"
+msgstr "*{user} digigit.*"
 
 #: simulation.py:312 simulation.py:321
 #, python-brace-format
 msgid "*{user} has been bitten.*"
-msgstr "*{user} ısırıldı.*"
+msgstr "*{user} telah digigit.*"
 
 #: simulation.py:313
 msgid "Why would you bite someone?"
-msgstr "Neden birini ısırırsın ki?"
+msgstr "Kenapa kamu menggigit orang?"
 
 #: simulation.py:314
 msgid "Biting people isn’t nice."
-msgstr "İnsanları ısırmak hoş bir şey değildir."
+msgstr "Menggigit orang itu tidak baik."
 
 #: simulation.py:315
 msgid "Stop biting people!"
-msgstr "İnsanları ısırmayı bırak!"
+msgstr "Berhenti menggigit orang!"
 
 #. TRANSLATORS: Command option description (/slap [user])
 #: simulation.py:334
 msgid "The user you want to slap."
-msgstr "Tokatlamak istediğin kullanıcı."
+msgstr "Pengguna yang ingin kamu tampar."
 
 #. TRANSLATORS: Command name (/slap)
 #: simulation.py:338
 msgid "slap"
-msgstr "tokat"
+msgstr "tamparan"
 
 #. TRANSLATORS: Command description (/slap)
 #: simulation.py:340
 msgid "Slap another user."
-msgstr "Başka bir kullanıcıya tokat at."
+msgstr "Pukul pengguna lain."
 
 #: simulation.py:353
 msgid "*You slapped yourself... for some reason.*"
-msgstr "*Kendine bir tokat attın... nedense.*"
+msgstr "*Kamu menampar dirimu sendiri... entah kenapa.*"
 
 #: simulation.py:356
 #, python-brace-format
 msgid "*Slaps {user}.*"
-msgstr "*{user}'a tokat atar.*"
+msgstr "*Menepuk {user}.*"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr "hepsini reddet"
+msgstr "menolak semuanya"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35
 msgid "Disown all of your children at once."
-msgstr "Tüm çocuklarını bir kerede reddet."
+msgstr "Tolaklah semua anakmu sekaligus."
 
 #: subscriber_commands.py:61
 msgid "Done! You no longer have any children :3"
-msgstr "Bitti! Artık hiç çocuğun yok :3"
+msgstr "Selesai! Kamu sudah tidak punya anak lagi :3"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:67
 msgid "abandon"
-msgstr "terk etmek"
+msgstr "meninggalkan"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:69
 msgid "Remove all of your family members at once."
-msgstr "Tüm aile üyelerinizi tek seferde kaldırın."
+msgstr "Hapus semua anggota keluarga Anda sekaligus."
 
 #: subscriber_commands.py:83
 #, python-brace-format
@@ -1150,16 +1155,17 @@ msgid ""
 "You need to be a higher tier subscriber to run this command! You can still "
 "use {divorce}, {disown}, and {runaway} though :3"
 msgstr ""
-"Bu komutu çalıştırmak için daha üst düzey bir abone olmanız gerekiyor! Yine "
-"de {divorce}, {disown} ve {runaway} tuşlarını kullanabilirsiniz :3"
+"Kamu harus menjadi pelanggan tingkat yang lebih tinggi untuk menjalankan "
+"perintah ini! Tapi kamu masih bisa menggunakan {divorce}, {disown}, dan "
+"{runaway} kok :3"
 
 #: subscriber_commands.py:100
 msgid "Done! You no longer have any family members :3"
-msgstr "Bitti! Artık hiç ailen kalmadı :3"
+msgstr "Selesai! Kamu tidak punya anggota keluarga lagi :3"
 
 #: utils/proposal_lock.py:65
 msgid "You're already married!"
-msgstr "Sen zaten evlisin!"
+msgstr "Kamu sudah menikah!"
 
 #: utils/proposal_lock.py:77
 #, python-brace-format
@@ -1170,19 +1176,15 @@ msgid_plural ""
 "You already have {count} partners! You can't have any more right now. {user} "
 "is at their partner limit as well :<"
 msgstr[0] ""
-"Zaten bir partnerin var! Şu anda başka bir partner alamazsın. {user} da "
-"partner sınırına ulaşmış durumda :<"
-msgstr[1] ""
-"Zaten {count} ortağın var! Şu anda daha fazlasını ekleyemezsin. {user} de "
-"ortak sınırına ulaşmış durumda :<"
+"Kamu sudah punya pasangan! Kamu tidak bisa punya pasangan lagi saat ini. "
+"{user} juga sudah mencapai batas jumlah pasangannya :<"
 
 #: utils/proposal_lock.py:92
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
 msgid_plural ""
 "You already have {count} partners! You can't have any more right now :<"
-msgstr[0] "Zaten bir partnerin var! Şu anda başka bir partnerin olamaz :<"
-msgstr[1] "Zaten {count} ortağın var! Şu anda daha fazlasını ekleyemezsin :<"
+msgstr[0] "Kamu sudah punya pasangan! Kamu nggak bisa punya lagi sekarang :<"
 
 #: utils/proposal_lock.py:108
 #, python-brace-format
@@ -1190,49 +1192,46 @@ msgid "{user} already has a partner! They can't have any more right now :<"
 msgid_plural ""
 "{user} already has {count} partners! They can't have any more right now :<"
 msgstr[0] ""
-"{user}'ın zaten bir partneri var! Şu anda başka bir partneri olamaz :<"
-msgstr[1] ""
-"{user}'ın şimdiden {count} ortağı var! Şu anda daha fazlasını kabul "
-"edemiyorlar :<"
+"{user} sudah punya pasangan! Mereka belum bisa punya lagi saat ini :<"
 
 #: utils/proposal_lock.py:136
 msgid "You're already their parent!"
-msgstr "Sen zaten onların ebeveynisin!"
+msgstr "Kamu sudah menjadi orang tua mereka!"
 
 #: utils/proposal_lock.py:143
 #, python-brace-format
 msgid "{user} already has a parent! They can only have one!"
-msgstr "{user}'ın zaten bir üst öğesi var! Sadece bir tane olabilir!"
+msgstr "{user} sudah punya orang tua! Mereka hanya boleh punya satu!"
 
 #: utils/proposal_lock.py:186
 msgid "They're already your parent!"
-msgstr "Onlar zaten senin ebeveynin!"
+msgstr "Mereka sudah menjadi orang tuamu!"
 
 #: utils/proposal_lock.py:192
 msgid "You already have a parent! You can only have one!"
-msgstr "Zaten bir annen var! Sadece bir tane olabilir!"
+msgstr "Kamu sudah punya orang tua! Kamu hanya boleh punya satu!"
 
 #: utils/proposal_lock.py:253
 msgid "You can't run this on yourself :/"
-msgstr "Bunu kendin üzerinde deneyemezsin :/"
+msgstr "Kamu nggak bisa mencobanya pada dirimu sendiri :/"
 
 #: utils/proposal_lock.py:261
 msgid "You can't run this on bots :/"
-msgstr "Bunu botlarda çalıştıramazsınız :/"
+msgstr "Kamu nggak bisa menjalankan ini di bot :/"
 
 #: utils/proposal_lock.py:270
 msgid "You're already waiting on a proposal."
-msgstr "Zaten bir teklif bekliyorsun."
+msgstr "Anda sudah menunggu proposal tersebut."
 
 #: utils/proposal_lock.py:276
 #, python-brace-format
 msgid "{user} is already waiting on a proposal."
-msgstr "{user} halihazırda bir teklif bekliyor."
+msgstr "{user} sudah menunggu usulan."
 
 #: utils/proposal_lock.py:345
 #, python-brace-format
 msgid "You and {user} are already related!"
-msgstr "Sen ve {user} zaten akrabasınız!"
+msgstr "Kamu dan {user} sudah saling mengenal!"
 
 #: utils/proposal_lock.py:375
 #, python-brace-format
@@ -1240,32 +1239,32 @@ msgid ""
 "You can't do that! If your families combine, you'd have over {family_size} "
 "members in your tree!"
 msgstr ""
-"Bunu yapamazsın! Aileleriniz birleşirse, aile ağacınızda {family_size}'dan "
-"fazla üye olur!"
+"Kamu tidak boleh melakukan itu! Jika kedua keluarga kalian digabungkan, "
+"jumlah anggota dalam silsilah kalian akan melebihi {family_size} orang!"
 
 #. TRANSLATORS: Label on a button
 #: utils/proposal_lock.py:403
 msgid "Yes"
-msgstr "Evet"
+msgstr "Iya"
 
 #. TRANSLATORS: Label on a button
 #: utils/proposal_lock.py:409
 msgid "No"
-msgstr "Hayır"
+msgstr "Tidak"
 
 #: utils/proposal_lock.py:421
 #, python-brace-format
 msgid "Sorry, {author}, your proposal to {user} has timed out!"
-msgstr "Üzgünüz, {author}, {user}'e gönderdiğin teklifin süresi doldu!"
+msgstr "Maaf, {author}, proposal Anda kepada {user} telah kedaluwarsa!"
 
 #: utils/utils.py:199
 msgid "Get MarriageBot Gold"
-msgstr "MarriageBot Gold'u edinin"
+msgstr "Dapatkan MarriageBot Gold"
 
 #: utils/utils.py:203
 msgid "Get MarriageBot perks"
-msgstr "MarriageBot avantajlarından yararlanın"
+msgstr "Dapatkan keuntungan MarriageBot"
 
 #: utils/utils.py:220
 msgid "Enable Gold"
-msgstr "Altın'ı etkinleştir"
+msgstr "Aktifkan Gold"

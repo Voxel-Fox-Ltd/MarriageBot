@@ -2,117 +2,117 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marriagebot\n"
 "POT-Creation-Date: 2025-01-08 00:32+0000\n"
-"PO-Revision-Date: 2025-01-08 02:05\n"
+"PO-Revision-Date: 2026-04-25 21:30+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: ../plugins\n"
-"X-Poedit-SearchPath-0: .\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Crowdin-Project: marriagebot\n"
 "X-Crowdin-Project-ID: 752359\n"
 "X-Crowdin-Language: fr\n"
 "X-Crowdin-File: /novus-rewrite/locales/main.pot\n"
 "X-Crowdin-File-ID: 70\n"
+"X-Poedit-SearchPath-0: .\n"
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
 #: force_commands.py:43 force_commands.py:119 force_commands.py:207
 msgid "user1"
-msgstr ""
+msgstr "utilisateur1"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:45
 msgid "The first user that you want to set up to marry."
-msgstr ""
+msgstr "Le premier utilisateur que tu souhaites configurer pour le mariage."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
 #: force_commands.py:53 force_commands.py:130 force_commands.py:217
 msgid "user2"
-msgstr ""
+msgstr "utilisateur2"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:55
 msgid "The second user that you want to set up to marry."
-msgstr ""
+msgstr "Le deuxième utilisateur que tu souhaites configurer pour le mariage."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr ""
+msgstr "forcer quelqu'un à se marier"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
 msgid "Force two users to marry each other."
-msgstr ""
+msgstr "Fais en sorte que deux utilisateurs se marient."
 
 #: force_commands.py:87
 msgid "You can't marry someone to themself :/"
-msgstr ""
+msgstr "On ne peut pas marier quelqu'un à lui-même :/"
 
 #: force_commands.py:99
 #, python-brace-format
 msgid "Done! Married {user1} and {user2} :3"
-msgstr ""
+msgstr "C'est fait ! Mariés {user1} et {user2} :3"
 
 #: force_commands.py:122
 msgid "The first user that you want to set up to divorce."
-msgstr ""
+msgstr "Le premier utilisateur que tu souhaites configurer pour le divorce."
 
 #: force_commands.py:133
 msgid "The second user that you want to set up to divorce."
-msgstr ""
+msgstr "Le deuxième utilisateur que tu souhaites configurer pour le divorce."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:138
 msgid "force divorce"
-msgstr ""
+msgstr "provoquer un divorce"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:140
 msgid "Force two users to divorce each other."
-msgstr ""
+msgstr "Oblige deux utilisateurs à se séparer."
 
 #: force_commands.py:187
 #, python-brace-format
 msgid "Done! {user1} and {user2} are now divorced :3"
-msgstr ""
+msgstr "C'est fait ! {user1} et {user2} sont désormais divorcés :3"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:209
 msgid "The child for the adoption"
-msgstr ""
+msgstr "L'enfant à adopter"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:219
 msgid "The parent for the adoption."
-msgstr ""
+msgstr "Le parent qui adopte."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:223
 msgid "force adopt"
-msgstr ""
+msgstr "imposer"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:225
 msgid "Force one user to adopt another."
-msgstr ""
+msgstr "Obliger un utilisateur à en adopter un autre."
 
 #: force_commands.py:251
 msgid "You can't adopt someone to themself :/"
-msgstr ""
+msgstr "On ne peut pas adopter quelqu'un pour lui-même :/"
 
 #: force_commands.py:278
 #, python-brace-format
 msgid "Done! {user1} is now a child of {user2} :3"
-msgstr ""
+msgstr "C'est fait ! {user1} est désormais un enfant de {user2} :3"
 
 #. TRANSLATORS: Command option name (/force runaway [user])
 #. TRANSLATORS: Command option name (/partners [user])
@@ -136,663 +136,662 @@ msgstr ""
 #: simulation.py:169 simulation.py:204 simulation.py:247 simulation.py:282
 #: simulation.py:326
 msgid "user"
-msgstr ""
+msgstr "utilisateur"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:300
 msgid "The user that you want to force to runaway"
-msgstr ""
+msgstr "L'utilisateur que tu veux forcer à quitter"
 
 #. TRANSLATORS: Command name
 #: force_commands.py:304
 msgid "force runaway"
-msgstr ""
+msgstr "fuir"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:306
 msgid "Force a user to runaway from their parent."
-msgstr ""
+msgstr "Obliger un utilisateur à fuir son parent."
 
 #: force_commands.py:336
 #, python-brace-format
 msgid "Done! {user} no longer has a parent :3"
-msgstr ""
+msgstr "C'est fait ! {user} n'a plus de parent :3"
 
 #. TRANSLATORS: Command name
 #: information.py:41
 msgid "partners"
-msgstr ""
+msgstr "partenaires"
 
 #. TRANSLATORS: Command option name description (/partners [user])
 #: information.py:50
 msgid "The user whose partners you want to see."
-msgstr ""
+msgstr "L'utilisateur dont tu veux voir les partenaires."
 
 #. TRANSLATORS: Command description
 #: information.py:55
 msgid "Shows you a list of partners for a user."
-msgstr ""
+msgstr "Affiche la liste des partenaires d'un utilisateur."
 
 #: information.py:85 marriage.py:84
 msgid "You don't have any partners right now :<"
-msgstr ""
+msgstr "Tu n'as pas de partenaire pour le moment :<"
 
 #: information.py:89
 #, python-brace-format
 msgid "{user} doesn't have any partners right now :<"
-msgstr ""
+msgstr "{user} n'a pas de partenaire pour le moment :<"
 
 #: information.py:99
 #, python-brace-format
 msgid "{user} is married to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user} est marié(e) à **{partner}** ({timestamp})."
 
 #: information.py:111
 #, python-brace-format
 msgid "{user} is married to:"
-msgstr ""
+msgstr "{user} est marié(e) à :"
 
 #. TRANSLATORS: Command name
 #: information.py:119
 msgid "children"
-msgstr ""
+msgstr "enfants"
 
 #. TRANSLATORS: Command option name description (/children [user])
 #: information.py:128
 msgid "The user whose children you want to see."
-msgstr ""
+msgstr "L'utilisateur dont tu veux voir les enfants."
 
 #. TRANSLATORS: Command description
 #: information.py:133
 msgid "Shows you a list of children for a user."
-msgstr ""
+msgstr "Affiche la liste des enfants d'un utilisateur."
 
 #: information.py:163 parents.py:110 parents.py:148
 msgid "You don't have any children right now :<"
-msgstr ""
+msgstr "Tu n'as pas d'enfants pour le moment :<"
 
 #: information.py:167
 #, python-brace-format
 msgid "{user} doesn't have any children right now :<"
-msgstr ""
+msgstr "{user} n'a pas d'enfants pour le moment :<"
 
 #: information.py:177
 #, python-brace-format
 msgid "{user} is parent to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user} est le parent de **{partner}** ({timestamp})."
 
 #: information.py:189
 #, python-brace-format
 msgid "{user} is parent to:"
-msgstr ""
+msgstr "{user} est le parent de :"
 
 #. TRANSLATORS: Command name
 #: information.py:197
 msgid "parent"
-msgstr ""
+msgstr "parent"
 
 #. TRANSLATORS: Command option name description (/parent [user])
 #: information.py:206
 msgid "The user whose parent you want to see."
-msgstr ""
+msgstr "L'utilisateur dont tu veux voir le parent."
 
 #. TRANSLATORS: Command description
 #: information.py:211
 msgid "Show you the parent for a user."
-msgstr ""
+msgstr "Afficher le parent d'un utilisateur."
 
 #: information.py:237
 msgid "You don't have a parent right now :<"
-msgstr ""
+msgstr "Tu n'as pas de parents pour le moment :<"
 
 #: information.py:241
 #, python-brace-format
 msgid "{user} doesn't have a parent right now :<"
-msgstr ""
+msgstr "{user} n'a pas de parent pour le moment :<"
 
 #: information.py:249
 #, python-brace-format
 msgid "{user}'s parent is **{parent}** ({timestamp})."
-msgstr ""
+msgstr "Le parent de {user} est **{parent}** ({timestamp})."
 
 #. TRANSLATORS: Command option description (/familysize [user])
 #: information.py:283
 msgid "The user who you want to see the family size of."
-msgstr ""
+msgstr "L'utilisateur dont tu veux connaître la taille de la famille."
 
 #. TRANSLATORS: Command name (/familysize)
 #: information.py:288
 msgid "familysize"
-msgstr ""
+msgstr "format familial"
 
 #. TRANSLATORS: Command description (/familysize)
 #: information.py:290
 msgid "Get the family size of another user."
-msgstr ""
+msgstr "Récupère le nombre de personnes composant la famille d'un autre utilisateur."
 
 #: information.py:312
 #, python-brace-format
 msgid "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives."
 msgid_plural "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "L'arbre généalogique de {user} compte **{number}** personnes, en incluant tous les parents, qu'ils soient de sang ou non."
+msgstr[1] "L'arbre généalogique de {user} compte **{number}** personnes, y compris tous les parents de sang et les parents par alliance."
 
 #. TRANSLATORS: Command name (/tree)
 #: information.py:320
 msgid "tree"
-msgstr ""
+msgstr "tree"
 
 #: information.py:328 information.py:354
 msgid "The user whose tree you want to see."
-msgstr ""
+msgstr "L'utilisateur dont tu veux consulter l'arborescence."
 
 #: information.py:332
 msgid "Show your family tree, but only blood relatives :3"
-msgstr ""
+msgstr "Montre ton arbre généalogique, mais uniquement les membres de ta famille par le sang :3"
 
 #. TRANSLATORS: Command name (/fulltree)
 #: information.py:346
 msgid "fulltree"
-msgstr ""
+msgstr "fulltree"
 
 #: information.py:358
 msgid "Show your entire family tree, including non-blood relatives :3"
-msgstr ""
+msgstr "Affiche ton arbre généalogique complet, y compris les parents qui ne sont pas de sang :3"
 
 #: information.py:373 subscriber_commands.py:47
 #, python-brace-format
 msgid "You need to be a higher tier subscriber to run this command! You can still use {non_perks_command} though :3"
-msgstr ""
+msgstr "Tu dois être abonné à un niveau supérieur pour utiliser cette commande ! Tu peux quand même utiliser {non_perks_command} :3"
 
 #: information.py:401
 msgid "You have no family to put into a tree .-."
-msgstr ""
+msgstr "Tu n'as personne à ajouter à ton arbre généalogique .-."
 
 #: information.py:405
 #, python-brace-format
 msgid "{user} has no family to put into a tree .-."
-msgstr ""
+msgstr "{user} n'a pas de famille à ajouter à l'arbre .-."
 
 #: information.py:477
 msgid "I couldn't send your family tree image - please try again in a few minutes."
-msgstr ""
+msgstr "Je n'ai pas pu envoyer l'image de ton arbre généalogique. Essaie à nouveau dans quelques minutes."
 
 #: information.py:481
 #, python-brace-format
 msgid "[Click here]({url}) to customise your tree."
-msgstr ""
+msgstr "[Clique ici]({url}) pour personnaliser ton sapin."
 
 #: information.py:485
 #, python-brace-format
 msgid "Use {fulltree} for your *entire* family, including non-blood relatives."
-msgstr ""
+msgstr "Utilise {fulltree} pour *toute* ta famille, y compris les personnes qui ne sont pas de ton sang."
 
 #. TRANSLATORS: Command name
 #: marriage.py:33
 msgid "marry"
-msgstr ""
+msgstr "se marier"
 
 #. TRANSLATORS: Command option name description (/marry user)
 #: marriage.py:42
 msgid "The user that you want to marry."
-msgstr ""
+msgstr "L'utilisateur que tu souhaites épouser."
 
 #. TRANSLATORS: Command description
 #: marriage.py:46
 msgid "Propose to another user."
-msgstr ""
+msgstr "Fais une demande en mariage à un autre utilisateur."
 
 #: marriage.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to marry you! What do you say?"
-msgstr ""
+msgstr "Salut {user}, {author} veut t'épouser ! Qu'en dis-tu ?"
 
 #. TRANSLATORS: Command name
 #: marriage.py:64
 msgid "divorce"
-msgstr ""
+msgstr "divorce"
 
 #. TRANSLATORS: Command description
 #: marriage.py:66
 msgid "Divorce one of your partners."
-msgstr ""
+msgstr "Divorce avec l'un de tes partenaires."
 
 #: marriage.py:89
 msgid "Which of your partners do you want to divorce?"
-msgstr ""
+msgstr "Avec lequel de tes partenaires veux-tu divorcer ?"
 
 #: marriage.py:116 parents.py:180 proposal_handler.py:47
 msgid "You cannot interact with these buttons."
-msgstr ""
+msgstr "Tu ne peux pas utiliser ces boutons."
 
 #: marriage.py:133 marriage.py:141
 #, python-brace-format
 msgid "You have been divorced from {user} :("
-msgstr ""
+msgstr "Tu es divorcé(e) depuis {user} :("
 
 #. TRANSLATORS: Command name
 #: parents.py:33
 msgid "adopt"
-msgstr ""
+msgstr "adopter"
 
 #. TRANSLATORS: Command option name description (/adopt user)
 #: parents.py:42
 msgid "The user that you want to adopt."
-msgstr ""
+msgstr "L'utilisateur que tu souhaites adopter."
 
 #. TRANSLATORS: Command description
 #: parents.py:46
 msgid "Ask to adopt another user."
-msgstr ""
+msgstr "Demande à adopter un autre utilisateur."
 
 #: parents.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to adopt you! What do you say?"
-msgstr ""
+msgstr "Salut {user}, {author} veut t'adopter ! Qu'est-ce que t'en dis ?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr ""
+msgstr "makeparent"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
 msgid "The user that you want to make into your parent."
-msgstr ""
+msgstr "L'utilisateur que tu souhaites désigner comme parent."
 
 #. TRANSLATORS: Command description
 #: parents.py:78
 msgid "Ask to make another user into your parent."
-msgstr ""
+msgstr "Demande à ce qu'un autre utilisateur devienne ton tuteur."
 
 #: parents.py:90
 #, python-brace-format
 msgid "Hey {user}, {author} wants you to be their parent! What do you say?"
-msgstr ""
+msgstr "Salut {user}, {author} aimerait que tu deviennes son parent ! Qu'en dis-tu ?"
 
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr ""
+msgstr "en fuite"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
 msgid "Run away from your parent."
-msgstr ""
+msgstr "Fuis tes parents."
 
 #: parents.py:121
 #, python-brace-format
 msgid "You have run away from {user} :("
-msgstr ""
+msgstr "Tu t'es enfui de {user} :("
 
 #. TRANSLATORS: Command name
 #: parents.py:128
 msgid "disown"
-msgstr ""
+msgstr "renier"
 
 #. TRANSLATORS: Command description
 #: parents.py:130
 msgid "Disown one of your children."
-msgstr ""
+msgstr "Renonce à l'un de tes enfants."
 
 #: parents.py:153
 msgid "Which of your children do you want to disown?"
-msgstr ""
+msgstr "Lequel de tes enfants veux-tu renier ?"
 
 #: parents.py:197 parents.py:205
 #, python-brace-format
 msgid "You have now disowned {user} :("
-msgstr ""
+msgstr "Tu as maintenant désabonné {user} :("
 
 #: proposal_handler.py:54
 msgid "You can no longer respond to this message."
-msgstr ""
+msgstr "Tu ne peux plus répondre à ce message."
 
 #: proposal_handler.py:66
 msgid "You can't accept your own proposal!"
-msgstr ""
+msgstr "Tu ne peux pas accepter ta propre proposition !"
 
 #: proposal_handler.py:77
 #, python-brace-format
 msgid "Alright, {author}, your proposal to {user} has been cancelled :)"
-msgstr ""
+msgstr "Bon, {author}, ta demande en mariage à {user} a été annulée :)"
 
 #: proposal_handler.py:90
 #, python-brace-format
 msgid "Sorry, {author}, {user} said no to your proposal :<"
-msgstr ""
+msgstr "Désolé, {author}, {user} a refusé ta proposition :<"
 
 #: proposal_handler.py:115
 #, python-brace-format
 msgid "Welcome {user}! You're now married to {author} :3c"
-msgstr ""
+msgstr "Bienvenue {user} ! Tu es désormais marié(e) à {author} :3c"
 
 #: proposal_handler.py:116
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the child of {author} :3c"
-msgstr ""
+msgstr "Bienvenue dans la famille, {user} ! Tu es désormais l'enfant de {author} :3c"
 
 #: proposal_handler.py:117
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the parent of {author} :3c"
-msgstr ""
+msgstr "Bienvenue dans la famille, {user} ! Tu es désormais le parent de {author} :3c"
 
 #. TRANSLATORS: Command option description (/hug [user])
 #: simulation.py:136
 msgid "The user you want to hug."
-msgstr ""
+msgstr "L'utilisateur que tu as envie de serrer dans tes bras."
 
 #. TRANSLATORS: Command name (/hug)
 #: simulation.py:140
 msgid "hug"
-msgstr ""
+msgstr "câlin"
 
 #. TRANSLATORS: Command description (/hug)
 #: simulation.py:142
 msgid "Hug another user."
-msgstr ""
+msgstr "Fais un câlin à un autre utilisateur."
 
 #: simulation.py:155
 msgid "*You hug yourself... and start crying.*"
-msgstr ""
+msgstr "*Tu te serres dans tes bras… et tu te mets à pleurer.*"
 
 #: simulation.py:158
 #, python-brace-format
 msgid "*Hugs {user}.*"
-msgstr ""
+msgstr "*Câlins {user}.*"
 
 #. TRANSLATORS: Command option description (/kiss [user])
 #: simulation.py:171
 msgid "The user you want to kiss."
-msgstr ""
+msgstr "L'utilisateur que tu veux embrasser."
 
 #. TRANSLATORS: Command name (/kiss)
 #: simulation.py:175
 msgid "kiss"
-msgstr ""
+msgstr "bisou"
 
 #. TRANSLATORS: Command description (/kiss)
 #: simulation.py:177
 msgid "Kiss another user."
-msgstr ""
+msgstr "Embrasse un autre utilisateur."
 
 #: simulation.py:190
 msgid "How would you even manage to do that?"
-msgstr ""
+msgstr "Mais comment tu t'y prendrais pour faire ça ?"
 
 #: simulation.py:193
 #, python-brace-format
 msgid "*Kisses {user}.*"
-msgstr ""
+msgstr "*Bisous {user}.*"
 
 #. TRANSLATORS: Command option description (/stab [user])
 #: simulation.py:206
 msgid "The user you want to stab."
-msgstr ""
+msgstr "L'utilisateur que tu veux poignarder."
 
 #. TRANSLATORS: Command name (/stab)
 #: simulation.py:210
 msgid "stab"
-msgstr ""
+msgstr "coup de couteau"
 
 #. TRANSLATORS: Command description (/stab)
 #: simulation.py:212
 msgid "Stab another user."
-msgstr ""
+msgstr "Poignarde un autre utilisateur."
 
 #: simulation.py:225
 msgid "*You stab yourself.*"
-msgstr ""
+msgstr "*Tu te poignardes.*"
 
 #: simulation.py:226 simulation.py:233
 msgid "Looks like you don't have a knife, oops!"
-msgstr ""
+msgstr "On dirait que tu n'as pas de couteau, oups !"
 
 #: simulation.py:227
 msgid "No."
-msgstr ""
+msgstr "Non."
 
 #: simulation.py:230
 #, python-brace-format
 msgid "*You stab {user}.*"
-msgstr ""
+msgstr "*Tu poignardes {user}.*"
 
 #: simulation.py:231
 #, python-brace-format
 msgid "*{user} has been stabbed.*"
-msgstr ""
+msgstr "*{user} a été poignardé.*"
 
 #: simulation.py:232
 #, python-brace-format
 msgid "*stabs {user}.*"
-msgstr ""
+msgstr "*poignarde {user}.*"
 
 #: simulation.py:234
 msgid "You can't legally stab someone without their consent."
-msgstr ""
+msgstr "Tu ne peux pas poignarder quelqu'un légalement sans son consentement."
 
 #: simulation.py:235
 msgid "Stab? Isn't that, like, illegal?"
-msgstr ""
+msgstr "Un coup de couteau ? C'est pas, genre, illégal ?"
 
 #: simulation.py:236
 msgid "I wouldn't recommend doing that tbh."
-msgstr ""
+msgstr "Franchement, je ne te le conseillerais pas."
 
 #. TRANSLATORS: Command option description (/punch [user])
 #: simulation.py:249
 msgid "The user you want to punch."
-msgstr ""
+msgstr "L'utilisateur que tu veux frapper."
 
 #. TRANSLATORS: Command name (/punch)
 #: simulation.py:253
 msgid "punch"
-msgstr ""
+msgstr "coup de poing"
 
 #. TRANSLATORS: Command description (/punch)
 #: simulation.py:255
 msgid "Punch another user."
-msgstr ""
+msgstr "Frappe un autre utilisateur."
 
 #: simulation.py:268
 msgid "*You punched yourself... for some reason.*"
-msgstr ""
+msgstr "*Tu t'es donné un coup de poing... pour une raison quelconque.*"
 
 #: simulation.py:271
 #, python-brace-format
 msgid "*Punches {user} right in the nose.*"
-msgstr ""
+msgstr "*Il lui met un coup de poing {user} en plein nez.*"
 
 #. TRANSLATORS: Command option description (/bite [user])
 #: simulation.py:284
 msgid "The user you want to bite."
-msgstr ""
+msgstr "L'utilisateur que tu veux mordre."
 
 #. TRANSLATORS: Command name (/bite)
 #: simulation.py:288
 msgid "bite"
-msgstr ""
+msgstr "mordre"
 
 #. TRANSLATORS: Command description (/bite)
 #: simulation.py:290
 msgid "Bite another user."
-msgstr ""
+msgstr "Mords un autre utilisateur."
 
 #: simulation.py:303
 msgid "*You missed and bit yourself! Loser.*"
-msgstr ""
+msgstr "*Tu l'as raté et tu t'es mordu toi-même ! Loser.*"
 
 #: simulation.py:304
 #, python-brace-format
 msgid "*You failed to bite {user}!*"
-msgstr ""
+msgstr "*Tu n'as pas mordu à l'hameçon {user} !*"
 
 #: simulation.py:305
 msgid "*You thought! You bit yourself.*"
-msgstr ""
+msgstr "*Tu croyais ! Tu t'es mordu.*"
 
 #: simulation.py:306
 msgid "*We'll act like you didn't just bite yourself.*"
-msgstr ""
+msgstr "*On fera comme si tu ne venais pas de te mordre.*"
 
 #: simulation.py:309
 #, python-brace-format
 msgid "*You bite {user}.*"
-msgstr ""
+msgstr "*Tu mords {user}.*"
 
 #: simulation.py:310
 #, python-brace-format
 msgid "*Bites {user}.*"
-msgstr ""
+msgstr "*Mordille {user}.*"
 
 #: simulation.py:311
 #, python-brace-format
 msgid "*{user} was bitten.*"
-msgstr ""
+msgstr "*{user} s'est fait mordre.*"
 
 #: simulation.py:312
 #, python-brace-format
 msgid "*{user} has been bitten.*"
-msgstr ""
+msgstr "*{user} s'est fait mordre.*"
 
 #: simulation.py:313
 msgid "Why would you bite someone?"
-msgstr ""
+msgstr "Pourquoi tu mordrais quelqu'un ?"
 
 #: simulation.py:314
 msgid "Biting people isn’t nice."
-msgstr ""
+msgstr "Mordre les gens, c'est pas sympa."
 
 #: simulation.py:315
 msgid "Stop biting people!"
-msgstr ""
+msgstr "Arrête de mordre les gens !"
 
 #. TRANSLATORS: Command option description (/slap [user])
 #: simulation.py:328
 msgid "The user you want to slap."
-msgstr ""
+msgstr "L'utilisateur que tu veux gifler."
 
 #. TRANSLATORS: Command name (/slap)
 #: simulation.py:332
 msgid "slap"
-msgstr ""
+msgstr "gifle"
 
 #. TRANSLATORS: Command description (/slap)
 #: simulation.py:334
 msgid "Slap another user."
-msgstr ""
+msgstr "Gifle un autre utilisateur."
 
 #: simulation.py:347
 msgid "*You slapped yourself... for some reason.*"
-msgstr ""
+msgstr "*Tu t'es giflé... pour une raison quelconque.*"
 
 #: simulation.py:350
 #, python-brace-format
 msgid "*Slaps {user}.*"
-msgstr ""
+msgstr "*Gifle {user}.*"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr ""
+msgstr "tout désavouer"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35
 msgid "Disown all of your children at once."
-msgstr ""
+msgstr "Renonce à tous tes enfants d'un seul coup."
 
 #: subscriber_commands.py:61
 msgid "Done! You no longer have any children :3"
-msgstr ""
+msgstr "Et voilà ! Tu n'as plus d'enfants :3"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:67
 msgid "abandon"
-msgstr ""
+msgstr "abandonner"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:69
 msgid "Remove all of your family members at once."
-msgstr ""
+msgstr "Supprime tous les membres de ta famille d'un seul coup."
 
 #: subscriber_commands.py:83
 #, python-brace-format
 msgid "You need to be a higher tier subscriber to run this command! You can still use {divorce}, {disown}, and {runaway} though :3"
-msgstr ""
+msgstr "Tu dois être abonné à un niveau supérieur pour utiliser cette commande ! Tu peux quand même utiliser {divorce}, {disown} et {runaway} :3"
 
 #: subscriber_commands.py:100
 msgid "Done! You no longer have any family members :3"
-msgstr ""
+msgstr "Et voilà ! Tu n'as plus aucun membre de ta famille :3"
 
 #: utils/proposal_lock.py:65
 msgid "You can't run this on yourself :/"
-msgstr ""
+msgstr "Tu ne peux pas l'essayer sur toi-même :/"
 
 #: utils/proposal_lock.py:73
 msgid "You can't run this on bots :/"
-msgstr ""
+msgstr "Tu ne peux pas l'utiliser sur des bots :/"
 
 #: utils/proposal_lock.py:82
 msgid "You're already waiting on a proposal."
-msgstr ""
+msgstr "Tu attends déjà une proposition."
 
 #: utils/proposal_lock.py:88
 #, python-brace-format
 msgid "{user} is already waiting on a proposal."
-msgstr ""
+msgstr "{user} attend déjà une proposition."
 
 #: utils/proposal_lock.py:116
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
 msgid_plural "You already have {count} partners! You can't have any more right now :<"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Tu as déjà un partenaire ! Tu ne peux pas en avoir d'autre pour l'instant :<"
+msgstr[1] "Tu as déjà {count} partenaires ! Tu ne peux pas en avoir d'autres pour le moment :<"
 
 #: utils/proposal_lock.py:127
 #, python-brace-format
 msgid "{user} already has a partner! They can't have any more right now :<"
 msgid_plural "{user} already has {count} partners! They can't have any more right now :<"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{user} a déjà un partenaire ! Il ne peut pas en avoir d'autre pour l'instant :<"
+msgstr[1] "{user} compte déjà {count} partenaire ! Ils ne peuvent pas en accueillir d'autres pour le moment :<"
 
 #: utils/proposal_lock.py:139
 #, python-brace-format
 msgid "{user} already has a parent! They can only have one!"
-msgstr ""
+msgstr "{user} a déjà un parent ! Il ne peut en avoir qu'un seul !"
 
 #: utils/proposal_lock.py:162
 msgid "You already have a parent! You can only have one!"
-msgstr ""
+msgstr "Tu as déjà un parent ! Tu ne peux en avoir qu'un seul !"
 
 #: utils/proposal_lock.py:184
 #, python-brace-format
 msgid "You and {user} are already related!"
-msgstr ""
+msgstr "Toi et {user}, vous êtes déjà en lien !"
 
 #: utils/proposal_lock.py:213
 #, python-brace-format
 msgid "You can't do that! If your families combine, you'd have over {family_size} members in your tree!"
-msgstr ""
+msgstr "Tu ne peux pas faire ça ! Si tu fusionnes tes deux arbres généalogiques, tu auras plus de {family_size} membres dans ton arbre !"
 
 #. TRANSLATORS: Label on a button
 #: utils/proposal_lock.py:230
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #. TRANSLATORS: Label on a button
 #: utils/proposal_lock.py:236
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: utils/proposal_lock.py:247
 #, python-brace-format
 msgid "Sorry, {author}, your proposal to {user} has timed out!"
-msgstr ""
+msgstr "Désolé, {author}, ta proposition à {user} a expiré !"
 
 #: utils/utils.py:126
 msgid "Get MarriageBot Gold"
-msgstr ""
+msgstr "Procure-toi MarriageBot Gold"
 
 #: utils/utils.py:130
 msgid "Get MarriageBot perks"
-msgstr ""
-
+msgstr "Profite des avantages de MarriageBot"

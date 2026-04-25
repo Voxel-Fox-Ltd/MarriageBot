@@ -1,120 +1,152 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: marriagebot\n"
-"POT-Creation-Date: 2025-01-08 00:32+0000\n"
-"PO-Revision-Date: 2025-01-08 02:05\n"
+"POT-Creation-Date: 2026-04-25 21:08+0100\n"
+"PO-Revision-Date: 2026-04-25 21:33+0100\n"
 "Last-Translator: Kae Bartlett <kae@voxelfox.co.uk>\n"
 "Language-Team: Korean\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: ../plugins\n"
-"X-Poedit-SearchPath-0: .\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Crowdin-Project: marriagebot\n"
 "X-Crowdin-Project-ID: 752359\n"
 "X-Crowdin-Language: ko\n"
 "X-Crowdin-File: /novus-rewrite/locales/main.pot\n"
 "X-Crowdin-File-ID: 70\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#. TRANSLATORS: Command name
+#: customisation.py:107
+msgid "customize-tree"
+msgstr "트리 사용자 지정"
+
+#. TRANSLATORS: Command description
+#: customisation.py:109
+msgid "Customize the look of your family trees."
+msgstr "가족 나무의 디자인을 직접 꾸며보세요."
+
+#: customisation.py:187
+#, python-brace-format
+msgid ""
+"You can't customise someone else's tree! You can customise your own by "
+"running the {cusomise_command} command :3"
+msgstr ""
+"다른 사람의 트리는 수정할 수 없어요! {cusomise_command} 명령어를 실행하면 본"
+"인의 트리를 수정할 수 있어요 :3"
+
+#: customisation.py:208
+msgid "Customise your tree"
+msgstr "나무를 나만의 스타일로 꾸미세요"
+
+#: customisation.py:213
+msgid "New value"
+msgstr "새로운 값"
+
+#: customisation.py:241
+msgid "I don't know what colour that is..."
+msgstr "그게 무슨 색인지 모르겠네요..."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:43 force_commands.py:119 force_commands.py:207
+#: force_commands.py:43 force_commands.py:122 force_commands.py:213
 msgid "user1"
-msgstr ""
+msgstr "사용자1"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:45
 msgid "The first user that you want to set up to marry."
-msgstr ""
+msgstr "결혼 상대로 설정하려는 첫 번째 사용자."
 
 #. TRANSLATORS: Command option name (/force marry [user1] [user2])
 #. TRANSLATORS: Command option name (/force divorce [user1] [user2])
 #. TRANSLATORS: Command option name (/force adopt [user1] [user2])
-#: force_commands.py:53 force_commands.py:130 force_commands.py:217
+#: force_commands.py:53 force_commands.py:133 force_commands.py:223
 msgid "user2"
-msgstr ""
+msgstr "사용자2"
 
 #. TRANSLATORS: Command option name description
 #: force_commands.py:55
 msgid "The second user that you want to set up to marry."
-msgstr ""
+msgstr "결혼 상대로 설정하려는 두 번째 사용자입니다."
 
 #. TRANSLATORS: Command name
 #: force_commands.py:59
 msgid "force marry"
-msgstr ""
+msgstr "강제 결혼"
 
 #. TRANSLATORS: Command description
 #: force_commands.py:61
 msgid "Force two users to marry each other."
-msgstr ""
+msgstr "두 사용자가 서로 결혼하도록 강제한다."
 
-#: force_commands.py:87
+#: force_commands.py:89
 msgid "You can't marry someone to themself :/"
-msgstr ""
+msgstr "누군가를 그 사람 자신과 결혼시킬 수는 없잖아 :/"
 
-#: force_commands.py:99
+#: force_commands.py:101
 #, python-brace-format
 msgid "Done! Married {user1} and {user2} :3"
-msgstr ""
+msgstr "끝! 결혼했어요 {user1}과 {user2} :3"
 
-#: force_commands.py:122
+#: force_commands.py:125
 msgid "The first user that you want to set up to divorce."
-msgstr ""
+msgstr "이혼 절차를 진행하려는 첫 번째 사용자입니다."
 
-#: force_commands.py:133
+#: force_commands.py:136
 msgid "The second user that you want to set up to divorce."
-msgstr ""
+msgstr "이혼 절차를 밟도록 설정하려는 두 번째 사용자입니다."
 
 #. TRANSLATORS: Command name
-#: force_commands.py:138
+#: force_commands.py:141
 msgid "force divorce"
-msgstr ""
+msgstr "강제 이혼"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:140
+#: force_commands.py:143
 msgid "Force two users to divorce each other."
-msgstr ""
+msgstr "두 사용자가 서로 이혼하도록 강제한다."
 
-#: force_commands.py:187
+#: force_commands.py:193
 #, python-brace-format
 msgid "Done! {user1} and {user2} are now divorced :3"
-msgstr ""
+msgstr "끝! {user1}과 {user2}은 이제 이혼했어요 :3"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:209
+#: force_commands.py:215
 msgid "The child for the adoption"
-msgstr ""
+msgstr "입양 대상 아동"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:219
+#: force_commands.py:225
 msgid "The parent for the adoption."
-msgstr ""
+msgstr "입양을 위한 양부모."
 
 #. TRANSLATORS: Command name
-#: force_commands.py:223
+#: force_commands.py:229
 msgid "force adopt"
-msgstr ""
+msgstr "강제로 채택하다"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:225
+#: force_commands.py:231
 msgid "Force one user to adopt another."
-msgstr ""
+msgstr "한 사용자가 다른 사용자를 강제로 채택하도록 한다."
 
-#: force_commands.py:251
+#: force_commands.py:259
 msgid "You can't adopt someone to themself :/"
-msgstr ""
+msgstr "누군가를 그 사람 본래의 모습 그대로 입양할 수는 없어요 :/"
 
-#: force_commands.py:278
+#: force_commands.py:286
 #, python-brace-format
 msgid "Done! {user1} is now a child of {user2} :3"
-msgstr ""
+msgstr "완료! {user1}이 이제 {user2}의 자식이 되었습니다 :3"
 
 #. TRANSLATORS: Command option name (/force runaway [user])
+#. TRANSLATORS: Command option name (/relationship [user] [other])
 #. TRANSLATORS: Command option name (/partners [user])
 #. TRANSLATORS: Command option name (/children [user])
 #. TRANSLATORS: Command option name (/parent [user])
@@ -130,666 +162,1094 @@ msgstr ""
 #. TRANSLATORS: Command option name (/punch [user])
 #. TRANSLATORS: Command option name (/bite [user])
 #. TRANSLATORS: Command option name (/slap [user])
-#: force_commands.py:298 information.py:48 information.py:126
-#: information.py:204 information.py:281 information.py:327 information.py:353
-#: marriage.py:40 parents.py:40 parents.py:72 simulation.py:134
-#: simulation.py:169 simulation.py:204 simulation.py:247 simulation.py:282
-#: simulation.py:326
+#: force_commands.py:307 information.py:49 information.py:117
+#: information.py:208 information.py:299 information.py:383 information.py:426
+#: information.py:452 marriage.py:40 parents.py:40 parents.py:72
+#: simulation.py:134 simulation.py:169 simulation.py:204 simulation.py:247
+#: simulation.py:282 simulation.py:332
 msgid "user"
-msgstr ""
+msgstr "사용자"
 
 #. TRANSLATORS: Command option name description
-#: force_commands.py:300
+#: force_commands.py:309
 msgid "The user that you want to force to runaway"
-msgstr ""
+msgstr "강제로 도망가게 하려는 사용자"
 
 #. TRANSLATORS: Command name
-#: force_commands.py:304
+#: force_commands.py:313
 msgid "force runaway"
-msgstr ""
+msgstr "강제 도주"
 
 #. TRANSLATORS: Command description
-#: force_commands.py:306
+#: force_commands.py:315
 msgid "Force a user to runaway from their parent."
-msgstr ""
+msgstr "사용자가 부모로부터 도망치도록 강요한다."
 
-#: force_commands.py:336
+#: force_commands.py:347
 #, python-brace-format
 msgid "Done! {user} no longer has a parent :3"
-msgstr ""
+msgstr "완료! {user}은 더 이상 상위 항목이 없습니다 :3"
 
 #. TRANSLATORS: Command name
 #: information.py:41
+msgid "relationship"
+msgstr "가족 관계"
+
+#. TRANSLATORS: Command description
+#: information.py:43
+msgid "Get the relationship between two users."
+msgstr "두 사용자 간의 관계를 가져옵니다."
+
+#. TRANSLATORS: Command option description (/relationship [user] [other])
+#: information.py:51
+msgid "The first user who you want to check the relation of."
+msgstr "관계를 확인하고 싶은 첫 번째 사용자."
+
+#. TRANSLATORS: Command option name (/relationship [user] [other])
+#: information.py:58
+msgid "other"
+msgstr "기타"
+
+#. TRANSLATORS: Command option description (/relationship [user] [other])
+#: information.py:60
+msgid "The second user who you want to compare the first to."
+msgstr "첫 번째 사용자와 비교하려는 두 번째 사용자입니다."
+
+#: information.py:92
+#, python-brace-format
+msgid "**{user}** is not related to **{other}**."
+msgstr "**{user}**은 **{other}**과 관련이 없습니다."
+
+#: information.py:102
+#, python-brace-format
+msgid "**{user}** is **{other}**'s **{relation}**."
+msgstr "**{user}**은 **{other}**의 **{relation}**이다."
+
+#. TRANSLATORS: Command name
+#: information.py:110
 msgid "partners"
-msgstr ""
+msgstr "파트너"
 
 #. TRANSLATORS: Command option name description (/partners [user])
-#: information.py:50
+#: information.py:119
 msgid "The user whose partners you want to see."
-msgstr ""
+msgstr "파트너 정보를 확인하고 싶은 사용자."
 
 #. TRANSLATORS: Command description
-#: information.py:55
+#: information.py:124
 msgid "Shows you a list of partners for a user."
-msgstr ""
+msgstr "특정 사용자의 파트너 목록을 표시합니다."
 
-#: information.py:85 marriage.py:84
+#: information.py:156 marriage.py:86
 msgid "You don't have any partners right now :<"
-msgstr ""
+msgstr "지금은 파트너가 없네요 :<"
 
-#: information.py:89
+#: information.py:163
 #, python-brace-format
 msgid "{user} doesn't have any partners right now :<"
-msgstr ""
+msgstr "{user}은 현재 파트너가 없네요 :<"
 
-#: information.py:99
+#: information.py:176
 #, python-brace-format
 msgid "{user} is married to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user}은 **{partner}**(**{timestamp}**)과 결혼했다."
 
-#: information.py:111
+#: information.py:191
 #, python-brace-format
 msgid "{user} is married to:"
-msgstr ""
+msgstr "{user}은/는 ~와 결혼했다:"
 
 #. TRANSLATORS: Command name
-#: information.py:119
+#: information.py:201
 msgid "children"
-msgstr ""
+msgstr "어린이"
 
 #. TRANSLATORS: Command option name description (/children [user])
-#: information.py:128
+#: information.py:210
 msgid "The user whose children you want to see."
-msgstr ""
+msgstr "자녀 정보를 확인하려는 사용자."
 
 #. TRANSLATORS: Command description
-#: information.py:133
+#: information.py:215
 msgid "Shows you a list of children for a user."
-msgstr ""
+msgstr "특정 사용자의 하위 항목 목록을 표시합니다."
 
-#: information.py:163 parents.py:110 parents.py:148
+#: information.py:247 parents.py:111 parents.py:153
 msgid "You don't have any children right now :<"
-msgstr ""
+msgstr "지금은 아이가 없네요 :<"
 
-#: information.py:167
+#: information.py:254
 #, python-brace-format
 msgid "{user} doesn't have any children right now :<"
-msgstr ""
+msgstr "{user}은(는) 지금 아이가 없어요 :<"
 
-#: information.py:177
+#: information.py:267
 #, python-brace-format
 msgid "{user} is parent to **{partner}** ({timestamp})."
-msgstr ""
+msgstr "{user}은 **{partner}**({timestamp})의 상위 노드입니다."
 
-#: information.py:189
+#: information.py:282
 #, python-brace-format
 msgid "{user} is parent to:"
-msgstr ""
+msgstr "{user}은 다음의 상위 항목입니다:"
 
 #. TRANSLATORS: Command name
-#: information.py:197
+#: information.py:292
 msgid "parent"
-msgstr ""
+msgstr "부모"
 
 #. TRANSLATORS: Command option name description (/parent [user])
-#: information.py:206
+#: information.py:301
 msgid "The user whose parent you want to see."
-msgstr ""
+msgstr "부모 정보를 확인하려는 사용자."
 
 #. TRANSLATORS: Command description
-#: information.py:211
+#: information.py:306
 msgid "Show you the parent for a user."
-msgstr ""
+msgstr "특정 사용자의 상위 항목을 보여드립니다."
 
-#: information.py:237
+#: information.py:334
 msgid "You don't have a parent right now :<"
-msgstr ""
+msgstr "지금 부모님이 안 계시네요 :<"
 
-#: information.py:241
+#: information.py:341
 #, python-brace-format
 msgid "{user} doesn't have a parent right now :<"
-msgstr ""
+msgstr "{user}은 현재 부모가 없습니다 :<"
 
-#: information.py:249
+#: information.py:351
 #, python-brace-format
 msgid "{user}'s parent is **{parent}** ({timestamp})."
-msgstr ""
+msgstr "{user}의 상위 노드는 **{parent}** ({timestamp})입니다."
 
 #. TRANSLATORS: Command option description (/familysize [user])
-#: information.py:283
+#: information.py:385
 msgid "The user who you want to see the family size of."
-msgstr ""
+msgstr "가족 구성원을 확인하고 싶은 사용자."
 
 #. TRANSLATORS: Command name (/familysize)
-#: information.py:288
+#: information.py:390
 msgid "familysize"
-msgstr ""
+msgstr "가족용"
 
 #. TRANSLATORS: Command description (/familysize)
-#: information.py:290
+#: information.py:392
 msgid "Get the family size of another user."
-msgstr ""
+msgstr "다른 사용자의 가족 구성원을 확인합니다."
 
-#: information.py:312
+#: information.py:411
 #, python-brace-format
-msgid "There is **{number}** person in {user}'s family tree, including all blood and non-blood relatives."
-msgid_plural "There are **{number}** people in {user}'s family tree, including all blood and non-blood relatives."
+msgid ""
+"There is **{number}** person in {user}'s family tree, including all blood "
+"and non-blood relatives."
+msgid_plural ""
+"There are **{number}** people in {user}'s family tree, including all blood "
+"and non-blood relatives."
 msgstr[0] ""
+"{user}의 가계도에는 혈연 관계와 비혈연 관계를 포함한 총 **{number}**명이 있습"
+"니다."
 
 #. TRANSLATORS: Command name (/tree)
-#: information.py:320
+#: information.py:419
 msgid "tree"
-msgstr ""
+msgstr "트리"
 
-#: information.py:328 information.py:354
+#: information.py:427 information.py:453
 msgid "The user whose tree you want to see."
-msgstr ""
+msgstr "보려는 사용자의 트리."
 
-#: information.py:332
+#: information.py:431
 msgid "Show your family tree, but only blood relatives :3"
-msgstr ""
+msgstr "가족 관계를 보여주세요. 단, 혈연 관계인 사람만요 :3"
 
 #. TRANSLATORS: Command name (/fulltree)
-#: information.py:346
+#: information.py:445
 msgid "fulltree"
-msgstr ""
+msgstr "풀트리"
 
-#: information.py:358
+#: information.py:457
 msgid "Show your entire family tree, including non-blood relatives :3"
-msgstr ""
+msgstr "혈연 관계가 아닌 친척까지 포함한 전체 가계도를 보여주세요 :3"
 
-#: information.py:373 subscriber_commands.py:47
+#: information.py:472 subscriber_commands.py:47
 #, python-brace-format
-msgid "You need to be a higher tier subscriber to run this command! You can still use {non_perks_command} though :3"
+msgid ""
+"You need to be a higher tier subscriber to run this command! You can still "
+"use {non_perks_command} though :3"
 msgstr ""
+"이 명령어를 실행하려면 상위 등급 구독자여야 합니다! 그래도 "
+"{non_perks_command}은 여전히 사용할 수 있어요 :3"
 
-#: information.py:401
+#: information.py:501
 msgid "You have no family to put into a tree .-."
-msgstr ""
+msgstr "가족이 없어서 가계도에 넣을 사람이 없네요 .-."
 
-#: information.py:405
+#: information.py:508
 #, python-brace-format
 msgid "{user} has no family to put into a tree .-."
-msgstr ""
+msgstr "{user}은 계보도에 넣을 가족이 없습니다 .-."
 
-#: information.py:477
-msgid "I couldn't send your family tree image - please try again in a few minutes."
-msgstr ""
+#: information.py:578
+msgid ""
+"I couldn't send your family tree image - please try again in a few minutes."
+msgstr "가족 나무 이미지를 전송할 수 없었습니다. 잠시 후 다시 시도해 주세요."
 
-#: information.py:481
+#: information.py:587
 #, python-brace-format
-msgid "[Click here]({url}) to customise your tree."
+msgid ""
+"Use {fulltree} for your *entire* family, including non-blood relatives.\n"
+"Use {customize} to change how your tree looks."
 msgstr ""
-
-#: information.py:485
-#, python-brace-format
-msgid "Use {fulltree} for your *entire* family, including non-blood relatives."
-msgstr ""
+"혈연 관계가 아닌 친척을 포함한 *온* 가족을 선택하려면 {fulltree}을 선택하세"
+"요.\n"
+"가계도의 표시 방식을 변경하려면 {customize}을 선택하세요."
 
 #. TRANSLATORS: Command name
 #: marriage.py:33
 msgid "marry"
-msgstr ""
+msgstr "결혼하다"
 
 #. TRANSLATORS: Command option name description (/marry user)
 #: marriage.py:42
 msgid "The user that you want to marry."
-msgstr ""
+msgstr "결혼하고 싶은 상대."
 
 #. TRANSLATORS: Command description
 #: marriage.py:46
 msgid "Propose to another user."
-msgstr ""
+msgstr "다른 사용자에게 청혼하세요."
 
 #: marriage.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to marry you! What do you say?"
-msgstr ""
+msgstr "{user}야, {author}이 너랑 결혼하고 싶어 해! 어때?"
 
 #. TRANSLATORS: Command name
 #: marriage.py:64
 msgid "divorce"
-msgstr ""
+msgstr "이혼"
 
 #. TRANSLATORS: Command description
 #: marriage.py:66
 msgid "Divorce one of your partners."
-msgstr ""
+msgstr "파트너 중 한 명과 이혼하세요."
 
-#: marriage.py:89
+#: marriage.py:94
 msgid "Which of your partners do you want to divorce?"
-msgstr ""
+msgstr "배우자 중 누구와 이혼하고 싶으신가요?"
 
-#: marriage.py:116 parents.py:180 proposal_handler.py:47
+#: marriage.py:123 parents.py:185 proposal_handler.py:48
 msgid "You cannot interact with these buttons."
-msgstr ""
+msgstr "이 버튼들은 작동하지 않습니다."
 
-#: marriage.py:133 marriage.py:141
+#: marriage.py:142 marriage.py:153
 #, python-brace-format
 msgid "You have been divorced from {user} :("
+msgstr "{user}과 이혼하셨군요 :("
+
+#. TRANSLATORS: Command name
+#: misc.py:32
+msgid "info"
+msgstr "정보"
+
+#. TRANSLATORS: Command description
+#: misc.py:34
+msgid "Give you information about the bot."
+msgstr "봇에 대한 정보를 알려드립니다."
+
+#: misc.py:44
+msgid ""
+"MarriageBot is a bot that allows users to marry, divorce, and have children "
+"with other users. It also features a unique family tree system that allows "
+"users to view their family history and relationships.\n"
+"-# MarriageBot is being maintained by [Voxel Fox](https://voxelfox.co.uk)."
 msgstr ""
+"MarriageBot은 사용자가 다른 사용자와 결혼하고, 이혼하며, 자녀를 가질 수 있게 "
+"해주는 봇입니다. 또한 사용자가 자신의 가계도와 가족 관계를 확인할 수 있는 독"
+"특한 가계도 시스템을 갖추고 있습니다.\n"
+"-# MarriageBot은 [Voxel Fox](https://voxelfox.co.uk)가 관리하고 있습니다."
+
+#: misc.py:52
+msgid "Family Tree Members"
+msgstr "가계도 구성원"
+
+#: misc.py:62 misc.py:176
+msgid "Donate"
+msgstr "기부하기"
+
+#: misc.py:67
+msgid "Support Server"
+msgstr "지원 서버"
+
+#. TRANSLATORS: Command name
+#: misc.py:81
+msgid "perks"
+msgstr "혜택"
+
+#. TRANSLATORS: Command description
+#: misc.py:83
+msgid "Give you information about the bot's premium perks."
+msgstr "봇의 프리미엄 혜택에 대한 정보를 알려드립니다."
+
+#. TRANSLATORS: Command name
+#: misc.py:94
+msgid "donate"
+msgstr "기부"
+
+#. TRANSLATORS: Command description
+#: misc.py:96
+msgid "Give you information about the bot's donation options."
+msgstr "봇의 기부 방법에 대한 정보를 알려드립니다."
+
+#: misc.py:112
+msgid "Support MarriageBot"
+msgstr "MarriageBot 후원하기"
+
+#: misc.py:114
+msgid ""
+"If you enjoy MarriageBot, please consider donating to support its ongoing "
+"maintainance, development, and hosting costs.\n"
+"MarriageBot isn't a small bot by any means, and keeping it going requires a "
+"lot of time and resources behind the scenes."
+msgstr ""
+"MarriageBot을 즐겨 주신다면, 지속적인 유지보수, 개발 및 호스팅 비용을 지원해 "
+"주시기 위해 후원을 고려해 주시면 감사하겠습니다.\n"
+"MarriageBot은 결코 작은 봇이 아니며, 이를 계속 운영하기 위해서는 뒤에서 많은 "
+"시간과 자원이 필요합니다."
+
+#: misc.py:120
+msgid "Donation Perks"
+msgstr "후원 혜택"
+
+#: misc.py:122
+#, python-brace-format
+msgid ""
+"By supporting MarriageBot, you gain access to exclusive perks depending on "
+"your subscription level:\n"
+"* Default\n"
+"  * 5 children\n"
+"  * 1 partner\n"
+"* T1\n"
+"  * 10 children\n"
+"  * 2 partners\n"
+"  * Access to {disownall_c}\n"
+"* T2\n"
+"  * 15 children\n"
+"  * 4 partners\n"
+"  * Access to {disownall_c}\n"
+"  * Access to {fulltree_c}\n"
+"* T3\n"
+"  * 20 children\n"
+"  * 8 partners\n"
+"  * Access to {disownall_c}\n"
+"  * Access to {fulltree_c}\n"
+"In addition, you can buy MarriageBot Gold for your server, which lets your "
+"server have its own family tree, and gives you access to the force "
+"commands!\n"
+"* Default\n"
+"  * Global tree\n"
+"* Gold\n"
+"  * Server-specific tree\n"
+"  * Access to the force commands ({forcedivorce_c}, {forcemarry_c}, "
+"{forceadopt_c}, {forcerunaway_c})\n"
+"  * Access to {incest_c}\n"
+"  * T3 perks for all of your server members\n"
+msgstr ""
+"MarriageBot을 후원하시면 구독 등급에 따라 다음과 같은 독점 혜택을 이용하실 "
+"수 있습니다:\n"
+"* 기본\n"
+"  * 자녀 5명\n"
+"  * 배우자 1명\n"
+"* T1\n"
+"  * 자녀 10명\n"
+"  * 배우자 2명\n"
+"  * {disownall_c} 이용 권한\n"
+"* T2\n"
+"  * 자녀 15명\n"
+"  * 배우자 4명\n"
+"  * {disownall_c} 이용 권한\n"
+"  * {fulltree_c} 이용 권한\n"
+"* T3\n"
+"  * 자녀 20명\n"
+"  * 배우자 8명\n"
+"  * {disownall_c} 이용 권한\n"
+"  * {fulltree_c} 이용 권한\n"
+"또한, 서버용 MarriageBot Gold를 구매하시면 서버 고유의 가계도를 생성할 수 있"
+"으며, 포스 명령어를 사용할 수 있습니다!\n"
+"* 기본\n"
+"  * 전체 가계도\n"
+"* 골드\n"
+"  * 서버 전용 가계도\n"
+"  * 포스 명령어 사용 권한 ({forcedivorce_c}, {forcemarry_c}, {forceadopt_c}, "
+"{forcerunaway_c})\n"
+"  * {incest_c} 사용 권한\n"
+"  * 모든 서버 구성원에게 T3 특전 제공\n"
+
+#: misc.py:162
+msgid "How to Support"
+msgstr "후원 방법"
+
+#: misc.py:164
+msgid ""
+"Subscriptions can be taken out on the [Voxel Fox website](https://voxelfox."
+"co.uk/portal/marriagebot) :3"
+msgstr ""
+"구독은 [Voxel Fox 웹사이트](https://voxelfox.co.uk/portal/marriagebot)에서 신"
+"청하실 수 있습니다 :3"
+
+#: misc.py:169
+msgid "Thank you for considering supporting MarriageBot!"
+msgstr "MarriageBot을 후원해 주실 것을 고려해 주셔서 감사합니다!"
 
 #. TRANSLATORS: Command name
 #: parents.py:33
 msgid "adopt"
-msgstr ""
+msgstr "채택하다"
 
 #. TRANSLATORS: Command option name description (/adopt user)
 #: parents.py:42
 msgid "The user that you want to adopt."
-msgstr ""
+msgstr "입양하고자 하는 사용자."
 
 #. TRANSLATORS: Command description
 #: parents.py:46
 msgid "Ask to adopt another user."
-msgstr ""
+msgstr "다른 사용자를 팔로우해 달라고 요청하세요."
 
 #: parents.py:58
 #, python-brace-format
 msgid "Hey {user}, {author} wants to adopt you! What do you say?"
-msgstr ""
+msgstr "{user}야, {author}이 너를 입양하고 싶어 해! 어때?"
 
 #: parents.py:65
 msgid "makeparent"
-msgstr ""
+msgstr "부모 만들기"
 
 #. TRANSLATORS: Command option name description (/makeparent user)
 #: parents.py:74
 msgid "The user that you want to make into your parent."
-msgstr ""
+msgstr "부모로 지정하려는 사용자."
 
 #. TRANSLATORS: Command description
 #: parents.py:78
 msgid "Ask to make another user into your parent."
-msgstr ""
+msgstr "다른 사용자를 자신의 부모로 지정해 달라고 요청하세요."
 
 #: parents.py:90
 #, python-brace-format
 msgid "Hey {user}, {author} wants you to be their parent! What do you say?"
-msgstr ""
+msgstr "{user}야, {author}이 네가 자기 부모가 되어주길 바란대! 어때?"
 
 #. TRANSLATORS: Command name
 #: parents.py:96
 msgid "runaway"
-msgstr ""
+msgstr "도망"
 
 #. TRANSLATORS: Command description
 #: parents.py:98
 msgid "Run away from your parent."
-msgstr ""
+msgstr "부모님에게서 도망쳐라."
 
-#: parents.py:121
+#: parents.py:123
 #, python-brace-format
 msgid "You have run away from {user} :("
-msgstr ""
+msgstr "{user}에게서 도망쳤네요 :("
 
 #. TRANSLATORS: Command name
-#: parents.py:128
+#: parents.py:132
 msgid "disown"
-msgstr ""
+msgstr "부인하다"
 
 #. TRANSLATORS: Command description
-#: parents.py:130
+#: parents.py:134
 msgid "Disown one of your children."
-msgstr ""
+msgstr "자식 중 한 명을 버리십시오."
 
-#: parents.py:153
+#: parents.py:158
 msgid "Which of your children do you want to disown?"
-msgstr ""
+msgstr "자녀 중 누구를 상속에서 제외하시겠습니까?"
 
-#: parents.py:197 parents.py:205
+#: parents.py:204 parents.py:215
 #, python-brace-format
 msgid "You have now disowned {user} :("
-msgstr ""
+msgstr "이제 {user}을 차단하셨습니다 :("
 
-#: proposal_handler.py:54
+#: proposal_handler.py:55
 msgid "You can no longer respond to this message."
-msgstr ""
+msgstr "이 메시지에 더 이상 답장할 수 없습니다."
 
-#: proposal_handler.py:66
+#: proposal_handler.py:67
 msgid "You can't accept your own proposal!"
-msgstr ""
+msgstr "자신이 제안한 내용을 수락할 수는 없습니다!"
 
-#: proposal_handler.py:77
+#: proposal_handler.py:79
 #, python-brace-format
 msgid "Alright, {author}, your proposal to {user} has been cancelled :)"
-msgstr ""
+msgstr "좋아요, {author}, {user}에게 보낸 청혼이 취소되었네요 :)"
 
-#: proposal_handler.py:90
+#: proposal_handler.py:95
 #, python-brace-format
 msgid "Sorry, {author}, {user} said no to your proposal :<"
-msgstr ""
+msgstr "미안해요, {author}, {user}이(가) 당신의 제안을 거절했어요 :<"
 
-#: proposal_handler.py:115
+#: proposal_handler.py:122
 #, python-brace-format
 msgid "Welcome {user}! You're now married to {author} :3c"
-msgstr ""
+msgstr "{user} 님, 환영합니다! 이제 {author} 님과 결혼하셨네요 :3c"
 
-#: proposal_handler.py:116
+#: proposal_handler.py:123
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the child of {author} :3c"
 msgstr ""
+"{user}님, 우리 가족에 오신 것을 환영합니다! 이제 {author}의 자녀가 되셨네"
+"요 :3c"
 
-#: proposal_handler.py:117
+#: proposal_handler.py:124
 #, python-brace-format
 msgid "Welcome to the family, {user}! You're now the parent of {author} :3c"
 msgstr ""
+"{user}님, 우리 가족에 오신 것을 환영합니다! 이제 {author}의 부모님이 되셨네"
+"요 :3c"
+
+#. TRANSLATORS: Command name
+#: settings.py:35
+msgid "transfer-gold"
+msgstr "골드 이체"
+
+#. TRANSLATORS: Command description
+#: settings.py:37
+msgid "Transfer your MarriageBot Gold purchase to this server."
+msgstr "MarriageBot Gold 구매 내역을 이 서버로 이전해 주세요."
+
+#: settings.py:59
+msgid "You haven't purchased any instances of MarriageBot Gold!"
+msgstr "MarriageBot Gold를 아직 구매하지 않으셨습니다!"
+
+#: settings.py:64
+msgid "MarriageBot Gold has already been purchased for this server!"
+msgstr "이 서버에는 이미 MarriageBot Gold가 구매되었습니다!"
+
+#: settings.py:89
+msgid ""
+"I'm going to transfer your MarriageBot Gold purchase into **this server**. "
+"Which server would you like to transfer your Gold purchase *from*?"
+msgstr ""
+"구매하신 MarriageBot 골드를 **이 서버**로 이전해 드리겠습니다. 골드를 *어느 "
+"서버*에서 이전하시겠습니까?"
+
+#: settings.py:96
+msgid "Select a server"
+msgstr "서버 선택"
+
+#: settings.py:123
+msgid "You cannot transfer someone else's MarriageBot Gold purchase!"
+msgstr "다른 사람이 구매한 MarriageBot Gold는 양도할 수 없습니다!"
+
+#: settings.py:141
+#, python-brace-format
+msgid ""
+"You didn't purchase the Gold subscription that's active in **{guild_name}**"
+msgstr "**{guild_name}**에서 활성화된 골드 구독을 구매하지 않으셨습니다."
+
+#: settings.py:166
+msgid "There was an error transferring your MarriageBot Gold purchase."
+msgstr "MarriageBot Gold 구매 내역 전송 중에 오류가 발생했습니다."
+
+#: settings.py:184
+#, python-brace-format
+msgid ""
+"Your MarriageBot Gold purchase has been transferred to this server! You can "
+"now run the {command_ping} command to activate it here :3"
+msgstr ""
+"MarriageBot Gold 구매 내역이 이 서버로 이전되었습니다! 이제 {command_ping} 명"
+"령어를 실행하여 이곳에서 활성화할 수 있습니다 :3"
+
+#: settings.py:203
+msgid "Gold has not been purchased for this guild."
+msgstr "이 길드에서는 금을 구매하지 않았습니다."
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:219 settings.py:324 settings.py:394
+msgid "Enabled"
+msgstr "활성화"
+
+#. TRANSLATORS: Enable/disable setting for a command
+#: settings.py:225 settings.py:330 settings.py:400
+msgid "Disabled"
+msgstr "비활성화"
+
+#. TRANSLATORS: Command name
+#: settings.py:233
+msgid "guild-settings guild-specific-families"
+msgstr "길드 설정, 길드별 가족"
+
+#. TRANSLATORS: Command description
+#: settings.py:235
+msgid "Set whether or not guild-specific families are enabled for this guild."
+msgstr "이 길드에 대해 길드 전용 가문을 활성화할지 여부를 설정합니다."
+
+#: settings.py:244
+msgid ""
+"This command cannot be run on the Gold version of MarriageBot. The regular "
+"version of MarriageBot now allows you to toggle between guild-specific "
+"families and global families.\n"
+"\n"
+"To use this command, please change over to the regular version of "
+"MarriageBot and run this command."
+msgstr ""
+"이 명령어는 MarriageBot 골드 버전에서는 실행할 수 없습니다. MarriageBot 일반 "
+"버전에서는 이제 길드 전용 가족 목록과 전체 가족 목록을 전환할 수 있습니다.\n"
+"\n"
+"이 명령어를 사용하려면 MarriageBot 일반 버전으로 전환한 후 이 명령어를 실행"
+"해 주세요."
+
+#: settings.py:263
+msgid ""
+"You can only switch to guild-specific families (and thus use the `/force` "
+"and `/incest` commands, enable polygamy for everyone in your server, and "
+"increase your child count) after you have purchased MarriageBot Gold."
+msgstr ""
+"MarriageBot Gold를 구매한 후에만 길드 전용 가족 관계로 전환할 수 있으며(따라"
+"서 `/force` 및 `/incest` 명령어를 사용하고, 서버 내 모든 사용자에게 일부다처"
+"제를 허용하며, 자녀 수를 늘릴 수 있습니다)."
+
+#: settings.py:295
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **enabled** in this guild, and you can now "
+"use the force commands.\n"
+"Please note that this is a completely seperate tree than the global "
+"MarriageBot tree.\n"
+"\n"
+"You can switch back to the global tree by using the {guild_specific_command} "
+"command :3"
+msgstr ""
+"이 길드에서는 이제 길드 전용 가족 기능이 **활성화**되었으며, force 명령어를 "
+"사용할 수 있습니다.\n"
+"이 기능은 글로벌 MarriageBot 기능과는 완전히 별개의 시스템임을 유의해 주세"
+"요.\n"
+"\n"
+"{guild_specific_command} 명령어를 사용하면 글로벌 시스템으로 다시 전환할 수 "
+"있습니다 :3"
+
+#: settings.py:304
+#, python-brace-format
+msgid ""
+"Guild-specific families are now **disabled** in this guild. You are now "
+"switched back to the global MarriageBot tree.\n"
+"\n"
+"You can switch back to your guild-specific tree by using the "
+"{guild_specific_command} command :3"
+msgstr ""
+"이 길드에서는 길드 전용 가계도가 **비활성화**되었습니다. 이제 전역 "
+"MarriageBot 가계도로 다시 전환되었습니다.\n"
+"\n"
+"{guild_specific_command} 명령어를 사용하면 길드 전용 가계도로 다시 전환할 수 "
+"있습니다 :3"
+
+#. TRANSLATORS: Command name
+#: settings.py:338
+msgid "guild-settings incest"
+msgstr "길드 설정 근친상간"
+
+#. TRANSLATORS: Command description
+#: settings.py:340
+msgid "Set whether or not incest is enabled for this guild."
+msgstr "이 길드에서 근친 관계 기능을 활성화할지 여부를 설정합니다."
+
+#: settings.py:352
+msgid "This command can only be run with MarriageBot Gold enabled!"
+msgstr "이 명령어는 MarriageBot Gold가 활성화된 상태에서만 실행할 수 있습니다!"
+
+#: settings.py:373
+#, python-brace-format
+msgid ""
+"Incest is now **enabled** in this guild.\n"
+"\n"
+"Please note that this only applies to your guild-specific tree - if "
+"{guild_specific_command} is enabled."
+msgstr ""
+"이 길드에서 근친 관계가 **활성화**되었습니다.\n"
+"\n"
+"이는 {guild_specific_command}이 활성화된 경우에만 해당 길드 전용 트리에서만 "
+"적용된다는 점을 유의해 주시기 바랍니다."
+
+#: settings.py:378
+msgid "Incest is now **disabled** in this guild."
+msgstr "이 길드에서는 이제 근친상간이 **사용 불가**입니다."
+
+#. TRANSLATORS: Command name
+#: settings.py:408
+msgid "guild-settings simulation-gifs"
+msgstr "길드 설정 시뮬레이션 GIF"
+
+#. TRANSLATORS: Command description
+#: settings.py:410
+msgid "Set whether or not simulation GIFs are enabled in this guild."
+msgstr "이 길드에서 시뮬레이션 GIF를 활성화할지 여부를 설정합니다."
+
+#: settings.py:431
+msgid "GIFs for the simulation commands are now **enabled**."
+msgstr "시뮬레이션 명령어용 GIF가 이제 **사용 가능**합니다."
+
+#: settings.py:433
+msgid "GIFs for the simulation commands are now **disabled**."
+msgstr "시뮬레이션 명령어용 GIF는 현재 **비활성화**되었습니다."
 
 #. TRANSLATORS: Command option description (/hug [user])
 #: simulation.py:136
 msgid "The user you want to hug."
-msgstr ""
+msgstr "안아주고 싶은 사용자."
 
 #. TRANSLATORS: Command name (/hug)
 #: simulation.py:140
 msgid "hug"
-msgstr ""
+msgstr "포옹"
 
 #. TRANSLATORS: Command description (/hug)
 #: simulation.py:142
 msgid "Hug another user."
-msgstr ""
+msgstr "다른 사용자에게 포옹을 건네세요."
 
 #: simulation.py:155
 msgid "*You hug yourself... and start crying.*"
-msgstr ""
+msgstr "*자신을 꼭 껴안고... 울기 시작한다.*"
 
 #: simulation.py:158
 #, python-brace-format
 msgid "*Hugs {user}.*"
-msgstr ""
+msgstr "*포옹 {user}.*"
 
 #. TRANSLATORS: Command option description (/kiss [user])
 #: simulation.py:171
 msgid "The user you want to kiss."
-msgstr ""
+msgstr "키스하고 싶은 사용자."
 
 #. TRANSLATORS: Command name (/kiss)
 #: simulation.py:175
 msgid "kiss"
-msgstr ""
+msgstr "키스"
 
 #. TRANSLATORS: Command description (/kiss)
 #: simulation.py:177
 msgid "Kiss another user."
-msgstr ""
+msgstr "다른 사용자에게 키스하세요."
 
 #: simulation.py:190
 msgid "How would you even manage to do that?"
-msgstr ""
+msgstr "도대체 어떻게 그런 일을 해낼 수 있겠어요?"
 
 #: simulation.py:193
 #, python-brace-format
 msgid "*Kisses {user}.*"
-msgstr ""
+msgstr "*키스 {user}.*"
 
 #. TRANSLATORS: Command option description (/stab [user])
 #: simulation.py:206
 msgid "The user you want to stab."
-msgstr ""
+msgstr "칼로 찌르고 싶은 사용자."
 
 #. TRANSLATORS: Command name (/stab)
 #: simulation.py:210
 msgid "stab"
-msgstr ""
+msgstr "찔린"
 
 #. TRANSLATORS: Command description (/stab)
 #: simulation.py:212
 msgid "Stab another user."
-msgstr ""
+msgstr "다른 사용자를 찌르세요."
 
 #: simulation.py:225
 msgid "*You stab yourself.*"
-msgstr ""
+msgstr "*자신을 찌른다.*"
 
 #: simulation.py:226 simulation.py:233
 msgid "Looks like you don't have a knife, oops!"
-msgstr ""
+msgstr "칼이 없는 것 같네요, 이런!"
 
 #: simulation.py:227
-msgid "No."
-msgstr ""
+msgid "I'd rather you didn't stab yourself, really."
+msgstr "솔직히 말해서, 자해는 하지 않았으면 좋겠어."
 
 #: simulation.py:230
 #, python-brace-format
 msgid "*You stab {user}.*"
-msgstr ""
+msgstr "*{user}을 찌른다.*"
 
 #: simulation.py:231
 #, python-brace-format
 msgid "*{user} has been stabbed.*"
-msgstr ""
+msgstr "*{user}이 칼에 찔렸다.*"
 
 #: simulation.py:232
 #, python-brace-format
 msgid "*stabs {user}.*"
-msgstr ""
+msgstr "*{user}을 찌른다.*"
 
 #: simulation.py:234
 msgid "You can't legally stab someone without their consent."
-msgstr ""
+msgstr "상대방의 동의 없이 법적으로 누군가를 찌를 수는 없습니다."
 
 #: simulation.py:235
 msgid "Stab? Isn't that, like, illegal?"
-msgstr ""
+msgstr "칼로 찌르다니? 그거, 법에 어긋나는 거 아니야?"
 
 #: simulation.py:236
 msgid "I wouldn't recommend doing that tbh."
-msgstr ""
+msgstr "솔직히 말해서 그건 하지 않는 게 좋을 것 같아요."
 
 #. TRANSLATORS: Command option description (/punch [user])
 #: simulation.py:249
 msgid "The user you want to punch."
-msgstr ""
+msgstr "주먹을 날리고 싶은 사용자."
 
 #. TRANSLATORS: Command name (/punch)
 #: simulation.py:253
 msgid "punch"
-msgstr ""
+msgstr "펀치"
 
 #. TRANSLATORS: Command description (/punch)
 #: simulation.py:255
 msgid "Punch another user."
-msgstr ""
+msgstr "다른 사용자를 때려라."
 
 #: simulation.py:268
 msgid "*You punched yourself... for some reason.*"
-msgstr ""
+msgstr "*왠지 모르게... 스스로를 때렸어.*"
 
 #: simulation.py:271
 #, python-brace-format
 msgid "*Punches {user} right in the nose.*"
-msgstr ""
+msgstr "*코를 {user} 콕 찔러준다.*"
 
 #. TRANSLATORS: Command option description (/bite [user])
 #: simulation.py:284
 msgid "The user you want to bite."
-msgstr ""
+msgstr "물고 싶은 사용자."
 
 #. TRANSLATORS: Command name (/bite)
 #: simulation.py:288
 msgid "bite"
-msgstr ""
+msgstr "물다"
 
 #. TRANSLATORS: Command description (/bite)
 #: simulation.py:290
 msgid "Bite another user."
-msgstr ""
+msgstr "다른 사용자를 물어요."
 
 #: simulation.py:303
 msgid "*You missed and bit yourself! Loser.*"
-msgstr ""
+msgstr "*빗나갔더니 자기 입술을 깨물었네! 찐루저.*"
 
 #: simulation.py:304
 #, python-brace-format
 msgid "*You failed to bite {user}!*"
-msgstr ""
+msgstr "*물지 못했습니다 {user}!*"
 
 #: simulation.py:305
 msgid "*You thought! You bit yourself.*"
-msgstr ""
+msgstr "*그랬다고 생각했지! 자업자득이야.*"
 
 #: simulation.py:306
 msgid "*We'll act like you didn't just bite yourself.*"
-msgstr ""
+msgstr "*방금 스스로를 깨물었다는 사실을 모른 척할게요.*"
 
-#: simulation.py:309
+#: simulation.py:309 simulation.py:318
 #, python-brace-format
 msgid "*You bite {user}.*"
-msgstr ""
+msgstr "*당신은 {user}을 깨물었다.*"
 
-#: simulation.py:310
+#: simulation.py:310 simulation.py:319
 #, python-brace-format
 msgid "*Bites {user}.*"
-msgstr ""
+msgstr "*{user}을 깨물다.*"
 
-#: simulation.py:311
+#: simulation.py:311 simulation.py:320
 #, python-brace-format
 msgid "*{user} was bitten.*"
-msgstr ""
+msgstr "*{user}이 물렸다.*"
 
-#: simulation.py:312
+#: simulation.py:312 simulation.py:321
 #, python-brace-format
 msgid "*{user} has been bitten.*"
-msgstr ""
+msgstr "*{user}이 물렸다.*"
 
 #: simulation.py:313
 msgid "Why would you bite someone?"
-msgstr ""
+msgstr "왜 남을 물어요?"
 
 #: simulation.py:314
 msgid "Biting people isn’t nice."
-msgstr ""
+msgstr "사람을 물면 안 돼요."
 
 #: simulation.py:315
 msgid "Stop biting people!"
-msgstr ""
+msgstr "사람을 물지 마!"
 
 #. TRANSLATORS: Command option description (/slap [user])
-#: simulation.py:328
+#: simulation.py:334
 msgid "The user you want to slap."
-msgstr ""
+msgstr "때려주고 싶은 사용자."
 
 #. TRANSLATORS: Command name (/slap)
-#: simulation.py:332
+#: simulation.py:338
 msgid "slap"
-msgstr ""
+msgstr "때리기"
 
 #. TRANSLATORS: Command description (/slap)
-#: simulation.py:334
+#: simulation.py:340
 msgid "Slap another user."
-msgstr ""
+msgstr "다른 사용자를 때려보세요."
 
-#: simulation.py:347
+#: simulation.py:353
 msgid "*You slapped yourself... for some reason.*"
-msgstr ""
+msgstr "*왠지 모르게... 스스로 뺨을 때렸어.*"
 
-#: simulation.py:350
+#: simulation.py:356
 #, python-brace-format
 msgid "*Slaps {user}.*"
-msgstr ""
+msgstr "*{user}을 때린다.*"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:33
 msgid "disownall"
-msgstr ""
+msgstr "모두 거부"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:35
 msgid "Disown all of your children at once."
-msgstr ""
+msgstr "자녀들을 한꺼번에 모두 버려라."
 
 #: subscriber_commands.py:61
 msgid "Done! You no longer have any children :3"
-msgstr ""
+msgstr "끝! 이제 자녀가 하나도 없네요 :3"
 
 #. TRANSLATORS: Command name
 #: subscriber_commands.py:67
 msgid "abandon"
-msgstr ""
+msgstr "포기하다"
 
 #. TRANSLATORS: Command description
 #: subscriber_commands.py:69
 msgid "Remove all of your family members at once."
-msgstr ""
+msgstr "가족 구성원들을 한꺼번에 모두 제거하세요."
 
 #: subscriber_commands.py:83
 #, python-brace-format
-msgid "You need to be a higher tier subscriber to run this command! You can still use {divorce}, {disown}, and {runaway} though :3"
+msgid ""
+"You need to be a higher tier subscriber to run this command! You can still "
+"use {divorce}, {disown}, and {runaway} though :3"
 msgstr ""
+"이 명령어를 실행하려면 상위 등급 구독자여야 합니다! 그래도 {divorce}, "
+"{disown}, {runaway}는 여전히 사용할 수 있어요 :3"
 
 #: subscriber_commands.py:100
 msgid "Done! You no longer have any family members :3"
-msgstr ""
+msgstr "끝! 이제 가족이 아무도 없네요 :3"
 
 #: utils/proposal_lock.py:65
-msgid "You can't run this on yourself :/"
-msgstr ""
+msgid "You're already married!"
+msgstr "벌써 결혼했구나!"
 
-#: utils/proposal_lock.py:73
-msgid "You can't run this on bots :/"
-msgstr ""
-
-#: utils/proposal_lock.py:82
-msgid "You're already waiting on a proposal."
-msgstr ""
-
-#: utils/proposal_lock.py:88
+#: utils/proposal_lock.py:77
 #, python-brace-format
-msgid "{user} is already waiting on a proposal."
-msgstr ""
+msgid ""
+"You already have a partner! You can't have any more right now. {user} is at "
+"their partner limit as well :<"
+msgid_plural ""
+"You already have {count} partners! You can't have any more right now. {user} "
+"is at their partner limit as well :<"
+msgstr[0] ""
+"이미 파트너가 있네요! 지금은 더 이상 파트너를 추가할 수 없습니다. {user}도 파"
+"트너 한도에 도달했습니다 :<"
 
-#: utils/proposal_lock.py:116
+#: utils/proposal_lock.py:92
 #, python-brace-format
 msgid "You already have a partner! You can't have any more right now :<"
-msgid_plural "You already have {count} partners! You can't have any more right now :<"
-msgstr[0] ""
+msgid_plural ""
+"You already have {count} partners! You can't have any more right now :<"
+msgstr[0] "이미 파트너가 있잖아요! 지금은 더 이상 가질 수 없어요 :<"
 
-#: utils/proposal_lock.py:127
+#: utils/proposal_lock.py:108
 #, python-brace-format
 msgid "{user} already has a partner! They can't have any more right now :<"
-msgid_plural "{user} already has {count} partners! They can't have any more right now :<"
+msgid_plural ""
+"{user} already has {count} partners! They can't have any more right now :<"
 msgstr[0] ""
+"{user}은 이미 파트너가 있어요! 지금은 더 이상 파트너를 둘 수 없어요 :<"
 
-#: utils/proposal_lock.py:139
+#: utils/proposal_lock.py:136
+msgid "You're already their parent!"
+msgstr "당신은 이미 그 아이들의 부모님이시잖아요!"
+
+#: utils/proposal_lock.py:143
 #, python-brace-format
 msgid "{user} already has a parent! They can only have one!"
-msgstr ""
+msgstr "{user}에는 이미 부모가 있습니다! 부모는 하나만 가질 수 있습니다!"
 
-#: utils/proposal_lock.py:162
+#: utils/proposal_lock.py:186
+msgid "They're already your parent!"
+msgstr "그들은 이미 당신의 부모님이시잖아요!"
+
+#: utils/proposal_lock.py:192
 msgid "You already have a parent! You can only have one!"
-msgstr ""
+msgstr "이미 부모님이 계시잖아요! 부모님은 한 분뿐이니까요!"
 
-#: utils/proposal_lock.py:184
+#: utils/proposal_lock.py:253
+msgid "You can't run this on yourself :/"
+msgstr "이건 자기 자신에게 적용할 수는 없어요 :/"
+
+#: utils/proposal_lock.py:261
+msgid "You can't run this on bots :/"
+msgstr "봇에서는 이걸 실행할 수 없어요 :/"
+
+#: utils/proposal_lock.py:270
+msgid "You're already waiting on a proposal."
+msgstr "이미 제안서를 기다리고 계시군요."
+
+#: utils/proposal_lock.py:276
+#, python-brace-format
+msgid "{user} is already waiting on a proposal."
+msgstr "{user}은 이미 제안서를 기다리고 있습니다."
+
+#: utils/proposal_lock.py:345
 #, python-brace-format
 msgid "You and {user} are already related!"
-msgstr ""
+msgstr "당신과 {user}은 이미 친척 관계입니다!"
 
-#: utils/proposal_lock.py:213
+#: utils/proposal_lock.py:375
 #, python-brace-format
-msgid "You can't do that! If your families combine, you'd have over {family_size} members in your tree!"
+msgid ""
+"You can't do that! If your families combine, you'd have over {family_size} "
+"members in your tree!"
 msgstr ""
+"그건 안 돼요! 두 가문이 합쳐지면 가계도에 {family_size}명 이상의 구성원이 생"
+"기게 될 거예요!"
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:230
+#: utils/proposal_lock.py:403
 msgid "Yes"
-msgstr ""
+msgstr "네"
 
 #. TRANSLATORS: Label on a button
-#: utils/proposal_lock.py:236
+#: utils/proposal_lock.py:409
 msgid "No"
-msgstr ""
+msgstr "아니"
 
-#: utils/proposal_lock.py:247
+#: utils/proposal_lock.py:421
 #, python-brace-format
 msgid "Sorry, {author}, your proposal to {user} has timed out!"
 msgstr ""
+"죄송합니다, {author} 님, {user} 님께 보내신 제안이 시간 초과되었습니다!"
 
-#: utils/utils.py:126
+#: utils/utils.py:199
 msgid "Get MarriageBot Gold"
-msgstr ""
+msgstr "MarriageBot Gold 구매하기"
 
-#: utils/utils.py:130
+#: utils/utils.py:203
 msgid "Get MarriageBot perks"
-msgstr ""
+msgstr "MarriageBot의 혜택을 누려보세요"
 
+#: utils/utils.py:220
+msgid "Enable Gold"
+msgstr "골드 활성화"
