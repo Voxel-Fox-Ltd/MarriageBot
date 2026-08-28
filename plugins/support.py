@@ -100,7 +100,8 @@ class Support(client.Plugin):
                     parents.append(temp)
 
         async with db.Database.acquire() as conn:
-            t = conn.transaction()
+            tr = conn.transaction()
+            await tr.start()
             try:
                 if delete:
                     await conn.execute("DELETE FROM parents WHERE guild_id=$1", guild_idi)
@@ -115,9 +116,9 @@ class Support(client.Plugin):
                     records=parents,
                     columns=["user_id", "partner_id", "guild_id"]
                 )
-                await t.commit()
+                await tr.commit()
             except Exception as e:
-                await t.rollback()
+                await tr.rollback()
                 await ctx.send(f"Failed to copy over records.\n`{e}`")
                 return
 
