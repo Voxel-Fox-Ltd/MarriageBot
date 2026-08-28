@@ -41,7 +41,6 @@ class Support(client.Plugin):
 
     @client.command(
         name="support copy-family-to-guild",
-        description="Copy a family to a Gold guild.",
         options=[
             n.ApplicationCommandOption(
                 "user",
@@ -100,31 +99,32 @@ class Support(client.Plugin):
                 if temp not in parents:
                     parents.append(temp)
 
-        try:
-            async with db.Database.acquire() as conn:
-                async with conn.transaction():
-                    if delete:
-                        await conn.execute("DELETE FROM parents WHERE guild_id=$1", guild_idi)
-                        await conn.execute("DELETE FROM marriages WHERE guild_id=$1", guild_idi)
-                    await conn.copy_records_to_table(
-                        "parents",
-                        records=parents,
-                        columns=["child_id", "parent_id", "guild_id"]
-                    )
-                    await conn.copy_records_to_table(
-                        "marriages",
-                        records=parents,
-                        columns=["user_id", "partner_id", "guild_id"]
-                    )
-        except Exception as e:
-            await ctx.send(f"Failed to copy over records.\n`{e}`")
-            return
+        async with db.Database.acquire() as conn:
+            t = conn.transaction()
+            try:
+                if delete:
+                    await conn.execute("DELETE FROM parents WHERE guild_id=$1", guild_idi)
+                    await conn.execute("DELETE FROM marriages WHERE guild_id=$1", guild_idi)
+                await conn.copy_records_to_table(
+                    "parents",
+                    records=parents,
+                    columns=["child_id", "parent_id", "guild_id"]
+                )
+                await conn.copy_records_to_table(
+                    "marriages",
+                    records=parents,
+                    columns=["user_id", "partner_id", "guild_id"]
+                )
+                await t.commit()
+            except Exception as e:
+                await t.rollback()
+                await ctx.send(f"Failed to copy over records.\n`{e}`")
+                return
 
         await ctx.send(f"Done; copied over **{len(all_users):,}** family users. Relevant bot cache will need refreshing.")
 
     @client.command(
         name="support reload-cache",
-        description="Reload the bot's family user cache.",
     )
     async def reloadcache(self, ctx: t.CommandGI) -> None:
         """
