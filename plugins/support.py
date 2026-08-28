@@ -139,3 +139,46 @@ class Support(client.Plugin):
         await cache.on_load()
         v = len(u.FamilyMember.ALL_MEMBERS)
         await ctx.send(f"Reload successful; **{v:,}** family users loaded into cache.")
+
+    @client.command(
+        name="support check-user",
+        options=[
+            n.ApplicationCommandOption(
+                "user",
+                "The user that you want to check the roles/permissions of.",
+                n.ApplicationOptionType.USER,
+            ),
+            n.ApplicationCommandOption(
+                "guild_id",
+                "The ID of the guild that you want to check the user in.",
+                n.ApplicationOptionType.STRING,
+            ),
+        ],
+    )
+    async def checkuser(self, ctx: t.CommandGI, user: n.User, guild_id: str) -> None:
+        """
+        Grab information for a guild and a user within it.
+        """
+
+        await ctx.defer()
+        guild = await n.Guild.fetch(self.state, guild_id)
+        member = await guild.fetch_member(user.id)
+        roles = await guild.fetch_roles()
+        member_roles = [i for i in roles if i.id in member.role_ids]
+        columns = [
+            list(),
+            list(),
+            list(),
+        ]
+        for idx, (name, val) in enumerate(member.permissions.walk()):
+            columns[idx % 3].append(f"{'🟢' if val else '🔴'} {name}")
+        embed = (
+            n.Embed()
+            .update(title=guild.name)
+            .set_image(guild.icon.get_url())
+            .add_field("Roles", "\n".join([i.name for i in member_roles]))
+            .add_field("Permissions 1", "\n".join(columns[0]))
+            .add_field("Permissions 2", "\n".join(columns[1]))
+            .add_field("Permissions 3", "\n".join(columns[2]))
+        )
+        await ctx.send(embeds=[embed])
