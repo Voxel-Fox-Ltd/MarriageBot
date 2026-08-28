@@ -103,9 +103,9 @@ class Support(client.Plugin):
         try:
             async with db.Database.acquire() as conn:
                 async with conn.transaction():
-                    # if delete:
-                    #     await conn.execute("DELETE FROM parents WHERE guild_id=$1", guild_idi)
-                    #     await conn.execute("DELETE FROM marriages WHERE guild_id=$1", guild_idi)
+                    if delete:
+                        await conn.execute("DELETE FROM parents WHERE guild_id=$1", guild_idi)
+                        await conn.execute("DELETE FROM marriages WHERE guild_id=$1", guild_idi)
                     await conn.copy_records_to_table(
                         "parents",
                         records=parents,
