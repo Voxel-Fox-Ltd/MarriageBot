@@ -43,3 +43,6 @@ nitro_boost:
   guild_id: 208895639164026880
   role_id: 586495239166885889
   tier: 1
+statsd:
+  host: 127.0.0.1:9125
+  namespace: marriagebot

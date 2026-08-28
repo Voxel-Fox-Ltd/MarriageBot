@@ -39,3 +39,6 @@ plugins:
 database_dsn: '$DSN'
 database_max_connections: 50
 weebsh_api_key: '$WEEBSH_API_KEY'
+statsd:
+  host: 127.0.0.1:9125
+  namespace: marriagebotgold
