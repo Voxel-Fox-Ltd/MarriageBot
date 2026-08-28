@@ -113,7 +113,7 @@ class Support(client.Plugin):
                 )
                 await conn.copy_records_to_table(
                     "marriages",
-                    records=parents,
+                    records=marriages,
                     columns=["user_id", "partner_id", "guild_id"]
                 )
                 await tr.commit()
