@@ -97,6 +97,7 @@ class CacheHandler(client.Plugin):
             raise SystemExit("Failed to cache any users")
         await conn.close()
 
+        u.FamilyMember.ALL_MEMBERS.clear()
         await asyncio.wait([
             asyncio.create_task(self.fetch_partners()),
             asyncio.create_task(self.fetch_parents()),
