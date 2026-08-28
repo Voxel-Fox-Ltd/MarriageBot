@@ -120,7 +120,7 @@ class Support(client.Plugin):
             await ctx.send(f"Failed to copy over records.\n`{e}`")
             return
 
-        await ctx.send("Done. Relevant bot cache will need refreshing.")
+        await ctx.send(f"Done; copied over **{len(all_users):,}** family users. Relevant bot cache will need refreshing.")
 
     @client.command(
         name="support reload-cache",
@@ -137,4 +137,4 @@ class Support(client.Plugin):
         await ctx.defer()
         await cache.on_load()
         v = len(u.FamilyMember.ALL_MEMBERS)
-        await ctx.send(f"Reload successful. **{v}** members loaded into cache.")
+        await ctx.send(f"Reload successful; **{v:,}** family users loaded into cache.")
