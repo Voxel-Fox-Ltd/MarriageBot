@@ -173,20 +173,22 @@ class Support(client.Plugin):
             return
         roles = await guild.fetch_roles()
         member_roles = [i for i in roles if i.id in member.role_ids]
+        permissions = n.Permissions()
+        for mr in member_roles:
+            permissions = n.Permissions.update(mr.permissions)
         columns = [
             list(),
             list(),
             list(),
         ]
-        for idx, (name, val) in enumerate(member.permissions.walk()):
-            columns[idx % 3].append(f"{'🟢' if val else '🔴'} {name}")
         embed = (
             n.Embed()
             .update(title=guild.name)
-            .set_image(guild.icon.get_url())
-            .add_field("Roles", "\n".join([i.name for i in member_roles]))
-            .add_field("Permissions 1", "\n".join(columns[0]))
-            .add_field("Permissions 2", "\n".join(columns[1]))
-            .add_field("Permissions 3", "\n".join(columns[2]))
+            .set_thumbnail(guild.icon.get_url())
+            .add_field("Roles", ", ".join([i.name for i in member_roles]), inline=False)
         )
+        for idx, (name, val) in enumerate(permissions.walk()):
+            columns[idx % len(columns)].append(f"{'🟢' if val else '🔴'} {name}")
+        for idx, col in enumerate(columns):
+            embed.add_field(f"Permissions {idx}", "\n".join(col))
         await ctx.send(embeds=[embed])
