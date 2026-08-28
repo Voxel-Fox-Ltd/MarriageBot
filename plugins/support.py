@@ -161,8 +161,16 @@ class Support(client.Plugin):
         """
 
         await ctx.defer()
-        guild = await n.Guild.fetch(self.state, guild_id)
-        member = await guild.fetch_member(user.id)
+        try:
+            guild = await n.Guild.fetch(self.state, guild_id)
+        except n.NotFound:
+            await ctx.send("Could not get guild.")
+            return
+        try:
+            member = await guild.fetch_member(user.id)
+        except n.NotFound:
+            await ctx.send("Member is not present in guild.")
+            return
         roles = await guild.fetch_roles()
         member_roles = [i for i in roles if i.id in member.role_ids]
         columns = [
