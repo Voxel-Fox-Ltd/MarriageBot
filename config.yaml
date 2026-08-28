@@ -36,6 +36,7 @@ plugins:
 - plugins.simulation:Simulation
 - plugins.subscriber_commands:SubscriberCommands
 - plugins.customisation:Customisation
+- plugins.support:Support
 database_dsn: '$DSN'
 database_max_connections: 50
 weebsh_api_key: '$WEEBSH_API_KEY'

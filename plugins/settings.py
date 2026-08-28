@@ -431,17 +431,3 @@ class Settings(client.Plugin):
             await ctx.send(ctx._("GIFs for the simulation commands are now **enabled**."))
         else:
             await ctx.send(ctx._("GIFs for the simulation commands are now **disabled**."))
-
-    # @client.command(
-    #     name="",
-    #     description="",
-    #     type=n.ApplicationCommandType.CHAT_INPUT,
-    #     dm_permission=False,
-    #     default_member_permissions=n.Permissions(manage_members=True),
-    #     # TRANSLATORS: Command name
-    #     name_localizations=LC._(""),
-    #     # TRANSLATORS: Command description
-    #     description_localizations=LC._(""),
-    # )
-    # async def test(self, ctx: t.CommandGI) -> None:
-    #     pass
