@@ -85,7 +85,10 @@ async def handle_marry_limits(
                 ),
                 components=(
                     get_upsell_components(ctx, label=ctx._("Upgrade your partner limit!"))
-                    if is_upsell_valid(author.id)
+                    if (
+                        len(author_ft._partner_ids) >= Perks.max().max_partners
+                        and is_upsell_valid(author.id)
+                    )
                     else n.utils.MISSING
                 ),
             )
@@ -103,7 +106,10 @@ async def handle_marry_limits(
             ),
             components=(
                 get_upsell_components(ctx, label=ctx._("Upgrade your partner limit!"))
-                if is_upsell_valid(author.id)
+                if (
+                    len(author_ft._partner_ids) >= Perks.max().max_partners
+                    and is_upsell_valid(author.id)
+                )
                 else n.utils.MISSING
             ),
         )
@@ -176,7 +182,10 @@ async def handle_adopt_limits(
             allowed_mentions=n.AllowedMentions.none(),
             components=(
                 get_upsell_components(ctx, label=ctx._("Upgrade your child limit!"))
-                if is_upsell_valid(author.id)
+                if (
+                    len(author_ft._child_ids) >= Perks.max().max_children
+                    and is_upsell_valid(author.id)
+                )
                 else n.utils.MISSING
             ),
         )

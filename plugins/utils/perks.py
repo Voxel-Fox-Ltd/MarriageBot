@@ -90,6 +90,10 @@ class Perks:
         )
 
     @classmethod
+    def max(cls) -> Perks:
+        return cls.three()
+
+    @classmethod
     def get_tier(cls, tier_number: int) -> Perks:
         return {
             0: cls.zero,
