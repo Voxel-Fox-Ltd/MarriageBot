@@ -122,7 +122,9 @@ class Support(client.Plugin):
                 await ctx.send(f"Failed to copy over records.\n`{e}`")
                 return
 
-        await ctx.send(f"Done; copied over **{len(all_users):,}** family users. Relevant bot cache will need refreshing.")
+        await ctx.send(
+            f"Done; copied over **{len(all_users):,}** family users. Relevant bot cache will need refreshing."
+        )
 
     @client.command(
         name="support reload-cache",
@@ -175,11 +177,11 @@ class Support(client.Plugin):
         member_roles = [i for i in roles if i.id in member.role_ids]
         permissions = n.Permissions()
         for mr in member_roles:
-            permissions = n.Permissions.update(mr.permissions)
+            permissions = n.Permissions(permissions.value | mr.permissions.value)
         columns = [
             list(),
             list(),
-            list(),
+            # list(),
         ]
         embed = (
             n.Embed()
