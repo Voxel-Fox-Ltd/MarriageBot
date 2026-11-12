@@ -569,6 +569,17 @@ class Information(client.Plugin):
         except Exception:
             raise
 
+        # See what upsells we can spit onto the user
+        ft = u.FamilyMember.get(user_id, guild_id)
+        blood_size = 0
+        async for _, span_user in ft.span(deep=True):
+            blood_size += 1
+        water_size = 0
+        async for _, span_user in ft.span():
+            water_size += 1
+        user_perks = await u.Perks.get_perks_for_user(self.bot, ctx, ctx.user.id)
+        can_run_fulltree = user_perks.can_run_fulltree
+
         # Send file
         try:
             file = n.File(image_filename, filename="tree.png")
@@ -580,23 +591,29 @@ class Information(client.Plugin):
                 )
             )
         text = ""
-        # text = ctx._("[Click here]({url}) to customise your tree.")
         if not full_tree:
-            text += " " + (
-                ctx._(
-                    "Use {fulltree} for your *entire* family, including non-blood relatives.\n"
-                    "Use {customize} to change how your tree looks."
-                )
-            )
+            text += ctx._(
+                "This tree is only showing you **{water_size} of {blood_size} members of your "
+                "family**. Use {fulltree} for your *entire* family, including non-blood "
+                "relatives."
+            ) + "\n"
+        text += ctx._("Use {customize} to change how your tree looks.") + "\n"
         fulltree_c = u.get_command_mention(self.bot, "fulltree")
         customize_c = u.get_command_mention(self.bot, "customize-tree")
         text = text.format(
             fulltree=fulltree_c,
             customize=customize_c,
+            water_size=water_size,
+            blood_size=blood_size,
         )
         await ctx.send(
             embeds=u.e(text, image_url="attachment://tree.png", gold=guild_id != 0),
             files=[file],
+            components=(
+                u.get_upsell_components(ctx)
+                if not can_run_fulltree and not full_tree
+                else n.utils.MISSING
+            ),
         )
 
         # Delete the files
