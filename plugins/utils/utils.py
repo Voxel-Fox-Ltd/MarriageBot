@@ -18,9 +18,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import random
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 import novus as n
+from cachetools import TTLCache
 from novus.ext.database import database as db
 
 if TYPE_CHECKING:
@@ -40,6 +42,7 @@ __all__ = (
     "missing_user_names",
     "get_gold_purchased",
     "get_guild_id_and_gold",
+    "is_upsell_valid",
 )
 
 
@@ -154,17 +157,17 @@ async def get_guild_id_and_gold(
     return guild_id, gold_purchased
 
 
-def e(content: str | None, image_url: str | None = None, gold: bool = False) -> list[n.Embed]:
+def e(
+        content: str | None,
+        image_url: str | None = None,
+        gold: bool = False) -> list[n.Embed]:
     """
     Take a string and shove it into an embed.
     """
 
-    e = (
-        n.Embed(
-            color=random.randint(0x0, 0xFFFFFF),
-            description=content,
-        )
-        # .set_footer("Thanks for using MarriageBot :)")
+    e = n.Embed(
+        color=random.randint(0x0, 0xFFFFFF),
+        description=content,
     )
     if gold:
         e.set_footer("Via MarriageBot Gold")
@@ -188,19 +191,22 @@ def get_command_mention(bot: client.Client, command_name: str) -> str:
 def get_upsell_button(
         ctx: n.Interaction | None = None,
         *,
+        label: str | None = None,
         gold: bool = False) -> n.Button:
     """
     Get a button that links to the MarriageBot store.
     """
 
-    if gold:
+    if label is not None:
+        pass
+    elif gold:
         label = "Get MarriageBot Gold"
         if ctx:
-            label = ctx._("Get MarriageBot Gold")
+            label = ctx._(label)
     else:
         label = "Get MarriageBot perks"
         if ctx:
-            label = ctx._("Get MarriageBot perks")
+            label = ctx._(label)
     return n.Button(
         label=label,
         style=n.ButtonStyle.LINK,
@@ -213,15 +219,18 @@ def get_upsell_row(
         ctx: n.Interaction,
         *,
         gold: bool = False,
+        label: str | None = None,
         enable_gold_button: bool = False) -> n.ActionRow:
     row = []
     if enable_gold_button:
-        row.append(n.Button(
-            label=ctx._("Enable Gold"),
-            style=n.ButtonStyle.PRIMARY,
-            custom_id="ENABLE_GOLD",
-        ))
-    row.append(get_upsell_button(ctx, gold=gold))
+        row.append(
+            n.Button(
+                label=ctx._("Enable Gold"),
+                style=n.ButtonStyle.PRIMARY,
+                custom_id="ENABLE_GOLD",
+            )
+        )
+    row.append(get_upsell_button(ctx, gold=gold, label=label))
     return n.ActionRow(row)
 
 
@@ -229,6 +238,7 @@ def get_upsell_components(
         ctx: n.Interaction,
         *,
         gold: bool = False,
+        label: str | None = None,
         enable_gold_button: bool = False) -> list[n.ActionRow]:
     """
     Get the components for an upsell.
@@ -242,4 +252,37 @@ def get_upsell_components(
         has purchased gold already.
     """
 
-    return [get_upsell_row(ctx, gold=gold, enable_gold_button=enable_gold_button)]
+    return [
+        get_upsell_row(
+            ctx,
+            gold=gold,
+            label=label,
+            enable_gold_button=enable_gold_button,
+        )
+    ]
+
+
+UPSELL_TIMEOUT = 60 * 10  # How often a user should be upsold to
+USER_LAST_UPSELL: dict[int, n.utils.DiscordDatetime] = TTLCache(1e3, UPSELL_TIMEOUT)  # pyright: ignore
+
+
+def is_upsell_valid(user_id: int) -> bool:
+    """
+    Determine whether or not we should show a set of upsell components to a user.
+
+    Parameters
+    ----------
+    user_id : int
+        The ID of the user that we want to determine the upsell compatibility of.
+
+    Returns
+    -------
+    bool
+        Whether or not the upsell components should be shown.
+    """
+    last_upsell = USER_LAST_UPSELL.get(user_id)
+    if last_upsell is not None:
+        if last_upsell + timedelta(seconds=UPSELL_TIMEOUT) > n.utils.utcnow():
+            return False
+    USER_LAST_UPSELL[user_id] = n.utils.utcnow()
+    return True

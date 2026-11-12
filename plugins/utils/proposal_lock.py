@@ -30,7 +30,7 @@ from novus.ext import database as db
 from .autodelete import AutoDelete
 from .family_member import FamilyMember
 from .perks import Perks
-from .utils import e, get_guild_id
+from .utils import e, get_guild_id, get_upsell_components, is_upsell_valid
 
 if TYPE_CHECKING:
     from novus import types as t
@@ -46,7 +46,7 @@ __all__ = (
 log = logging.getLogger("proposallock")
 
 
-PROPOSAL_TIMEOUT: float = 60.0
+PROPOSAL_TIMEOUT: float = 60.0  # How long a proposal lock should last
 
 
 async def handle_marry_limits(
@@ -62,7 +62,7 @@ async def handle_marry_limits(
     """
 
     if author.id in user_ft._partner_ids:
-        await ctx.send(embeds=e(ctx._("You're already married!")))
+        await ctx.send(embeds=e(ctx._("You're already married to each other!")))
         return False
 
     author_perks = await Perks.get_perks_for_user(bot, ctx, author.id)
@@ -82,7 +82,12 @@ async def handle_marry_limits(
                         ).format(user=f"<@{user.id}>", count=num)
                     ),
                     gold=guild_id != 0,
-                )
+                ),
+                components=(
+                    get_upsell_components(ctx, label=ctx._("Upgrade your partner limit!"))
+                    if is_upsell_valid(author.id)
+                    else n.utils.MISSING
+                ),
             )
             return False
         await ctx.send(
@@ -95,7 +100,12 @@ async def handle_marry_limits(
                     ).format(count=num)
                 ),
                 gold=guild_id != 0,
-            )
+            ),
+            components=(
+                get_upsell_components(ctx, label=ctx._("Upgrade your partner limit!"))
+                if is_upsell_valid(author.id)
+                else n.utils.MISSING
+            ),
         )
         return False
 
@@ -161,9 +171,14 @@ async def handle_adopt_limits(
                         )
                     ).format(count=num)
                 ),
-                gold=guild_id != 0,  # TODO upsell
+                gold=guild_id != 0,
             ),
             allowed_mentions=n.AllowedMentions.none(),
+            components=(
+                get_upsell_components(ctx, label=ctx._("Upgrade your child limit!"))
+                if is_upsell_valid(author.id)
+                else n.utils.MISSING
+            ),
         )
         return False
 
